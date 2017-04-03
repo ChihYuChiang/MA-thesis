@@ -1,6 +1,6 @@
 # Repository Update Notes
 *General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
-___
+
 ### 04/02/2017
 1. Upload **technical overview** of the project. See the [file](/overview.pdf).
 
