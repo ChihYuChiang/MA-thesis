@@ -1,8 +1,7 @@
 # Repository Update Notes
-*Last Update: 04/02/2017*  
-
-General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).  
-
+*General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
+___
+### 04/02/2017
 1. Upload **technical overview** of the project. See the [file](/overview.pdf).
 
 2. Upload possible **player trait tests** reference in [reference](/reference) folder:  
@@ -17,4 +16,3 @@ General writing progress will try to follow the schedule [here](https://github.c
 4. Upload links to **pretest questionnaires** in [reference](/reference) folder.
 
 5. Upload **Content Analysis final project** in [reference](/reference) folder:
-   * Includes a poster and a technical appendix.
