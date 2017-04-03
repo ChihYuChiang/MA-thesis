@@ -1,6 +1,8 @@
 # Repository Update Notes
 *Last Update: 04/02/2017*  
 
+General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).  
+
 1. Upload **technical overview** of the project. See the [file](/overview.pdf).
 
 2. Upload possible **player trait tests** reference in [reference](/reference) folder:  
@@ -9,8 +11,10 @@
    * An online version simplified Big Five measure.
    * An online version simplified MBTI measure.
    * A psychological needs satisfaction measure (from SDT).
-   
+
 3. Upload **triplet embedding algorithm** article in [reference](/reference) folder.
 
-4. Upload **Content Analysis final project** in [reference](/reference) folder:
+4. Upload links to **pretest questionnaires** in [reference](/reference) folder.
+
+5. Upload **Content Analysis final project** in [reference](/reference) folder:
    * Includes a poster and a technical appendix.
