@@ -1,6 +1,10 @@
 # Repository Update Notes
 *General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
 
+### 04/09/2017
+1. Upload **technical framework** of the [Content Analysis final project](/reference/content%20analysis%20final%20project).
+
+
 ### 04/02/2017
 1. Upload **technical overview** of the project. See the [file](/overview.pdf).
 
