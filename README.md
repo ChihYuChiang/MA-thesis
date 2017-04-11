@@ -1,6 +1,10 @@
 # Repository Update Notes
 *General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
 
+### 04/16/2017
+1. Update general **survey plan** according to the discussion in 04/11.
+
+
 ### 04/09/2017
 1. Upload general **survey plan** in [method](/method) folder. It includes rough survey flow, time, and sample size estimates.
 
