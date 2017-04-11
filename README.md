@@ -4,7 +4,7 @@
 ### 04/09/2017
 1. Upload general **survey plan** in [method](/method) folder. It includes rough survey flow, time, and sample size estimates.
 
-1. Update **core game** list to include 15 new games (total 40) and **filter questions** (and answer keys) for survey (for testing if the respondents have really played the game they identified) in [method](/method) folder.
+1. Update **core game** list to include 15 new games (total 40) and corresponding **filter questions** (and answer keys) for survey (for testing if the respondents have really played the game they identified) in [method](/method) folder.
 
 1. Upload **experiential keyword** list and identification process in [method](/method) folder.
 
