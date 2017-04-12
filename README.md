@@ -4,6 +4,8 @@
 ### 04/16/2017
 1. Update general **survey plan** in [method](/method) folder according to the discussion in 04/11.
 
+1. Upload **analysis framework** in [method](/method) folder.
+
 
 ### 04/09/2017
 1. Upload general **survey plan** in [method](/method) folder. It includes rough survey flow, time, and sample size estimates.
