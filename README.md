@@ -2,6 +2,10 @@
 *General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
 
 ### 04/16/2017
+1. **Survey** is online! Please access through [here]( https://goo.gl/SMlW7Z).
+
+1. A 5-sample pretest is made, which adds some issues to our **payment setting**.
+
 1. Update general **survey plan** in [method](/method) folder according to the discussion in 04/11. The orange-marked issue notes require further discussion.
 
 1. Upload **analysis framework** in [method](/method) folder.
