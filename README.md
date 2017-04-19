@@ -1,6 +1,12 @@
 # Repository Update Notes
 *General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
 
+### 04/23/2017
+1. Update **core game** list to include 10 new games (total 50) and corresponding **filter questions** (and answer keys) for survey in [method](/method) folder.
+
+1. Upload **survey instruction** in [method](/method) folder.
+
+
 ### 04/16/2017
 1. **Survey** is online! Please access through [here]( https://goo.gl/SMlW7Z).
 
