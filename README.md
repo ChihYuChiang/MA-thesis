@@ -6,9 +6,11 @@
 
 1. Upload **survey instruction** in [method](/method) folder.
 
+1. Start **literature review** in [writing](/writing) folder.
+
 
 ### 04/16/2017
-1. **Survey** is online! Please access through [here]( https://goo.gl/SMlW7Z).
+1. **Survey** is online! Please access through the shared Qualtrics project.
 
 1. A 5-sample pretest is made, which adds some issues to our **payment setting**.
 
