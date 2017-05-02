@@ -1,12 +1,24 @@
 # Repository Update Notes
-*General writing progress will try to follow the schedule [here](https://github.com/UC-MACSS/persp-research).*  
+*General writing progress will follow the schedule of [MACS 30200](https://github.com/UC-MACSS/persp-research).*  
+
+### 05/02/2017
+1. Some reference of **W2V**, **SVM**, **Naive Bayes**, and **Random Forest** can be found in [reference](/reference) folder.
+
+1. **Target response number** of the first survey would be increased to 220 for counterbalancing some bogus responses.
+
+1. Also from the author of t-STE, **t-SNE** is a technique for reducing data dimensions. It is said to be superior to traditional methods, such as PCA, and is widely used in machine learning field. Please refer to the author's [website](https://lvdmaaten.github.io/tsne/).
+
+1. An interesting [website](https://www.galaxyzoo.org/#/)  built for **Galaxy Zoo**, a project aiming at categorizing galaxies. This website makes people answer simple multi-choice questions for tagging galaxies by their shapes, density, and other visual characteristics. Similar to the website idea we talk about today.
+
+1. Start **introduction** section.
+
 
 ### 04/23/2017
 1. Update **core game** list to include 10 new games (total 50) and corresponding **filter questions** (and answer keys) for survey in [method](/method) folder.
 
 1. Upload **survey instruction** in [method](/method) folder.
 
-1. Start **literature review** in [writing](/writing) folder.
+1. Start **literature review** section in [writing](/writing) folder.
 
 
 ### 04/16/2017
