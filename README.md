@@ -1,14 +1,14 @@
 # Repository Update Notes
-*General writing progress will follow the schedule of [MACS 30200](https://github.com/UC-MACSS/persp-research).*  
+_General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
 ### 05/02/2017
 1. Some reference of **W2V**, **SVM**, **Naive Bayes**, and **Random Forest** can be found in [reference](/reference) folder.
 
 1. **Target response number** of the first survey would be increased to 220 for counterbalancing some bogus responses.
 
-1. Also from the author of t-STE, **t-SNE** is a technique for reducing data dimensions. It is said to be superior to traditional methods, such as PCA, and is widely used in machine learning field. Please refer to the author's [website](https://lvdmaaten.github.io/tsne/).
+1. Also from the author of t-STE, **t-SNE** is a technique for reducing data dimensions. It is said to be superior to traditional methods, such as PCA, and is widely used in machine learning field. Please refer to the author's <a href="https://lvdmaaten.github.io/tsne/" target="_blank">website</a>.
 
-1. An interesting [website](https://www.galaxyzoo.org/#/)  built for **Galaxy Zoo**, a project aiming at categorizing galaxies. This website makes people answer simple multi-choice questions for tagging galaxies by their shapes, density, and other visual characteristics. Similar to the website idea we talk about today.
+1. An interesting <a href="https://www.galaxyzoo.org/#/" target="_blank">website</a> built for **Galaxy Zoo**, a project aiming at categorizing galaxies. This website makes people answer simple multi-choice questions for tagging galaxies by their shapes, density, and other visual characteristics. Similar to the website idea we talk about today.
 
 1. Start **introduction** section.
 
