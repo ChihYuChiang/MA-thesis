@@ -10,11 +10,13 @@ _General writing progress will follow the schedule of <a href="https://github.co
 
 1. _(Not directly related to this project but worth a look)_ An interesting <a href="https://www.galaxyzoo.org/#/" target="_blank">website</a> built for **Galaxy Zoo**, a project aiming at categorizing galaxies. This website makes people answer simple multi-choice questions for tagging galaxies by their shapes, density, and other visual characteristics. Similar to the website idea we talk about today.
 
+1. Update **core game** list to include 150 new games (total 200) for the second survey.
+
 1. Start **introduction** section.
 
 
 ### 04/23/2017
-1. Update **core game** list to include 10 new games (total 50) and corresponding **filter questions** (and answer keys) for survey in [method](/method) folder.
+1. Update **core game** list to include 10 new games (total 50) and corresponding **filter questions** (and answer keys) for the first survey in [method](/method) folder.
 
 1. Upload **survey instruction** in [method](/method) folder.
 
