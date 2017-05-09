@@ -1,5 +1,8 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
+### 05/09/2017
+1. Upload **survey result description** in [method](/method) folder.
+
 
 ### 05/02/2017
 1. Some reference of **W2V**, **SVM**, **Naive Bayes**, and **Random Forest** can be found in [reference](/reference) folder.
