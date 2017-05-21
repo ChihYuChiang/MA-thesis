@@ -1,5 +1,12 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
+
+### 05/20/2017
+1. Upload **Model precision rate comparison with random inputs** in [method](/method) folder. The random trials are conducted 5 times with each method and input combination. Total 100 models are reported.
+
+1. Upload **method and result** section in [writing](/writing) folder.
+
+
 ### 05/09/2017
 1. Upload **survey result description** in [method](/method) folder.
 
