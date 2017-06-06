@@ -1,6 +1,10 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 06/05/2017
+1. Upload a **report** of the process acquiring game characteristics in [writing](/writing) folder (final paper for the MACS course).
+
+
 ### 05/29/2017
 1. Upload a **poster** for the process of acquiring game characteristics in [writing](/writing) folder.
 
