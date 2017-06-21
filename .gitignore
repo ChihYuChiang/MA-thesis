@@ -87,3 +87,19 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# data files
+data/
+img/
+reference/
+
+# from tste package
+bin/tste/
+
+# temp files
+.vscode/
+kernel*
+test.py
+.Rproj.user
+.Rhistory
+*.Rproj
