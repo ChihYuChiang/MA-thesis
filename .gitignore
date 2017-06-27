@@ -89,7 +89,7 @@ ENV/
 .ropeproject
 
 # data files
-data/
+raw_survey/
 img/
 reference/
 

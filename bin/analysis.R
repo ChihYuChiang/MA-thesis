@@ -34,7 +34,7 @@ df <- left_join(survey, core_cluster, by=c("core_id"), copy=FALSE)
 #Create response variable
 df <- df %>%
   rowwise() %>% 
-  mutate(preference = mean(c(preference_1, preference_2)))
+  mutate(preference = mean(c(preference_1, preference_3)))
 
 #Select variables to be included in regression (model formation)
 #predictor variables
