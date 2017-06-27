@@ -1,6 +1,12 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 06/25/2017
+1. Update **analysis framework** to include variables available in [method](/method) folder.
+1. Upload **data** in [data](/data) folder, including game and player characteristics from survey and review.
+1. Start analysis. Corresponding **R code** will be updated in [bin](/bin) folder.
+
+
 ### 06/05/2017
 1. Upload a **report** of the process acquiring game characteristics in [writing](/writing) folder (final paper for the MACS course).
 
@@ -10,7 +16,7 @@ _General writing progress will follow the schedule of <a href="https://github.co
 
 
 ### 05/20/2017
-1. Upload **Model precision rate comparison with random inputs** in [method](/method) folder. The random trials are conducted 5 times with each method and input combination. Total 100 models are reported.
+1. Upload **model precision rate comparison with random inputs** in [method](/method) folder. The random trials are conducted 5 times with each method and input combination. Total 100 models are reported.
 
 1. Upload **method and result** section in [writing](/writing) folder.
 
