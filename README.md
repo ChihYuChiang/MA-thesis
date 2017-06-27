@@ -5,6 +5,10 @@ _General writing progress will follow the schedule of <a href="https://github.co
 1. Update **analysis framework** to include variables available in [method](/method) folder.
 1. Upload **data** in [data](/data) folder, including game and player characteristics from survey and review.
 1. Start analysis. Corresponding **R code** will be updated in [bin](/bin) folder.
+1. Upload document of **MAPSS paper deadlines**.
+	* July 7 - draft.
+	* July 28 - final draft.
+    * Aug 11 - faculty evaluation.
 
 
 ### 06/05/2017
