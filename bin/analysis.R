@@ -1,7 +1,9 @@
 "
---------------------------------------------------
+----------------------------------------------------------------------
 Preliminary
---------------------------------------------------
+
+- Game release data (year) is read in as an interval variable
+----------------------------------------------------------------------
 "
 #--Setting up
 #Package
@@ -26,17 +28,48 @@ survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
          core_id = factor(core_id)) %>%
   select(-id)
 
-#Match up
+
+#--Impute missing with mean
+imputation_mean <- function(c){
+  c[is.na(c)] <- mean(c, na.rm=TRUE)
+  return(c)
+}
+core_cluster <- mutate_each(core_cluster,
+                           funs(imputation_mean(.)),
+                           star_user, star_GS)
+
+
+#--Match up
 df <- left_join(survey, core_cluster, by=c("core_id"), copy=FALSE)
 
 
-#--Transformation
-#Create response variable
+
+
+"
+----------------------------------------------------------------------
+Transformation
+
+- preference_1 = how much do you like
+- preference_2 = how often play it
+- preference_3 = match personal taste
+----------------------------------------------------------------------
+"
+#--Create response variable
 df <- df %>%
   rowwise() %>% 
-  mutate(preference = mean(c(preference_1, preference_3)))
+  mutate(preference = mean(c(preference_3)))
 
-#Select variables to be included in regression (model formation)
+
+#--Compute personalty gap
+df <- mutate(df,
+             gap_extraversion = game_extraversion - real_extraversion,
+             gap_agreeableness = game_agreeableness - real_agreeableness,
+             gap_conscientiousness = game_conscientiousness - real_conscientiousness,
+             gap_emotionstability = game_emotionstability - real_emotionstability,
+             gap_openness = game_openness - real_openness)
+
+
+#--Select variables to be included in regression (model formation)
 #predictor variables
 predictors <- paste(read.csv("../data/predictors.csv", header=FALSE)[,1], collapse="+")
 
@@ -52,41 +85,18 @@ df_yx <- bind_cols(select(df, preference), data.frame(df_x))
 
 
 "
---------------------------------------------------
-Description
---------------------------------------------------
-"
-#--Descriptive stats
-summary(df)
-
-
-#--Correlation
-#Full matrix
-cor(select(df, which(sapply(df, is.numeric))))
-
-#Preference - game characteristics
-corrgram(select(df, preference, starts_with("score")),
-         order=NULL,
-         lower.panel=panel.ellipse,
-         upper.panel=panel.shade)
-
-#Preference - player personality
-corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
-         order=NULL,
-         lower.panel=panel.ellipse,
-         upper.panel=panel.shade)
-
-
-
-
-"
---------------------------------------------------
+----------------------------------------------------------------------
 Models
---------------------------------------------------
+
+- Predictor variables being used are edited through 'predictors.csv'
+----------------------------------------------------------------------
 "
-#--Regression_linear
+#--Regression_linear_all
 model_lm <- lm(preference ~ ., data=df_yx)
 summary(model_lm)
+
+
+#--Regression_linear_grouped
 
 
 #--Regression_lasso
@@ -121,9 +131,9 @@ summary(model_svm)
 
 
 "
---------------------------------------------------
-Cross validation
---------------------------------------------------
+----------------------------------------------------------------------
+Model selection (cross validation)
+----------------------------------------------------------------------
 "
 #--Create leave-one-out datasets
 df_select_loo <- crossv_kfold(df_select, k = nrow(df_select))
@@ -145,7 +155,63 @@ df_select_loo <- crossv_kfold(df_select, k = nrow(df_select))
 
 
 "
---------------------------------------------------
-Regression assumptions
---------------------------------------------------
+----------------------------------------------------------------------
+Model selection (information criteria)
+----------------------------------------------------------------------
 "
+
+
+
+
+"
+----------------------------------------------------------------------
+Description
+----------------------------------------------------------------------
+"
+#--Descriptive stats
+summary(df)
+
+
+#--Correlation
+#Full matrix
+cor(select(df, which(sapply(df, is.numeric))))
+
+#Preference - game characteristics
+corrgram(select(df, preference, starts_with("distance_survey_mean")),
+         order=NULL,
+         lower.panel=panel.ellipse,
+         upper.panel=panel.shade)
+
+#Preference - player personality
+corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
+         order=NULL,
+         lower.panel=panel.ellipse,
+         upper.panel=panel.shade)
+
+
+
+
+"
+----------------------------------------------------------------------
+Regression assumptions
+----------------------------------------------------------------------
+"
+#--Influential observations
+
+
+#--Normally distributed
+# car::qqPlot(lm_1)
+# 
+# augment(lm_1, df) %>%
+#   mutate(.student=rstudent(lm_1)) %>%
+#   ggplot(aes(.student)) +
+#   geom_density(adjust=.5) +
+#   labs(title = "Density plot of the studentized residuals",
+#        x="Studentized residuals",
+#        y="Estimated density")
+
+
+#--Heteroscedasticity
+
+
+#--Multicollinearity
