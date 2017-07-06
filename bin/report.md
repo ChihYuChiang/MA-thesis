@@ -232,168 +232,166 @@ summary(model_lm)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0583 -0.6868  0.2737  1.0325  3.3076 
+    ## -5.0397 -0.6836  0.2651  1.0141  3.1886 
     ## 
     ## Coefficients:
     ##                                                  Estimate Std. Error
-    ## (Intercept)                                     39.505774  20.803633
-    ## star_user                                        0.026380   0.054343
-    ## education                                        0.008020   0.026154
-    ## income                                          -0.007082   0.016778
-    ## release                                         -0.023976   0.006945
-    ## sex2                                            -0.150880   0.071659
-    ## real_extraversion                                0.805741   0.932159
-    ## real_agreeableness                               1.261912   1.271032
-    ## real_conscientiousness                           3.101851   1.512743
-    ## real_emotionstability                            1.114126   1.393602
-    ## real_openness                                   -1.151492   1.259056
-    ## distance_survey_median_1                         5.039080   2.975120
-    ## distance_survey_median_2                         2.946458   3.310633
-    ## distance_survey_median_3                        -0.032897   2.767971
-    ## distance_survey_median_4                         2.606824   2.501109
-    ## distance_survey_median_5                         2.711597   3.352934
-    ## distance_survey_median_6                        -0.141274   2.239959
-    ## distance_survey_median_7                        -0.982010   2.450619
-    ## satis_autonomy                                   6.717965   2.178035
-    ## satis_relatedness                               -4.823087   1.925432
-    ## satis_competence                                -2.880620   2.097255
-    ## real_extraversion.distance_survey_median_1      -0.154998   0.172777
-    ## real_agreeableness.distance_survey_median_1     -0.524500   0.236785
-    ## real_conscientiousness.distance_survey_median_1 -0.495529   0.276966
-    ## real_emotionstability.distance_survey_median_1  -0.413795   0.249749
-    ## real_openness.distance_survey_median_1          -0.175181   0.234118
-    ## real_extraversion.distance_survey_median_2      -0.230410   0.197969
-    ## real_agreeableness.distance_survey_median_2      0.080856   0.267692
-    ## real_conscientiousness.distance_survey_median_2 -0.686491   0.320725
-    ## real_emotionstability.distance_survey_median_2  -0.486532   0.300438
-    ## real_openness.distance_survey_median_2           0.248208   0.267558
-    ## real_extraversion.distance_survey_median_3       0.067592   0.170138
-    ## real_agreeableness.distance_survey_median_3     -0.120688   0.229795
-    ## real_conscientiousness.distance_survey_median_3 -0.536834   0.271527
-    ## real_emotionstability.distance_survey_median_3  -0.117834   0.253783
-    ## real_openness.distance_survey_median_3           0.343994   0.225269
-    ## real_extraversion.distance_survey_median_4      -0.174750   0.156164
-    ## real_agreeableness.distance_survey_median_4     -0.277825   0.213233
-    ## real_conscientiousness.distance_survey_median_4 -0.421161   0.239261
-    ## real_emotionstability.distance_survey_median_4  -0.020653   0.229539
-    ## real_openness.distance_survey_median_4           0.333880   0.200891
-    ## real_extraversion.distance_survey_median_5      -0.070634   0.206369
-    ## real_agreeableness.distance_survey_median_5     -0.398053   0.277705
-    ## real_conscientiousness.distance_survey_median_5 -0.752626   0.326862
-    ## real_emotionstability.distance_survey_median_5  -0.272401   0.300825
-    ## real_openness.distance_survey_median_5           0.056634   0.274858
-    ## real_extraversion.distance_survey_median_6       0.017837   0.137123
-    ## real_agreeableness.distance_survey_median_6     -0.078816   0.184053
-    ## real_conscientiousness.distance_survey_median_6 -0.159223   0.216856
-    ## real_emotionstability.distance_survey_median_6   0.306463   0.208066
-    ## real_openness.distance_survey_median_6           0.447697   0.179708
-    ## real_extraversion.distance_survey_median_7      -0.229021   0.141755
-    ## real_agreeableness.distance_survey_median_7      0.053781   0.196881
-    ## real_conscientiousness.distance_survey_median_7 -0.019522   0.239300
-    ## real_emotionstability.distance_survey_median_7  -0.092932   0.216045
-    ## real_openness.distance_survey_median_7          -0.021028   0.192646
-    ## distance_survey_median_1.satis_autonomy         -0.890339   0.389296
-    ## distance_survey_median_2.satis_autonomy         -1.390498   0.460050
-    ## distance_survey_median_3.satis_autonomy         -1.066138   0.375320
-    ## distance_survey_median_4.satis_autonomy         -1.072098   0.360957
-    ## distance_survey_median_5.satis_autonomy         -1.225015   0.472577
-    ## distance_survey_median_6.satis_autonomy         -0.371007   0.292319
-    ## distance_survey_median_7.satis_autonomy         -0.568311   0.322048
-    ## distance_survey_median_1.satis_relatedness       0.946892   0.351251
-    ## distance_survey_median_2.satis_relatedness       0.996882   0.407072
-    ## distance_survey_median_3.satis_relatedness       0.826226   0.354506
-    ## distance_survey_median_4.satis_relatedness       0.610028   0.305656
-    ## distance_survey_median_5.satis_relatedness       0.973976   0.414943
-    ## distance_survey_median_6.satis_relatedness      -0.075513   0.279034
-    ## distance_survey_median_7.satis_relatedness       0.553008   0.293621
-    ## distance_survey_median_1.satis_competence        0.348739   0.376592
-    ## distance_survey_median_2.satis_competence        0.625805   0.445943
-    ## distance_survey_median_3.satis_competence        0.436924   0.377869
-    ## distance_survey_median_4.satis_competence        0.324006   0.342654
-    ## distance_survey_median_5.satis_competence        0.746395   0.450820
-    ## distance_survey_median_6.satis_competence        0.045324   0.293476
-    ## distance_survey_median_7.satis_competence        0.397762   0.318363
+    ## (Intercept)                                     40.351083  20.817068
+    ## star_user                                        0.026853   0.054387
+    ## education                                        0.005403   0.026146
+    ## income                                          -0.006006   0.016784
+    ## release                                         -0.024263   0.006950
+    ## real_extraversion                                0.814264   0.932926
+    ## real_agreeableness                               1.239082   1.272043
+    ## real_conscientiousness                           2.982567   1.512939
+    ## real_emotionstability                            1.057145   1.394499
+    ## real_openness                                   -1.154781   1.260103
+    ## distance_survey_median_1                         4.977043   2.977450
+    ## distance_survey_median_2                         2.945795   3.313388
+    ## distance_survey_median_3                        -0.106674   2.770052
+    ## distance_survey_median_4                         2.480897   2.502475
+    ## distance_survey_median_5                         2.724114   3.355719
+    ## distance_survey_median_6                        -0.201554   2.241640
+    ## distance_survey_median_7                        -0.908753   2.452411
+    ## satis_autonomy                                   6.721478   2.179847
+    ## satis_relatedness                               -4.811202   1.927026
+    ## satis_competence                                -2.785237   2.098511
+    ## real_extraversion.distance_survey_median_1      -0.161793   0.172891
+    ## real_agreeableness.distance_survey_median_1     -0.516165   0.236948
+    ## real_conscientiousness.distance_survey_median_1 -0.475268   0.277029
+    ## real_emotionstability.distance_survey_median_1  -0.411359   0.249954
+    ## real_openness.distance_survey_median_1          -0.178889   0.234306
+    ## real_extraversion.distance_survey_median_2      -0.230142   0.198134
+    ## real_agreeableness.distance_survey_median_2      0.083174   0.267912
+    ## real_conscientiousness.distance_survey_median_2 -0.671752   0.320915
+    ## real_emotionstability.distance_survey_median_2  -0.475499   0.300642
+    ## real_openness.distance_survey_median_2           0.251065   0.267777
+    ## real_extraversion.distance_survey_median_3       0.068474   0.170279
+    ## real_agreeableness.distance_survey_median_3     -0.110227   0.229932
+    ## real_conscientiousness.distance_survey_median_3 -0.513815   0.271533
+    ## real_emotionstability.distance_survey_median_3  -0.106607   0.253938
+    ## real_openness.distance_survey_median_3           0.345132   0.225456
+    ## real_extraversion.distance_survey_median_4      -0.175621   0.156294
+    ## real_agreeableness.distance_survey_median_4     -0.278401   0.213410
+    ## real_conscientiousness.distance_survey_median_4 -0.397264   0.239191
+    ## real_emotionstability.distance_survey_median_4  -0.010221   0.229676
+    ## real_openness.distance_survey_median_4           0.334871   0.201058
+    ## real_extraversion.distance_survey_median_5      -0.074011   0.206535
+    ## real_agreeableness.distance_survey_median_5     -0.384690   0.277864
+    ## real_conscientiousness.distance_survey_median_5 -0.741117   0.327088
+    ## real_emotionstability.distance_survey_median_5  -0.270543   0.301074
+    ## real_openness.distance_survey_median_5           0.054047   0.275084
+    ## real_extraversion.distance_survey_median_6       0.028497   0.137143
+    ## real_agreeableness.distance_survey_median_6     -0.078690   0.184206
+    ## real_conscientiousness.distance_survey_median_6 -0.140251   0.216849
+    ## real_emotionstability.distance_survey_median_6   0.313551   0.208212
+    ## real_openness.distance_survey_median_6           0.442823   0.179843
+    ## real_extraversion.distance_survey_median_7      -0.235843   0.141835
+    ## real_agreeableness.distance_survey_median_7      0.054702   0.197045
+    ## real_conscientiousness.distance_survey_median_7 -0.017221   0.239497
+    ## real_emotionstability.distance_survey_median_7  -0.096744   0.216217
+    ## real_openness.distance_survey_median_7          -0.016483   0.192794
+    ## distance_survey_median_1.satis_autonomy         -0.887364   0.389618
+    ## distance_survey_median_2.satis_autonomy         -1.386969   0.460430
+    ## distance_survey_median_3.satis_autonomy         -1.061902   0.375627
+    ## distance_survey_median_4.satis_autonomy         -1.088082   0.361178
+    ## distance_survey_median_5.satis_autonomy         -1.229970   0.472965
+    ## distance_survey_median_6.satis_autonomy         -0.373551   0.292560
+    ## distance_survey_median_7.satis_autonomy         -0.556664   0.322268
+    ## distance_survey_median_1.satis_relatedness       0.943819   0.351541
+    ## distance_survey_median_2.satis_relatedness       0.990044   0.407398
+    ## distance_survey_median_3.satis_relatedness       0.809158   0.354708
+    ## distance_survey_median_4.satis_relatedness       0.635332   0.305673
+    ## distance_survey_median_5.satis_relatedness       0.971645   0.415287
+    ## distance_survey_median_6.satis_relatedness      -0.067544   0.279241
+    ## distance_survey_median_7.satis_relatedness       0.537966   0.293779
+    ## distance_survey_median_1.satis_competence        0.343273   0.376896
+    ## distance_survey_median_2.satis_competence        0.604373   0.446198
+    ## distance_survey_median_3.satis_competence        0.426429   0.378150
+    ## distance_survey_median_4.satis_competence        0.305683   0.342829
+    ## distance_survey_median_5.satis_competence        0.733143   0.451151
+    ## distance_survey_median_6.satis_competence        0.022521   0.293520
+    ## distance_survey_median_7.satis_competence        0.386659   0.318584
     ##                                                 t value Pr(>|t|)    
-    ## (Intercept)                                       1.899 0.057706 .  
-    ## star_user                                         0.485 0.627420    
-    ## education                                         0.307 0.759132    
-    ## income                                           -0.422 0.672971    
-    ## release                                          -3.452 0.000568 ***
-    ## sex2                                             -2.106 0.035367 *  
-    ## real_extraversion                                 0.864 0.387479    
-    ## real_agreeableness                                0.993 0.320912    
-    ## real_conscientiousness                            2.050 0.040444 *  
-    ## real_emotionstability                             0.799 0.424117    
-    ## real_openness                                    -0.915 0.360526    
-    ## distance_survey_median_1                          1.694 0.090466 .  
-    ## distance_survey_median_2                          0.890 0.373571    
-    ## distance_survey_median_3                         -0.012 0.990518    
-    ## distance_survey_median_4                          1.042 0.297410    
-    ## distance_survey_median_5                          0.809 0.418767    
-    ## distance_survey_median_6                         -0.063 0.949717    
-    ## distance_survey_median_7                         -0.401 0.688668    
-    ## satis_autonomy                                    3.084 0.002067 ** 
-    ## satis_relatedness                                -2.505 0.012324 *  
-    ## satis_competence                                 -1.374 0.169740    
-    ## real_extraversion.distance_survey_median_1       -0.897 0.369773    
-    ## real_agreeableness.distance_survey_median_1      -2.215 0.026862 *  
-    ## real_conscientiousness.distance_survey_median_1  -1.789 0.073740 .  
-    ## real_emotionstability.distance_survey_median_1   -1.657 0.097703 .  
-    ## real_openness.distance_survey_median_1           -0.748 0.454388    
-    ## real_extraversion.distance_survey_median_2       -1.164 0.244611    
-    ## real_agreeableness.distance_survey_median_2       0.302 0.762646    
-    ## real_conscientiousness.distance_survey_median_2  -2.140 0.032437 *  
-    ## real_emotionstability.distance_survey_median_2   -1.619 0.105513    
-    ## real_openness.distance_survey_median_2            0.928 0.353682    
-    ## real_extraversion.distance_survey_median_3        0.397 0.691204    
-    ## real_agreeableness.distance_survey_median_3      -0.525 0.599500    
-    ## real_conscientiousness.distance_survey_median_3  -1.977 0.048164 *  
-    ## real_emotionstability.distance_survey_median_3   -0.464 0.642476    
-    ## real_openness.distance_survey_median_3            1.527 0.126905    
-    ## real_extraversion.distance_survey_median_4       -1.119 0.263263    
-    ## real_agreeableness.distance_survey_median_4      -1.303 0.192748    
-    ## real_conscientiousness.distance_survey_median_4  -1.760 0.078513 .  
-    ## real_emotionstability.distance_survey_median_4   -0.090 0.928314    
-    ## real_openness.distance_survey_median_4            1.662 0.096666 .  
-    ## real_extraversion.distance_survey_median_5       -0.342 0.732182    
-    ## real_agreeableness.distance_survey_median_5      -1.433 0.151905    
-    ## real_conscientiousness.distance_survey_median_5  -2.303 0.021402 *  
-    ## real_emotionstability.distance_survey_median_5   -0.906 0.365299    
-    ## real_openness.distance_survey_median_5            0.206 0.836772    
-    ## real_extraversion.distance_survey_median_6        0.130 0.896516    
-    ## real_agreeableness.distance_survey_median_6      -0.428 0.668533    
-    ## real_conscientiousness.distance_survey_median_6  -0.734 0.462890    
-    ## real_emotionstability.distance_survey_median_6    1.473 0.140928    
-    ## real_openness.distance_survey_median_6            2.491 0.012808 *  
-    ## real_extraversion.distance_survey_median_7       -1.616 0.106331    
-    ## real_agreeableness.distance_survey_median_7       0.273 0.784755    
-    ## real_conscientiousness.distance_survey_median_7  -0.082 0.934988    
-    ## real_emotionstability.distance_survey_median_7   -0.430 0.667130    
-    ## real_openness.distance_survey_median_7           -0.109 0.913090    
-    ## distance_survey_median_1.satis_autonomy          -2.287 0.022294 *  
-    ## distance_survey_median_2.satis_autonomy          -3.022 0.002538 ** 
-    ## distance_survey_median_3.satis_autonomy          -2.841 0.004547 ** 
-    ## distance_survey_median_4.satis_autonomy          -2.970 0.003011 ** 
-    ## distance_survey_median_5.satis_autonomy          -2.592 0.009604 ** 
-    ## distance_survey_median_6.satis_autonomy          -1.269 0.204518    
-    ## distance_survey_median_7.satis_autonomy          -1.765 0.077766 .  
-    ## distance_survey_median_1.satis_relatedness        2.696 0.007080 ** 
-    ## distance_survey_median_2.satis_relatedness        2.449 0.014412 *  
-    ## distance_survey_median_3.satis_relatedness        2.331 0.019868 *  
-    ## distance_survey_median_4.satis_relatedness        1.996 0.046087 *  
-    ## distance_survey_median_5.satis_relatedness        2.347 0.019007 *  
-    ## distance_survey_median_6.satis_relatedness       -0.271 0.786708    
-    ## distance_survey_median_7.satis_relatedness        1.883 0.059786 .  
-    ## distance_survey_median_1.satis_competence         0.926 0.354533    
-    ## distance_survey_median_2.satis_competence         1.403 0.160669    
-    ## distance_survey_median_3.satis_competence         1.156 0.247699    
-    ## distance_survey_median_4.satis_competence         0.946 0.344476    
-    ## distance_survey_median_5.satis_competence         1.656 0.097947 .  
-    ## distance_survey_median_6.satis_competence         0.154 0.877279    
-    ## distance_survey_median_7.satis_competence         1.249 0.211661    
+    ## (Intercept)                                       1.938 0.052715 .  
+    ## star_user                                         0.494 0.621540    
+    ## education                                         0.207 0.836315    
+    ## income                                           -0.358 0.720486    
+    ## release                                          -3.491 0.000491 ***
+    ## real_extraversion                                 0.873 0.382870    
+    ## real_agreeableness                                0.974 0.330127    
+    ## real_conscientiousness                            1.971 0.048815 *  
+    ## real_emotionstability                             0.758 0.448488    
+    ## real_openness                                    -0.916 0.359555    
+    ## distance_survey_median_1                          1.672 0.094759 .  
+    ## distance_survey_median_2                          0.889 0.374075    
+    ## distance_survey_median_3                         -0.039 0.969285    
+    ## distance_survey_median_4                          0.991 0.321618    
+    ## distance_survey_median_5                          0.812 0.417010    
+    ## distance_survey_median_6                         -0.090 0.928364    
+    ## distance_survey_median_7                         -0.371 0.711007    
+    ## satis_autonomy                                    3.083 0.002073 ** 
+    ## satis_relatedness                                -2.497 0.012613 *  
+    ## satis_competence                                 -1.327 0.184575    
+    ## real_extraversion.distance_survey_median_1       -0.936 0.349479    
+    ## real_agreeableness.distance_survey_median_1      -2.178 0.029490 *  
+    ## real_conscientiousness.distance_survey_median_1  -1.716 0.086387 .  
+    ## real_emotionstability.distance_survey_median_1   -1.646 0.099970 .  
+    ## real_openness.distance_survey_median_1           -0.763 0.445261    
+    ## real_extraversion.distance_survey_median_2       -1.162 0.245553    
+    ## real_agreeableness.distance_survey_median_2       0.310 0.756248    
+    ## real_conscientiousness.distance_survey_median_2  -2.093 0.036450 *  
+    ## real_emotionstability.distance_survey_median_2   -1.582 0.113892    
+    ## real_openness.distance_survey_median_2            0.938 0.348564    
+    ## real_extraversion.distance_survey_median_3        0.402 0.687632    
+    ## real_agreeableness.distance_survey_median_3      -0.479 0.631712    
+    ## real_conscientiousness.distance_survey_median_3  -1.892 0.058594 .  
+    ## real_emotionstability.distance_survey_median_3   -0.420 0.674666    
+    ## real_openness.distance_survey_median_3            1.531 0.125967    
+    ## real_extraversion.distance_survey_median_4       -1.124 0.261287    
+    ## real_agreeableness.distance_survey_median_4      -1.305 0.192196    
+    ## real_conscientiousness.distance_survey_median_4  -1.661 0.096892 .  
+    ## real_emotionstability.distance_survey_median_4   -0.045 0.964509    
+    ## real_openness.distance_survey_median_4            1.666 0.095957 .  
+    ## real_extraversion.distance_survey_median_5       -0.358 0.720121    
+    ## real_agreeableness.distance_survey_median_5      -1.384 0.166369    
+    ## real_conscientiousness.distance_survey_median_5  -2.266 0.023567 *  
+    ## real_emotionstability.distance_survey_median_5   -0.899 0.368975    
+    ## real_openness.distance_survey_median_5            0.196 0.844257    
+    ## real_extraversion.distance_survey_median_6        0.208 0.835413    
+    ## real_agreeableness.distance_survey_median_6      -0.427 0.669289    
+    ## real_conscientiousness.distance_survey_median_6  -0.647 0.517855    
+    ## real_emotionstability.distance_survey_median_6    1.506 0.132241    
+    ## real_openness.distance_survey_median_6            2.462 0.013887 *  
+    ## real_extraversion.distance_survey_median_7       -1.663 0.096506 .  
+    ## real_agreeableness.distance_survey_median_7       0.278 0.781339    
+    ## real_conscientiousness.distance_survey_median_7  -0.072 0.942684    
+    ## real_emotionstability.distance_survey_median_7   -0.447 0.654605    
+    ## real_openness.distance_survey_median_7           -0.085 0.931877    
+    ## distance_survey_median_1.satis_autonomy          -2.278 0.022857 *  
+    ## distance_survey_median_2.satis_autonomy          -3.012 0.002624 ** 
+    ## distance_survey_median_3.satis_autonomy          -2.827 0.004744 ** 
+    ## distance_survey_median_4.satis_autonomy          -3.013 0.002622 ** 
+    ## distance_survey_median_5.satis_autonomy          -2.601 0.009374 ** 
+    ## distance_survey_median_6.satis_autonomy          -1.277 0.201804    
+    ## distance_survey_median_7.satis_autonomy          -1.727 0.084258 .  
+    ## distance_survey_median_1.satis_relatedness        2.685 0.007315 ** 
+    ## distance_survey_median_2.satis_relatedness        2.430 0.015177 *  
+    ## distance_survey_median_3.satis_relatedness        2.281 0.022639 *  
+    ## distance_survey_median_4.satis_relatedness        2.078 0.037790 *  
+    ## distance_survey_median_5.satis_relatedness        2.340 0.019394 *  
+    ## distance_survey_median_6.satis_relatedness       -0.242 0.808893    
+    ## distance_survey_median_7.satis_relatedness        1.831 0.067216 .  
+    ## distance_survey_median_1.satis_competence         0.911 0.362513    
+    ## distance_survey_median_2.satis_competence         1.354 0.175727    
+    ## distance_survey_median_3.satis_competence         1.128 0.259591    
+    ## distance_survey_median_4.satis_competence         0.892 0.372685    
+    ## distance_survey_median_5.satis_competence         1.625 0.104305    
+    ## distance_survey_median_6.satis_competence         0.077 0.938848    
+    ## distance_survey_median_7.satis_competence         1.214 0.225009    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.441 on 2061 degrees of freedom
-    ## Multiple R-squared:  0.1116, Adjusted R-squared:  0.07888 
-    ## F-statistic: 3.408 on 76 and 2061 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.443 on 2062 degrees of freedom
+    ## Multiple R-squared:  0.1097, Adjusted R-squared:  0.07734 
+    ## F-statistic: 3.389 on 75 and 2062 DF,  p-value: < 2.2e-16
