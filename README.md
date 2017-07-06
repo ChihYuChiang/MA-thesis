@@ -1,6 +1,11 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 07/05/2017
+1. Update **analysis code (.R)** to include survey scores and some other variables, available in [bin](/bin) folder.
+1. Upload **analysis report (.rmd)** in [bin](/bin) folder.
+
+
 ### 06/25/2017
 1. Update **analysis framework** to include variables available in [method](/method) folder.
 1. Upload **data** in [data](/data) folder, including game and player characteristics from survey and review.

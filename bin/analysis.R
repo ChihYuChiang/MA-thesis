@@ -1,12 +1,13 @@
 "
 ----------------------------------------------------------------------
-Preliminary
+## Setup
+Data of game and player are read in and matched up.
 
-- Game release data (year) is read in as an interval variable
+- Game release data, `release` (year), is read in as an interval variable.
+- Missing values are imputed with variable mean conveniently (`star_user` and `star_GS`).
 ----------------------------------------------------------------------
 "
-#--Setting up
-#Package
+#--Package
 library(tidyverse)
 library(corrgram)
 library(modelr)
@@ -16,7 +17,8 @@ library(e1071)
 library(pander)
 set.seed(1)
 
-#Read in data
+
+#--Read in data
 core_cluster <- read_csv("../data/core_cluster.csv", col_names=TRUE) %>%
   mutate(group_survey = factor(group_survey),
          group_review = factor(group_review),
@@ -47,11 +49,49 @@ df <- left_join(survey, core_cluster, by=c("core_id"), copy=FALSE)
 
 "
 ----------------------------------------------------------------------
-Transformation
+## Variable
+Compute and select variables to be used in models.
 
-- preference_1 = how much do you like
-- preference_2 = how often play it
-- preference_3 = match personal taste
+- Player preference:
+Name | Definition | Unit
+-----|------------|------
+`preference_1` | how much do you like | Likert 1-7=like
+`preference_2` | how often play it | ordinary 1=never-7=everyday
+`preference_3` | does it fit personal taste | Likert 1-7=fit
+
+- Game characteristics:
+Name | Definition | Unit
+-----|------------|------
+`distance_survey_mean_x` | group score from survey (distance from group mean in tste) | cosine distance
+`distance_survey_median_x` | group score from survey (distance from group median in tste) | cosine distance
+`probability_review_mean_x` | group score from review (mean probability to be categorized in the group by NN) | percentage
+`probability_review_median_x` | group score from review (median probability to be categorized in the group by NN) | percentage
+`group_survey` | group identity from survey | categorical 1-7
+`group_review` | group identity from review | categorical 1-7
+
+- Player personality:
+Name | Definition | Unit
+-----|------------|------
+`game_xxxxx` | Big-five personality in game | Likert 1-7
+`real_xxxxx` | Big-five personality in real life | Likert 1-7
+`gap_xxxxx` | personality gap (game - real) | Likert 1-7
+`satis_xxxxx` | SDT satisfaction in real life | Likert 1-7
+`dissatis_xxxxx` | SDT dissatisfaction in real life | Likert 1-7
+`combined_xxxxx` | SDT combined (previous two) dissatisfaction in real life | Likert 1-7
+
+- Control:
+Name | Definition | Unit
+-----|------------|------
+`age` | player age | interval
+`education` | player education | ordinary 1-7=PhD
+`income` | player annual household income | ordinary 1-7=over 150,000 
+`sex` | player sex | categorical 1=male
+`race` | player race | categorical 1-5
+`release` | game release year | interval year
+`star_GS` | general game quality rated by GameSpot expert | interval 0-10
+`star_user` | general game quality rated by GameSpot user | interval 0-10
+
+- Final response variable utilizes only `preference_3`.
 ----------------------------------------------------------------------
 "
 #--Create response variable
@@ -86,7 +126,8 @@ df_yx <- bind_cols(select(df, preference), data.frame(df_x))
 
 "
 ----------------------------------------------------------------------
-Models
+## Models
+Models applying the variables selected in the previous section.
 
 - Predictor variables being used are edited through 'predictors.csv'
 ----------------------------------------------------------------------
@@ -97,6 +138,27 @@ summary(model_lm)
 
 
 #--Regression_linear_grouped
+seq(1, 7)
+model_lm_1 <- lm(preference ~ ., data=df_yx[df$group_survey==1, ])
+summary(model_lm_1)
+
+model_lm_2 <- lm(preference ~ ., data=df_yx[df$group_survey==2, ])
+summary(model_lm_2)
+
+model_lm_3 <- lm(preference ~ ., data=df_yx[df$group_survey==3, ])
+summary(model_lm_3)
+
+model_lm_4 <- lm(preference ~ ., data=df_yx[df$group_survey==4, ])
+summary(model_lm_4)
+
+model_lm_5 <- lm(preference ~ ., data=df_yx[df$group_survey==5, ])
+summary(model_lm_5)
+
+model_lm_6 <- lm(preference ~ ., data=df_yx[df$group_survey==6, ])
+summary(model_lm_6)
+
+model_lm_7 <- lm(preference ~ ., data=df_yx[df$group_survey==7, ])
+summary(model_lm_7)
 
 
 #--Regression_lasso
@@ -132,7 +194,7 @@ summary(model_svm)
 
 "
 ----------------------------------------------------------------------
-Model selection (cross validation)
+## Model selection (cross validation)
 ----------------------------------------------------------------------
 "
 #--Create leave-one-out datasets
@@ -156,7 +218,7 @@ df_select_loo <- crossv_kfold(df_select, k = nrow(df_select))
 
 "
 ----------------------------------------------------------------------
-Model selection (information criteria)
+## Model selection (information criteria)
 ----------------------------------------------------------------------
 "
 
@@ -165,7 +227,16 @@ Model selection (information criteria)
 
 "
 ----------------------------------------------------------------------
-Description
+## Personality marginal effect (at different group score levels)
+----------------------------------------------------------------------
+"
+
+
+
+
+"
+----------------------------------------------------------------------
+## Description
 ----------------------------------------------------------------------
 "
 #--Descriptive stats
@@ -193,7 +264,7 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
 
 "
 ----------------------------------------------------------------------
-Regression assumptions
+## Regression assumptions
 ----------------------------------------------------------------------
 "
 #--Influential observations
