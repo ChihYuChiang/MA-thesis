@@ -14,6 +14,7 @@ library(modelr)
 library(glmnet)
 library(randomForest)
 library(e1071)
+library(car)
 library(pander)
 set.seed(1)
 
@@ -66,8 +67,8 @@ Name | Definition | Unit
 `distance_survey_median_x` | group score from survey (distance from group median in tste) | cosine distance
 `probability_review_mean_x` | group score from review (mean probability to be categorized in the group by NN) | percentage
 `probability_review_median_x` | group score from review (median probability to be categorized in the group by NN) | percentage
-`group_survey` | group identity from survey | categorical 1-7
-`group_review` | group identity from review | categorical 1-7
+`group_survey` | group identity from survey | categorical 1-group number
+`group_review` | group identity from review | categorical 1-group number
 
 - Player personality:
 Name | Definition | Unit
@@ -132,51 +133,66 @@ Models applying the variables selected in the previous section.
 - Predictor variables being used are edited through 'predictors.csv'
 ----------------------------------------------------------------------
 "
+"
+### Linear models
+"
 #--Regression_linear_all
 model_lm <- lm(preference ~ ., data=df_yx)
 summary(model_lm)
 
 
 #--Regression_linear_grouped
-seq(1, 7)
-model_lm_1 <- lm(preference ~ ., data=df_yx[df$group_survey==1, ])
-summary(model_lm_1)
+#Include `group survey` or `group review` for grouping (do not include in the csv, which makes dummies)
+#Group the data into multiple dfs
+df_yx_group <- df_yx %>% 
+  bind_cols(data.frame(df$group_survey)) %>%
+  group_by(df.group_survey) %>%
+  nest()
 
-model_lm_2 <- lm(preference ~ ., data=df_yx[df$group_survey==2, ])
-summary(model_lm_2)
+#Train models
+model_lm_group <- map2("preference ~ .", df_yx_group$data, lm)
 
-model_lm_3 <- lm(preference ~ ., data=df_yx[df$group_survey==3, ])
-summary(model_lm_3)
-
-model_lm_4 <- lm(preference ~ ., data=df_yx[df$group_survey==4, ])
-summary(model_lm_4)
-
-model_lm_5 <- lm(preference ~ ., data=df_yx[df$group_survey==5, ])
-summary(model_lm_5)
-
-model_lm_6 <- lm(preference ~ ., data=df_yx[df$group_survey==6, ])
-summary(model_lm_6)
-
-model_lm_7 <- lm(preference ~ ., data=df_yx[df$group_survey==7, ])
-summary(model_lm_7)
+#Print the results
+for(i in seq(1, length(model_lm_group))){
+  print(paste("group", i, sep=" "))
+  print(summary(model_lm_group[[i]]))
+}
 
 
+"
+### Lasso and ridge
+"
 #--Regression_lasso
-lambdas <- 10^seq(10, -2, length=100)
+#Acquire various lambda levels
+lambdas <- 10^seq(3, -3, length=7)
+
+#Train models on each lambda level
 model_las <- glmnet(x=df_x, y=df$preference, alpha=1,
                     lambda=lambdas,
                     standardize=TRUE)
+
+#Print the results
+model_las$lambda
 coef(model_las)
 
 
 #--Regression_ridge
-lambdas <- 10^seq(10, -2, length=100)
+#Acquire various lambda levels
+lambdas <- 10^seq(3, -3, length=7)
+
+#Train models on each lambda level
 model_rid <- glmnet(x=df_x, y=df$preference, alpha=0,
                     lambda=lambdas,
                     standardize=TRUE)
+
+#Print the results
+model_rid$lambda
 coef(model_rid)
   
 
+"
+### Prediction models
+"
 #--Random forest (bagging)
 model_rf <- randomForest(preference ~ ., data=df_yx,
                          mtry=5, ntree=500)
@@ -194,40 +210,50 @@ summary(model_svm)
 
 "
 ----------------------------------------------------------------------
-## Model selection (cross validation)
+## Model selection
 ----------------------------------------------------------------------
+"
+"
+### Cross validation
 "
 #--Create leave-one-out datasets
-df_select_loo <- crossv_kfold(df_select, k = nrow(df_select))
+df_yx_loo <- crossv_kfold(df_yx, k=nrow(df_yx))
 
-# models_lm <- map(df_original_loo$train, ~ lm(biden ~ age + female + educ + dem + rep, data = .))
-# 
-# loocv_mse <- map2_dbl(loocv_models, loocv_data$test, mse)
-# 
-# ggplot(data = data_frame(loocv_mse), aes(x = "MSE (LOOSV)", y = data_frame(loocv_mse)[[1]])) +
-#   geom_boxplot() +
-#   labs(title = "Boxplot of MSEs",
-#        x = element_blank(),
-#        y = "MSE value")
-# 
-# mse_loocv <- mean(loocv_mse)
-# mseSd_loocv <- sd(loocv_mse)
+
+#--Train models on each training df
+model_lm_loo <- map(df_yx_loo$train, ~ lm(preference ~ ., data=.x))
+
+
+#--MSE stats
+#Acquire MSE of each model on training dfs
+mses_lm_loo <- map2_dbl(model_lm_loo, df_yx_loo$test, mse)
+
+#Box plot of all MSEs
+ggplot(data = data_frame(mses_lm_loo), aes(x = "MSE (LOOSV)", y = data_frame(mses_lm_loo)[[1]])) +
+  geom_boxplot() +
+  labs(title = "Boxplot of MSEs",
+       x = element_blank(),
+       y = "MSE value")
+
+#MSE mean
+mse_lm_loo <- mean(mses_lm_loo)
+
+#MSE std
+mseSd_lm_loo <- sd(mses_lm_loo)
+
+
+"
+### Information criteria
+"
 
 
 
 
 "
 ----------------------------------------------------------------------
-## Model selection (information criteria)
-----------------------------------------------------------------------
-"
+## Personality marginal effect
 
-
-
-
-"
-----------------------------------------------------------------------
-## Personality marginal effect (at different group score levels)
+- At different group score levels)
 ----------------------------------------------------------------------
 "
 
@@ -267,6 +293,11 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
 ## Regression assumptions
 ----------------------------------------------------------------------
 "
+#--Multicollinearity
+#VIF score (criterion: <10)
+vif(model_lm)
+
+
 #--Influential observations
 
 
@@ -283,6 +314,3 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
 
 
 #--Heteroscedasticity
-
-
-#--Multicollinearity
