@@ -46,6 +46,23 @@ core_cluster <- mutate_each(core_cluster,
 df <- left_join(survey, core_cluster, by=c("core_id"), copy=FALSE)
 
 
+"
+### Additional functions
+"
+#--MSE computation
+#Works with simple regression, SVM, RF
+mse_1 <- function(model, data_yx){
+  res <- modelr:::residuals(model, data_yx)
+  mean(res^2, na.rm=TRUE)
+}
+
+#Works with lasso and ridge
+mse_2 <- function(model, lambda, data_y, data_x){
+  pred <- predict(model, s=lambda, newx=data_x)
+  mean((pred - data_y)^2, na.rm=TRUE)
+}
+
+
 
 
 "
@@ -134,7 +151,7 @@ Models applying the variables selected in the previous section.
 ----------------------------------------------------------------------
 "
 "
-### Linear models
+### Simple linear model
 "
 #--Regression_linear_all
 model_lm <- lm(preference ~ ., data=df_yx)
@@ -163,35 +180,38 @@ for(i in seq(1, length(model_lm_group))){
 ### Lasso and ridge
 "
 #--Regression_lasso
-#Acquire various lambda levels
+#Acquire various lambda levels (can be plugged in the `glmet` if needed; not used for now)
 lambdas <- 10^seq(3, -3, length=7)
 
-#Train models on each lambda level
-model_las <- glmnet(x=df_x, y=df$preference, alpha=1,
-                    lambda=lambdas,
+#Identify the best lambda level
+#Adjust `nfolds` to increase the folds
+lambda_las_best <- cv.glmnet(x=df_x, y=df$preference, alpha=1, nfolds=10)$lambda.min
+
+#Train model with best lambda level
+#Better to standardize while the regulation counts on the units
+model_las_best <- glmnet(x=df_x, y=df$preference, alpha=1,
+                    lambda=lambda_las_best,
                     standardize=TRUE)
 
-#Print the results
-model_las$lambda
-coef(model_las)
+#Print the best result
+coef(model_las_best)
 
 
 #--Regression_ridge
-#Acquire various lambda levels
-lambdas <- 10^seq(3, -3, length=7)
+#Identify the best lambda level
+lambda_rid_best <- cv.glmnet(x=df_x, y=df$preference, alpha=0, nfolds=10)$lambda.min
 
-#Train models on each lambda level
-model_rid <- glmnet(x=df_x, y=df$preference, alpha=0,
-                    lambda=lambdas,
-                    standardize=TRUE)
+#Train model with best lambda level
+model_rid_best <- glmnet(x=df_x, y=df$preference, alpha=0,
+                         lambda=lambda_rid_best,
+                         standardize=TRUE)
 
-#Print the results
-model_rid$lambda
-coef(model_rid)
+#Print the best result
+coef(model_rid_best)
   
 
 "
-### Prediction models
+### Predicting models
 "
 #--Random forest (bagging)
 model_rf <- randomForest(preference ~ ., data=df_yx,
@@ -210,40 +230,78 @@ summary(model_svm)
 
 "
 ----------------------------------------------------------------------
-## Model selection
+## Cross validation
 ----------------------------------------------------------------------
 "
-"
-### Cross validation
-"
-#--Create leave-one-out datasets
-df_yx_loo <- crossv_kfold(df_yx, k=nrow(df_yx))
+#--Create cross validation datasets
+#Leave-one-out: k=nrow(df_yx)
+df_yx_cv <- crossv_kfold(df_yx, k=10)
 
 
+"
+### Simple linear model and predicting models
+"
 #--Train models on each training df
-model_lm_loo <- map(df_yx_loo$train, ~ lm(preference ~ ., data=.x))
+model_lm_cv <- map(df_yx_cv$train, ~ lm(preference ~ ., data=.x))
 
 
 #--MSE stats
 #Acquire MSE of each model on training dfs
-mses_lm_loo <- map2_dbl(model_lm_loo, df_yx_loo$test, mse)
+mses_lm_cv <- map2_dbl(model_lm_cv, df_yx_cv$test, mse_1)
+
 
 #Box plot of all MSEs
-ggplot(data = data_frame(mses_lm_loo), aes(x = "MSE (LOOSV)", y = data_frame(mses_lm_loo)[[1]])) +
+ggplot(data=data_frame(mses_lm_cv), aes(x="MSE (cross validation)", y=data_frame(mses_lm_cv)[[1]])) +
   geom_boxplot() +
-  labs(title = "Boxplot of MSEs",
-       x = element_blank(),
-       y = "MSE value")
+  labs(title="Boxplot of MSEs",
+       x=element_blank(),
+       y="MSE value")
 
 #MSE mean
-mse_lm_loo <- mean(mses_lm_loo)
+mse_lm_cv <- mean(mses_lm_cv)
 
 #MSE std
-mseSd_lm_loo <- sd(mses_lm_loo)
+mseSd_lm_cv <- sd(mses_lm_cv)
 
 
 "
-### Information criteria
+### Lasso and ridge
+"
+#--Train models on each training df
+model_las_cv <- map(df_yx_cv$train, ~ glmnet(x=as.matrix(select(as.data.frame(.x), -preference)),
+                                               y=as.matrix(select(as.data.frame(.x), preference)),
+                                               alpha=1,
+                                               lambda=lambda_las_best,
+                                               standardize=TRUE))
+
+
+#--MSE stats
+#Acquire MSE of each model on training dfs
+mses_las_cv <- map2_dbl(model_las_cv, df_yx_cv$test, ~ mse_2(model=.x,
+                                                                lambda=lambda_las_best,
+                                                                data_x=as.matrix(select(as.data.frame(.y), -preference)),
+                                                                data_y=as.matrix(select(as.data.frame(.y), preference))))
+
+#Box plot of all MSEs
+ggplot(data=data_frame(mses_las_cv), aes(x="MSE (cross validation)", y=data_frame(mses_las_cv)[[1]])) +
+  geom_boxplot() +
+  labs(title="Boxplot of MSEs",
+       x=element_blank(),
+       y="MSE value")
+
+#MSE mean
+mse_las_cv <- mean(mses_las_cv)
+
+#MSE std
+mseSd_las_cv <- sd(mses_las_cv)
+
+
+
+
+"
+----------------------------------------------------------------------
+## Information criteria
+----------------------------------------------------------------------
 "
 
 
