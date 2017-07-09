@@ -141,7 +141,7 @@ updateVars <- function(){
   
   #--Select variables to be included in regression (model formation)
   #predictor variables
-  predictors <<- paste(read.csv("../data/predictors.csv", header=FALSE)[,1], collapse="+")
+  predictors <<- paste(read.csv("../data/var/predictors.csv", header=FALSE)[,1], collapse="+")
   
   #df with only predictor variables
   df_x <<- model.matrix(as.formula(paste("preference ~ ", predictors, sep="")),
@@ -204,7 +204,13 @@ updateVars()
 
 #Train model
 model_lm <- lm(preference ~ ., data=df_yx)
-summary(model_lm)
+
+#Summary
+summary(model_lm)$coefficients
+
+#Extract p-values for bonferroni
+#Use `str(summary(model))` to see object structure
+pValues_lm <- summary(model_lm)$coefficients[, 4]
 
 
 "
@@ -437,6 +443,11 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
 #--Multicollinearity
 #VIF score (criterion: <10)
 vif(model_lm)
+
+
+#--P-value adjustment
+#Bonferroni correction
+p.adjust(pValues_lm, method=c("bonferroni"))
 
 
 #--Influential observations
