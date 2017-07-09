@@ -20,11 +20,18 @@ set.seed(1)
 
 
 #--Read in data
+#Core game info and group distance/probability data
 core_cluster <- read_csv("../data/core_cluster.csv", col_names=TRUE) %>%
   mutate(group_survey = factor(group_survey),
          group_review = factor(group_review),
          core_id = factor(core_id)) %>%
   select(-X1)
+
+#Core game tste scores (of dif numbers of features)
+core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
+  select(-X1)
+
+#Player-related survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
   mutate(race = factor(race),
          sex = factor(sex),
@@ -43,7 +50,10 @@ core_cluster <- mutate_each(core_cluster,
 
 
 #--Match up
-df <- left_join(survey, core_cluster, by=c("core_id"), copy=FALSE)
+df <- bind_cols(core_cluster, core_tsteScore) %>%
+  left_join(survey, by=c("core_id"), copy=FALSE)
+  
+  
 
 
 "
@@ -69,6 +79,9 @@ mse_2 <- function(model, lambda, data_y, data_x){
 ----------------------------------------------------------------------
 ## Variable
 Compute and select variables to be used in models.
+
+- Call the function to update the vars employed.
+- Final response variable utilizes only `preference_3`.
 
 - Player preference:
 Name | Definition | Unit
@@ -108,36 +121,36 @@ Name | Definition | Unit
 `release` | game release year | interval year
 `star_GS` | general game quality rated by GameSpot expert | interval 0-10
 `star_user` | general game quality rated by GameSpot user | interval 0-10
-
-- Final response variable utilizes only `preference_3`.
 ----------------------------------------------------------------------
 "
-#--Create response variable
-df <- df %>%
-  rowwise() %>% 
-  mutate(preference = mean(c(preference_3)))
-
-
-#--Compute personalty gap
-df <- mutate(df,
-             gap_extraversion = game_extraversion - real_extraversion,
-             gap_agreeableness = game_agreeableness - real_agreeableness,
-             gap_conscientiousness = game_conscientiousness - real_conscientiousness,
-             gap_emotionstability = game_emotionstability - real_emotionstability,
-             gap_openness = game_openness - real_openness)
-
-
-#--Select variables to be included in regression (model formation)
-#predictor variables
-predictors <- paste(read.csv("../data/predictors.csv", header=FALSE)[,1], collapse="+")
-
-#df with only predictor variables
-df_x <- model.matrix(as.formula(paste("preference ~ ", predictors, sep="")),
-                     data=df) %>% #Define model formation and create dummies
-  .[, -1] #Remove redundant interacept column
-
-#df also with outcome variables
-df_yx <- bind_cols(select(df, preference), data.frame(df_x))
+updateVars <- function(){
+  #--Create response variable
+  df <<- df %>%
+    rowwise() %>% 
+    mutate(preference = mean(c(preference_3)))
+  
+  
+  #--Compute personalty gap
+  df <<- mutate(df,
+               gap_extraversion = game_extraversion - real_extraversion,
+               gap_agreeableness = game_agreeableness - real_agreeableness,
+               gap_conscientiousness = game_conscientiousness - real_conscientiousness,
+               gap_emotionstability = game_emotionstability - real_emotionstability,
+               gap_openness = game_openness - real_openness)
+  
+  
+  #--Select variables to be included in regression (model formation)
+  #predictor variables
+  predictors <<- paste(read.csv("../data/predictors.csv", header=FALSE)[,1], collapse="+")
+  
+  #df with only predictor variables
+  df_x <<- model.matrix(as.formula(paste("preference ~ ", predictors, sep="")),
+                       data=df) %>% #Define model formation and create dummies
+    .[, -1] #Remove redundant interacept column
+  
+  #df also with outcome variables
+  df_yx <<- bind_cols(select(df, preference), data.frame(df_x))
+}
 
 
 
@@ -151,14 +164,55 @@ Models applying the variables selected in the previous section.
 ----------------------------------------------------------------------
 "
 "
-### Simple linear model
+### Step-wise simple linear model
 "
-#--Regression_linear_all
+#--Partial models
+#Update vars
+updateVars()
+
+#Must include corresponding vars in the csv to make the models work
+model_control
+
+model_gChar_survey_mean
+model_gChar_survey_median
+model_gChar_review_mean
+model_gChar_review_median
+model_gChar_tste_2
+model_gChar_tste_3
+model_gChar_tste_4
+model_gChar_tste_5
+model_gChar_tste_6
+model_gChar_tste_7
+model_gChar_tste_8
+model_gChar_tste_9
+model_gChar_tste_10
+model_gChar_tste_11
+model_gChar_tste_12
+
+model_personality_game
+model_personality_real
+model_personality_gap
+
+model_personality_satis
+model_personality_dissatis
+model_personality_combined
+
+
+#--Full model
+#Update vars
+updateVars()
+
+#Train model
 model_lm <- lm(preference ~ ., data=df_yx)
 summary(model_lm)
 
 
-#--Regression_linear_grouped
+"
+### Simple linear model (by game characteristic groups)
+"
+#Update vars
+updateVars()
+
 #Include `group survey` or `group review` for grouping (do not include in the csv, which makes dummies)
 #Group the data into multiple dfs
 df_yx_group <- df_yx %>% 
@@ -180,6 +234,9 @@ for(i in seq(1, length(model_lm_group))){
 ### Lasso and ridge
 "
 #--Regression_lasso
+#Update vars
+updateVars()
+
 #Acquire various lambda levels (can be plugged in the `glmet` if needed; not used for now)
 lambdas <- 10^seq(3, -3, length=7)
 
@@ -198,6 +255,9 @@ coef(model_las_best)
 
 
 #--Regression_ridge
+#Update vars
+updateVars()
+
 #Identify the best lambda level
 lambda_rid_best <- cv.glmnet(x=df_x, y=df$preference, alpha=0, nfolds=10)$lambda.min
 
@@ -214,12 +274,20 @@ coef(model_rid_best)
 ### Predicting models
 "
 #--Random forest (bagging)
+#Update vars
+updateVars()
+
+#Train model
 model_rf <- randomForest(preference ~ ., data=df_yx,
                          mtry=5, ntree=500)
 summary(model_rf)
 
 
 #--SVM (linear kernel)
+#Update vars
+updateVars()
+
+#Train model
 costs <- 10^seq(2, -3, length=20)
 model_svm <- tune.svm(preference ~ ., data=df_yx,
                   kernel="linear", range=list(cost=costs))
@@ -233,14 +301,17 @@ summary(model_svm)
 ## Cross validation
 ----------------------------------------------------------------------
 "
+"
+### Simple linear model and predicting models
+"
 #--Create cross validation datasets
+#Update vars
+updateVars()
+
 #Leave-one-out: k=nrow(df_yx)
 df_yx_cv <- crossv_kfold(df_yx, k=10)
 
 
-"
-### Simple linear model and predicting models
-"
 #--Train models on each training df
 model_lm_cv <- map(df_yx_cv$train, ~ lm(preference ~ ., data=.x))
 
@@ -267,6 +338,14 @@ mseSd_lm_cv <- sd(mses_lm_cv)
 "
 ### Lasso and ridge
 "
+#--Create cross validation datasets
+#Update vars
+updateVars()
+
+#Leave-one-out: k=nrow(df_yx)
+df_yx_cv <- crossv_kfold(df_yx, k=10)
+
+
 #--Train models on each training df
 model_las_cv <- map(df_yx_cv$train, ~ glmnet(x=as.matrix(select(as.data.frame(.x), -preference)),
                                                y=as.matrix(select(as.data.frame(.x), preference)),
@@ -311,7 +390,7 @@ mseSd_las_cv <- sd(mses_las_cv)
 ----------------------------------------------------------------------
 ## Personality marginal effect
 
-- At different group score levels)
+- At different group score levels
 ----------------------------------------------------------------------
 "
 
@@ -324,6 +403,10 @@ mseSd_las_cv <- sd(mses_las_cv)
 ----------------------------------------------------------------------
 "
 #--Descriptive stats
+#Update vars
+updateVars()
+
+#Get stats
 summary(df)
 
 
