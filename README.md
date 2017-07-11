@@ -1,8 +1,13 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 07/10/2017
+1. Update **analysis report (.rmd)** primarily for including the partial models of each version of constructs.
+1. Add **analysis code (.R)** with VIF, Bonferroni, multivariate linear, partial models, and cross validation.
+
+
 ### 07/05/2017
-1. Update **analysis code (.R)** to include survey scores and some other variables, available in [bin](/bin) folder.
+1. Update **analysis code (.R)** with simple linear, Lasso, and ridge. available in [bin](/bin) folder.
 1. Upload **analysis report (.rmd)** in [bin](/bin) folder.
 
 

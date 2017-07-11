@@ -19,7 +19,10 @@ library(pander)
 set.seed(1)
 
 
-#--Read in data
+"
+### Read in data
+"
+#--Read in
 #Core game info and group distance/probability data
 core_cluster <- read_csv("../data/core_cluster.csv", col_names=TRUE) %>%
   mutate(group_survey = factor(group_survey),
@@ -45,21 +48,22 @@ imputation_mean <- function(c){
   return(c)
 }
 core_cluster <- mutate_each(core_cluster,
-                           funs(imputation_mean(.)),
-                           star_user, star_GS)
+                            funs(imputation_mean(.)),
+                            star_user, star_GS)
 
 
 #--Match up
+#Main df, key=player-game
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
-  
-  
+
+#Player df, key=player
+df_player <- distinct(df, respondent, .keep_all = TRUE)
 
 
 "
-### Additional functions
+### MSE computation
 "
-#--MSE computation
 #Works with simple regression, SVM, RF
 mse_1 <- function(model, data_yx){
   res <- modelr:::residuals(model, data_yx)
@@ -99,6 +103,7 @@ Name | Definition | Unit
 `probability_review_median_x` | group score from review (median probability to be categorized in the group by NN) | percentage
 `group_survey` | group identity from survey | categorical 1-group number
 `group_review` | group identity from review | categorical 1-group number
+`tste_n_x` | group score from survey (tste), n=number of features | interval arbitrary
 
 - Player personality:
 Name | Definition | Unit
@@ -127,7 +132,7 @@ updateVars <- function(){
   #--Create response variable
   df <<- df %>%
     rowwise() %>% 
-    mutate(preference = mean(c(preference_3)))
+    mutate(preference = mean(c(preference_1, preference_3)))
   
   
   #--Compute personalty gap
@@ -141,7 +146,7 @@ updateVars <- function(){
   
   #--Select variables to be included in regression (model formation)
   #predictor variables
-  predictors <<- paste(read.csv("../data/var/predictors.csv", header=FALSE)[,1], collapse="+")
+  predictors <<- paste(read.csv("../data/vars/predictors.csv", header=FALSE)[,1], collapse="+")
   
   #df with only predictor variables
   df_x <<- model.matrix(as.formula(paste("preference ~ ", predictors, sep="")),
@@ -158,47 +163,96 @@ updateVars <- function(){
 "
 ----------------------------------------------------------------------
 ## Models
-Models applying the variables selected in the previous section.
+Models applying the variables selected. Two ways to select variables:
 
-- Predictor variables being used are edited through 'predictors.csv'
+- Use `select` to include vars in the models from `df`/`df_player`.
+- Edited through `predictors.csv` (for complexed interaction terms).
 ----------------------------------------------------------------------
 "
 "
-### Step-wise simple linear model
+### Simple linear model (partial models)
 "
-#--Partial models
 #Update vars
 updateVars()
 
-#Must include corresponding vars in the csv to make the models work
-model_control
+#Full df with control marked
+df_c <- mutate(df,
+               c_age = age,
+               c_education = education,
+               c_income = income,
+               c_race = race,
+               c_sex = sex,
+               c_release = release,
+               c_star = star_user)
 
-model_gChar_survey_mean
-model_gChar_survey_median
-model_gChar_review_mean
-model_gChar_review_median
-model_gChar_tste_2
-model_gChar_tste_3
-model_gChar_tste_4
-model_gChar_tste_5
-model_gChar_tste_6
-model_gChar_tste_7
-model_gChar_tste_8
-model_gChar_tste_9
-model_gChar_tste_10
-model_gChar_tste_11
-model_gChar_tste_12
+#Models with specific construct as main effect
+model_control <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_")))
 
-model_personality_game
-model_personality_real
-model_personality_gap
+model_gChar_survey_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("distance_survey_mean")))
+model_gChar_survey_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("distance_survey_median")))
+model_gChar_review_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_mean")))
+model_gChar_review_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_median")))
 
-model_personality_satis
-model_personality_dissatis
-model_personality_combined
+model_gChar_tste_2 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_2")))
+model_gChar_tste_3 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_3")))
+model_gChar_tste_4 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_4")))
+model_gChar_tste_5 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_5")))
+model_gChar_tste_6 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_6")))
+model_gChar_tste_7 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_7")))
+model_gChar_tste_8 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_8")))
+model_gChar_tste_9 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_9")))
+model_gChar_tste_10 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_10")))
+
+model_personality_game <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("game")))
+model_personality_real <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("real")))
+model_personality_gap <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("gap")))
+
+model_personality_satis <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("satis")))
+model_personality_dissatis <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("dissatis")))
+model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("combined")))
+
+#Plug in for result
+summary(model_gChar_tste_5)
 
 
-#--Full model
+"
+### Multivariate linear model
+"
+#Update vars
+updateVars()
+
+#Full df with control marked
+df_c <- mutate(df,
+               c_age = age,
+               c_education = education,
+               c_income = income,
+               c_race = race,
+               c_sex = sex)
+
+#Player df with control marked
+df_player_c <- mutate(df_player,
+                      c_age = age,
+                      c_education = education,
+                      c_income = income,
+                      c_race = race,
+                      c_sex = sex)
+
+#Train model
+#`ygap` uses player df and corresponding controls specified in the previous section
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
+                 data=select(df_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+
+#Results of seperate models
+summary(model_ygap)
+
+#MANOVA
+Anova(model_ygap)
+summary(Anova(model_ygap))
+
+
+"
+### Simple linear model (full model)
+"
 #Update vars
 updateVars()
 
@@ -206,7 +260,7 @@ updateVars()
 model_lm <- lm(preference ~ ., data=df_yx)
 
 #Summary
-summary(model_lm)$coefficients
+summary(model_lm)
 
 #Extract p-values for bonferroni
 #Use `str(summary(model))` to see object structure
@@ -214,7 +268,7 @@ pValues_lm <- summary(model_lm)$coefficients[, 4]
 
 
 "
-### Simple linear model (by game characteristic groups)
+### multiple Simple linear models (grouped by by game characteristic)
 "
 #Update vars
 updateVars()
