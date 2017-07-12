@@ -15,6 +15,7 @@ library(glmnet)
 library(randomForest)
 library(e1071)
 library(car)
+library(rlist)
 library(pander)
 set.seed(1)
 
@@ -194,15 +195,8 @@ model_gChar_survey_median <- lm(preference ~ ., data=select(df_c, preference, st
 model_gChar_review_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_mean")))
 model_gChar_review_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_median")))
 
-model_gChar_tste_2 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_2")))
-model_gChar_tste_3 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_3")))
-model_gChar_tste_4 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_4")))
-model_gChar_tste_5 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_5")))
-model_gChar_tste_6 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_6")))
-model_gChar_tste_7 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_7")))
-model_gChar_tste_8 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_8")))
-model_gChar_tste_9 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_9")))
-model_gChar_tste_10 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_10")))
+featureNo <- seq(2, 20)
+model_gChar_tstes <- map(featureNo, ~ lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep="")))))
 
 model_personality_game <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("game")))
 model_personality_real <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("real")))
@@ -213,6 +207,7 @@ model_personality_dissatis <- lm(preference ~ ., data=select(df_c, preference, s
 model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("combined")))
 
 #Plug in for result
+#tste_2 = model_gChar_tstes[[1]]
 summary(model_gChar_tste_5)
 
 
@@ -231,7 +226,6 @@ df_player_c <- mutate(df_player,
                       c_sex = sex)
 
 #Train model
-#`ygap` uses player df and corresponding controls specified in the previous section
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
                  data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
 
@@ -436,44 +430,19 @@ mseSd_las_cv <- sd(mses_las_cv)
 ----------------------------------------------------------------------
 "
 #--BIC
-BICs <- c(BIC(model_gChar_tste_2),
-          BIC(model_gChar_tste_3),
-          BIC(model_gChar_tste_4),
-          BIC(model_gChar_tste_5),
-          BIC(model_gChar_tste_6),
-          BIC(model_gChar_tste_7),
-          BIC(model_gChar_tste_8),
-          BIC(model_gChar_tste_9),
-          BIC(model_gChar_tste_10))
+BICs <- unlist(map(model_gChar_tstes, BIC))
 
 ggplot(data=as.data.frame(BICs)) +
-  geom_line(mapping=aes(seq(2, 10), BICs))
+  geom_line(mapping=aes(seq(2, 20), BICs)) +
+  labs(x="Number of features", y="BIC")
 
 
 #--AIC
-AICs <- c(AIC(model_gChar_tste_2),
-          AIC(model_gChar_tste_3),
-          AIC(model_gChar_tste_4),
-          AIC(model_gChar_tste_5),
-          AIC(model_gChar_tste_6),
-          AIC(model_gChar_tste_7),
-          AIC(model_gChar_tste_8),
-          AIC(model_gChar_tste_9),
-          AIC(model_gChar_tste_10))
+AICs <- unlist(map(model_gChar_tstes, AIC))
 
 ggplot(data=as.data.frame(AICs)) +
-  geom_line(mapping=aes(seq(2, 10), AICs))
-
-
-
-
-"
-----------------------------------------------------------------------
-## Personality marginal effect
-
-- At different group score levels
-----------------------------------------------------------------------
-"
+  geom_line(mapping=aes(seq(2, 20), AICs)) +
+  labs(x="Number of features", y="AIC")
 
 
 
@@ -515,9 +484,11 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
 "
 ### Difference between real and game personality
 "
+#Observation
 mean(df_player$real_agreeableness)
 mean(df_player$game_agreeableness)
 
+#T test for each pair
 t.test(df_player$real_agreeableness, df_player$game_agreeableness, paired=TRUE)
 t.test(df_player$real_conscientiousness, df_player$game_conscientiousness, paired=TRUE)
 t.test(df_player$real_extraversion, df_player$game_extraversion, paired=TRUE)
@@ -532,20 +503,68 @@ t.test(df_player$real_openness, df_player$game_openness, paired=TRUE)
 ## Regression assumptions
 ----------------------------------------------------------------------
 "
-#--Multicollinearity
+#Update vars
+updateVars()
+
+
+"
+### Multicollinearity
+"
 #VIF score (criterion: <10)
 vif(model_lm)
 
 
-#--P-value adjustment
+"
+### P-value adjustment
+"
 #Bonferroni correction
 p.adjust(pValues_lm, method=c("bonferroni"))
 
 
-#--Influential observations
+"
+### Influential observations
+"
+#--Observe
+#Add key statistics; add row name for graph reference
+df_influenceDetect <- df_yx %>%
+  ungroup() %>%
+  rownames_to_column(var="row") %>%
+  mutate(hat=hatvalues(model_lm),
+         student=rstudent(model_lm),
+         cooksd=cooks.distance(model_lm))
+
+#Draw bubble plot
+ggplot(df_influenceDetect, aes(hat, student)) +
+  geom_hline(yintercept=0, linetype=2) +
+  geom_point(aes(size=cooksd), shape=1) +
+  geom_text(data=df_influenceDetect %>%
+              arrange(-cooksd) %>%
+              slice(1:10),
+            aes(label=row, color="orange")) +
+  scale_size_continuous(range=c(1, 20)) +
+  labs(title="Bubble plot of influential indicators",
+       subtitle="Leverage, Sutentized residual, and Cook’s D (bubble size)",
+       x="Leverage",
+       y="Studentized residual") +
+  theme(legend.position ="none")
 
 
-#--Normally distributed
+#--Filter
+hat <- df_augment %>%
+  filter(hat > 2 * mean(hat))
+
+student <- df_augment %>%
+  filter(abs(student) > 2)
+
+cooksd <- df_augment %>%
+  filter(cooksd > 4 / (nrow(.) - (length(coef(lm_1)) - 1) - 1))
+
+bind_rows(hat, student, cooksd)
+
+
+"
+### Normally distributed
+"
 # car::qqPlot(lm_1)
 # 
 # augment(lm_1, df) %>%
@@ -557,4 +576,6 @@ p.adjust(pValues_lm, method=c("bonferroni"))
 #        y="Estimated density")
 
 
-#--Heteroscedasticity
+"
+### Heteroscedasticity
+"
