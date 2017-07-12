@@ -1,7 +1,7 @@
 ---
 title: "MAPSS Thesis II - Game Characteristics and Player Personality"
 author: "Chih-Yu Chiang"
-date: "July 10, 2017"
+date: "July 12, 2017"
 output: github_document
 ---
 ```{r setting}
@@ -29,6 +29,7 @@ library(glmnet)
 library(randomForest)
 library(e1071)
 library(car)
+library(rlist)
 library(pander)
 set.seed(1)
 
@@ -86,7 +87,12 @@ mse_2 <- function(model, lambda, data_y, data_x){
 }
 
 ```
-![Analysis Framework](img/framework.png)
+
+
+
+
+# Model 1
+![Analysis Framework](img/framework_1.png)
 
 
 
@@ -145,7 +151,7 @@ updateVars <- function(){
   #--Create response variable
   df <<- df %>%
     rowwise() %>% 
-    mutate(preference = mean(c(preference_1, preference_3)))
+    mutate(preference = mean(c(preference_3)))
   
   
   #--Compute personalty gap
@@ -155,6 +161,10 @@ updateVars <- function(){
                gap_conscientiousness = game_conscientiousness - real_conscientiousness,
                gap_emotionstability = game_emotionstability - real_emotionstability,
                gap_openness = game_openness - real_openness)
+  
+  
+  #--Acquire player df, key=player
+  df_player <<- distinct(df, respondent, .keep_all=TRUE)
   
   
   #--Select variables to be included in regression (model formation)
@@ -180,9 +190,6 @@ Models applying the variables selected. Two ways to select variables:
 
 - Use `select` to include vars in the models from `df`/`df_player`.
 - Edited through `predictors.csv` (for complexed interaction terms).
-
-
-### Simple linear model (partial models)
 ```{r model_partial}
 #Update vars
 updateVars()
@@ -205,15 +212,8 @@ model_gChar_survey_median <- lm(preference ~ ., data=select(df_c, preference, st
 model_gChar_review_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_mean")))
 model_gChar_review_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_median")))
 
-model_gChar_tste_2 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_2")))
-model_gChar_tste_3 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_3")))
-model_gChar_tste_4 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_4")))
-model_gChar_tste_5 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_5")))
-model_gChar_tste_6 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_6")))
-model_gChar_tste_7 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_7")))
-model_gChar_tste_8 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_8")))
-model_gChar_tste_9 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_9")))
-model_gChar_tste_10 <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tste_10")))
+featureNo <- seq(2, 20)
+model_gChar_tstes <- map(featureNo, ~ lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep="")))))
 
 model_personality_game <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("game")))
 model_personality_real <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("real")))
@@ -226,39 +226,41 @@ model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, s
 ```
 
 
-#### preference ~ control
+### preference ~ control
 ```{r model_partial_control}
 summary(model_control)
 
 ```
 
 
-#### preference ~ control + group score
-```{r model_partial_groupScore}
-summary(model_gChar_survey_mean)
-summary(model_gChar_survey_median)
-summary(model_gChar_review_mean)
-summary(model_gChar_review_median)
+### Information criteria
+```{r information_criteria}
+#--BIC
+BICs <- unlist(map(model_gChar_tstes, BIC))
+
+ggplot(data=as.data.frame(BICs)) +
+  geom_line(mapping=aes(seq(2, 20), BICs)) +
+  labs(x="Number of features", y="BIC")
+
+
+#--AIC
+AICs <- unlist(map(model_gChar_tstes, AIC))
+
+ggplot(data=as.data.frame(AICs)) +
+  geom_line(mapping=aes(seq(2, 20), AICs)) +
+  labs(x="Number of features", y="AIC")
 
 ```
 
 
-#### preference ~ control + tste score
+### preference ~ control + tste score
 ```{r model_partial_tsteScore}
-summary(model_gChar_tste_2)
-summary(model_gChar_tste_3)
-summary(model_gChar_tste_4)
-summary(model_gChar_tste_5)
-summary(model_gChar_tste_6)
-summary(model_gChar_tste_7)
-summary(model_gChar_tste_8)
-summary(model_gChar_tste_9)
-summary(model_gChar_tste_10)
+map(model_gChar_tstes, summary)
 
 ```
 
 
-#### preference ~ control + Big Five personality
+### preference ~ control + Big Five personality
 ```{r model_partial_big5}
 summary(model_personality_real)
 summary(model_personality_game)
@@ -267,7 +269,7 @@ summary(model_personality_gap)
 ```
 
 
-#### preference ~ control + SDT satisfaction
+### preference ~ control + SDT satisfaction
 ```{r model_partial_sdt}
 summary(model_personality_satis)
 summary(model_personality_dissatis)
@@ -276,18 +278,29 @@ summary(model_personality_combined)
 ```
 
 
-### Multivariate linear model
-```{r model_multi}
+
+
+# Model 2
+![Analysis Framework](img/framework_2.png)
+
+
+## Difference between real and game personality
+```{r real_game_dif}
+#T test for each pair
+#T test result dif: game - real
+t.test(df_player$game_agreeableness, df_player$real_agreeableness, paired=TRUE)
+t.test(df_player$game_conscientiousness, df_player$real_conscientiousness, paired=TRUE)
+t.test(df_player$game_extraversion, df_player$real_extraversion, paired=TRUE)
+t.test(df_player$game_emotionstability, df_player$real_emotionstability, paired=TRUE)
+t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
+
+```
+
+
+## gap ~ real personality + satisfaction
+```{r ygap_real_satis}
 #Update vars
 updateVars()
-
-#Full df with control marked
-df_c <- mutate(df,
-               c_age = age,
-               c_education = education,
-               c_income = income,
-               c_race = race,
-               c_sex = sex)
 
 #Player df with control marked
 df_player_c <- mutate(df_player,
@@ -298,9 +311,8 @@ df_player_c <- mutate(df_player,
                       c_sex = sex)
 
 #Train model
-#`ygap` uses player df and corresponding controls specified in the previous section
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
 
 #Results of seperate models
 summary(model_ygap)
@@ -311,7 +323,33 @@ Anova(model_ygap)
 ```
 
 
-### Simple linear model (full model)
+## gap ~ satisfaction
+```{r ygap_satis}
+#Update vars
+updateVars()
+
+#Player df with control marked
+df_player_c <- mutate(df_player,
+                      c_age = age,
+                      c_education = education,
+                      c_income = income,
+                      c_race = race,
+                      c_sex = sex)
+
+#Train model
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
+                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), starts_with("combined")))
+
+#Results of seperate models
+summary(model_ygap)
+
+#MANOVA
+Anova(model_ygap)
+
+```
+
+
+### Simple linear (full model)
 ```{r model_full}
 #Update vars
 updateVars()

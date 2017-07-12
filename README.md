@@ -1,9 +1,14 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 07/12/2017
+1. Add **analysis report 0712** corresponding to the changes.
+1. Add **analysis code** with gap t tests, BIC and AIC, influential observation detection; update model 2 with only player data.
+
+
 ### 07/10/2017
-1. Update **analysis report (.rmd)** primarily for including the partial models of each version of constructs.
-1. Add **analysis code (.R)** with VIF, Bonferroni, multivariate linear, partial models, and cross validation.
+1. Add **analysis report 0710** primarily for including the partial models of each version of constructs.
+1. Add **analysis code** with VIF, Bonferroni, multivariate linear, partial models, and cross validation.
 
 
 ### 07/05/2017
