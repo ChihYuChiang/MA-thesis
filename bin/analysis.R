@@ -489,11 +489,12 @@ mean(df_player$real_agreeableness)
 mean(df_player$game_agreeableness)
 
 #T test for each pair
-t.test(df_player$real_agreeableness, df_player$game_agreeableness, paired=TRUE)
-t.test(df_player$real_conscientiousness, df_player$game_conscientiousness, paired=TRUE)
-t.test(df_player$real_extraversion, df_player$game_extraversion, paired=TRUE)
-t.test(df_player$real_emotionstability, df_player$game_emotionstability, paired=TRUE)
-t.test(df_player$real_openness, df_player$game_openness, paired=TRUE)
+#T test result dif: game - real
+t.test(df_player$game_agreeableness, df_player$real_agreeableness, paired=TRUE)
+t.test(df_player$game_conscientiousness, df_player$real_conscientiousness, paired=TRUE)
+t.test(df_player$game_extraversion, df_player$real_extraversion, paired=TRUE)
+t.test(df_player$game_emotionstability, df_player$real_emotionstability, paired=TRUE)
+t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
 
 
 
@@ -549,16 +550,17 @@ ggplot(df_influenceDetect, aes(hat, student)) +
   theme(legend.position ="none")
 
 
-#--Filter
-hat <- df_augment %>%
+#--Filter with separate criterion
+hat <- df_influenceDetect %>%
   filter(hat > 2 * mean(hat))
 
-student <- df_augment %>%
+student <- df_influenceDetect %>%
   filter(abs(student) > 2)
 
-cooksd <- df_augment %>%
-  filter(cooksd > 4 / (nrow(.) - (length(coef(lm_1)) - 1) - 1))
+cooksd <- df_influenceDetect %>%
+  filter(cooksd > 4 / (nrow(.) - (length(coef(model_lm)) - 1) - 1))
 
+#Combine to identify problematic observations
 bind_rows(hat, student, cooksd)
 
 
