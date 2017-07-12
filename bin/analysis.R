@@ -53,12 +53,9 @@ core_cluster <- mutate_each(core_cluster,
 
 
 #--Match up
-#Main df, key=player-game
+#Main df, key=player-game pair
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
-
-#Player df, key=player
-df_player <- distinct(df, respondent, .keep_all = TRUE)
 
 
 "
@@ -82,7 +79,7 @@ mse_2 <- function(model, lambda, data_y, data_x){
 "
 ----------------------------------------------------------------------
 ## Variable
-Compute and select variables to be used in models.
+Acquire `player_df`; Compute and select variables to be used in models.
 
 - Call the function to update the vars employed.
 - Final response variable utilizes only `preference_3`.
@@ -132,7 +129,7 @@ updateVars <- function(){
   #--Create response variable
   df <<- df %>%
     rowwise() %>% 
-    mutate(preference = mean(c(preference_1, preference_3)))
+    mutate(preference = mean(c(preference_3)))
   
   
   #--Compute personalty gap
@@ -142,6 +139,10 @@ updateVars <- function(){
                gap_conscientiousness = game_conscientiousness - real_conscientiousness,
                gap_emotionstability = game_emotionstability - real_emotionstability,
                gap_openness = game_openness - real_openness)
+  
+  
+  #--Acquire player df, key=player
+  df_player <<- distinct(df, respondent, .keep_all=TRUE)
   
   
   #--Select variables to be included in regression (model formation)
@@ -221,14 +222,6 @@ summary(model_gChar_tste_5)
 #Update vars
 updateVars()
 
-#Full df with control marked
-df_c <- mutate(df,
-               c_age = age,
-               c_education = education,
-               c_income = income,
-               c_race = race,
-               c_sex = sex)
-
 #Player df with control marked
 df_player_c <- mutate(df_player,
                       c_age = age,
@@ -240,7 +233,7 @@ df_player_c <- mutate(df_player,
 #Train model
 #`ygap` uses player df and corresponding controls specified in the previous section
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
 
 #Results of seperate models
 summary(model_ygap)
@@ -442,6 +435,34 @@ mseSd_las_cv <- sd(mses_las_cv)
 ## Information criteria
 ----------------------------------------------------------------------
 "
+#--BIC
+BICs <- c(BIC(model_gChar_tste_2),
+          BIC(model_gChar_tste_3),
+          BIC(model_gChar_tste_4),
+          BIC(model_gChar_tste_5),
+          BIC(model_gChar_tste_6),
+          BIC(model_gChar_tste_7),
+          BIC(model_gChar_tste_8),
+          BIC(model_gChar_tste_9),
+          BIC(model_gChar_tste_10))
+
+ggplot(data=as.data.frame(BICs)) +
+  geom_line(mapping=aes(seq(2, 10), BICs))
+
+
+#--AIC
+AICs <- c(AIC(model_gChar_tste_2),
+          AIC(model_gChar_tste_3),
+          AIC(model_gChar_tste_4),
+          AIC(model_gChar_tste_5),
+          AIC(model_gChar_tste_6),
+          AIC(model_gChar_tste_7),
+          AIC(model_gChar_tste_8),
+          AIC(model_gChar_tste_9),
+          AIC(model_gChar_tste_10))
+
+ggplot(data=as.data.frame(AICs)) +
+  geom_line(mapping=aes(seq(2, 10), AICs))
 
 
 
@@ -462,7 +483,9 @@ mseSd_las_cv <- sd(mses_las_cv)
 ## Description
 ----------------------------------------------------------------------
 "
-#--Descriptive stats
+"
+### Descriptive stats
+"
 #Update vars
 updateVars()
 
@@ -470,7 +493,9 @@ updateVars()
 summary(df)
 
 
-#--Correlation
+"
+### Correlation
+"
 #Full matrix
 cor(select(df, which(sapply(df, is.numeric))))
 
@@ -485,6 +510,19 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
          order=NULL,
          lower.panel=panel.ellipse,
          upper.panel=panel.shade)
+
+
+"
+### Difference between real and game personality
+"
+mean(df_player$real_agreeableness)
+mean(df_player$game_agreeableness)
+
+t.test(df_player$real_agreeableness, df_player$game_agreeableness, paired=TRUE)
+t.test(df_player$real_conscientiousness, df_player$game_conscientiousness, paired=TRUE)
+t.test(df_player$real_extraversion, df_player$game_extraversion, paired=TRUE)
+t.test(df_player$real_emotionstability, df_player$game_emotionstability, paired=TRUE)
+t.test(df_player$real_openness, df_player$game_openness, paired=TRUE)
 
 
 
