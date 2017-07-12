@@ -101,3 +101,4 @@ kernel*
 test.py
 .Rproj.user
 .Rhistory
+.rmd
