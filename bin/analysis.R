@@ -59,22 +59,6 @@ df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
 
 
-"
-### MSE computation
-"
-#Works with simple regression, SVM, RF
-mse_1 <- function(model, data_yx){
-  res <- modelr:::residuals(model, data_yx)
-  mean(res^2, na.rm=TRUE)
-}
-
-#Works with lasso and ridge
-mse_2 <- function(model, lambda, data_y, data_x){
-  pred <- predict(model, s=lambda, newx=data_x)
-  mean((pred - data_y)^2, na.rm=TRUE)
-}
-
-
 
 
 "
@@ -135,11 +119,11 @@ updateVars <- function(){
   
   #--Compute personalty gap
   df <<- mutate(df,
-               gap_extraversion = game_extraversion - real_extraversion,
-               gap_agreeableness = game_agreeableness - real_agreeableness,
-               gap_conscientiousness = game_conscientiousness - real_conscientiousness,
-               gap_emotionstability = game_emotionstability - real_emotionstability,
-               gap_openness = game_openness - real_openness)
+                gap_extraversion = game_extraversion - real_extraversion,
+                gap_agreeableness = game_agreeableness - real_agreeableness,
+                gap_conscientiousness = game_conscientiousness - real_conscientiousness,
+                gap_emotionstability = game_emotionstability - real_emotionstability,
+                gap_openness = game_openness - real_openness)
   
   
   #--Acquire player df, key=player
@@ -147,16 +131,22 @@ updateVars <- function(){
   
   
   #--Select variables to be included in regression (model formation)
-  #predictor variables
-  predictors <<- paste(read.csv("../data/vars/predictors.csv", header=FALSE)[,1], collapse="+")
+  #Sets of predictor variables from file
+  predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
   
-  #df with only predictor variables
-  df_x <<- model.matrix(as.formula(paste("preference ~ ", predictors, sep="")),
-                       data=df) %>% #Define model formation and create dummies
-    .[, -1] #Remove redundant interacept column
+  #Get column name as model id
+  modelId <<- colnames(predictors)
   
-  #df also with outcome variables
-  df_yx <<- bind_cols(select(df, preference), data.frame(df_x))
+  #predictor variable as strings for each model
+  predictorString <<- apply(predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
+  
+  #Make the dfs into a data frame
+  dfs <<- data.frame(predictorString, modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, preference), data.frame(.x)))) #df also with outcome variables
+  
+  #Set row names for reference
+  row.names(dfs) <<- modelId
 }
 
 
@@ -169,8 +159,10 @@ Models applying the variables selected. Two ways to select variables:
 
 - Use `select` to include vars in the models from `df`/`df_player`.
 - Edited through `predictors.csv` (for complexed interaction terms).
+- Column name of `predictors.csv` = model id
 ----------------------------------------------------------------------
 "
+bm_models <- function(){}
 "
 ### Simple linear model (partial models)
 "
@@ -227,18 +219,22 @@ df_player_c <- mutate(df_player,
 
 
 #--Train models
+#gap ~ real + c
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
+                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_")))
+
+#gap ~ dissatis + c
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
+                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), starts_with("dissatis")))
+
 #gap ~ real + satis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
                  data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
 
-#gap ~ satis + c
-model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), starts_with("combined")))
-
-#gap ~ real + satis + real * satis + c
+#gap ~ real + dissatis + real * dissatis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ . +
-                   (combined_autonomy + combined_relatedness + combined_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
-                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+                   (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("dissatis")))
 
 
 #Results of seperate models
@@ -250,33 +246,28 @@ summary(Anova(model_ygap))
 
 
 "
-### Simple linear model (full model)
+### Simple linear models (full model)
 "
 #Update vars
 updateVars()
 
-#Train model
-model_lm <- lm(preference ~ ., data=df_yx)
+#Train models
+dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
 
 #Summary
-summary(model_lm)
-BIC(model_lm)
-AIC(model_lm)
-
-#Extract p-values for bonferroni
-#Use `str(summary(model))` to see object structure
-pValues_lm <- summary(model_lm)$coefficients[, 4]
+for(model in dfs$model_lm) print(summary(model))
+summary(dfs["t4_r_g", "model_lm"][[1]])
 
 
 "
-### multiple Simple linear models (grouped by game characteristic)
+### Grouped simple linear models (grouped by game characteristic)
 "
 #Update vars
 updateVars()
 
 #Include `group survey` or `group review` for grouping (do not include in the csv, which makes dummies)
 #Group the data into multiple dfs
-df_yx_group <- df_yx %>% 
+df_yx_group <- dfs$df_yx[[1]] %>% 
   bind_cols(data.frame(df$group_survey)) %>%
   group_by(df.group_survey) %>%
   nest()
@@ -303,16 +294,16 @@ lambdas <- 10^seq(3, -3, length=7)
 
 #Identify the best lambda level
 #Adjust `nfolds` to increase the folds
-lambda_las_best <- cv.glmnet(x=df_x, y=df$preference, alpha=1, nfolds=10)$lambda.min
+dfs$lambda_las_best <- map(dfs$df_x, ~ cv.glmnet(x=.x, y=df$preference, alpha=1, nfolds=10)$lambda.min)
 
 #Train model with best lambda level
 #Better to standardize while the regulation counts on the units
-model_las_best <- glmnet(x=df_x, y=df$preference, alpha=1,
-                    lambda=lambda_las_best,
-                    standardize=TRUE)
+dfs$model_las_best <- map2(dfs$df_x, dfs$lambda_las_best, ~ glmnet(x=.x, y=df$preference, alpha=1,
+                                                                   lambda=.y,
+                                                                   standardize=TRUE))
 
-#Print the best result
-coef(model_las_best)
+#Acquire the best result
+dfs$model_las_coef <- map(dfs$model_las_best, coef)
 
 
 #--Regression_ridge
@@ -320,15 +311,15 @@ coef(model_las_best)
 updateVars()
 
 #Identify the best lambda level
-lambda_rid_best <- cv.glmnet(x=df_x, y=df$preference, alpha=0, nfolds=10)$lambda.min
+dfs$lambda_rid_best <- map(dfs$df_x, ~ cv.glmnet(x=.x, y=df$preference, alpha=0, nfolds=10)$lambda.min)
 
 #Train model with best lambda level
-model_rid_best <- glmnet(x=df_x, y=df$preference, alpha=0,
-                         lambda=lambda_rid_best,
-                         standardize=TRUE)
+dfs$model_rid_best <- map2(dfs$df_x, dfs$lambda_rid_best, ~ glmnet(x=.x, y=df$preference, alpha=0,
+                                                                   lambda=.y,
+                                                                   standardize=TRUE))
 
-#Print the best result
-coef(model_rid_best)
+#Acquire the best result
+dfs$model_rid_coef <- map(dfs$model_rid_best, coef)
   
 
 "
@@ -339,9 +330,11 @@ coef(model_rid_best)
 updateVars()
 
 #Train model
-model_rf <- randomForest(preference ~ ., data=df_yx,
-                         mtry=5, ntree=500)
-summary(model_rf)
+dfs$model_rf <- map(dfs$df_yx, ~ randomForest(preference ~ ., data=.x,
+                                              mtry=5, ntree=500))
+
+#Print results
+for(model in dfs$model_rf) print(summary(model))
 
 
 #--SVM (linear kernel)
@@ -350,9 +343,11 @@ updateVars()
 
 #Train model
 costs <- 10^seq(2, -3, length=20)
-model_svm <- tune.svm(preference ~ ., data=df_yx,
-                  kernel="linear", range=list(cost=costs))
-summary(model_svm)
+dfs$model_svm <- map(dfs$df_yx, ~ tune.svm(preference ~ ., data=.x,
+                                           kernel="linear", range=list(cost=costs)))
+
+#Print results
+for(model in dfs$model_svm) print(summary(model))
 
 
 
@@ -362,6 +357,23 @@ summary(model_svm)
 ## Cross validation
 ----------------------------------------------------------------------
 "
+bm_crossValidation <- function(){}
+"
+### MSE computation
+"
+#Works with simple regression, SVM, RF
+mse_1 <- function(model, data_yx){
+  res <- modelr:::residuals(model, data_yx)
+  mean(res^2, na.rm=TRUE)
+}
+
+#Works with lasso and ridge
+mse_2 <- function(model, lambda, data_y, data_x){
+  pred <- predict(model, s=lambda, newx=data_x)
+  mean((pred - data_y)^2, na.rm=TRUE)
+}
+
+
 "
 ### Simple linear model and predicting models
 "
@@ -370,7 +382,7 @@ summary(model_svm)
 updateVars()
 
 #Leave-one-out: k=nrow(df_yx)
-df_yx_cv <- crossv_kfold(df_yx, k=10)
+df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
 
 
 #--Train models on each training df
@@ -404,7 +416,7 @@ mseSd_lm_cv <- sd(mses_lm_cv)
 updateVars()
 
 #Leave-one-out: k=nrow(df_yx)
-df_yx_cv <- crossv_kfold(df_yx, k=10)
+df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
 
 
 #--Train models on each training df
@@ -443,20 +455,41 @@ mseSd_las_cv <- sd(mses_las_cv)
 ## Information criteria
 ----------------------------------------------------------------------
 "
+bm_infoCriteria <- function(){}
 #--BIC
+#gap ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
 
 ggplot(data=as.data.frame(BICs)) +
   geom_line(mapping=aes(seq(2, 20), BICs)) +
   labs(x="Number of features", y="BIC")
 
+#lm models
+dfs$BIC <- unlist(map(dfs$model_lm, BIC))
+
+ggplot() +
+  geom_line(data=slice(dfs, 1:5), mapping=aes(seq(1, 5), BIC), color="red") +
+  geom_line(data=slice(dfs, 6:10), mapping=aes(seq(1, 5), BIC), color="blue") +
+  labs(x="Model", y="BIC") +
+  scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
+
 
 #--AIC
+#gap ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
 
 ggplot(data=as.data.frame(AICs)) +
   geom_line(mapping=aes(seq(2, 20), AICs)) +
   labs(x="Number of features", y="AIC")
+
+#lm models
+dfs$AIC <- unlist(map(dfs$model_lm, AIC))
+
+ggplot() +
+  geom_line(data=slice(dfs, 1:5), mapping=aes(seq(1, 5), AIC), color="red") +
+  geom_line(data=slice(dfs, 6:10), mapping=aes(seq(1, 5), AIC), color="blue") +
+  labs(x="Model", y="AIC") +
+  scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
 
 
 
@@ -466,6 +499,7 @@ ggplot(data=as.data.frame(AICs)) +
 ## Description
 ----------------------------------------------------------------------
 "
+bm_description <- function(){}
 "
 ### Descriptive stats
 "
@@ -482,13 +516,13 @@ summary(df)
 #Full matrix
 cor(select(df, which(sapply(df, is.numeric))))
 
-#Preference - game characteristics
+#Preference ~ game characteristics
 corrgram(select(df, preference, starts_with("distance_survey_mean")),
          order=NULL,
          lower.panel=panel.ellipse,
          upper.panel=panel.shade)
 
-#Preference - player personality
+#Preference ~ player personality
 corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
          order=NULL,
          lower.panel=panel.ellipse,
@@ -516,8 +550,12 @@ t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
 "
 ----------------------------------------------------------------------
 ## Regression assumptions
+
+- Applied on specific single model
 ----------------------------------------------------------------------
 "
+bm_regAssumption <- function(){}
+
 #Update vars
 updateVars()
 
@@ -526,12 +564,16 @@ updateVars()
 ### Multicollinearity
 "
 #VIF score (criterion: <10)
-vif(model_lm)
+vif(dfs$model_lm[[1]])
 
 
 "
 ### P-value adjustment
 "
+#Extract p-values for bonferroni
+#Use `str(summary(model))` to see object structure
+pValues_lm <- summary(dfs$model_lm[[1]])$coefficients[, 4]
+
 #Bonferroni correction
 p.adjust(pValues_lm, method=c("bonferroni"))
 
@@ -541,12 +583,12 @@ p.adjust(pValues_lm, method=c("bonferroni"))
 "
 #--Observe
 #Add key statistics; add row name for graph reference
-df_influenceDetect <- df_yx %>%
+df_influenceDetect <- dfs$df_yx[[1]] %>%
   ungroup() %>%
   rownames_to_column(var="row") %>%
-  mutate(hat=hatvalues(model_lm),
-         student=rstudent(model_lm),
-         cooksd=cooks.distance(model_lm))
+  mutate(hat=hatvalues(dfs$model_lm[[1]]),
+         student=rstudent(dfs$model_lm[[1]]),
+         cooksd=cooks.distance(dfs$model_lm[[1]]))
 
 #Draw bubble plot
 ggplot(df_influenceDetect, aes(hat, student)) +
