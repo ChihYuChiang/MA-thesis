@@ -208,7 +208,7 @@ model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, s
 
 #Plug in for result
 #tste_2 = model_gChar_tstes[[1]]
-summary(model_gChar_tste_5)
+summary(model_gChar_tstes[[2]])
 
 
 "
@@ -225,9 +225,21 @@ df_player_c <- mutate(df_player,
                       c_race = race,
                       c_sex = sex)
 
-#Train model
+
+#--Train models
+#gap ~ real + satis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
                  data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+
+#gap ~ satis + c
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
+                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), starts_with("combined")))
+
+#gap ~ real + satis + real * satis + c
+model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ . +
+                   (combined_autonomy + combined_relatedness + combined_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+
 
 #Results of seperate models
 summary(model_ygap)
@@ -248,6 +260,8 @@ model_lm <- lm(preference ~ ., data=df_yx)
 
 #Summary
 summary(model_lm)
+BIC(model_lm)
+AIC(model_lm)
 
 #Extract p-values for bonferroni
 #Use `str(summary(model))` to see object structure
@@ -255,7 +269,7 @@ pValues_lm <- summary(model_lm)$coefficients[, 4]
 
 
 "
-### multiple Simple linear models (grouped by by game characteristic)
+### multiple Simple linear models (grouped by game characteristic)
 "
 #Update vars
 updateVars()
