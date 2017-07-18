@@ -1,6 +1,12 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 07/17/2017
+1. Add **analysis report 0717** corresponding to the changes.
+1. Update **analysis code** of Model 1 with interaction terms, with different preference measures, and corresponding AIC and BIC.
+1. Update **analysis code** of Model 2 with interaction terms and MANOVA test.
+
+
 ### 07/12/2017
 1. Add **analysis report 0712** corresponding to the changes.
 1. Add **analysis code** with gap t tests, BIC and AIC, influential observation detection; update model 2 with only player data.
