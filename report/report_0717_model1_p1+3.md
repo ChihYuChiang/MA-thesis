@@ -282,7 +282,7 @@ ggplot(data=as.data.frame(BICs)) +
   labs(x="Number of features", y="BIC")
 ```
 
-![](report_0717_model1_p1_3_files/figure-markdown_github/ic_tstes-1.png)
+![](report_0717_model1_p1+3_files/figure-markdown_github/ic_tstes-1.png)
 
 ``` r
 #--AIC
@@ -293,7 +293,7 @@ ggplot(data=as.data.frame(AICs)) +
   labs(x="Number of features", y="AIC")
 ```
 
-![](report_0717_model1_p1_3_files/figure-markdown_github/ic_tstes-2.png)
+![](report_0717_model1_p1+3_files/figure-markdown_github/ic_tstes-2.png)
 
 ### preference ~ tste scores + gap + interaction
 
@@ -311,7 +311,7 @@ ggplot() +
   scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
 ```
 
-![](report_0717_model1_p1_3_files/figure-markdown_github/ic_tste_inter-1.png)
+![](report_0717_model1_p1+3_files/figure-markdown_github/ic_tste_inter-1.png)
 
 ``` r
 #--AIC
@@ -324,7 +324,7 @@ ggplot() +
   scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
 ```
 
-![](report_0717_model1_p1_3_files/figure-markdown_github/ic_tste_inter-2.png)
+![](report_0717_model1_p1+3_files/figure-markdown_github/ic_tste_inter-2.png)
 
 Model summaries
 ---------------
