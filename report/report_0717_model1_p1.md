@@ -1,4 +1,4 @@
-MAPSS Thesis II - Game Characteristics and Player Personality
+MAPSS Thesis II - model1\_preference1
 ================
 Chih-Yu Chiang
 July 17, 2017
@@ -275,7 +275,6 @@ Information criteria
 
 ``` r
 #--BIC
-#gap ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
 
 ggplot(data=as.data.frame(BICs)) +
@@ -286,21 +285,7 @@ ggplot(data=as.data.frame(BICs)) +
 ![](report_0717_model1_p1_files/figure-markdown_github/ic_tstes-1.png)
 
 ``` r
-#lm models
-dfs$BIC <- unlist(map(dfs$model_lm, BIC))
-
-ggplot() +
-  geom_line(data=slice(dfs, 1:5), mapping=aes(seq(1, 5), BIC), color="red") +
-  geom_line(data=slice(dfs, 6:10), mapping=aes(seq(1, 5), BIC), color="blue") +
-  labs(x="Model", y="BIC") +
-  scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
-```
-
-![](report_0717_model1_p1_files/figure-markdown_github/ic_tstes-2.png)
-
-``` r
 #--AIC
-#gap ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
 
 ggplot(data=as.data.frame(AICs)) +
@@ -308,7 +293,7 @@ ggplot(data=as.data.frame(AICs)) +
   labs(x="Number of features", y="AIC")
 ```
 
-![](report_0717_model1_p1_files/figure-markdown_github/ic_tstes-3.png)
+![](report_0717_model1_p1_files/figure-markdown_github/ic_tstes-2.png)
 
 ### preference ~ tste scores + gap + interaction
 
