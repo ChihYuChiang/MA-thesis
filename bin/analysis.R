@@ -458,7 +458,7 @@ mseSd_las_cv <- sd(mses_las_cv)
 "
 bm_infoCriteria <- function(){}
 "
-### BIC
+### BIC and BIC difference
 "
 #--gap ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
@@ -469,6 +469,7 @@ ggplot(data=as.data.frame(BICs)) +
   labs(x="Number of features", y="BIC") +
   scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
 
+#Model 3 = the BIC change from 2-feature to 3-feature models 
 ggplot(data=as.data.frame(BICs_dif)) +
   geom_line(mapping=aes(seq(3, 20), BICs_dif)) +
   labs(x="Number of features", y="BIC difference") +
@@ -480,6 +481,16 @@ ggplot(data=as.data.frame(BICs_dif)) +
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
 dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 
+#Seperate batch models from dfs
+dfs_gap <- slice(dfs, 1:19)
+dfs_real <- slice(dfs, 20:38)
+dfs_game <- slice(dfs, 39:57)
+
+dfs_gap_dif <- slice(dfs, 2:19)
+dfs_real_dif <- slice(dfs, 21:38)
+dfs_game_dif <- slice(dfs, 40:57)
+
+#All models
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC)) +
   labs(x="Model", y="BIC") +
@@ -491,9 +502,30 @@ ggplot() +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
   geom_hline(yintercept=0, linetype=3)
 
+#Batch models
+ggplot() +
+  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), BIC, color="3")) +
+  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), BIC, color="1")) +
+  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), BIC, color="2")) +
+  labs(x="Model (number of tste features)", y="BIC", title="Model BIC") +
+  theme(legend.position="right", legend.direction="vertical")+
+  scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
+  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
+                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste"))
+
+ggplot() +
+  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), BIC_dif, color="3")) +
+  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), BIC_dif, color="1")) +
+  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), BIC_dif, color="2")) +
+  labs(x="Model (number of tste features)", y="BIC difference", title="BIC difference when increasing the number of tste features") +
+  scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
+  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
+                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste")) +
+  geom_hline(yintercept=0, linetype=3)
+
 
 "
-### AIC
+### AIC and AIC difference
 "
 #--gap ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
@@ -504,6 +536,7 @@ ggplot(data=as.data.frame(AICs)) +
   labs(x="Number of features", y="AIC") +
   scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
 
+#Model 3 = the AIC change from 2-feature to 3-feature models 
 ggplot(data=as.data.frame(AICs_dif)) +
   geom_line(mapping=aes(seq(3, 20), AICs_dif)) +
   labs(x="Number of features", y="AIC difference") +
@@ -515,6 +548,12 @@ ggplot(data=as.data.frame(AICs_dif)) +
 dfs$AIC <- unlist(map(dfs$model_lm, AIC))
 dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 
+#Seperate batch models from dfs
+dfs_gap <- slice(dfs, 1:19)
+dfs_real <- slice(dfs, 20:38)
+dfs_game <- slice(dfs, 39:57)
+
+#All models
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC)) +
   labs(x="Model", y="AIC") +
@@ -524,6 +563,27 @@ ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC_dif)) +
   labs(x="Model", y="AIC difference") +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
+  geom_hline(yintercept=0, linetype=3)
+
+#Batch models
+ggplot() +
+  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), AIC, color="3")) +
+  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), AIC, color="1")) +
+  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), AIC, color="2")) +
+  labs(x="Model (number of tste features)", y="AIC", title="Model AIC") +
+  theme(legend.position="right", legend.direction="vertical")+
+  scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
+  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
+                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste"))
+
+ggplot() +
+  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), AIC_dif, color="3")) +
+  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), AIC_dif, color="1")) +
+  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), AIC_dif, color="2")) +
+  labs(x="Model (number of tste features)", y="AIC difference", title="AIC difference when increasing the number of tste features") +
+  scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
+  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
+                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste")) +
   geom_hline(yintercept=0, linetype=3)
 
 
