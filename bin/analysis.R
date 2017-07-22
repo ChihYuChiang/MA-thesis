@@ -113,8 +113,9 @@ Name | Definition | Unit
 updateVars <- function(){
   #--Create response variable
   df <<- df %>%
-    rowwise() %>% 
-    mutate(preference = mean(c(preference_3)))
+    rowwise() %>% #Rowwise to make the ordinary functions work
+    mutate(preference = mean(c(preference_3))) %>%
+    ungroup() #Ungroup to cancel rowwise
   
   
   #--Compute personalty gap
@@ -456,40 +457,74 @@ mseSd_las_cv <- sd(mses_las_cv)
 ----------------------------------------------------------------------
 "
 bm_infoCriteria <- function(){}
-#--BIC
-#gap ~ tstes
+"
+### BIC
+"
+#--gap ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
+BICs_dif <- BICs[-1] - lag(BICs)[-1]
 
 ggplot(data=as.data.frame(BICs)) +
   geom_line(mapping=aes(seq(2, 20), BICs)) +
-  labs(x="Number of features", y="BIC")
+  labs(x="Number of features", y="BIC") +
+  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
 
-#lm models
+ggplot(data=as.data.frame(BICs_dif)) +
+  geom_line(mapping=aes(seq(3, 20), BICs_dif)) +
+  labs(x="Number of features", y="BIC difference") +
+  scale_x_continuous(breaks=seq(3, 20), minor_breaks=NULL) +
+  geom_hline(yintercept=0, linetype=3)
+
+
+#--lm models
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
+dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 
 ggplot() +
-  geom_line(data=slice(dfs, 1:5), mapping=aes(seq(1, 5), BIC), color="red") +
-  geom_line(data=slice(dfs, 6:10), mapping=aes(seq(1, 5), BIC), color="blue") +
+  geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC)) +
   labs(x="Model", y="BIC") +
-  scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+
+ggplot() +
+  geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC_dif)) +
+  labs(x="Model", y="BIC difference") +
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
+  geom_hline(yintercept=0, linetype=3)
 
 
-#--AIC
-#gap ~ tstes
+"
+### AIC
+"
+#--gap ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
+AICs_dif <- AICs[-1] - lag(AICs)[-1]
 
 ggplot(data=as.data.frame(AICs)) +
   geom_line(mapping=aes(seq(2, 20), AICs)) +
-  labs(x="Number of features", y="AIC")
+  labs(x="Number of features", y="AIC") +
+  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
 
-#lm models
+ggplot(data=as.data.frame(AICs_dif)) +
+  geom_line(mapping=aes(seq(3, 20), AICs_dif)) +
+  labs(x="Number of features", y="AIC difference") +
+  scale_x_continuous(breaks=seq(3, 20), minor_breaks=NULL) +
+  geom_hline(yintercept=0, linetype=3)
+
+
+#--lm models
 dfs$AIC <- unlist(map(dfs$model_lm, AIC))
+dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 
 ggplot() +
-  geom_line(data=slice(dfs, 1:5), mapping=aes(seq(1, 5), AIC), color="red") +
-  geom_line(data=slice(dfs, 6:10), mapping=aes(seq(1, 5), AIC), color="blue") +
+  geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC)) +
   labs(x="Model", y="AIC") +
-  scale_x_continuous(breaks=seq(1, 5), labels=c("t3", "t4", "t9", "t10", "t16"))
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+
+ggplot() +
+  geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC_dif)) +
+  labs(x="Model", y="AIC difference") +
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
+  geom_hline(yintercept=0, linetype=3)
 
 
 
@@ -508,6 +543,27 @@ updateVars()
 
 #Get stats
 summary(df)
+
+
+#--Distribution of real and game personality (comparison)
+dist_personality <- function(personality){
+  #Acquire specific column by reg
+  real <- select(df_player, matches(paste("^real.*", personality, "$", sep="")))
+  game <- select(df_player, matches(paste("^game.*", personality, "$", sep="")))
+  
+  #Plot: red bars = game personality
+  ggplot(data=as.data.frame(real, game)) +
+    geom_histogram(mapping=aes(x=real), binwidth=1) +
+    geom_histogram(mapping=aes(x=game), binwidth=1, fill="red", alpha=0.5) +
+    labs(x="distribution", title=personality)
+}
+
+#Call function for each personality
+dist_personality("agreeableness")
+dist_personality("conscientiousness")
+dist_personality("emotionstability")
+dist_personality("extraversion")
+dist_personality("openness")
 
 
 "
@@ -583,8 +639,7 @@ p.adjust(pValues_lm, method=c("bonferroni"))
 "
 #--Observe
 #Add key statistics; add row name for graph reference
-df_influenceDetect <- dfs$df_yx[[1]] %>%
-  ungroup() %>%
+df_influenceDetect <- dfs$df_yx[[1]]
   rownames_to_column(var="row") %>%
   mutate(hat=hatvalues(dfs$model_lm[[1]]),
          student=rstudent(dfs$model_lm[[1]]),
