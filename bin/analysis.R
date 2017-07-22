@@ -7,7 +7,9 @@ Data of game and player are read in and matched up.
 - Missing values are imputed with variable mean conveniently (`star_user` and `star_GS`).
 ----------------------------------------------------------------------
 "
-#--Package
+"
+### Packages
+"
 library(tidyverse)
 library(corrgram)
 library(modelr)
@@ -18,6 +20,8 @@ library(car)
 library(rlist)
 library(pander)
 set.seed(1)
+
+
 
 
 "
@@ -57,6 +61,10 @@ core_cluster <- mutate_each(core_cluster,
 #Main df, key=player-game pair
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
+
+
+
+
 
 
 
@@ -153,6 +161,10 @@ updateVars <- function(){
 
 
 
+
+
+
+
 "
 ----------------------------------------------------------------------
 ## Models
@@ -204,6 +216,8 @@ model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, s
 summary(model_gChar_tstes[[2]])
 
 
+
+
 "
 ### Multivariate linear model
 "
@@ -246,6 +260,15 @@ Anova(model_ygap)
 summary(Anova(model_ygap))
 
 
+
+
+"
+### Tobit model
+"
+
+
+
+
 "
 ### Simple linear models (full model)
 "
@@ -258,6 +281,8 @@ dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
 #Summary
 for(model in dfs$model_lm) print(summary(model))
 summary(dfs["t4_r_g", "model_lm"][[1]])
+
+
 
 
 "
@@ -281,6 +306,8 @@ for(i in seq(1, length(model_lm_group))){
   print(paste("group", i, sep=" "))
   print(summary(model_lm_group[[i]]))
 }
+
+
 
 
 "
@@ -323,6 +350,8 @@ dfs$model_rid_best <- map2(dfs$df_x, dfs$lambda_rid_best, ~ glmnet(x=.x, y=df$pr
 dfs$model_rid_coef <- map(dfs$model_rid_best, coef)
   
 
+
+
 "
 ### Predicting models
 "
@@ -353,6 +382,10 @@ for(model in dfs$model_svm) print(summary(model))
 
 
 
+
+
+
+
 "
 ----------------------------------------------------------------------
 ## Cross validation
@@ -373,6 +406,8 @@ mse_2 <- function(model, lambda, data_y, data_x){
   pred <- predict(model, s=lambda, newx=data_x)
   mean((pred - data_y)^2, na.rm=TRUE)
 }
+
+
 
 
 "
@@ -407,6 +442,8 @@ mse_lm_cv <- mean(mses_lm_cv)
 
 #MSE std
 mseSd_lm_cv <- sd(mses_lm_cv)
+
+
 
 
 "
@@ -447,6 +484,10 @@ mse_las_cv <- mean(mses_las_cv)
 
 #MSE std
 mseSd_las_cv <- sd(mses_las_cv)
+
+
+
+
 
 
 
@@ -524,6 +565,8 @@ ggplot() +
   geom_hline(yintercept=0, linetype=3)
 
 
+
+
 "
 ### AIC and AIC difference
 "
@@ -589,6 +632,10 @@ ggplot() +
 
 
 
+
+
+
+
 "
 ----------------------------------------------------------------------
 ## Description
@@ -626,6 +673,8 @@ dist_personality("extraversion")
 dist_personality("openness")
 
 
+
+
 "
 ### Correlation
 "
@@ -643,6 +692,8 @@ corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
          order=NULL,
          lower.panel=panel.ellipse,
          upper.panel=panel.shade)
+
+
 
 
 "
@@ -663,6 +714,10 @@ t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
 
 
 
+
+
+
+
 "
 ----------------------------------------------------------------------
 ## Regression assumptions
@@ -675,12 +730,13 @@ bm_regAssumption <- function(){}
 #Update vars
 updateVars()
 
-
 "
 ### Multicollinearity
 "
 #VIF score (criterion: <10)
 vif(dfs$model_lm[[1]])
+
+
 
 
 "
@@ -692,6 +748,8 @@ pValues_lm <- summary(dfs$model_lm[[1]])$coefficients[, 4]
 
 #Bonferroni correction
 p.adjust(pValues_lm, method=c("bonferroni"))
+
+
 
 
 "
@@ -735,6 +793,8 @@ cooksd <- df_influenceDetect %>%
 bind_rows(hat, student, cooksd)
 
 
+
+
 "
 ### Normally distributed
 "
@@ -747,6 +807,8 @@ bind_rows(hat, student, cooksd)
 #   labs(title = "Density plot of the studentized residuals",
 #        x="Studentized residuals",
 #        y="Estimated density")
+
+
 
 
 "
