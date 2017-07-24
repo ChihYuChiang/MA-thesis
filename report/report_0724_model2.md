@@ -8,7 +8,7 @@ July 24, 2017
 -   [Model](#model)
 -   [Difference between real and game personality](#difference-between-real-and-game-personality)
 -   [Personality distribution](#personality-distribution)
--   [game personality: real personality & dissatisfaction & real personality\*dissatisfaction](#game-personality-real-personality-dissatisfaction-real-personalitydissatisfaction)
+-   [game personality ~ real personality + dissatisfaction + real personality\*dissatisfaction](#game-personality-real-personality-dissatisfaction-real-personalitydissatisfaction)
     -   [agreeableness](#agreeableness)
     -   [conscientiousness](#conscientiousness)
     -   [emotionstability](#emotionstability)
@@ -436,8 +436,8 @@ dist_personality("openness")
 
 ![](report_0724_model2_files/figure-markdown_github/distri-5.png)
 
-game personality: real personality & dissatisfaction & real personality\*dissatisfaction
-----------------------------------------------------------------------------------------
+game personality ~ real personality + dissatisfaction + real personality\*dissatisfaction
+-----------------------------------------------------------------------------------------
 
 ### agreeableness
 

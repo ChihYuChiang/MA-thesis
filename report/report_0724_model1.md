@@ -7,12 +7,17 @@ July 24, 2017
 -   [Variable](#variable)
 -   [Model](#model)
 -   [Information criteria](#information-criteria)
-    -   [preference: tste](#preference-tste)
-    -   [preference: tste & personality & interaction](#preference-tste-personality-interaction)
+    -   [preference ~ tste](#preference-tste)
+    -   [(link for the above position)](#link-for-the-above-position)
+    -   [preference ~ tste + personality + interaction](#preference-tste-personality-interaction)
+    -   [(link for the above position)](#link-for-the-above-position-1)
 -   [Model summaries](#model-summaries)
-    -   [preference: tste & real & real\*tste](#preference-tste-real-realtste)
-    -   [preference: tste & real & game & game\*tste](#preference-tste-real-game-gametste)
-    -   [preference: tste & real & gap & gap\*tste](#preference-tste-real-gap-gaptste)
+    -   [preference ~ tste + real + real\*tste](#preference-tste-real-realtste)
+    -   [(link for the above position)](#link-for-the-above-position-2)
+    -   [preference ~ tste + real + game + game\*tste](#preference-tste-real-game-gametste)
+    -   [(link for the above position)](#link-for-the-above-position-3)
+    -   [preference ~ tste + real + gap + gap\*tste](#preference-tste-real-gap-gaptste)
+    -   [(link for the above position)](#link-for-the-above-position-4)
 
 ``` r
 knitr::opts_chunk$set(
@@ -286,7 +291,9 @@ dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
 Information criteria
 --------------------
 
-### preference: tste
+### preference ~ tste
+
+### (link for the above position)
 
 ``` r
 "
@@ -352,7 +359,9 @@ ggplot(data=as.data.frame(AICs_dif)) +
 
 ![](report_0724_model1_files/figure-markdown_github/ic_tstes-4.png)
 
-### preference: tste & personality & interaction
+### preference ~ tste + personality + interaction
+
+### (link for the above position)
 
 ``` r
 #--BIC
@@ -441,7 +450,9 @@ ggplot() +
 Model summaries
 ---------------
 
-### preference: tste & real & real\*tste
+### preference ~ tste + real + real\*tste
+
+### (link for the above position)
 
 ``` r
 #Summary
@@ -2329,7 +2340,9 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## Multiple R-squared:  0.1508, Adjusted R-squared:  0.09359 
     ## F-statistic: 2.634 on 135 and 2002 DF,  p-value: < 2.2e-16
 
-### preference: tste & real & game & game\*tste
+### preference ~ tste + real + game + game\*tste
+
+### (link for the above position)
 
 ``` r
 #Summary
@@ -4312,7 +4325,9 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## Multiple R-squared:  0.1409, Adjusted R-squared:  0.08072 
     ## F-statistic:  2.34 on 140 and 1997 DF,  p-value: 2.44e-15
 
-### preference: tste & real & gap & gap\*tste
+### preference ~ tste + real + gap + gap\*tste
+
+### (link for the above position)
 
 ``` r
 #Summary

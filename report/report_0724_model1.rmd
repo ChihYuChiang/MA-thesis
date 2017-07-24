@@ -200,8 +200,13 @@ dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
 ```
 
 
+
+
 ## Information criteria
-### preference: tste
+
+### preference ~ tste
+
+### (link for the above position)
 ```{r ic_tstes}
 "
 ### BIC and BIC difference
@@ -245,7 +250,9 @@ ggplot(data=as.data.frame(AICs_dif)) +
 ```
 
 
-### preference: tste & personality & interaction 
+### preference ~ tste + personality + interaction
+
+### (link for the above position)
 ```{r ic_tste_inter}
 #--BIC
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
@@ -320,7 +327,10 @@ ggplot() +
 
 
 ## Model summaries
-### preference: tste & real & real*tste
+
+### preference ~ tste + real + real*tste
+
+### (link for the above position)
 ```{r model_sum_real}
 #Summary
 for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
@@ -328,7 +338,9 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
 ```
 
 
-### preference: tste & real & game & game*tste
+### preference ~ tste + real + game + game*tste
+
+### (link for the above position)
 ```{r model_sum_game}
 #Summary
 for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
@@ -336,7 +348,9 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
 ```
 
 
-### preference: tste & real & gap & gap*tste
+### preference ~ tste + real + gap + gap*tste
+
+### (link for the above position)
 ```{r model_sum_gap}
 #Summary
 for(model in slice(dfs, 1:19)$model_lm) print(summary(model))

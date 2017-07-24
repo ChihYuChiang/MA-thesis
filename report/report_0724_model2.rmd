@@ -261,7 +261,7 @@ dist_personality("openness")
 
 
 
-## game personality: real personality & dissatisfaction & real personality*dissatisfaction
+## game personality ~ real personality + dissatisfaction + real personality*dissatisfaction
 
 ### agreeableness
 ```{r agreeableness}
@@ -306,6 +306,7 @@ summary(models_ygame_tobit[[5]])
 
 
 ## Information criteria
+
 ### BIC
 ```{r BIC}
 BICs_ygame_lm <- unlist(map(models_ygame_lm, BIC))
