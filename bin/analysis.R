@@ -266,6 +266,17 @@ summary(Anova(model_ygap))
 "
 ### Tobit model
 "
+#Update vars
+updateVars()
+
+#Player df with control marked
+df_player_c <- mutate(df_player,
+                      c_age = age,
+                      c_education = education,
+                      c_income = income,
+                      c_race = race,
+                      c_sex = sex)
+
 #--Acquire corresponding df for each game personality
 #Alphabetical order for personality response vars
 dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),

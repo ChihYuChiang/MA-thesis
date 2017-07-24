@@ -7,18 +7,21 @@ July 24, 2017
 -   [Variable](#variable)
 -   [Model](#model)
 -   [Information criteria](#information-criteria)
-    -   [preference ~ tste](#preference-tste)
-    -   [preference ~ tste + personality + interaction](#preference-tste-personality-interaction)
+    -   [preference: tste](#preference-tste)
+    -   [preference: tste & personality & interaction](#preference-tste-personality-interaction)
 -   [Model summaries](#model-summaries)
-    -   [preference ~ tste + real + real\*tste](#preference-tste-real-realtste)
-    -   [preference ~ tste + real + game + game\*tste](#preference-tste-real-game-gametste)
-    -   [preference ~ tste + real + gap + gap\*tste](#preference-tste-real-gap-gaptste)
+    -   [preference: tste & real & real\*tste](#preference-tste-real-realtste)
+    -   [preference: tste & real & game & game\*tste](#preference-tste-real-game-gametste)
+    -   [preference: tste & real & gap & gap\*tste](#preference-tste-real-gap-gaptste)
 
 ``` r
 knitr::opts_chunk$set(
-    message = FALSE,
-    warning = FALSE
+    message=FALSE,
+    warning=FALSE
 )
+
+#Prevent result wrapping
+options(width=120)
 ```
 
 Setup
@@ -78,9 +81,6 @@ core_cluster <- mutate_each(core_cluster,
 #Main df, key=player-game
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
-
-#Player df, key=player
-df_player <- distinct(df, respondent, .keep_all = TRUE)
 ```
 
 Variable
@@ -286,7 +286,7 @@ dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
 Information criteria
 --------------------
 
-### preference ~ tste
+### preference: tste
 
 ``` r
 "
@@ -352,7 +352,7 @@ ggplot(data=as.data.frame(AICs_dif)) +
 
 ![](report_0724_model1_files/figure-markdown_github/ic_tstes-4.png)
 
-### preference ~ tste + personality + interaction
+### preference: tste & personality & interaction
 
 ``` r
 #--BIC
@@ -441,7 +441,7 @@ ggplot() +
 Model summaries
 ---------------
 
-### preference ~ tste + real + real\*tste
+### preference: tste & real & real\*tste
 
 ``` r
 #Summary
@@ -1078,172 +1078,89 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -4.9869 -0.6894  0.2693  0.9894  2.7767 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       57.3405037 16.0358257   3.576 0.000357
-    ## age                               -0.0140383  0.0045960  -3.054 0.002283
-    ## education                          0.0148217  0.0264924   0.559 0.575903
-    ## income                             0.0094039  0.0168186   0.559 0.576130
-    ## race2                              0.0763751  0.1318094   0.579 0.562359
-    ## race4                             -0.1805529  0.1427628  -1.265 0.206120
-    ## race6                             -0.9852636  0.3447301  -2.858 0.004305
-    ## race7                             -0.1342252  0.1346343  -0.997 0.318901
-    ## sex2                              -0.1110154  0.0719026  -1.544 0.122750
-    ## release                           -0.0262782  0.0078735  -3.338 0.000860
-    ## star_user                          0.0211494  0.0621177   0.340 0.733535
-    ## real_extraversion                  0.0490224  0.0202120   2.425 0.015377
-    ## real_agreeableness                -0.0190709  0.0276284  -0.690 0.490105
-    ## real_conscientiousness             0.0768063  0.0300903   2.553 0.010766
-    ## real_emotionstability             -0.0149929  0.0305081  -0.491 0.623168
-    ## real_openness                      0.1150511  0.0249621   4.609 4.29e-06
-    ## tste_11_0                          0.2340813  0.4880744   0.480 0.631562
-    ## tste_11_1                         -0.6464038  0.4690241  -1.378 0.168295
-    ## tste_11_2                          0.0175599  0.4151681   0.042 0.966267
-    ## tste_11_3                          0.3506704  0.5014977   0.699 0.484477
-    ## tste_11_4                         -0.0379567  0.4990616  -0.076 0.939382
-    ## tste_11_5                         -0.0090210  0.4329883  -0.021 0.983380
-    ## tste_11_6                          0.9928053  0.4241719   2.341 0.019349
-    ## tste_11_7                         -0.1949834  0.4834920  -0.403 0.686783
-    ## tste_11_8                         -0.4372334  0.3615606  -1.209 0.226689
-    ## tste_11_9                          0.7796307  0.4472730   1.743 0.081470
-    ## tste_11_10                         0.4474344  0.4408624   1.015 0.310269
-    ## real_extraversion.tste_11_0       -0.0161515  0.0339257  -0.476 0.634065
-    ## real_extraversion.tste_11_1        0.0158625  0.0313379   0.506 0.612788
-    ## real_extraversion.tste_11_2        0.0114117  0.0282577   0.404 0.686369
-    ## real_extraversion.tste_11_3        0.0002396  0.0345061   0.007 0.994459
-    ## real_extraversion.tste_11_4        0.0484160  0.0332387   1.457 0.145375
-    ## real_extraversion.tste_11_5        0.0185515  0.0305691   0.607 0.544004
-    ## real_extraversion.tste_11_6       -0.0140605  0.0292037  -0.481 0.630238
-    ## real_extraversion.tste_11_7       -0.0332382  0.0341615  -0.973 0.330682
-    ## real_extraversion.tste_11_8       -0.0020163  0.0255179  -0.079 0.937029
-    ## real_extraversion.tste_11_9       -0.0192812  0.0318796  -0.605 0.545370
-    ## real_extraversion.tste_11_10       0.0359138  0.0297754   1.206 0.227896
-    ## real_agreeableness.tste_11_0       0.0546343  0.0463542   1.179 0.238683
-    ## real_agreeableness.tste_11_1      -0.0134434  0.0419800  -0.320 0.748824
-    ## real_agreeableness.tste_11_2       0.0402192  0.0378622   1.062 0.288247
-    ## real_agreeableness.tste_11_3      -0.0065102  0.0461032  -0.141 0.887719
-    ## real_agreeableness.tste_11_4       0.0275707  0.0450772   0.612 0.540848
-    ## real_agreeableness.tste_11_5      -0.0207365  0.0413028  -0.502 0.615679
-    ## real_agreeableness.tste_11_6      -0.0497624  0.0396808  -1.254 0.209960
-    ## real_agreeableness.tste_11_7       0.0728872  0.0461672   1.579 0.114544
-    ## real_agreeableness.tste_11_8       0.0022479  0.0353991   0.064 0.949374
-    ## real_agreeableness.tste_11_9      -0.0639101  0.0416493  -1.534 0.125064
-    ## real_agreeableness.tste_11_10     -0.0486428  0.0424301  -1.146 0.251754
-    ## real_conscientiousness.tste_11_0   0.0774480  0.0510087   1.518 0.129086
-    ## real_conscientiousness.tste_11_1   0.1052474  0.0475244   2.215 0.026897
-    ## real_conscientiousness.tste_11_2  -0.0271154  0.0421099  -0.644 0.519700
-    ## real_conscientiousness.tste_11_3   0.0190399  0.0495100   0.385 0.700598
-    ## real_conscientiousness.tste_11_4  -0.0142847  0.0500506  -0.285 0.775362
-    ## real_conscientiousness.tste_11_5  -0.0375155  0.0428767  -0.875 0.381696
-    ## real_conscientiousness.tste_11_6  -0.0655008  0.0422592  -1.550 0.121301
-    ## real_conscientiousness.tste_11_7  -0.0014617  0.0492817  -0.030 0.976342
-    ## real_conscientiousness.tste_11_8  -0.0134134  0.0374420  -0.358 0.720197
-    ## real_conscientiousness.tste_11_9  -0.0431440  0.0456887  -0.944 0.345125
-    ## real_conscientiousness.tste_11_10 -0.0670383  0.0452120  -1.483 0.138292
-    ## real_emotionstability.tste_11_0   -0.0699764  0.0476669  -1.468 0.142249
-    ## real_emotionstability.tste_11_1    0.0852058  0.0460011   1.852 0.064133
-    ## real_emotionstability.tste_11_2   -0.0524920  0.0413104  -1.271 0.203989
-    ## real_emotionstability.tste_11_3   -0.0132542  0.0496049  -0.267 0.789346
-    ## real_emotionstability.tste_11_4   -0.0470318  0.0491894  -0.956 0.339115
-    ## real_emotionstability.tste_11_5   -0.0118901  0.0434740  -0.273 0.784496
-    ## real_emotionstability.tste_11_6   -0.0874821  0.0425992  -2.054 0.040140
-    ## real_emotionstability.tste_11_7    0.0007610  0.0484107   0.016 0.987460
-    ## real_emotionstability.tste_11_8    0.0579922  0.0360834   1.607 0.108170
-    ## real_emotionstability.tste_11_9   -0.0076967  0.0447304  -0.172 0.863400
-    ## real_emotionstability.tste_11_10   0.0048077  0.0438714   0.110 0.912748
-    ## real_openness.tste_11_0           -0.1074416  0.0419012  -2.564 0.010413
-    ## real_openness.tste_11_1           -0.0276641  0.0403391  -0.686 0.492924
-    ## real_openness.tste_11_2            0.0104951  0.0348965   0.301 0.763636
-    ## real_openness.tste_11_3           -0.0719330  0.0414639  -1.735 0.082920
-    ## real_openness.tste_11_4           -0.0215482  0.0413409  -0.521 0.602261
-    ## real_openness.tste_11_5            0.0337974  0.0374816   0.902 0.367318
-    ## real_openness.tste_11_6           -0.0098909  0.0374423  -0.264 0.791679
-    ## real_openness.tste_11_7            0.0304024  0.0419910   0.724 0.469134
-    ## real_openness.tste_11_8            0.0248120  0.0318358   0.779 0.435848
-    ## real_openness.tste_11_9           -0.0189435  0.0397919  -0.476 0.634080
-    ## real_openness.tste_11_10          -0.0023307  0.0369845  -0.063 0.949758
-    ##                                      
-    ## (Intercept)                       ***
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           ***
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_11_0                            
-    ## tste_11_1                            
-    ## tste_11_2                            
-    ## tste_11_3                            
-    ## tste_11_4                            
-    ## tste_11_5                            
-    ## tste_11_6                         *  
-    ## tste_11_7                            
-    ## tste_11_8                            
-    ## tste_11_9                         .  
-    ## tste_11_10                           
-    ## real_extraversion.tste_11_0          
-    ## real_extraversion.tste_11_1          
-    ## real_extraversion.tste_11_2          
-    ## real_extraversion.tste_11_3          
-    ## real_extraversion.tste_11_4          
-    ## real_extraversion.tste_11_5          
-    ## real_extraversion.tste_11_6          
-    ## real_extraversion.tste_11_7          
-    ## real_extraversion.tste_11_8          
-    ## real_extraversion.tste_11_9          
-    ## real_extraversion.tste_11_10         
-    ## real_agreeableness.tste_11_0         
-    ## real_agreeableness.tste_11_1         
-    ## real_agreeableness.tste_11_2         
-    ## real_agreeableness.tste_11_3         
-    ## real_agreeableness.tste_11_4         
-    ## real_agreeableness.tste_11_5         
-    ## real_agreeableness.tste_11_6         
-    ## real_agreeableness.tste_11_7         
-    ## real_agreeableness.tste_11_8         
-    ## real_agreeableness.tste_11_9         
-    ## real_agreeableness.tste_11_10        
-    ## real_conscientiousness.tste_11_0     
-    ## real_conscientiousness.tste_11_1  *  
-    ## real_conscientiousness.tste_11_2     
-    ## real_conscientiousness.tste_11_3     
-    ## real_conscientiousness.tste_11_4     
-    ## real_conscientiousness.tste_11_5     
-    ## real_conscientiousness.tste_11_6     
-    ## real_conscientiousness.tste_11_7     
-    ## real_conscientiousness.tste_11_8     
-    ## real_conscientiousness.tste_11_9     
-    ## real_conscientiousness.tste_11_10    
-    ## real_emotionstability.tste_11_0      
-    ## real_emotionstability.tste_11_1   .  
-    ## real_emotionstability.tste_11_2      
-    ## real_emotionstability.tste_11_3      
-    ## real_emotionstability.tste_11_4      
-    ## real_emotionstability.tste_11_5      
-    ## real_emotionstability.tste_11_6   *  
-    ## real_emotionstability.tste_11_7      
-    ## real_emotionstability.tste_11_8      
-    ## real_emotionstability.tste_11_9      
-    ## real_emotionstability.tste_11_10     
-    ## real_openness.tste_11_0           *  
-    ## real_openness.tste_11_1              
-    ## real_openness.tste_11_2              
-    ## real_openness.tste_11_3           .  
-    ## real_openness.tste_11_4              
-    ## real_openness.tste_11_5              
-    ## real_openness.tste_11_6              
-    ## real_openness.tste_11_7              
-    ## real_openness.tste_11_8              
-    ## real_openness.tste_11_9              
-    ## real_openness.tste_11_10             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       57.3405037 16.0358257   3.576 0.000357 ***
+    ## age                               -0.0140383  0.0045960  -3.054 0.002283 ** 
+    ## education                          0.0148217  0.0264924   0.559 0.575903    
+    ## income                             0.0094039  0.0168186   0.559 0.576130    
+    ## race2                              0.0763751  0.1318094   0.579 0.562359    
+    ## race4                             -0.1805529  0.1427628  -1.265 0.206120    
+    ## race6                             -0.9852636  0.3447301  -2.858 0.004305 ** 
+    ## race7                             -0.1342252  0.1346343  -0.997 0.318901    
+    ## sex2                              -0.1110154  0.0719026  -1.544 0.122750    
+    ## release                           -0.0262782  0.0078735  -3.338 0.000860 ***
+    ## star_user                          0.0211494  0.0621177   0.340 0.733535    
+    ## real_extraversion                  0.0490224  0.0202120   2.425 0.015377 *  
+    ## real_agreeableness                -0.0190709  0.0276284  -0.690 0.490105    
+    ## real_conscientiousness             0.0768063  0.0300903   2.553 0.010766 *  
+    ## real_emotionstability             -0.0149929  0.0305081  -0.491 0.623168    
+    ## real_openness                      0.1150511  0.0249621   4.609 4.29e-06 ***
+    ## tste_11_0                          0.2340813  0.4880744   0.480 0.631562    
+    ## tste_11_1                         -0.6464038  0.4690241  -1.378 0.168295    
+    ## tste_11_2                          0.0175599  0.4151681   0.042 0.966267    
+    ## tste_11_3                          0.3506704  0.5014977   0.699 0.484477    
+    ## tste_11_4                         -0.0379567  0.4990616  -0.076 0.939382    
+    ## tste_11_5                         -0.0090210  0.4329883  -0.021 0.983380    
+    ## tste_11_6                          0.9928053  0.4241719   2.341 0.019349 *  
+    ## tste_11_7                         -0.1949834  0.4834920  -0.403 0.686783    
+    ## tste_11_8                         -0.4372334  0.3615606  -1.209 0.226689    
+    ## tste_11_9                          0.7796307  0.4472730   1.743 0.081470 .  
+    ## tste_11_10                         0.4474344  0.4408624   1.015 0.310269    
+    ## real_extraversion.tste_11_0       -0.0161515  0.0339257  -0.476 0.634065    
+    ## real_extraversion.tste_11_1        0.0158625  0.0313379   0.506 0.612788    
+    ## real_extraversion.tste_11_2        0.0114117  0.0282577   0.404 0.686369    
+    ## real_extraversion.tste_11_3        0.0002396  0.0345061   0.007 0.994459    
+    ## real_extraversion.tste_11_4        0.0484160  0.0332387   1.457 0.145375    
+    ## real_extraversion.tste_11_5        0.0185515  0.0305691   0.607 0.544004    
+    ## real_extraversion.tste_11_6       -0.0140605  0.0292037  -0.481 0.630238    
+    ## real_extraversion.tste_11_7       -0.0332382  0.0341615  -0.973 0.330682    
+    ## real_extraversion.tste_11_8       -0.0020163  0.0255179  -0.079 0.937029    
+    ## real_extraversion.tste_11_9       -0.0192812  0.0318796  -0.605 0.545370    
+    ## real_extraversion.tste_11_10       0.0359138  0.0297754   1.206 0.227896    
+    ## real_agreeableness.tste_11_0       0.0546343  0.0463542   1.179 0.238683    
+    ## real_agreeableness.tste_11_1      -0.0134434  0.0419800  -0.320 0.748824    
+    ## real_agreeableness.tste_11_2       0.0402192  0.0378622   1.062 0.288247    
+    ## real_agreeableness.tste_11_3      -0.0065102  0.0461032  -0.141 0.887719    
+    ## real_agreeableness.tste_11_4       0.0275707  0.0450772   0.612 0.540848    
+    ## real_agreeableness.tste_11_5      -0.0207365  0.0413028  -0.502 0.615679    
+    ## real_agreeableness.tste_11_6      -0.0497624  0.0396808  -1.254 0.209960    
+    ## real_agreeableness.tste_11_7       0.0728872  0.0461672   1.579 0.114544    
+    ## real_agreeableness.tste_11_8       0.0022479  0.0353991   0.064 0.949374    
+    ## real_agreeableness.tste_11_9      -0.0639101  0.0416493  -1.534 0.125064    
+    ## real_agreeableness.tste_11_10     -0.0486428  0.0424301  -1.146 0.251754    
+    ## real_conscientiousness.tste_11_0   0.0774480  0.0510087   1.518 0.129086    
+    ## real_conscientiousness.tste_11_1   0.1052474  0.0475244   2.215 0.026897 *  
+    ## real_conscientiousness.tste_11_2  -0.0271154  0.0421099  -0.644 0.519700    
+    ## real_conscientiousness.tste_11_3   0.0190399  0.0495100   0.385 0.700598    
+    ## real_conscientiousness.tste_11_4  -0.0142847  0.0500506  -0.285 0.775362    
+    ## real_conscientiousness.tste_11_5  -0.0375155  0.0428767  -0.875 0.381696    
+    ## real_conscientiousness.tste_11_6  -0.0655008  0.0422592  -1.550 0.121301    
+    ## real_conscientiousness.tste_11_7  -0.0014617  0.0492817  -0.030 0.976342    
+    ## real_conscientiousness.tste_11_8  -0.0134134  0.0374420  -0.358 0.720197    
+    ## real_conscientiousness.tste_11_9  -0.0431440  0.0456887  -0.944 0.345125    
+    ## real_conscientiousness.tste_11_10 -0.0670383  0.0452120  -1.483 0.138292    
+    ## real_emotionstability.tste_11_0   -0.0699764  0.0476669  -1.468 0.142249    
+    ## real_emotionstability.tste_11_1    0.0852058  0.0460011   1.852 0.064133 .  
+    ## real_emotionstability.tste_11_2   -0.0524920  0.0413104  -1.271 0.203989    
+    ## real_emotionstability.tste_11_3   -0.0132542  0.0496049  -0.267 0.789346    
+    ## real_emotionstability.tste_11_4   -0.0470318  0.0491894  -0.956 0.339115    
+    ## real_emotionstability.tste_11_5   -0.0118901  0.0434740  -0.273 0.784496    
+    ## real_emotionstability.tste_11_6   -0.0874821  0.0425992  -2.054 0.040140 *  
+    ## real_emotionstability.tste_11_7    0.0007610  0.0484107   0.016 0.987460    
+    ## real_emotionstability.tste_11_8    0.0579922  0.0360834   1.607 0.108170    
+    ## real_emotionstability.tste_11_9   -0.0076967  0.0447304  -0.172 0.863400    
+    ## real_emotionstability.tste_11_10   0.0048077  0.0438714   0.110 0.912748    
+    ## real_openness.tste_11_0           -0.1074416  0.0419012  -2.564 0.010413 *  
+    ## real_openness.tste_11_1           -0.0276641  0.0403391  -0.686 0.492924    
+    ## real_openness.tste_11_2            0.0104951  0.0348965   0.301 0.763636    
+    ## real_openness.tste_11_3           -0.0719330  0.0414639  -1.735 0.082920 .  
+    ## real_openness.tste_11_4           -0.0215482  0.0413409  -0.521 0.602261    
+    ## real_openness.tste_11_5            0.0337974  0.0374816   0.902 0.367318    
+    ## real_openness.tste_11_6           -0.0098909  0.0374423  -0.264 0.791679    
+    ## real_openness.tste_11_7            0.0304024  0.0419910   0.724 0.469134    
+    ## real_openness.tste_11_8            0.0248120  0.0318358   0.779 0.435848    
+    ## real_openness.tste_11_9           -0.0189435  0.0397919  -0.476 0.634080    
+    ## real_openness.tste_11_10          -0.0023307  0.0369845  -0.063 0.949758    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1260,184 +1177,95 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -4.9179 -0.6886  0.2712  0.9911  2.9053 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       47.516953  16.463910   2.886  0.00394
-    ## age                               -0.013929   0.004594  -3.032  0.00246
-    ## education                          0.018639   0.026459   0.704  0.48123
-    ## income                             0.006825   0.016846   0.405  0.68540
-    ## race2                              0.071488   0.132057   0.541  0.58833
-    ## race4                             -0.181898   0.143223  -1.270  0.20422
-    ## race6                             -0.976489   0.347204  -2.812  0.00496
-    ## race7                             -0.120433   0.134588  -0.895  0.37098
-    ## sex2                              -0.118903   0.071933  -1.653  0.09849
-    ## release                           -0.021556   0.008071  -2.671  0.00763
-    ## star_user                          0.060685   0.062880   0.965  0.33461
-    ## real_extraversion                  0.047092   0.020305   2.319  0.02048
-    ## real_agreeableness                -0.011355   0.027790  -0.409  0.68286
-    ## real_conscientiousness             0.077733   0.030190   2.575  0.01010
-    ## real_emotionstability             -0.021035   0.030689  -0.685  0.49316
-    ## real_openness                      0.116347   0.025086   4.638 3.74e-06
-    ## tste_12_0                         -0.380963   0.460332  -0.828  0.40800
-    ## tste_12_1                         -0.035777   0.412279  -0.087  0.93086
-    ## tste_12_2                          1.428796   0.435159   3.283  0.00104
-    ## tste_12_3                          0.059945   0.484182   0.124  0.90148
-    ## tste_12_4                         -0.370852   0.466564  -0.795  0.42679
-    ## tste_12_5                         -0.052231   0.475582  -0.110  0.91256
-    ## tste_12_6                         -0.696265   0.483315  -1.441  0.14985
-    ## tste_12_7                         -0.023312   0.478670  -0.049  0.96116
-    ## tste_12_8                         -0.089637   0.406258  -0.221  0.82539
-    ## tste_12_9                         -0.500801   0.472558  -1.060  0.28938
-    ## tste_12_10                         0.106840   0.401019   0.266  0.78994
-    ## tste_12_11                        -1.025781   0.416430  -2.463  0.01385
-    ## real_extraversion.tste_12_0       -0.021474   0.032325  -0.664  0.50657
-    ## real_extraversion.tste_12_1        0.025486   0.028407   0.897  0.36973
-    ## real_extraversion.tste_12_2        0.020617   0.029666   0.695  0.48714
-    ## real_extraversion.tste_12_3       -0.003447   0.034023  -0.101  0.91931
-    ## real_extraversion.tste_12_4        0.003471   0.030753   0.113  0.91013
-    ## real_extraversion.tste_12_5        0.012088   0.032245   0.375  0.70778
-    ## real_extraversion.tste_12_6       -0.007378   0.033020  -0.223  0.82323
-    ## real_extraversion.tste_12_7        0.042626   0.033732   1.264  0.20650
-    ## real_extraversion.tste_12_8        0.008568   0.027827   0.308  0.75820
-    ## real_extraversion.tste_12_9        0.021972   0.032318   0.680  0.49667
-    ## real_extraversion.tste_12_10      -0.021389   0.027397  -0.781  0.43508
-    ## real_extraversion.tste_12_11       0.049338   0.028780   1.714  0.08662
-    ## real_agreeableness.tste_12_0       0.035875   0.045331   0.791  0.42880
-    ## real_agreeableness.tste_12_1      -0.045757   0.038165  -1.199  0.23069
-    ## real_agreeableness.tste_12_2      -0.019881   0.039795  -0.500  0.61742
-    ## real_agreeableness.tste_12_3      -0.039352   0.044489  -0.885  0.37651
-    ## real_agreeableness.tste_12_4       0.030358   0.041901   0.725  0.46884
-    ## real_agreeableness.tste_12_5       0.043210   0.045009   0.960  0.33715
-    ## real_agreeableness.tste_12_6      -0.016521   0.045160  -0.366  0.71453
-    ## real_agreeableness.tste_12_7      -0.075716   0.044981  -1.683  0.09247
-    ## real_agreeableness.tste_12_8      -0.031392   0.038358  -0.818  0.41322
-    ## real_agreeableness.tste_12_9      -0.028404   0.044499  -0.638  0.52334
-    ## real_agreeableness.tste_12_10     -0.060740   0.036815  -1.650  0.09913
-    ## real_agreeableness.tste_12_11      0.020018   0.039262   0.510  0.61019
-    ## real_conscientiousness.tste_12_0   0.003895   0.047822   0.081  0.93509
-    ## real_conscientiousness.tste_12_1   0.014588   0.042855   0.340  0.73359
-    ## real_conscientiousness.tste_12_2  -0.115902   0.044348  -2.613  0.00903
-    ## real_conscientiousness.tste_12_3   0.003900   0.048691   0.080  0.93617
-    ## real_conscientiousness.tste_12_4  -0.026545   0.046912  -0.566  0.57156
-    ## real_conscientiousness.tste_12_5   0.092314   0.047644   1.938  0.05281
-    ## real_conscientiousness.tste_12_6   0.099319   0.050167   1.980  0.04786
-    ## real_conscientiousness.tste_12_7  -0.009871   0.049752  -0.198  0.84275
-    ## real_conscientiousness.tste_12_8  -0.010257   0.041021  -0.250  0.80258
-    ## real_conscientiousness.tste_12_9   0.044907   0.047437   0.947  0.34392
-    ## real_conscientiousness.tste_12_10  0.011859   0.040968   0.289  0.77225
-    ## real_conscientiousness.tste_12_11  0.043519   0.040252   1.081  0.27975
-    ## real_emotionstability.tste_12_0    0.066462   0.046697   1.423  0.15481
-    ## real_emotionstability.tste_12_1    0.042429   0.041395   1.025  0.30550
-    ## real_emotionstability.tste_12_2   -0.106852   0.042798  -2.497  0.01262
-    ## real_emotionstability.tste_12_3    0.038803   0.048811   0.795  0.42672
-    ## real_emotionstability.tste_12_4   -0.001482   0.046415  -0.032  0.97454
-    ## real_emotionstability.tste_12_5    0.008727   0.045645   0.191  0.84840
-    ## real_emotionstability.tste_12_6    0.075501   0.047467   1.591  0.11186
-    ## real_emotionstability.tste_12_7    0.032110   0.047057   0.682  0.49509
-    ## real_emotionstability.tste_12_8    0.013821   0.040468   0.342  0.73275
-    ## real_emotionstability.tste_12_9    0.049434   0.047107   1.049  0.29412
-    ## real_emotionstability.tste_12_10   0.049070   0.039426   1.245  0.21342
-    ## real_emotionstability.tste_12_11   0.085935   0.040769   2.108  0.03516
-    ## real_openness.tste_12_0            0.035467   0.039163   0.906  0.36524
-    ## real_openness.tste_12_1           -0.017380   0.035204  -0.494  0.62158
-    ## real_openness.tste_12_2           -0.080718   0.037313  -2.163  0.03064
-    ## real_openness.tste_12_3           -0.010128   0.041019  -0.247  0.80500
-    ## real_openness.tste_12_4            0.065215   0.038876   1.678  0.09359
-    ## real_openness.tste_12_5           -0.107802   0.041229  -2.615  0.00900
-    ## real_openness.tste_12_6           -0.004545   0.041007  -0.111  0.91176
-    ## real_openness.tste_12_7            0.014298   0.041578   0.344  0.73097
-    ## real_openness.tste_12_8            0.061444   0.034799   1.766  0.07760
-    ## real_openness.tste_12_9            0.014741   0.041153   0.358  0.72023
-    ## real_openness.tste_12_10           0.020969   0.033479   0.626  0.53116
-    ## real_openness.tste_12_11           0.026366   0.037236   0.708  0.47898
-    ##                                      
-    ## (Intercept)                       ** 
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                           ** 
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_12_0                            
-    ## tste_12_1                            
-    ## tste_12_2                         ** 
-    ## tste_12_3                            
-    ## tste_12_4                            
-    ## tste_12_5                            
-    ## tste_12_6                            
-    ## tste_12_7                            
-    ## tste_12_8                            
-    ## tste_12_9                            
-    ## tste_12_10                           
-    ## tste_12_11                        *  
-    ## real_extraversion.tste_12_0          
-    ## real_extraversion.tste_12_1          
-    ## real_extraversion.tste_12_2          
-    ## real_extraversion.tste_12_3          
-    ## real_extraversion.tste_12_4          
-    ## real_extraversion.tste_12_5          
-    ## real_extraversion.tste_12_6          
-    ## real_extraversion.tste_12_7          
-    ## real_extraversion.tste_12_8          
-    ## real_extraversion.tste_12_9          
-    ## real_extraversion.tste_12_10         
-    ## real_extraversion.tste_12_11      .  
-    ## real_agreeableness.tste_12_0         
-    ## real_agreeableness.tste_12_1         
-    ## real_agreeableness.tste_12_2         
-    ## real_agreeableness.tste_12_3         
-    ## real_agreeableness.tste_12_4         
-    ## real_agreeableness.tste_12_5         
-    ## real_agreeableness.tste_12_6         
-    ## real_agreeableness.tste_12_7      .  
-    ## real_agreeableness.tste_12_8         
-    ## real_agreeableness.tste_12_9         
-    ## real_agreeableness.tste_12_10     .  
-    ## real_agreeableness.tste_12_11        
-    ## real_conscientiousness.tste_12_0     
-    ## real_conscientiousness.tste_12_1     
-    ## real_conscientiousness.tste_12_2  ** 
-    ## real_conscientiousness.tste_12_3     
-    ## real_conscientiousness.tste_12_4     
-    ## real_conscientiousness.tste_12_5  .  
-    ## real_conscientiousness.tste_12_6  *  
-    ## real_conscientiousness.tste_12_7     
-    ## real_conscientiousness.tste_12_8     
-    ## real_conscientiousness.tste_12_9     
-    ## real_conscientiousness.tste_12_10    
-    ## real_conscientiousness.tste_12_11    
-    ## real_emotionstability.tste_12_0      
-    ## real_emotionstability.tste_12_1      
-    ## real_emotionstability.tste_12_2   *  
-    ## real_emotionstability.tste_12_3      
-    ## real_emotionstability.tste_12_4      
-    ## real_emotionstability.tste_12_5      
-    ## real_emotionstability.tste_12_6      
-    ## real_emotionstability.tste_12_7      
-    ## real_emotionstability.tste_12_8      
-    ## real_emotionstability.tste_12_9      
-    ## real_emotionstability.tste_12_10     
-    ## real_emotionstability.tste_12_11  *  
-    ## real_openness.tste_12_0              
-    ## real_openness.tste_12_1              
-    ## real_openness.tste_12_2           *  
-    ## real_openness.tste_12_3              
-    ## real_openness.tste_12_4           .  
-    ## real_openness.tste_12_5           ** 
-    ## real_openness.tste_12_6              
-    ## real_openness.tste_12_7              
-    ## real_openness.tste_12_8           .  
-    ## real_openness.tste_12_9              
-    ## real_openness.tste_12_10             
-    ## real_openness.tste_12_11             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       47.516953  16.463910   2.886  0.00394 ** 
+    ## age                               -0.013929   0.004594  -3.032  0.00246 ** 
+    ## education                          0.018639   0.026459   0.704  0.48123    
+    ## income                             0.006825   0.016846   0.405  0.68540    
+    ## race2                              0.071488   0.132057   0.541  0.58833    
+    ## race4                             -0.181898   0.143223  -1.270  0.20422    
+    ## race6                             -0.976489   0.347204  -2.812  0.00496 ** 
+    ## race7                             -0.120433   0.134588  -0.895  0.37098    
+    ## sex2                              -0.118903   0.071933  -1.653  0.09849 .  
+    ## release                           -0.021556   0.008071  -2.671  0.00763 ** 
+    ## star_user                          0.060685   0.062880   0.965  0.33461    
+    ## real_extraversion                  0.047092   0.020305   2.319  0.02048 *  
+    ## real_agreeableness                -0.011355   0.027790  -0.409  0.68286    
+    ## real_conscientiousness             0.077733   0.030190   2.575  0.01010 *  
+    ## real_emotionstability             -0.021035   0.030689  -0.685  0.49316    
+    ## real_openness                      0.116347   0.025086   4.638 3.74e-06 ***
+    ## tste_12_0                         -0.380963   0.460332  -0.828  0.40800    
+    ## tste_12_1                         -0.035777   0.412279  -0.087  0.93086    
+    ## tste_12_2                          1.428796   0.435159   3.283  0.00104 ** 
+    ## tste_12_3                          0.059945   0.484182   0.124  0.90148    
+    ## tste_12_4                         -0.370852   0.466564  -0.795  0.42679    
+    ## tste_12_5                         -0.052231   0.475582  -0.110  0.91256    
+    ## tste_12_6                         -0.696265   0.483315  -1.441  0.14985    
+    ## tste_12_7                         -0.023312   0.478670  -0.049  0.96116    
+    ## tste_12_8                         -0.089637   0.406258  -0.221  0.82539    
+    ## tste_12_9                         -0.500801   0.472558  -1.060  0.28938    
+    ## tste_12_10                         0.106840   0.401019   0.266  0.78994    
+    ## tste_12_11                        -1.025781   0.416430  -2.463  0.01385 *  
+    ## real_extraversion.tste_12_0       -0.021474   0.032325  -0.664  0.50657    
+    ## real_extraversion.tste_12_1        0.025486   0.028407   0.897  0.36973    
+    ## real_extraversion.tste_12_2        0.020617   0.029666   0.695  0.48714    
+    ## real_extraversion.tste_12_3       -0.003447   0.034023  -0.101  0.91931    
+    ## real_extraversion.tste_12_4        0.003471   0.030753   0.113  0.91013    
+    ## real_extraversion.tste_12_5        0.012088   0.032245   0.375  0.70778    
+    ## real_extraversion.tste_12_6       -0.007378   0.033020  -0.223  0.82323    
+    ## real_extraversion.tste_12_7        0.042626   0.033732   1.264  0.20650    
+    ## real_extraversion.tste_12_8        0.008568   0.027827   0.308  0.75820    
+    ## real_extraversion.tste_12_9        0.021972   0.032318   0.680  0.49667    
+    ## real_extraversion.tste_12_10      -0.021389   0.027397  -0.781  0.43508    
+    ## real_extraversion.tste_12_11       0.049338   0.028780   1.714  0.08662 .  
+    ## real_agreeableness.tste_12_0       0.035875   0.045331   0.791  0.42880    
+    ## real_agreeableness.tste_12_1      -0.045757   0.038165  -1.199  0.23069    
+    ## real_agreeableness.tste_12_2      -0.019881   0.039795  -0.500  0.61742    
+    ## real_agreeableness.tste_12_3      -0.039352   0.044489  -0.885  0.37651    
+    ## real_agreeableness.tste_12_4       0.030358   0.041901   0.725  0.46884    
+    ## real_agreeableness.tste_12_5       0.043210   0.045009   0.960  0.33715    
+    ## real_agreeableness.tste_12_6      -0.016521   0.045160  -0.366  0.71453    
+    ## real_agreeableness.tste_12_7      -0.075716   0.044981  -1.683  0.09247 .  
+    ## real_agreeableness.tste_12_8      -0.031392   0.038358  -0.818  0.41322    
+    ## real_agreeableness.tste_12_9      -0.028404   0.044499  -0.638  0.52334    
+    ## real_agreeableness.tste_12_10     -0.060740   0.036815  -1.650  0.09913 .  
+    ## real_agreeableness.tste_12_11      0.020018   0.039262   0.510  0.61019    
+    ## real_conscientiousness.tste_12_0   0.003895   0.047822   0.081  0.93509    
+    ## real_conscientiousness.tste_12_1   0.014588   0.042855   0.340  0.73359    
+    ## real_conscientiousness.tste_12_2  -0.115902   0.044348  -2.613  0.00903 ** 
+    ## real_conscientiousness.tste_12_3   0.003900   0.048691   0.080  0.93617    
+    ## real_conscientiousness.tste_12_4  -0.026545   0.046912  -0.566  0.57156    
+    ## real_conscientiousness.tste_12_5   0.092314   0.047644   1.938  0.05281 .  
+    ## real_conscientiousness.tste_12_6   0.099319   0.050167   1.980  0.04786 *  
+    ## real_conscientiousness.tste_12_7  -0.009871   0.049752  -0.198  0.84275    
+    ## real_conscientiousness.tste_12_8  -0.010257   0.041021  -0.250  0.80258    
+    ## real_conscientiousness.tste_12_9   0.044907   0.047437   0.947  0.34392    
+    ## real_conscientiousness.tste_12_10  0.011859   0.040968   0.289  0.77225    
+    ## real_conscientiousness.tste_12_11  0.043519   0.040252   1.081  0.27975    
+    ## real_emotionstability.tste_12_0    0.066462   0.046697   1.423  0.15481    
+    ## real_emotionstability.tste_12_1    0.042429   0.041395   1.025  0.30550    
+    ## real_emotionstability.tste_12_2   -0.106852   0.042798  -2.497  0.01262 *  
+    ## real_emotionstability.tste_12_3    0.038803   0.048811   0.795  0.42672    
+    ## real_emotionstability.tste_12_4   -0.001482   0.046415  -0.032  0.97454    
+    ## real_emotionstability.tste_12_5    0.008727   0.045645   0.191  0.84840    
+    ## real_emotionstability.tste_12_6    0.075501   0.047467   1.591  0.11186    
+    ## real_emotionstability.tste_12_7    0.032110   0.047057   0.682  0.49509    
+    ## real_emotionstability.tste_12_8    0.013821   0.040468   0.342  0.73275    
+    ## real_emotionstability.tste_12_9    0.049434   0.047107   1.049  0.29412    
+    ## real_emotionstability.tste_12_10   0.049070   0.039426   1.245  0.21342    
+    ## real_emotionstability.tste_12_11   0.085935   0.040769   2.108  0.03516 *  
+    ## real_openness.tste_12_0            0.035467   0.039163   0.906  0.36524    
+    ## real_openness.tste_12_1           -0.017380   0.035204  -0.494  0.62158    
+    ## real_openness.tste_12_2           -0.080718   0.037313  -2.163  0.03064 *  
+    ## real_openness.tste_12_3           -0.010128   0.041019  -0.247  0.80500    
+    ## real_openness.tste_12_4            0.065215   0.038876   1.678  0.09359 .  
+    ## real_openness.tste_12_5           -0.107802   0.041229  -2.615  0.00900 ** 
+    ## real_openness.tste_12_6           -0.004545   0.041007  -0.111  0.91176    
+    ## real_openness.tste_12_7            0.014298   0.041578   0.344  0.73097    
+    ## real_openness.tste_12_8            0.061444   0.034799   1.766  0.07760 .  
+    ## real_openness.tste_12_9            0.014741   0.041153   0.358  0.72023    
+    ## real_openness.tste_12_10           0.020969   0.033479   0.626  0.53116    
+    ## real_openness.tste_12_11           0.026366   0.037236   0.708  0.47898    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1454,196 +1282,101 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -4.9478 -0.6946  0.2690  1.0013  2.9490 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       44.7478931 16.9655490   2.638  0.00841
-    ## age                               -0.0132869  0.0045995  -2.889  0.00391
-    ## education                          0.0171273  0.0264947   0.646  0.51807
-    ## income                             0.0061927  0.0168267   0.368  0.71289
-    ## race2                              0.0419974  0.1323564   0.317  0.75104
-    ## race4                             -0.1750902  0.1429311  -1.225  0.22072
-    ## race6                             -0.9838073  0.3463432  -2.841  0.00455
-    ## race7                             -0.1134828  0.1347988  -0.842  0.39996
-    ## sex2                              -0.1326473  0.0719491  -1.844  0.06538
-    ## release                           -0.0200460  0.0083160  -2.411  0.01602
-    ## star_user                          0.0303565  0.0612370   0.496  0.62014
-    ## real_extraversion                  0.0460755  0.0202524   2.275  0.02301
-    ## real_agreeableness                -0.0088743  0.0277779  -0.319  0.74940
-    ## real_conscientiousness             0.0801812  0.0301701   2.658  0.00793
-    ## real_emotionstability             -0.0222771  0.0307069  -0.725  0.46824
-    ## real_openness                      0.1121480  0.0250968   4.469  8.3e-06
-    ## tste_13_0                          0.0537308  0.4365067   0.123  0.90205
-    ## tste_13_1                          0.5497367  0.4112864   1.337  0.18149
-    ## tste_13_2                          0.1154632  0.4043225   0.286  0.77523
-    ## tste_13_3                         -0.0968496  0.4330873  -0.224  0.82307
-    ## tste_13_4                          0.4661632  0.4401851   1.059  0.28972
-    ## tste_13_5                          1.0566247  0.4564975   2.315  0.02073
-    ## tste_13_6                         -0.2882202  0.4890610  -0.589  0.55570
-    ## tste_13_7                         -0.2196450  0.4584007  -0.479  0.63188
-    ## tste_13_8                          0.0940618  0.4131221   0.228  0.81991
-    ## tste_13_9                          1.3582342  0.5051034   2.689  0.00722
-    ## tste_13_10                         0.9852874  0.4333293   2.274  0.02308
-    ## tste_13_11                         0.3502829  0.4590184   0.763  0.44548
-    ## tste_13_12                         0.3537530  0.4633757   0.763  0.44530
-    ## real_extraversion.tste_13_0        0.0214812  0.0298817   0.719  0.47230
-    ## real_extraversion.tste_13_1        0.0273191  0.0283649   0.963  0.33559
-    ## real_extraversion.tste_13_2       -0.0327753  0.0281422  -1.165  0.24430
-    ## real_extraversion.tste_13_3        0.0011367  0.0298319   0.038  0.96961
-    ## real_extraversion.tste_13_4        0.0297484  0.0312970   0.951  0.34196
-    ## real_extraversion.tste_13_5       -0.0227676  0.0310310  -0.734  0.46321
-    ## real_extraversion.tste_13_6       -0.0001958  0.0334392  -0.006  0.99533
-    ## real_extraversion.tste_13_7       -0.0124941  0.0309673  -0.403  0.68665
-    ## real_extraversion.tste_13_8       -0.0427323  0.0293809  -1.454  0.14598
-    ## real_extraversion.tste_13_9       -0.0752267  0.0349193  -2.154  0.03133
-    ## real_extraversion.tste_13_10       0.0262605  0.0292685   0.897  0.36970
-    ## real_extraversion.tste_13_11       0.0249504  0.0327520   0.762  0.44627
-    ## real_extraversion.tste_13_12       0.0161494  0.0309208   0.522  0.60153
-    ## real_agreeableness.tste_13_0      -0.0364418  0.0413969  -0.880  0.37880
-    ## real_agreeableness.tste_13_1       0.0337048  0.0376236   0.896  0.37044
-    ## real_agreeableness.tste_13_2       0.0056259  0.0389817   0.144  0.88526
-    ## real_agreeableness.tste_13_3       0.0219701  0.0401567   0.547  0.58436
-    ## real_agreeableness.tste_13_4      -0.0020023  0.0427156  -0.047  0.96262
-    ## real_agreeableness.tste_13_5       0.0130647  0.0423242   0.309  0.75760
-    ## real_agreeableness.tste_13_6      -0.0089999  0.0437308  -0.206  0.83697
-    ## real_agreeableness.tste_13_7      -0.0070218  0.0414742  -0.169  0.86557
-    ## real_agreeableness.tste_13_8       0.0500529  0.0383921   1.304  0.19247
-    ## real_agreeableness.tste_13_9       0.0626415  0.0486139   1.289  0.19770
-    ## real_agreeableness.tste_13_10     -0.1249791  0.0398504  -3.136  0.00174
-    ## real_agreeableness.tste_13_11     -0.0467209  0.0447997  -1.043  0.29712
-    ## real_agreeableness.tste_13_12      0.0094564  0.0437823   0.216  0.82902
-    ## real_conscientiousness.tste_13_0  -0.0213420  0.0436136  -0.489  0.62465
-    ## real_conscientiousness.tste_13_1  -0.0765650  0.0408251  -1.875  0.06088
-    ## real_conscientiousness.tste_13_2  -0.0266648  0.0417866  -0.638  0.52347
-    ## real_conscientiousness.tste_13_3   0.0657178  0.0445085   1.477  0.13996
-    ## real_conscientiousness.tste_13_4  -0.0982888  0.0463118  -2.122  0.03393
-    ## real_conscientiousness.tste_13_5  -0.0620657  0.0445061  -1.395  0.16330
-    ## real_conscientiousness.tste_13_6  -0.0418444  0.0493489  -0.848  0.39658
-    ## real_conscientiousness.tste_13_7   0.0647863  0.0469776   1.379  0.16802
-    ## real_conscientiousness.tste_13_8  -0.0037929  0.0431522  -0.088  0.92997
-    ## real_conscientiousness.tste_13_9  -0.0916199  0.0515133  -1.779  0.07546
-    ## real_conscientiousness.tste_13_10 -0.1000501  0.0441610  -2.266  0.02358
-    ## real_conscientiousness.tste_13_11  0.0172382  0.0471560   0.366  0.71473
-    ## real_conscientiousness.tste_13_12  0.0288461  0.0467465   0.617  0.53725
-    ## real_emotionstability.tste_13_0   -0.0395375  0.0435594  -0.908  0.36416
-    ## real_emotionstability.tste_13_1   -0.0720690  0.0409996  -1.758  0.07893
-    ## real_emotionstability.tste_13_2    0.0393439  0.0402626   0.977  0.32859
-    ## real_emotionstability.tste_13_3    0.0078812  0.0435162   0.181  0.85630
-    ## real_emotionstability.tste_13_4   -0.0372648  0.0450009  -0.828  0.40772
-    ## real_emotionstability.tste_13_5   -0.0718366  0.0460303  -1.561  0.11876
-    ## real_emotionstability.tste_13_6    0.0355902  0.0495845   0.718  0.47298
-    ## real_emotionstability.tste_13_7    0.0067007  0.0456450   0.147  0.88330
-    ## real_emotionstability.tste_13_8   -0.0661237  0.0418711  -1.579  0.11444
-    ## real_emotionstability.tste_13_9   -0.1579811  0.0484003  -3.264  0.00112
-    ## real_emotionstability.tste_13_10  -0.0098339  0.0414361  -0.237  0.81243
-    ## real_emotionstability.tste_13_11   0.0026223  0.0454332   0.058  0.95398
-    ## real_emotionstability.tste_13_12  -0.0313608  0.0441498  -0.710  0.47758
-    ## real_openness.tste_13_0            0.0418796  0.0378721   1.106  0.26894
-    ## real_openness.tste_13_1           -0.0348847  0.0343750  -1.015  0.31031
-    ## real_openness.tste_13_2            0.0252491  0.0349277   0.723  0.46983
-    ## real_openness.tste_13_3           -0.0597722  0.0378923  -1.577  0.11485
-    ## real_openness.tste_13_4           -0.0028801  0.0387133  -0.074  0.94070
-    ## real_openness.tste_13_5           -0.0716720  0.0385171  -1.861  0.06292
-    ## real_openness.tste_13_6            0.0729156  0.0413010   1.765  0.07763
-    ## real_openness.tste_13_7           -0.0229244  0.0374979  -0.611  0.54104
-    ## real_openness.tste_13_8            0.0416043  0.0364121   1.143  0.25334
-    ## real_openness.tste_13_9           -0.0304502  0.0429693  -0.709  0.47862
-    ## real_openness.tste_13_10           0.0052899  0.0364486   0.145  0.88462
-    ## real_openness.tste_13_11          -0.0665605  0.0392196  -1.697  0.08983
-    ## real_openness.tste_13_12          -0.0830737  0.0395481  -2.101  0.03580
-    ##                                      
-    ## (Intercept)                       ** 
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            ** 
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_13_0                            
-    ## tste_13_1                            
-    ## tste_13_2                            
-    ## tste_13_3                            
-    ## tste_13_4                            
-    ## tste_13_5                         *  
-    ## tste_13_6                            
-    ## tste_13_7                            
-    ## tste_13_8                            
-    ## tste_13_9                         ** 
-    ## tste_13_10                        *  
-    ## tste_13_11                           
-    ## tste_13_12                           
-    ## real_extraversion.tste_13_0          
-    ## real_extraversion.tste_13_1          
-    ## real_extraversion.tste_13_2          
-    ## real_extraversion.tste_13_3          
-    ## real_extraversion.tste_13_4          
-    ## real_extraversion.tste_13_5          
-    ## real_extraversion.tste_13_6          
-    ## real_extraversion.tste_13_7          
-    ## real_extraversion.tste_13_8          
-    ## real_extraversion.tste_13_9       *  
-    ## real_extraversion.tste_13_10         
-    ## real_extraversion.tste_13_11         
-    ## real_extraversion.tste_13_12         
-    ## real_agreeableness.tste_13_0         
-    ## real_agreeableness.tste_13_1         
-    ## real_agreeableness.tste_13_2         
-    ## real_agreeableness.tste_13_3         
-    ## real_agreeableness.tste_13_4         
-    ## real_agreeableness.tste_13_5         
-    ## real_agreeableness.tste_13_6         
-    ## real_agreeableness.tste_13_7         
-    ## real_agreeableness.tste_13_8         
-    ## real_agreeableness.tste_13_9         
-    ## real_agreeableness.tste_13_10     ** 
-    ## real_agreeableness.tste_13_11        
-    ## real_agreeableness.tste_13_12        
-    ## real_conscientiousness.tste_13_0     
-    ## real_conscientiousness.tste_13_1  .  
-    ## real_conscientiousness.tste_13_2     
-    ## real_conscientiousness.tste_13_3     
-    ## real_conscientiousness.tste_13_4  *  
-    ## real_conscientiousness.tste_13_5     
-    ## real_conscientiousness.tste_13_6     
-    ## real_conscientiousness.tste_13_7     
-    ## real_conscientiousness.tste_13_8     
-    ## real_conscientiousness.tste_13_9  .  
-    ## real_conscientiousness.tste_13_10 *  
-    ## real_conscientiousness.tste_13_11    
-    ## real_conscientiousness.tste_13_12    
-    ## real_emotionstability.tste_13_0      
-    ## real_emotionstability.tste_13_1   .  
-    ## real_emotionstability.tste_13_2      
-    ## real_emotionstability.tste_13_3      
-    ## real_emotionstability.tste_13_4      
-    ## real_emotionstability.tste_13_5      
-    ## real_emotionstability.tste_13_6      
-    ## real_emotionstability.tste_13_7      
-    ## real_emotionstability.tste_13_8      
-    ## real_emotionstability.tste_13_9   ** 
-    ## real_emotionstability.tste_13_10     
-    ## real_emotionstability.tste_13_11     
-    ## real_emotionstability.tste_13_12     
-    ## real_openness.tste_13_0              
-    ## real_openness.tste_13_1              
-    ## real_openness.tste_13_2              
-    ## real_openness.tste_13_3              
-    ## real_openness.tste_13_4              
-    ## real_openness.tste_13_5           .  
-    ## real_openness.tste_13_6           .  
-    ## real_openness.tste_13_7              
-    ## real_openness.tste_13_8              
-    ## real_openness.tste_13_9              
-    ## real_openness.tste_13_10             
-    ## real_openness.tste_13_11          .  
-    ## real_openness.tste_13_12          *  
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       44.7478931 16.9655490   2.638  0.00841 ** 
+    ## age                               -0.0132869  0.0045995  -2.889  0.00391 ** 
+    ## education                          0.0171273  0.0264947   0.646  0.51807    
+    ## income                             0.0061927  0.0168267   0.368  0.71289    
+    ## race2                              0.0419974  0.1323564   0.317  0.75104    
+    ## race4                             -0.1750902  0.1429311  -1.225  0.22072    
+    ## race6                             -0.9838073  0.3463432  -2.841  0.00455 ** 
+    ## race7                             -0.1134828  0.1347988  -0.842  0.39996    
+    ## sex2                              -0.1326473  0.0719491  -1.844  0.06538 .  
+    ## release                           -0.0200460  0.0083160  -2.411  0.01602 *  
+    ## star_user                          0.0303565  0.0612370   0.496  0.62014    
+    ## real_extraversion                  0.0460755  0.0202524   2.275  0.02301 *  
+    ## real_agreeableness                -0.0088743  0.0277779  -0.319  0.74940    
+    ## real_conscientiousness             0.0801812  0.0301701   2.658  0.00793 ** 
+    ## real_emotionstability             -0.0222771  0.0307069  -0.725  0.46824    
+    ## real_openness                      0.1121480  0.0250968   4.469  8.3e-06 ***
+    ## tste_13_0                          0.0537308  0.4365067   0.123  0.90205    
+    ## tste_13_1                          0.5497367  0.4112864   1.337  0.18149    
+    ## tste_13_2                          0.1154632  0.4043225   0.286  0.77523    
+    ## tste_13_3                         -0.0968496  0.4330873  -0.224  0.82307    
+    ## tste_13_4                          0.4661632  0.4401851   1.059  0.28972    
+    ## tste_13_5                          1.0566247  0.4564975   2.315  0.02073 *  
+    ## tste_13_6                         -0.2882202  0.4890610  -0.589  0.55570    
+    ## tste_13_7                         -0.2196450  0.4584007  -0.479  0.63188    
+    ## tste_13_8                          0.0940618  0.4131221   0.228  0.81991    
+    ## tste_13_9                          1.3582342  0.5051034   2.689  0.00722 ** 
+    ## tste_13_10                         0.9852874  0.4333293   2.274  0.02308 *  
+    ## tste_13_11                         0.3502829  0.4590184   0.763  0.44548    
+    ## tste_13_12                         0.3537530  0.4633757   0.763  0.44530    
+    ## real_extraversion.tste_13_0        0.0214812  0.0298817   0.719  0.47230    
+    ## real_extraversion.tste_13_1        0.0273191  0.0283649   0.963  0.33559    
+    ## real_extraversion.tste_13_2       -0.0327753  0.0281422  -1.165  0.24430    
+    ## real_extraversion.tste_13_3        0.0011367  0.0298319   0.038  0.96961    
+    ## real_extraversion.tste_13_4        0.0297484  0.0312970   0.951  0.34196    
+    ## real_extraversion.tste_13_5       -0.0227676  0.0310310  -0.734  0.46321    
+    ## real_extraversion.tste_13_6       -0.0001958  0.0334392  -0.006  0.99533    
+    ## real_extraversion.tste_13_7       -0.0124941  0.0309673  -0.403  0.68665    
+    ## real_extraversion.tste_13_8       -0.0427323  0.0293809  -1.454  0.14598    
+    ## real_extraversion.tste_13_9       -0.0752267  0.0349193  -2.154  0.03133 *  
+    ## real_extraversion.tste_13_10       0.0262605  0.0292685   0.897  0.36970    
+    ## real_extraversion.tste_13_11       0.0249504  0.0327520   0.762  0.44627    
+    ## real_extraversion.tste_13_12       0.0161494  0.0309208   0.522  0.60153    
+    ## real_agreeableness.tste_13_0      -0.0364418  0.0413969  -0.880  0.37880    
+    ## real_agreeableness.tste_13_1       0.0337048  0.0376236   0.896  0.37044    
+    ## real_agreeableness.tste_13_2       0.0056259  0.0389817   0.144  0.88526    
+    ## real_agreeableness.tste_13_3       0.0219701  0.0401567   0.547  0.58436    
+    ## real_agreeableness.tste_13_4      -0.0020023  0.0427156  -0.047  0.96262    
+    ## real_agreeableness.tste_13_5       0.0130647  0.0423242   0.309  0.75760    
+    ## real_agreeableness.tste_13_6      -0.0089999  0.0437308  -0.206  0.83697    
+    ## real_agreeableness.tste_13_7      -0.0070218  0.0414742  -0.169  0.86557    
+    ## real_agreeableness.tste_13_8       0.0500529  0.0383921   1.304  0.19247    
+    ## real_agreeableness.tste_13_9       0.0626415  0.0486139   1.289  0.19770    
+    ## real_agreeableness.tste_13_10     -0.1249791  0.0398504  -3.136  0.00174 ** 
+    ## real_agreeableness.tste_13_11     -0.0467209  0.0447997  -1.043  0.29712    
+    ## real_agreeableness.tste_13_12      0.0094564  0.0437823   0.216  0.82902    
+    ## real_conscientiousness.tste_13_0  -0.0213420  0.0436136  -0.489  0.62465    
+    ## real_conscientiousness.tste_13_1  -0.0765650  0.0408251  -1.875  0.06088 .  
+    ## real_conscientiousness.tste_13_2  -0.0266648  0.0417866  -0.638  0.52347    
+    ## real_conscientiousness.tste_13_3   0.0657178  0.0445085   1.477  0.13996    
+    ## real_conscientiousness.tste_13_4  -0.0982888  0.0463118  -2.122  0.03393 *  
+    ## real_conscientiousness.tste_13_5  -0.0620657  0.0445061  -1.395  0.16330    
+    ## real_conscientiousness.tste_13_6  -0.0418444  0.0493489  -0.848  0.39658    
+    ## real_conscientiousness.tste_13_7   0.0647863  0.0469776   1.379  0.16802    
+    ## real_conscientiousness.tste_13_8  -0.0037929  0.0431522  -0.088  0.92997    
+    ## real_conscientiousness.tste_13_9  -0.0916199  0.0515133  -1.779  0.07546 .  
+    ## real_conscientiousness.tste_13_10 -0.1000501  0.0441610  -2.266  0.02358 *  
+    ## real_conscientiousness.tste_13_11  0.0172382  0.0471560   0.366  0.71473    
+    ## real_conscientiousness.tste_13_12  0.0288461  0.0467465   0.617  0.53725    
+    ## real_emotionstability.tste_13_0   -0.0395375  0.0435594  -0.908  0.36416    
+    ## real_emotionstability.tste_13_1   -0.0720690  0.0409996  -1.758  0.07893 .  
+    ## real_emotionstability.tste_13_2    0.0393439  0.0402626   0.977  0.32859    
+    ## real_emotionstability.tste_13_3    0.0078812  0.0435162   0.181  0.85630    
+    ## real_emotionstability.tste_13_4   -0.0372648  0.0450009  -0.828  0.40772    
+    ## real_emotionstability.tste_13_5   -0.0718366  0.0460303  -1.561  0.11876    
+    ## real_emotionstability.tste_13_6    0.0355902  0.0495845   0.718  0.47298    
+    ## real_emotionstability.tste_13_7    0.0067007  0.0456450   0.147  0.88330    
+    ## real_emotionstability.tste_13_8   -0.0661237  0.0418711  -1.579  0.11444    
+    ## real_emotionstability.tste_13_9   -0.1579811  0.0484003  -3.264  0.00112 ** 
+    ## real_emotionstability.tste_13_10  -0.0098339  0.0414361  -0.237  0.81243    
+    ## real_emotionstability.tste_13_11   0.0026223  0.0454332   0.058  0.95398    
+    ## real_emotionstability.tste_13_12  -0.0313608  0.0441498  -0.710  0.47758    
+    ## real_openness.tste_13_0            0.0418796  0.0378721   1.106  0.26894    
+    ## real_openness.tste_13_1           -0.0348847  0.0343750  -1.015  0.31031    
+    ## real_openness.tste_13_2            0.0252491  0.0349277   0.723  0.46983    
+    ## real_openness.tste_13_3           -0.0597722  0.0378923  -1.577  0.11485    
+    ## real_openness.tste_13_4           -0.0028801  0.0387133  -0.074  0.94070    
+    ## real_openness.tste_13_5           -0.0716720  0.0385171  -1.861  0.06292 .  
+    ## real_openness.tste_13_6            0.0729156  0.0413010   1.765  0.07763 .  
+    ## real_openness.tste_13_7           -0.0229244  0.0374979  -0.611  0.54104    
+    ## real_openness.tste_13_8            0.0416043  0.0364121   1.143  0.25334    
+    ## real_openness.tste_13_9           -0.0304502  0.0429693  -0.709  0.47862    
+    ## real_openness.tste_13_10           0.0052899  0.0364486   0.145  0.88462    
+    ## real_openness.tste_13_11          -0.0665605  0.0392196  -1.697  0.08983 .  
+    ## real_openness.tste_13_12          -0.0830737  0.0395481  -2.101  0.03580 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1660,208 +1393,107 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -4.9808 -0.6969  0.2851  0.9799  2.9040 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       40.664766  16.841661   2.415 0.015843
-    ## age                               -0.012666   0.004610  -2.748 0.006057
-    ## education                          0.014658   0.026480   0.554 0.579944
-    ## income                             0.007539   0.016837   0.448 0.654378
-    ## race2                              0.025796   0.132549   0.195 0.845714
-    ## race4                             -0.179133   0.143343  -1.250 0.211557
-    ## race6                             -0.946518   0.347236  -2.726 0.006468
-    ## race7                             -0.117934   0.134882  -0.874 0.382030
-    ## sex2                              -0.120688   0.072090  -1.674 0.094260
-    ## release                           -0.018164   0.008264  -2.198 0.028063
-    ## star_user                          0.064660   0.062093   1.041 0.297846
-    ## real_extraversion                  0.047766   0.020376   2.344 0.019163
-    ## real_agreeableness                -0.011702   0.027922  -0.419 0.675193
-    ## real_conscientiousness             0.078806   0.030281   2.603 0.009322
-    ## real_emotionstability             -0.021323   0.030672  -0.695 0.487014
-    ## real_openness                      0.113111   0.025186   4.491 7.48e-06
-    ## tste_14_0                         -0.593979   0.441084  -1.347 0.178247
-    ## tste_14_1                          0.289590   0.426665   0.679 0.497385
-    ## tste_14_2                         -0.457899   0.419906  -1.090 0.275630
-    ## tste_14_3                          0.468577   0.410377   1.142 0.253662
-    ## tste_14_4                         -1.118819   0.399912  -2.798 0.005196
-    ## tste_14_5                          0.294773   0.482851   0.610 0.541609
-    ## tste_14_6                         -0.761317   0.439322  -1.733 0.083258
-    ## tste_14_7                         -0.160425   0.499344  -0.321 0.748037
-    ## tste_14_8                          0.196449   0.397098   0.495 0.620857
-    ## tste_14_9                          0.330148   0.448865   0.736 0.462109
-    ## tste_14_10                         0.339633   0.454422   0.747 0.454912
-    ## tste_14_11                        -0.700904   0.443806  -1.579 0.114422
-    ## tste_14_12                         0.288905   0.438413   0.659 0.509984
-    ## tste_14_13                         1.043183   0.448107   2.328 0.020011
-    ## real_extraversion.tste_14_0        0.041293   0.030117   1.371 0.170505
-    ## real_extraversion.tste_14_1       -0.019913   0.028814  -0.691 0.489593
-    ## real_extraversion.tste_14_2        0.000692   0.029282   0.024 0.981149
-    ## real_extraversion.tste_14_3        0.007391   0.027809   0.266 0.790426
-    ## real_extraversion.tste_14_4       -0.024530   0.028218  -0.869 0.384792
-    ## real_extraversion.tste_14_5       -0.038744   0.033576  -1.154 0.248675
-    ## real_extraversion.tste_14_6        0.018658   0.030299   0.616 0.538092
-    ## real_extraversion.tste_14_7        0.023562   0.034122   0.691 0.489952
-    ## real_extraversion.tste_14_8       -0.021238   0.026780  -0.793 0.427833
-    ## real_extraversion.tste_14_9        0.052456   0.030138   1.741 0.081916
-    ## real_extraversion.tste_14_10      -0.050650   0.032391  -1.564 0.118039
-    ## real_extraversion.tste_14_11       0.004684   0.029550   0.158 0.874079
-    ## real_extraversion.tste_14_12       0.006239   0.031389   0.199 0.842461
-    ## real_extraversion.tste_14_13      -0.027080   0.030381  -0.891 0.372850
-    ## real_agreeableness.tste_14_0      -0.060541   0.042585  -1.422 0.155287
-    ## real_agreeableness.tste_14_1      -0.030603   0.039461  -0.776 0.438118
-    ## real_agreeableness.tste_14_2      -0.053972   0.040357  -1.337 0.181252
-    ## real_agreeableness.tste_14_3      -0.020123   0.038303  -0.525 0.599390
-    ## real_agreeableness.tste_14_4       0.035630   0.037258   0.956 0.339027
-    ## real_agreeableness.tste_14_5       0.039787   0.045160   0.881 0.378408
-    ## real_agreeableness.tste_14_6      -0.030577   0.040978  -0.746 0.455640
-    ## real_agreeableness.tste_14_7       0.031332   0.048700   0.643 0.520061
-    ## real_agreeableness.tste_14_8      -0.072535   0.035809  -2.026 0.042935
-    ## real_agreeableness.tste_14_9      -0.072594   0.043185  -1.681 0.092920
-    ## real_agreeableness.tste_14_10     -0.009242   0.042877  -0.216 0.829363
-    ## real_agreeableness.tste_14_11      0.027973   0.039415   0.710 0.477963
-    ## real_agreeableness.tste_14_12     -0.016505   0.042329  -0.390 0.696632
-    ## real_agreeableness.tste_14_13     -0.028655   0.041919  -0.684 0.494322
-    ## real_conscientiousness.tste_14_0  -0.023028   0.045124  -0.510 0.609871
-    ## real_conscientiousness.tste_14_1  -0.023803   0.043873  -0.543 0.587503
-    ## real_conscientiousness.tste_14_2   0.004113   0.043047   0.096 0.923892
-    ## real_conscientiousness.tste_14_3  -0.022330   0.042382  -0.527 0.598337
-    ## real_conscientiousness.tste_14_4   0.134924   0.040192   3.357 0.000802
-    ## real_conscientiousness.tste_14_5  -0.079297   0.047740  -1.661 0.096861
-    ## real_conscientiousness.tste_14_6   0.079931   0.044780   1.785 0.074411
-    ## real_conscientiousness.tste_14_7  -0.002339   0.050579  -0.046 0.963112
-    ## real_conscientiousness.tste_14_8   0.035136   0.040134   0.875 0.381431
-    ## real_conscientiousness.tste_14_9   0.002755   0.046756   0.059 0.953026
-    ## real_conscientiousness.tste_14_10  0.012804   0.045512   0.281 0.778477
-    ## real_conscientiousness.tste_14_11  0.030212   0.044240   0.683 0.494734
-    ## real_conscientiousness.tste_14_12 -0.063773   0.043938  -1.451 0.146812
-    ## real_conscientiousness.tste_14_13 -0.098003   0.046144  -2.124 0.033804
-    ## real_emotionstability.tste_14_0    0.111293   0.044046   2.527 0.011586
-    ## real_emotionstability.tste_14_1   -0.035065   0.042189  -0.831 0.405986
-    ## real_emotionstability.tste_14_2    0.048821   0.040864   1.195 0.232340
-    ## real_emotionstability.tste_14_3   -0.031334   0.042132  -0.744 0.457142
-    ## real_emotionstability.tste_14_4    0.091278   0.040251   2.268 0.023448
-    ## real_emotionstability.tste_14_5   -0.040598   0.047924  -0.847 0.397022
-    ## real_emotionstability.tste_14_6    0.100757   0.043443   2.319 0.020478
-    ## real_emotionstability.tste_14_7   -0.053932   0.047985  -1.124 0.261179
-    ## real_emotionstability.tste_14_8    0.043699   0.039344   1.111 0.266832
-    ## real_emotionstability.tste_14_9    0.012615   0.044365   0.284 0.776180
-    ## real_emotionstability.tste_14_10   0.009509   0.046179   0.206 0.836877
-    ## real_emotionstability.tste_14_11   0.026746   0.043701   0.612 0.540591
-    ## real_emotionstability.tste_14_12   0.002549   0.043758   0.058 0.953550
-    ## real_emotionstability.tste_14_13  -0.084790   0.044108  -1.922 0.054704
-    ## real_openness.tste_14_0            0.062160   0.037942   1.638 0.101518
-    ## real_openness.tste_14_1            0.027113   0.035104   0.772 0.439992
-    ## real_openness.tste_14_2            0.092074   0.035709   2.578 0.009994
-    ## real_openness.tste_14_3           -0.019949   0.035596  -0.560 0.575245
-    ## real_openness.tste_14_4            0.021538   0.034253   0.629 0.529551
-    ## real_openness.tste_14_5            0.043803   0.040920   1.070 0.284540
-    ## real_openness.tste_14_6            0.011080   0.037561   0.295 0.768035
-    ## real_openness.tste_14_7           -0.005818   0.042333  -0.137 0.890693
-    ## real_openness.tste_14_8           -0.018732   0.033196  -0.564 0.572634
-    ## real_openness.tste_14_9           -0.067514   0.038184  -1.768 0.077193
-    ## real_openness.tste_14_10          -0.023224   0.039697  -0.585 0.558589
-    ## real_openness.tste_14_11           0.063298   0.038160   1.659 0.097323
-    ## real_openness.tste_14_12           0.019742   0.037890   0.521 0.602404
-    ## real_openness.tste_14_13           0.009801   0.037757   0.260 0.795218
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            ** 
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_14_0                            
-    ## tste_14_1                            
-    ## tste_14_2                            
-    ## tste_14_3                            
-    ## tste_14_4                         ** 
-    ## tste_14_5                            
-    ## tste_14_6                         .  
-    ## tste_14_7                            
-    ## tste_14_8                            
-    ## tste_14_9                            
-    ## tste_14_10                           
-    ## tste_14_11                           
-    ## tste_14_12                           
-    ## tste_14_13                        *  
-    ## real_extraversion.tste_14_0          
-    ## real_extraversion.tste_14_1          
-    ## real_extraversion.tste_14_2          
-    ## real_extraversion.tste_14_3          
-    ## real_extraversion.tste_14_4          
-    ## real_extraversion.tste_14_5          
-    ## real_extraversion.tste_14_6          
-    ## real_extraversion.tste_14_7          
-    ## real_extraversion.tste_14_8          
-    ## real_extraversion.tste_14_9       .  
-    ## real_extraversion.tste_14_10         
-    ## real_extraversion.tste_14_11         
-    ## real_extraversion.tste_14_12         
-    ## real_extraversion.tste_14_13         
-    ## real_agreeableness.tste_14_0         
-    ## real_agreeableness.tste_14_1         
-    ## real_agreeableness.tste_14_2         
-    ## real_agreeableness.tste_14_3         
-    ## real_agreeableness.tste_14_4         
-    ## real_agreeableness.tste_14_5         
-    ## real_agreeableness.tste_14_6         
-    ## real_agreeableness.tste_14_7         
-    ## real_agreeableness.tste_14_8      *  
-    ## real_agreeableness.tste_14_9      .  
-    ## real_agreeableness.tste_14_10        
-    ## real_agreeableness.tste_14_11        
-    ## real_agreeableness.tste_14_12        
-    ## real_agreeableness.tste_14_13        
-    ## real_conscientiousness.tste_14_0     
-    ## real_conscientiousness.tste_14_1     
-    ## real_conscientiousness.tste_14_2     
-    ## real_conscientiousness.tste_14_3     
-    ## real_conscientiousness.tste_14_4  ***
-    ## real_conscientiousness.tste_14_5  .  
-    ## real_conscientiousness.tste_14_6  .  
-    ## real_conscientiousness.tste_14_7     
-    ## real_conscientiousness.tste_14_8     
-    ## real_conscientiousness.tste_14_9     
-    ## real_conscientiousness.tste_14_10    
-    ## real_conscientiousness.tste_14_11    
-    ## real_conscientiousness.tste_14_12    
-    ## real_conscientiousness.tste_14_13 *  
-    ## real_emotionstability.tste_14_0   *  
-    ## real_emotionstability.tste_14_1      
-    ## real_emotionstability.tste_14_2      
-    ## real_emotionstability.tste_14_3      
-    ## real_emotionstability.tste_14_4   *  
-    ## real_emotionstability.tste_14_5      
-    ## real_emotionstability.tste_14_6   *  
-    ## real_emotionstability.tste_14_7      
-    ## real_emotionstability.tste_14_8      
-    ## real_emotionstability.tste_14_9      
-    ## real_emotionstability.tste_14_10     
-    ## real_emotionstability.tste_14_11     
-    ## real_emotionstability.tste_14_12     
-    ## real_emotionstability.tste_14_13  .  
-    ## real_openness.tste_14_0              
-    ## real_openness.tste_14_1              
-    ## real_openness.tste_14_2           ** 
-    ## real_openness.tste_14_3              
-    ## real_openness.tste_14_4              
-    ## real_openness.tste_14_5              
-    ## real_openness.tste_14_6              
-    ## real_openness.tste_14_7              
-    ## real_openness.tste_14_8              
-    ## real_openness.tste_14_9           .  
-    ## real_openness.tste_14_10             
-    ## real_openness.tste_14_11          .  
-    ## real_openness.tste_14_12             
-    ## real_openness.tste_14_13             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       40.664766  16.841661   2.415 0.015843 *  
+    ## age                               -0.012666   0.004610  -2.748 0.006057 ** 
+    ## education                          0.014658   0.026480   0.554 0.579944    
+    ## income                             0.007539   0.016837   0.448 0.654378    
+    ## race2                              0.025796   0.132549   0.195 0.845714    
+    ## race4                             -0.179133   0.143343  -1.250 0.211557    
+    ## race6                             -0.946518   0.347236  -2.726 0.006468 ** 
+    ## race7                             -0.117934   0.134882  -0.874 0.382030    
+    ## sex2                              -0.120688   0.072090  -1.674 0.094260 .  
+    ## release                           -0.018164   0.008264  -2.198 0.028063 *  
+    ## star_user                          0.064660   0.062093   1.041 0.297846    
+    ## real_extraversion                  0.047766   0.020376   2.344 0.019163 *  
+    ## real_agreeableness                -0.011702   0.027922  -0.419 0.675193    
+    ## real_conscientiousness             0.078806   0.030281   2.603 0.009322 ** 
+    ## real_emotionstability             -0.021323   0.030672  -0.695 0.487014    
+    ## real_openness                      0.113111   0.025186   4.491 7.48e-06 ***
+    ## tste_14_0                         -0.593979   0.441084  -1.347 0.178247    
+    ## tste_14_1                          0.289590   0.426665   0.679 0.497385    
+    ## tste_14_2                         -0.457899   0.419906  -1.090 0.275630    
+    ## tste_14_3                          0.468577   0.410377   1.142 0.253662    
+    ## tste_14_4                         -1.118819   0.399912  -2.798 0.005196 ** 
+    ## tste_14_5                          0.294773   0.482851   0.610 0.541609    
+    ## tste_14_6                         -0.761317   0.439322  -1.733 0.083258 .  
+    ## tste_14_7                         -0.160425   0.499344  -0.321 0.748037    
+    ## tste_14_8                          0.196449   0.397098   0.495 0.620857    
+    ## tste_14_9                          0.330148   0.448865   0.736 0.462109    
+    ## tste_14_10                         0.339633   0.454422   0.747 0.454912    
+    ## tste_14_11                        -0.700904   0.443806  -1.579 0.114422    
+    ## tste_14_12                         0.288905   0.438413   0.659 0.509984    
+    ## tste_14_13                         1.043183   0.448107   2.328 0.020011 *  
+    ## real_extraversion.tste_14_0        0.041293   0.030117   1.371 0.170505    
+    ## real_extraversion.tste_14_1       -0.019913   0.028814  -0.691 0.489593    
+    ## real_extraversion.tste_14_2        0.000692   0.029282   0.024 0.981149    
+    ## real_extraversion.tste_14_3        0.007391   0.027809   0.266 0.790426    
+    ## real_extraversion.tste_14_4       -0.024530   0.028218  -0.869 0.384792    
+    ## real_extraversion.tste_14_5       -0.038744   0.033576  -1.154 0.248675    
+    ## real_extraversion.tste_14_6        0.018658   0.030299   0.616 0.538092    
+    ## real_extraversion.tste_14_7        0.023562   0.034122   0.691 0.489952    
+    ## real_extraversion.tste_14_8       -0.021238   0.026780  -0.793 0.427833    
+    ## real_extraversion.tste_14_9        0.052456   0.030138   1.741 0.081916 .  
+    ## real_extraversion.tste_14_10      -0.050650   0.032391  -1.564 0.118039    
+    ## real_extraversion.tste_14_11       0.004684   0.029550   0.158 0.874079    
+    ## real_extraversion.tste_14_12       0.006239   0.031389   0.199 0.842461    
+    ## real_extraversion.tste_14_13      -0.027080   0.030381  -0.891 0.372850    
+    ## real_agreeableness.tste_14_0      -0.060541   0.042585  -1.422 0.155287    
+    ## real_agreeableness.tste_14_1      -0.030603   0.039461  -0.776 0.438118    
+    ## real_agreeableness.tste_14_2      -0.053972   0.040357  -1.337 0.181252    
+    ## real_agreeableness.tste_14_3      -0.020123   0.038303  -0.525 0.599390    
+    ## real_agreeableness.tste_14_4       0.035630   0.037258   0.956 0.339027    
+    ## real_agreeableness.tste_14_5       0.039787   0.045160   0.881 0.378408    
+    ## real_agreeableness.tste_14_6      -0.030577   0.040978  -0.746 0.455640    
+    ## real_agreeableness.tste_14_7       0.031332   0.048700   0.643 0.520061    
+    ## real_agreeableness.tste_14_8      -0.072535   0.035809  -2.026 0.042935 *  
+    ## real_agreeableness.tste_14_9      -0.072594   0.043185  -1.681 0.092920 .  
+    ## real_agreeableness.tste_14_10     -0.009242   0.042877  -0.216 0.829363    
+    ## real_agreeableness.tste_14_11      0.027973   0.039415   0.710 0.477963    
+    ## real_agreeableness.tste_14_12     -0.016505   0.042329  -0.390 0.696632    
+    ## real_agreeableness.tste_14_13     -0.028655   0.041919  -0.684 0.494322    
+    ## real_conscientiousness.tste_14_0  -0.023028   0.045124  -0.510 0.609871    
+    ## real_conscientiousness.tste_14_1  -0.023803   0.043873  -0.543 0.587503    
+    ## real_conscientiousness.tste_14_2   0.004113   0.043047   0.096 0.923892    
+    ## real_conscientiousness.tste_14_3  -0.022330   0.042382  -0.527 0.598337    
+    ## real_conscientiousness.tste_14_4   0.134924   0.040192   3.357 0.000802 ***
+    ## real_conscientiousness.tste_14_5  -0.079297   0.047740  -1.661 0.096861 .  
+    ## real_conscientiousness.tste_14_6   0.079931   0.044780   1.785 0.074411 .  
+    ## real_conscientiousness.tste_14_7  -0.002339   0.050579  -0.046 0.963112    
+    ## real_conscientiousness.tste_14_8   0.035136   0.040134   0.875 0.381431    
+    ## real_conscientiousness.tste_14_9   0.002755   0.046756   0.059 0.953026    
+    ## real_conscientiousness.tste_14_10  0.012804   0.045512   0.281 0.778477    
+    ## real_conscientiousness.tste_14_11  0.030212   0.044240   0.683 0.494734    
+    ## real_conscientiousness.tste_14_12 -0.063773   0.043938  -1.451 0.146812    
+    ## real_conscientiousness.tste_14_13 -0.098003   0.046144  -2.124 0.033804 *  
+    ## real_emotionstability.tste_14_0    0.111293   0.044046   2.527 0.011586 *  
+    ## real_emotionstability.tste_14_1   -0.035065   0.042189  -0.831 0.405986    
+    ## real_emotionstability.tste_14_2    0.048821   0.040864   1.195 0.232340    
+    ## real_emotionstability.tste_14_3   -0.031334   0.042132  -0.744 0.457142    
+    ## real_emotionstability.tste_14_4    0.091278   0.040251   2.268 0.023448 *  
+    ## real_emotionstability.tste_14_5   -0.040598   0.047924  -0.847 0.397022    
+    ## real_emotionstability.tste_14_6    0.100757   0.043443   2.319 0.020478 *  
+    ## real_emotionstability.tste_14_7   -0.053932   0.047985  -1.124 0.261179    
+    ## real_emotionstability.tste_14_8    0.043699   0.039344   1.111 0.266832    
+    ## real_emotionstability.tste_14_9    0.012615   0.044365   0.284 0.776180    
+    ## real_emotionstability.tste_14_10   0.009509   0.046179   0.206 0.836877    
+    ## real_emotionstability.tste_14_11   0.026746   0.043701   0.612 0.540591    
+    ## real_emotionstability.tste_14_12   0.002549   0.043758   0.058 0.953550    
+    ## real_emotionstability.tste_14_13  -0.084790   0.044108  -1.922 0.054704 .  
+    ## real_openness.tste_14_0            0.062160   0.037942   1.638 0.101518    
+    ## real_openness.tste_14_1            0.027113   0.035104   0.772 0.439992    
+    ## real_openness.tste_14_2            0.092074   0.035709   2.578 0.009994 ** 
+    ## real_openness.tste_14_3           -0.019949   0.035596  -0.560 0.575245    
+    ## real_openness.tste_14_4            0.021538   0.034253   0.629 0.529551    
+    ## real_openness.tste_14_5            0.043803   0.040920   1.070 0.284540    
+    ## real_openness.tste_14_6            0.011080   0.037561   0.295 0.768035    
+    ## real_openness.tste_14_7           -0.005818   0.042333  -0.137 0.890693    
+    ## real_openness.tste_14_8           -0.018732   0.033196  -0.564 0.572634    
+    ## real_openness.tste_14_9           -0.067514   0.038184  -1.768 0.077193 .  
+    ## real_openness.tste_14_10          -0.023224   0.039697  -0.585 0.558589    
+    ## real_openness.tste_14_11           0.063298   0.038160   1.659 0.097323 .  
+    ## real_openness.tste_14_12           0.019742   0.037890   0.521 0.602404    
+    ## real_openness.tste_14_13           0.009801   0.037757   0.260 0.795218    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1878,220 +1510,113 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -4.9972 -0.7163  0.2555  0.9856  2.9962 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       45.546784  17.817940   2.556  0.01065
-    ## age                               -0.012545   0.004619  -2.716  0.00666
-    ## education                          0.015703   0.026549   0.591  0.55428
-    ## income                             0.009027   0.016870   0.535  0.59264
-    ## race2                              0.019930   0.132760   0.150  0.88068
-    ## race4                             -0.188547   0.143345  -1.315  0.18855
-    ## race6                             -0.979392   0.348645  -2.809  0.00501
-    ## race7                             -0.102418   0.134952  -0.759  0.44799
-    ## sex2                              -0.118178   0.072120  -1.639  0.10144
-    ## release                           -0.020458   0.008731  -2.343  0.01922
-    ## star_user                          0.023304   0.066010   0.353  0.72410
-    ## real_extraversion                  0.050453   0.020577   2.452  0.01429
-    ## real_agreeableness                -0.013796   0.028083  -0.491  0.62330
-    ## real_conscientiousness             0.080693   0.030348   2.659  0.00790
-    ## real_emotionstability             -0.013500   0.030851  -0.438  0.66173
-    ## real_openness                      0.114422   0.025331   4.517 6.63e-06
-    ## tste_15_0                         -0.369898   0.431428  -0.857  0.39134
-    ## tste_15_1                         -0.595435   0.439057  -1.356  0.17520
-    ## tste_15_2                         -0.203439   0.433277  -0.470  0.63874
-    ## tste_15_3                          0.106948   0.465394   0.230  0.81827
-    ## tste_15_4                          0.387912   0.409207   0.948  0.34326
-    ## tste_15_5                          0.296039   0.465682   0.636  0.52504
-    ## tste_15_6                         -0.684035   0.412154  -1.660  0.09714
-    ## tste_15_7                          0.914770   0.422118   2.167  0.03034
-    ## tste_15_8                         -0.841410   0.485875  -1.732  0.08347
-    ## tste_15_9                          0.080969   0.436546   0.185  0.85287
-    ## tste_15_10                        -0.057315   0.466687  -0.123  0.90227
-    ## tste_15_11                         0.708483   0.483046   1.467  0.14261
-    ## tste_15_12                         0.036992   0.336298   0.110  0.91242
-    ## tste_15_13                         0.775079   0.393076   1.972  0.04876
-    ## tste_15_14                        -0.436687   0.394722  -1.106  0.26872
-    ## real_extraversion.tste_15_0        0.035940   0.029589   1.215  0.22463
-    ## real_extraversion.tste_15_1        0.020373   0.031474   0.647  0.51751
-    ## real_extraversion.tste_15_2       -0.037150   0.029511  -1.259  0.20823
-    ## real_extraversion.tste_15_3       -0.032342   0.029788  -1.086  0.27772
-    ## real_extraversion.tste_15_4       -0.013316   0.027319  -0.487  0.62600
-    ## real_extraversion.tste_15_5       -0.051747   0.031974  -1.618  0.10573
-    ## real_extraversion.tste_15_6        0.021434   0.028947   0.740  0.45911
-    ## real_extraversion.tste_15_7        0.014250   0.030524   0.467  0.64066
-    ## real_extraversion.tste_15_8        0.017130   0.032457   0.528  0.59772
-    ## real_extraversion.tste_15_9       -0.053926   0.030056  -1.794  0.07294
-    ## real_extraversion.tste_15_10      -0.028608   0.031998  -0.894  0.37139
-    ## real_extraversion.tste_15_11       0.018170   0.034471   0.527  0.59817
-    ## real_extraversion.tste_15_12       0.017437   0.023197   0.752  0.45231
-    ## real_extraversion.tste_15_13       0.018279   0.027604   0.662  0.50791
-    ## real_extraversion.tste_15_14       0.008086   0.026243   0.308  0.75801
-    ## real_agreeableness.tste_15_0      -0.069971   0.040616  -1.723  0.08509
-    ## real_agreeableness.tste_15_1       0.031766   0.041042   0.774  0.43903
-    ## real_agreeableness.tste_15_2      -0.058174   0.039585  -1.470  0.14182
-    ## real_agreeableness.tste_15_3      -0.055590   0.043672  -1.273  0.20321
-    ## real_agreeableness.tste_15_4      -0.038417   0.037702  -1.019  0.30835
-    ## real_agreeableness.tste_15_5       0.083700   0.042564   1.966  0.04938
-    ## real_agreeableness.tste_15_6      -0.031283   0.038911  -0.804  0.42151
-    ## real_agreeableness.tste_15_7      -0.058400   0.039745  -1.469  0.14188
-    ## real_agreeableness.tste_15_8       0.005441   0.045241   0.120  0.90428
-    ## real_agreeableness.tste_15_9       0.016310   0.041537   0.393  0.69460
-    ## real_agreeableness.tste_15_10      0.024383   0.043941   0.555  0.57902
-    ## real_agreeableness.tste_15_11     -0.014519   0.044000  -0.330  0.74146
-    ## real_agreeableness.tste_15_12     -0.054622   0.032997  -1.655  0.09800
-    ## real_agreeableness.tste_15_13      0.011159   0.037620   0.297  0.76678
-    ## real_agreeableness.tste_15_14      0.008643   0.036221   0.239  0.81142
-    ## real_conscientiousness.tste_15_0   0.025213   0.044206   0.570  0.56850
-    ## real_conscientiousness.tste_15_1   0.058152   0.044295   1.313  0.18939
-    ## real_conscientiousness.tste_15_2   0.066313   0.044594   1.487  0.13716
-    ## real_conscientiousness.tste_15_3  -0.041171   0.047330  -0.870  0.38447
-    ## real_conscientiousness.tste_15_4  -0.028191   0.041271  -0.683  0.49464
-    ## real_conscientiousness.tste_15_5  -0.075957   0.046761  -1.624  0.10445
-    ## real_conscientiousness.tste_15_6  -0.017438   0.041028  -0.425  0.67085
-    ## real_conscientiousness.tste_15_7  -0.077944   0.043020  -1.812  0.07016
-    ## real_conscientiousness.tste_15_8   0.011969   0.049373   0.242  0.80849
-    ## real_conscientiousness.tste_15_9   0.038708   0.044127   0.877  0.38048
-    ## real_conscientiousness.tste_15_10  0.012461   0.047854   0.260  0.79459
-    ## real_conscientiousness.tste_15_11 -0.117740   0.049200  -2.393  0.01680
-    ## real_conscientiousness.tste_15_12  0.021275   0.034254   0.621  0.53460
-    ## real_conscientiousness.tste_15_13 -0.097687   0.040305  -2.424  0.01545
-    ## real_conscientiousness.tste_15_14  0.045554   0.040428   1.127  0.25996
-    ## real_emotionstability.tste_15_0    0.065685   0.041763   1.573  0.11592
-    ## real_emotionstability.tste_15_1    0.034718   0.045053   0.771  0.44103
-    ## real_emotionstability.tste_15_2    0.038565   0.043780   0.881  0.37849
-    ## real_emotionstability.tste_15_3    0.045185   0.044176   1.023  0.30651
-    ## real_emotionstability.tste_15_4   -0.040893   0.040426  -1.012  0.31187
-    ## real_emotionstability.tste_15_5   -0.110095   0.047643  -2.311  0.02094
-    ## real_emotionstability.tste_15_6    0.074252   0.040612   1.828  0.06765
-    ## real_emotionstability.tste_15_7   -0.046324   0.043614  -1.062  0.28830
-    ## real_emotionstability.tste_15_8    0.054249   0.048001   1.130  0.25854
-    ## real_emotionstability.tste_15_9    0.014740   0.043658   0.338  0.73569
-    ## real_emotionstability.tste_15_10   0.010536   0.046318   0.227  0.82008
-    ## real_emotionstability.tste_15_11  -0.025995   0.048354  -0.538  0.59092
-    ## real_emotionstability.tste_15_12   0.007209   0.033794   0.213  0.83110
-    ## real_emotionstability.tste_15_13  -0.074245   0.039681  -1.871  0.06148
-    ## real_emotionstability.tste_15_14   0.060725   0.038191   1.590  0.11199
-    ## real_openness.tste_15_0            0.006888   0.037542   0.183  0.85445
-    ## real_openness.tste_15_1           -0.015661   0.038881  -0.403  0.68715
-    ## real_openness.tste_15_2            0.029915   0.037279   0.802  0.42239
-    ## real_openness.tste_15_3            0.060772   0.037265   1.631  0.10309
-    ## real_openness.tste_15_4            0.018440   0.034373   0.536  0.59171
-    ## real_openness.tste_15_5            0.056373   0.040286   1.399  0.16187
-    ## real_openness.tste_15_6            0.089829   0.036004   2.495  0.01267
-    ## real_openness.tste_15_7           -0.061975   0.036226  -1.711  0.08728
-    ## real_openness.tste_15_8            0.083737   0.040873   2.049  0.04062
-    ## real_openness.tste_15_9           -0.033009   0.038121  -0.866  0.38666
-    ## real_openness.tste_15_10           0.007159   0.038648   0.185  0.85306
-    ## real_openness.tste_15_11           0.029267   0.040658   0.720  0.47171
-    ## real_openness.tste_15_12          -0.020603   0.028342  -0.727  0.46734
-    ## real_openness.tste_15_13          -0.016038   0.032923  -0.487  0.62621
-    ## real_openness.tste_15_14          -0.007511   0.034009  -0.221  0.82523
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            ** 
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_15_0                            
-    ## tste_15_1                            
-    ## tste_15_2                            
-    ## tste_15_3                            
-    ## tste_15_4                            
-    ## tste_15_5                            
-    ## tste_15_6                         .  
-    ## tste_15_7                         *  
-    ## tste_15_8                         .  
-    ## tste_15_9                            
-    ## tste_15_10                           
-    ## tste_15_11                           
-    ## tste_15_12                           
-    ## tste_15_13                        *  
-    ## tste_15_14                           
-    ## real_extraversion.tste_15_0          
-    ## real_extraversion.tste_15_1          
-    ## real_extraversion.tste_15_2          
-    ## real_extraversion.tste_15_3          
-    ## real_extraversion.tste_15_4          
-    ## real_extraversion.tste_15_5          
-    ## real_extraversion.tste_15_6          
-    ## real_extraversion.tste_15_7          
-    ## real_extraversion.tste_15_8          
-    ## real_extraversion.tste_15_9       .  
-    ## real_extraversion.tste_15_10         
-    ## real_extraversion.tste_15_11         
-    ## real_extraversion.tste_15_12         
-    ## real_extraversion.tste_15_13         
-    ## real_extraversion.tste_15_14         
-    ## real_agreeableness.tste_15_0      .  
-    ## real_agreeableness.tste_15_1         
-    ## real_agreeableness.tste_15_2         
-    ## real_agreeableness.tste_15_3         
-    ## real_agreeableness.tste_15_4         
-    ## real_agreeableness.tste_15_5      *  
-    ## real_agreeableness.tste_15_6         
-    ## real_agreeableness.tste_15_7         
-    ## real_agreeableness.tste_15_8         
-    ## real_agreeableness.tste_15_9         
-    ## real_agreeableness.tste_15_10        
-    ## real_agreeableness.tste_15_11        
-    ## real_agreeableness.tste_15_12     .  
-    ## real_agreeableness.tste_15_13        
-    ## real_agreeableness.tste_15_14        
-    ## real_conscientiousness.tste_15_0     
-    ## real_conscientiousness.tste_15_1     
-    ## real_conscientiousness.tste_15_2     
-    ## real_conscientiousness.tste_15_3     
-    ## real_conscientiousness.tste_15_4     
-    ## real_conscientiousness.tste_15_5     
-    ## real_conscientiousness.tste_15_6     
-    ## real_conscientiousness.tste_15_7  .  
-    ## real_conscientiousness.tste_15_8     
-    ## real_conscientiousness.tste_15_9     
-    ## real_conscientiousness.tste_15_10    
-    ## real_conscientiousness.tste_15_11 *  
-    ## real_conscientiousness.tste_15_12    
-    ## real_conscientiousness.tste_15_13 *  
-    ## real_conscientiousness.tste_15_14    
-    ## real_emotionstability.tste_15_0      
-    ## real_emotionstability.tste_15_1      
-    ## real_emotionstability.tste_15_2      
-    ## real_emotionstability.tste_15_3      
-    ## real_emotionstability.tste_15_4      
-    ## real_emotionstability.tste_15_5   *  
-    ## real_emotionstability.tste_15_6   .  
-    ## real_emotionstability.tste_15_7      
-    ## real_emotionstability.tste_15_8      
-    ## real_emotionstability.tste_15_9      
-    ## real_emotionstability.tste_15_10     
-    ## real_emotionstability.tste_15_11     
-    ## real_emotionstability.tste_15_12     
-    ## real_emotionstability.tste_15_13  .  
-    ## real_emotionstability.tste_15_14     
-    ## real_openness.tste_15_0              
-    ## real_openness.tste_15_1              
-    ## real_openness.tste_15_2              
-    ## real_openness.tste_15_3              
-    ## real_openness.tste_15_4              
-    ## real_openness.tste_15_5              
-    ## real_openness.tste_15_6           *  
-    ## real_openness.tste_15_7           .  
-    ## real_openness.tste_15_8           *  
-    ## real_openness.tste_15_9              
-    ## real_openness.tste_15_10             
-    ## real_openness.tste_15_11             
-    ## real_openness.tste_15_12             
-    ## real_openness.tste_15_13             
-    ## real_openness.tste_15_14             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       45.546784  17.817940   2.556  0.01065 *  
+    ## age                               -0.012545   0.004619  -2.716  0.00666 ** 
+    ## education                          0.015703   0.026549   0.591  0.55428    
+    ## income                             0.009027   0.016870   0.535  0.59264    
+    ## race2                              0.019930   0.132760   0.150  0.88068    
+    ## race4                             -0.188547   0.143345  -1.315  0.18855    
+    ## race6                             -0.979392   0.348645  -2.809  0.00501 ** 
+    ## race7                             -0.102418   0.134952  -0.759  0.44799    
+    ## sex2                              -0.118178   0.072120  -1.639  0.10144    
+    ## release                           -0.020458   0.008731  -2.343  0.01922 *  
+    ## star_user                          0.023304   0.066010   0.353  0.72410    
+    ## real_extraversion                  0.050453   0.020577   2.452  0.01429 *  
+    ## real_agreeableness                -0.013796   0.028083  -0.491  0.62330    
+    ## real_conscientiousness             0.080693   0.030348   2.659  0.00790 ** 
+    ## real_emotionstability             -0.013500   0.030851  -0.438  0.66173    
+    ## real_openness                      0.114422   0.025331   4.517 6.63e-06 ***
+    ## tste_15_0                         -0.369898   0.431428  -0.857  0.39134    
+    ## tste_15_1                         -0.595435   0.439057  -1.356  0.17520    
+    ## tste_15_2                         -0.203439   0.433277  -0.470  0.63874    
+    ## tste_15_3                          0.106948   0.465394   0.230  0.81827    
+    ## tste_15_4                          0.387912   0.409207   0.948  0.34326    
+    ## tste_15_5                          0.296039   0.465682   0.636  0.52504    
+    ## tste_15_6                         -0.684035   0.412154  -1.660  0.09714 .  
+    ## tste_15_7                          0.914770   0.422118   2.167  0.03034 *  
+    ## tste_15_8                         -0.841410   0.485875  -1.732  0.08347 .  
+    ## tste_15_9                          0.080969   0.436546   0.185  0.85287    
+    ## tste_15_10                        -0.057315   0.466687  -0.123  0.90227    
+    ## tste_15_11                         0.708483   0.483046   1.467  0.14261    
+    ## tste_15_12                         0.036992   0.336298   0.110  0.91242    
+    ## tste_15_13                         0.775079   0.393076   1.972  0.04876 *  
+    ## tste_15_14                        -0.436687   0.394722  -1.106  0.26872    
+    ## real_extraversion.tste_15_0        0.035940   0.029589   1.215  0.22463    
+    ## real_extraversion.tste_15_1        0.020373   0.031474   0.647  0.51751    
+    ## real_extraversion.tste_15_2       -0.037150   0.029511  -1.259  0.20823    
+    ## real_extraversion.tste_15_3       -0.032342   0.029788  -1.086  0.27772    
+    ## real_extraversion.tste_15_4       -0.013316   0.027319  -0.487  0.62600    
+    ## real_extraversion.tste_15_5       -0.051747   0.031974  -1.618  0.10573    
+    ## real_extraversion.tste_15_6        0.021434   0.028947   0.740  0.45911    
+    ## real_extraversion.tste_15_7        0.014250   0.030524   0.467  0.64066    
+    ## real_extraversion.tste_15_8        0.017130   0.032457   0.528  0.59772    
+    ## real_extraversion.tste_15_9       -0.053926   0.030056  -1.794  0.07294 .  
+    ## real_extraversion.tste_15_10      -0.028608   0.031998  -0.894  0.37139    
+    ## real_extraversion.tste_15_11       0.018170   0.034471   0.527  0.59817    
+    ## real_extraversion.tste_15_12       0.017437   0.023197   0.752  0.45231    
+    ## real_extraversion.tste_15_13       0.018279   0.027604   0.662  0.50791    
+    ## real_extraversion.tste_15_14       0.008086   0.026243   0.308  0.75801    
+    ## real_agreeableness.tste_15_0      -0.069971   0.040616  -1.723  0.08509 .  
+    ## real_agreeableness.tste_15_1       0.031766   0.041042   0.774  0.43903    
+    ## real_agreeableness.tste_15_2      -0.058174   0.039585  -1.470  0.14182    
+    ## real_agreeableness.tste_15_3      -0.055590   0.043672  -1.273  0.20321    
+    ## real_agreeableness.tste_15_4      -0.038417   0.037702  -1.019  0.30835    
+    ## real_agreeableness.tste_15_5       0.083700   0.042564   1.966  0.04938 *  
+    ## real_agreeableness.tste_15_6      -0.031283   0.038911  -0.804  0.42151    
+    ## real_agreeableness.tste_15_7      -0.058400   0.039745  -1.469  0.14188    
+    ## real_agreeableness.tste_15_8       0.005441   0.045241   0.120  0.90428    
+    ## real_agreeableness.tste_15_9       0.016310   0.041537   0.393  0.69460    
+    ## real_agreeableness.tste_15_10      0.024383   0.043941   0.555  0.57902    
+    ## real_agreeableness.tste_15_11     -0.014519   0.044000  -0.330  0.74146    
+    ## real_agreeableness.tste_15_12     -0.054622   0.032997  -1.655  0.09800 .  
+    ## real_agreeableness.tste_15_13      0.011159   0.037620   0.297  0.76678    
+    ## real_agreeableness.tste_15_14      0.008643   0.036221   0.239  0.81142    
+    ## real_conscientiousness.tste_15_0   0.025213   0.044206   0.570  0.56850    
+    ## real_conscientiousness.tste_15_1   0.058152   0.044295   1.313  0.18939    
+    ## real_conscientiousness.tste_15_2   0.066313   0.044594   1.487  0.13716    
+    ## real_conscientiousness.tste_15_3  -0.041171   0.047330  -0.870  0.38447    
+    ## real_conscientiousness.tste_15_4  -0.028191   0.041271  -0.683  0.49464    
+    ## real_conscientiousness.tste_15_5  -0.075957   0.046761  -1.624  0.10445    
+    ## real_conscientiousness.tste_15_6  -0.017438   0.041028  -0.425  0.67085    
+    ## real_conscientiousness.tste_15_7  -0.077944   0.043020  -1.812  0.07016 .  
+    ## real_conscientiousness.tste_15_8   0.011969   0.049373   0.242  0.80849    
+    ## real_conscientiousness.tste_15_9   0.038708   0.044127   0.877  0.38048    
+    ## real_conscientiousness.tste_15_10  0.012461   0.047854   0.260  0.79459    
+    ## real_conscientiousness.tste_15_11 -0.117740   0.049200  -2.393  0.01680 *  
+    ## real_conscientiousness.tste_15_12  0.021275   0.034254   0.621  0.53460    
+    ## real_conscientiousness.tste_15_13 -0.097687   0.040305  -2.424  0.01545 *  
+    ## real_conscientiousness.tste_15_14  0.045554   0.040428   1.127  0.25996    
+    ## real_emotionstability.tste_15_0    0.065685   0.041763   1.573  0.11592    
+    ## real_emotionstability.tste_15_1    0.034718   0.045053   0.771  0.44103    
+    ## real_emotionstability.tste_15_2    0.038565   0.043780   0.881  0.37849    
+    ## real_emotionstability.tste_15_3    0.045185   0.044176   1.023  0.30651    
+    ## real_emotionstability.tste_15_4   -0.040893   0.040426  -1.012  0.31187    
+    ## real_emotionstability.tste_15_5   -0.110095   0.047643  -2.311  0.02094 *  
+    ## real_emotionstability.tste_15_6    0.074252   0.040612   1.828  0.06765 .  
+    ## real_emotionstability.tste_15_7   -0.046324   0.043614  -1.062  0.28830    
+    ## real_emotionstability.tste_15_8    0.054249   0.048001   1.130  0.25854    
+    ## real_emotionstability.tste_15_9    0.014740   0.043658   0.338  0.73569    
+    ## real_emotionstability.tste_15_10   0.010536   0.046318   0.227  0.82008    
+    ## real_emotionstability.tste_15_11  -0.025995   0.048354  -0.538  0.59092    
+    ## real_emotionstability.tste_15_12   0.007209   0.033794   0.213  0.83110    
+    ## real_emotionstability.tste_15_13  -0.074245   0.039681  -1.871  0.06148 .  
+    ## real_emotionstability.tste_15_14   0.060725   0.038191   1.590  0.11199    
+    ## real_openness.tste_15_0            0.006888   0.037542   0.183  0.85445    
+    ## real_openness.tste_15_1           -0.015661   0.038881  -0.403  0.68715    
+    ## real_openness.tste_15_2            0.029915   0.037279   0.802  0.42239    
+    ## real_openness.tste_15_3            0.060772   0.037265   1.631  0.10309    
+    ## real_openness.tste_15_4            0.018440   0.034373   0.536  0.59171    
+    ## real_openness.tste_15_5            0.056373   0.040286   1.399  0.16187    
+    ## real_openness.tste_15_6            0.089829   0.036004   2.495  0.01267 *  
+    ## real_openness.tste_15_7           -0.061975   0.036226  -1.711  0.08728 .  
+    ## real_openness.tste_15_8            0.083737   0.040873   2.049  0.04062 *  
+    ## real_openness.tste_15_9           -0.033009   0.038121  -0.866  0.38666    
+    ## real_openness.tste_15_10           0.007159   0.038648   0.185  0.85306    
+    ## real_openness.tste_15_11           0.029267   0.040658   0.720  0.47171    
+    ## real_openness.tste_15_12          -0.020603   0.028342  -0.727  0.46734    
+    ## real_openness.tste_15_13          -0.016038   0.032923  -0.487  0.62621    
+    ## real_openness.tste_15_14          -0.007511   0.034009  -0.221  0.82523    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -2108,232 +1633,119 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -5.0432 -0.7154  0.2405  0.9878  3.1257 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       29.7528744 17.9298658   1.659  0.09719
-    ## age                               -0.0109271  0.0046010  -2.375  0.01764
-    ## education                          0.0145046  0.0264797   0.548  0.58391
-    ## income                             0.0126546  0.0168336   0.752  0.45229
-    ## race2                              0.0453863  0.1323506   0.343  0.73169
-    ## race4                             -0.1815516  0.1428576  -1.271  0.20393
-    ## race6                             -0.9811661  0.3484676  -2.816  0.00491
-    ## race7                             -0.0986184  0.1347116  -0.732  0.46421
-    ## sex2                              -0.1202759  0.0716804  -1.678  0.09351
-    ## release                           -0.0126243  0.0087956  -1.435  0.15136
-    ## star_user                          0.0253861  0.0633013   0.401  0.68844
-    ## real_extraversion                  0.0522780  0.0204397   2.558  0.01061
-    ## real_agreeableness                -0.0146037  0.0278408  -0.525  0.59996
-    ## real_conscientiousness             0.0733102  0.0302489   2.424  0.01546
-    ## real_emotionstability             -0.0087127  0.0308226  -0.283  0.77746
-    ## real_openness                      0.1162625  0.0252319   4.608 4.32e-06
-    ## tste_16_0                          0.4623966  0.4472562   1.034  0.30133
-    ## tste_16_1                          0.3758496  0.4062318   0.925  0.35497
-    ## tste_16_2                          0.5611933  0.3893848   1.441  0.14967
-    ## tste_16_3                         -0.2510733  0.4146739  -0.605  0.54493
-    ## tste_16_4                          0.5761625  0.3836209   1.502  0.13328
-    ## tste_16_5                         -0.0150989  0.4281792  -0.035  0.97187
-    ## tste_16_6                          0.0458632  0.4042025   0.113  0.90967
-    ## tste_16_7                          0.7658013  0.3776767   2.028  0.04273
-    ## tste_16_8                          0.4063097  0.4285896   0.948  0.34323
-    ## tste_16_9                          0.2979871  0.3885546   0.767  0.44322
-    ## tste_16_10                        -0.4983036  0.3977838  -1.253  0.21046
-    ## tste_16_11                         0.5999715  0.4142876   1.448  0.14772
-    ## tste_16_12                         0.6581944  0.4252203   1.548  0.12180
-    ## tste_16_13                         0.5718016  0.4574773   1.250  0.21148
-    ## tste_16_14                         0.3414825  0.3981196   0.858  0.39114
-    ## tste_16_15                        -0.5705754  0.4639353  -1.230  0.21889
-    ## real_extraversion.tste_16_0       -0.0124263  0.0308393  -0.403  0.68704
-    ## real_extraversion.tste_16_1        0.0034058  0.0278905   0.122  0.90282
-    ## real_extraversion.tste_16_2        0.0602329  0.0275997   2.182  0.02920
-    ## real_extraversion.tste_16_3        0.0423997  0.0285774   1.484  0.13805
-    ## real_extraversion.tste_16_4       -0.0015023  0.0261962  -0.057  0.95427
-    ## real_extraversion.tste_16_5        0.0120142  0.0295307   0.407  0.68417
-    ## real_extraversion.tste_16_6        0.0301596  0.0278883   1.081  0.27963
-    ## real_extraversion.tste_16_7       -0.0326892  0.0267414  -1.222  0.22169
-    ## real_extraversion.tste_16_8       -0.0550580  0.0295911  -1.861  0.06294
-    ## real_extraversion.tste_16_9       -0.0165975  0.0274638  -0.604  0.54568
-    ## real_extraversion.tste_16_10      -0.0251328  0.0262578  -0.957  0.33860
-    ## real_extraversion.tste_16_11       0.0132428  0.0287037   0.461  0.64459
-    ## real_extraversion.tste_16_12      -0.0289347  0.0290474  -0.996  0.31931
-    ## real_extraversion.tste_16_13       0.0084791  0.0302622   0.280  0.77936
-    ## real_extraversion.tste_16_14      -0.0066338  0.0270296  -0.245  0.80615
-    ## real_extraversion.tste_16_15      -0.0141217  0.0305323  -0.463  0.64376
-    ## real_agreeableness.tste_16_0       0.0408223  0.0408207   1.000  0.31741
-    ## real_agreeableness.tste_16_1      -0.0167411  0.0389870  -0.429  0.66768
-    ## real_agreeableness.tste_16_2      -0.0404735  0.0368802  -1.097  0.27258
-    ## real_agreeableness.tste_16_3      -0.0486809  0.0393038  -1.239  0.21564
-    ## real_agreeableness.tste_16_4       0.0529717  0.0350096   1.513  0.13042
-    ## real_agreeableness.tste_16_5      -0.0533490  0.0393401  -1.356  0.17522
-    ## real_agreeableness.tste_16_6      -0.0184683  0.0379122  -0.487  0.62622
-    ## real_agreeableness.tste_16_7      -0.0512600  0.0358485  -1.430  0.15290
-    ## real_agreeableness.tste_16_8       0.0051629  0.0407499   0.127  0.89919
-    ## real_agreeableness.tste_16_9      -0.0647581  0.0378910  -1.709  0.08759
-    ## real_agreeableness.tste_16_10      0.0704021  0.0359035   1.961  0.05003
-    ## real_agreeableness.tste_16_11     -0.0325570  0.0384850  -0.846  0.39767
-    ## real_agreeableness.tste_16_12      0.0031101  0.0402399   0.077  0.93840
-    ## real_agreeableness.tste_16_13     -0.0099766  0.0414364  -0.241  0.80976
-    ## real_agreeableness.tste_16_14      0.0362474  0.0364153   0.995  0.31967
-    ## real_agreeableness.tste_16_15     -0.0717972  0.0429712  -1.671  0.09491
-    ## real_conscientiousness.tste_16_0  -0.0422102  0.0466748  -0.904  0.36592
-    ## real_conscientiousness.tste_16_1  -0.0338338  0.0420523  -0.805  0.42117
-    ## real_conscientiousness.tste_16_2  -0.0844965  0.0400189  -2.111  0.03486
-    ## real_conscientiousness.tste_16_3   0.0333291  0.0418012   0.797  0.42536
-    ## real_conscientiousness.tste_16_4  -0.0818266  0.0385620  -2.122  0.03396
-    ## real_conscientiousness.tste_16_5   0.0198278  0.0431802   0.459  0.64615
-    ## real_conscientiousness.tste_16_6   0.0378089  0.0400292   0.945  0.34501
-    ## real_conscientiousness.tste_16_7  -0.0312801  0.0375927  -0.832  0.40546
-    ## real_conscientiousness.tste_16_8   0.0499245  0.0438204   1.139  0.25471
-    ## real_conscientiousness.tste_16_9  -0.0825687  0.0398353  -2.073  0.03832
-    ## real_conscientiousness.tste_16_10  0.0410034  0.0403817   1.015  0.31004
-    ## real_conscientiousness.tste_16_11 -0.0661536  0.0421769  -1.568  0.11693
-    ## real_conscientiousness.tste_16_12 -0.0036671  0.0426658  -0.086  0.93152
-    ## real_conscientiousness.tste_16_13 -0.0815653  0.0462979  -1.762  0.07826
-    ## real_conscientiousness.tste_16_14 -0.0471104  0.0406750  -1.158  0.24691
-    ## real_conscientiousness.tste_16_15  0.0130425  0.0473072   0.276  0.78281
-    ## real_emotionstability.tste_16_0   -0.0064530  0.0447427  -0.144  0.88534
-    ## real_emotionstability.tste_16_1   -0.0421366  0.0420109  -1.003  0.31598
-    ## real_emotionstability.tste_16_2   -0.0088375  0.0399025  -0.221  0.82474
-    ## real_emotionstability.tste_16_3   -0.0005567  0.0419913  -0.013  0.98942
-    ## real_emotionstability.tste_16_4   -0.1088037  0.0381246  -2.854  0.00436
-    ## real_emotionstability.tste_16_5    0.0530622  0.0418582   1.268  0.20506
-    ## real_emotionstability.tste_16_6    0.0189523  0.0393016   0.482  0.62970
-    ## real_emotionstability.tste_16_7   -0.0266673  0.0370636  -0.720  0.47191
-    ## real_emotionstability.tste_16_8   -0.0685973  0.0423851  -1.618  0.10573
-    ## real_emotionstability.tste_16_9    0.0152302  0.0378846   0.402  0.68771
-    ## real_emotionstability.tste_16_10   0.0022090  0.0388992   0.057  0.95472
-    ## real_emotionstability.tste_16_11  -0.0139615  0.0422609  -0.330  0.74116
-    ## real_emotionstability.tste_16_12  -0.0285755  0.0413530  -0.691  0.48964
-    ## real_emotionstability.tste_16_13  -0.0539824  0.0461877  -1.169  0.24264
-    ## real_emotionstability.tste_16_14  -0.0669695  0.0398248  -1.682  0.09280
-    ## real_emotionstability.tste_16_15   0.1127129  0.0453587   2.485  0.01304
-    ## real_openness.tste_16_0           -0.0246936  0.0379945  -0.650  0.51581
-    ## real_openness.tste_16_1           -0.0275748  0.0353226  -0.781  0.43510
-    ## real_openness.tste_16_2           -0.0409307  0.0327616  -1.249  0.21168
-    ## real_openness.tste_16_3           -0.0065904  0.0351224  -0.188  0.85118
-    ## real_openness.tste_16_4           -0.0197625  0.0323046  -0.612  0.54077
-    ## real_openness.tste_16_5           -0.0075615  0.0368297  -0.205  0.83735
-    ## real_openness.tste_16_6           -0.0541465  0.0331183  -1.635  0.10222
-    ## real_openness.tste_16_7           -0.0373968  0.0340662  -1.098  0.27244
-    ## real_openness.tste_16_8           -0.0650542  0.0376294  -1.729  0.08400
-    ## real_openness.tste_16_9            0.0900615  0.0329815   2.731  0.00638
-    ## real_openness.tste_16_10           0.0134471  0.0323954   0.415  0.67812
-    ## real_openness.tste_16_11          -0.0014676  0.0349782  -0.042  0.96654
-    ## real_openness.tste_16_12          -0.0714739  0.0363925  -1.964  0.04967
-    ## real_openness.tste_16_13           0.0175959  0.0397108   0.443  0.65774
-    ## real_openness.tste_16_14           0.0325127  0.0340190   0.956  0.33933
-    ## real_openness.tste_16_15           0.0800342  0.0382989   2.090  0.03677
-    ##                                      
-    ## (Intercept)                       .  
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_16_0                            
-    ## tste_16_1                            
-    ## tste_16_2                            
-    ## tste_16_3                            
-    ## tste_16_4                            
-    ## tste_16_5                            
-    ## tste_16_6                            
-    ## tste_16_7                         *  
-    ## tste_16_8                            
-    ## tste_16_9                            
-    ## tste_16_10                           
-    ## tste_16_11                           
-    ## tste_16_12                           
-    ## tste_16_13                           
-    ## tste_16_14                           
-    ## tste_16_15                           
-    ## real_extraversion.tste_16_0          
-    ## real_extraversion.tste_16_1          
-    ## real_extraversion.tste_16_2       *  
-    ## real_extraversion.tste_16_3          
-    ## real_extraversion.tste_16_4          
-    ## real_extraversion.tste_16_5          
-    ## real_extraversion.tste_16_6          
-    ## real_extraversion.tste_16_7          
-    ## real_extraversion.tste_16_8       .  
-    ## real_extraversion.tste_16_9          
-    ## real_extraversion.tste_16_10         
-    ## real_extraversion.tste_16_11         
-    ## real_extraversion.tste_16_12         
-    ## real_extraversion.tste_16_13         
-    ## real_extraversion.tste_16_14         
-    ## real_extraversion.tste_16_15         
-    ## real_agreeableness.tste_16_0         
-    ## real_agreeableness.tste_16_1         
-    ## real_agreeableness.tste_16_2         
-    ## real_agreeableness.tste_16_3         
-    ## real_agreeableness.tste_16_4         
-    ## real_agreeableness.tste_16_5         
-    ## real_agreeableness.tste_16_6         
-    ## real_agreeableness.tste_16_7         
-    ## real_agreeableness.tste_16_8         
-    ## real_agreeableness.tste_16_9      .  
-    ## real_agreeableness.tste_16_10     .  
-    ## real_agreeableness.tste_16_11        
-    ## real_agreeableness.tste_16_12        
-    ## real_agreeableness.tste_16_13        
-    ## real_agreeableness.tste_16_14        
-    ## real_agreeableness.tste_16_15     .  
-    ## real_conscientiousness.tste_16_0     
-    ## real_conscientiousness.tste_16_1     
-    ## real_conscientiousness.tste_16_2  *  
-    ## real_conscientiousness.tste_16_3     
-    ## real_conscientiousness.tste_16_4  *  
-    ## real_conscientiousness.tste_16_5     
-    ## real_conscientiousness.tste_16_6     
-    ## real_conscientiousness.tste_16_7     
-    ## real_conscientiousness.tste_16_8     
-    ## real_conscientiousness.tste_16_9  *  
-    ## real_conscientiousness.tste_16_10    
-    ## real_conscientiousness.tste_16_11    
-    ## real_conscientiousness.tste_16_12    
-    ## real_conscientiousness.tste_16_13 .  
-    ## real_conscientiousness.tste_16_14    
-    ## real_conscientiousness.tste_16_15    
-    ## real_emotionstability.tste_16_0      
-    ## real_emotionstability.tste_16_1      
-    ## real_emotionstability.tste_16_2      
-    ## real_emotionstability.tste_16_3      
-    ## real_emotionstability.tste_16_4   ** 
-    ## real_emotionstability.tste_16_5      
-    ## real_emotionstability.tste_16_6      
-    ## real_emotionstability.tste_16_7      
-    ## real_emotionstability.tste_16_8      
-    ## real_emotionstability.tste_16_9      
-    ## real_emotionstability.tste_16_10     
-    ## real_emotionstability.tste_16_11     
-    ## real_emotionstability.tste_16_12     
-    ## real_emotionstability.tste_16_13     
-    ## real_emotionstability.tste_16_14  .  
-    ## real_emotionstability.tste_16_15  *  
-    ## real_openness.tste_16_0              
-    ## real_openness.tste_16_1              
-    ## real_openness.tste_16_2              
-    ## real_openness.tste_16_3              
-    ## real_openness.tste_16_4              
-    ## real_openness.tste_16_5              
-    ## real_openness.tste_16_6              
-    ## real_openness.tste_16_7              
-    ## real_openness.tste_16_8           .  
-    ## real_openness.tste_16_9           ** 
-    ## real_openness.tste_16_10             
-    ## real_openness.tste_16_11             
-    ## real_openness.tste_16_12          *  
-    ## real_openness.tste_16_13             
-    ## real_openness.tste_16_14             
-    ## real_openness.tste_16_15          *  
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       29.7528744 17.9298658   1.659  0.09719 .  
+    ## age                               -0.0109271  0.0046010  -2.375  0.01764 *  
+    ## education                          0.0145046  0.0264797   0.548  0.58391    
+    ## income                             0.0126546  0.0168336   0.752  0.45229    
+    ## race2                              0.0453863  0.1323506   0.343  0.73169    
+    ## race4                             -0.1815516  0.1428576  -1.271  0.20393    
+    ## race6                             -0.9811661  0.3484676  -2.816  0.00491 ** 
+    ## race7                             -0.0986184  0.1347116  -0.732  0.46421    
+    ## sex2                              -0.1202759  0.0716804  -1.678  0.09351 .  
+    ## release                           -0.0126243  0.0087956  -1.435  0.15136    
+    ## star_user                          0.0253861  0.0633013   0.401  0.68844    
+    ## real_extraversion                  0.0522780  0.0204397   2.558  0.01061 *  
+    ## real_agreeableness                -0.0146037  0.0278408  -0.525  0.59996    
+    ## real_conscientiousness             0.0733102  0.0302489   2.424  0.01546 *  
+    ## real_emotionstability             -0.0087127  0.0308226  -0.283  0.77746    
+    ## real_openness                      0.1162625  0.0252319   4.608 4.32e-06 ***
+    ## tste_16_0                          0.4623966  0.4472562   1.034  0.30133    
+    ## tste_16_1                          0.3758496  0.4062318   0.925  0.35497    
+    ## tste_16_2                          0.5611933  0.3893848   1.441  0.14967    
+    ## tste_16_3                         -0.2510733  0.4146739  -0.605  0.54493    
+    ## tste_16_4                          0.5761625  0.3836209   1.502  0.13328    
+    ## tste_16_5                         -0.0150989  0.4281792  -0.035  0.97187    
+    ## tste_16_6                          0.0458632  0.4042025   0.113  0.90967    
+    ## tste_16_7                          0.7658013  0.3776767   2.028  0.04273 *  
+    ## tste_16_8                          0.4063097  0.4285896   0.948  0.34323    
+    ## tste_16_9                          0.2979871  0.3885546   0.767  0.44322    
+    ## tste_16_10                        -0.4983036  0.3977838  -1.253  0.21046    
+    ## tste_16_11                         0.5999715  0.4142876   1.448  0.14772    
+    ## tste_16_12                         0.6581944  0.4252203   1.548  0.12180    
+    ## tste_16_13                         0.5718016  0.4574773   1.250  0.21148    
+    ## tste_16_14                         0.3414825  0.3981196   0.858  0.39114    
+    ## tste_16_15                        -0.5705754  0.4639353  -1.230  0.21889    
+    ## real_extraversion.tste_16_0       -0.0124263  0.0308393  -0.403  0.68704    
+    ## real_extraversion.tste_16_1        0.0034058  0.0278905   0.122  0.90282    
+    ## real_extraversion.tste_16_2        0.0602329  0.0275997   2.182  0.02920 *  
+    ## real_extraversion.tste_16_3        0.0423997  0.0285774   1.484  0.13805    
+    ## real_extraversion.tste_16_4       -0.0015023  0.0261962  -0.057  0.95427    
+    ## real_extraversion.tste_16_5        0.0120142  0.0295307   0.407  0.68417    
+    ## real_extraversion.tste_16_6        0.0301596  0.0278883   1.081  0.27963    
+    ## real_extraversion.tste_16_7       -0.0326892  0.0267414  -1.222  0.22169    
+    ## real_extraversion.tste_16_8       -0.0550580  0.0295911  -1.861  0.06294 .  
+    ## real_extraversion.tste_16_9       -0.0165975  0.0274638  -0.604  0.54568    
+    ## real_extraversion.tste_16_10      -0.0251328  0.0262578  -0.957  0.33860    
+    ## real_extraversion.tste_16_11       0.0132428  0.0287037   0.461  0.64459    
+    ## real_extraversion.tste_16_12      -0.0289347  0.0290474  -0.996  0.31931    
+    ## real_extraversion.tste_16_13       0.0084791  0.0302622   0.280  0.77936    
+    ## real_extraversion.tste_16_14      -0.0066338  0.0270296  -0.245  0.80615    
+    ## real_extraversion.tste_16_15      -0.0141217  0.0305323  -0.463  0.64376    
+    ## real_agreeableness.tste_16_0       0.0408223  0.0408207   1.000  0.31741    
+    ## real_agreeableness.tste_16_1      -0.0167411  0.0389870  -0.429  0.66768    
+    ## real_agreeableness.tste_16_2      -0.0404735  0.0368802  -1.097  0.27258    
+    ## real_agreeableness.tste_16_3      -0.0486809  0.0393038  -1.239  0.21564    
+    ## real_agreeableness.tste_16_4       0.0529717  0.0350096   1.513  0.13042    
+    ## real_agreeableness.tste_16_5      -0.0533490  0.0393401  -1.356  0.17522    
+    ## real_agreeableness.tste_16_6      -0.0184683  0.0379122  -0.487  0.62622    
+    ## real_agreeableness.tste_16_7      -0.0512600  0.0358485  -1.430  0.15290    
+    ## real_agreeableness.tste_16_8       0.0051629  0.0407499   0.127  0.89919    
+    ## real_agreeableness.tste_16_9      -0.0647581  0.0378910  -1.709  0.08759 .  
+    ## real_agreeableness.tste_16_10      0.0704021  0.0359035   1.961  0.05003 .  
+    ## real_agreeableness.tste_16_11     -0.0325570  0.0384850  -0.846  0.39767    
+    ## real_agreeableness.tste_16_12      0.0031101  0.0402399   0.077  0.93840    
+    ## real_agreeableness.tste_16_13     -0.0099766  0.0414364  -0.241  0.80976    
+    ## real_agreeableness.tste_16_14      0.0362474  0.0364153   0.995  0.31967    
+    ## real_agreeableness.tste_16_15     -0.0717972  0.0429712  -1.671  0.09491 .  
+    ## real_conscientiousness.tste_16_0  -0.0422102  0.0466748  -0.904  0.36592    
+    ## real_conscientiousness.tste_16_1  -0.0338338  0.0420523  -0.805  0.42117    
+    ## real_conscientiousness.tste_16_2  -0.0844965  0.0400189  -2.111  0.03486 *  
+    ## real_conscientiousness.tste_16_3   0.0333291  0.0418012   0.797  0.42536    
+    ## real_conscientiousness.tste_16_4  -0.0818266  0.0385620  -2.122  0.03396 *  
+    ## real_conscientiousness.tste_16_5   0.0198278  0.0431802   0.459  0.64615    
+    ## real_conscientiousness.tste_16_6   0.0378089  0.0400292   0.945  0.34501    
+    ## real_conscientiousness.tste_16_7  -0.0312801  0.0375927  -0.832  0.40546    
+    ## real_conscientiousness.tste_16_8   0.0499245  0.0438204   1.139  0.25471    
+    ## real_conscientiousness.tste_16_9  -0.0825687  0.0398353  -2.073  0.03832 *  
+    ## real_conscientiousness.tste_16_10  0.0410034  0.0403817   1.015  0.31004    
+    ## real_conscientiousness.tste_16_11 -0.0661536  0.0421769  -1.568  0.11693    
+    ## real_conscientiousness.tste_16_12 -0.0036671  0.0426658  -0.086  0.93152    
+    ## real_conscientiousness.tste_16_13 -0.0815653  0.0462979  -1.762  0.07826 .  
+    ## real_conscientiousness.tste_16_14 -0.0471104  0.0406750  -1.158  0.24691    
+    ## real_conscientiousness.tste_16_15  0.0130425  0.0473072   0.276  0.78281    
+    ## real_emotionstability.tste_16_0   -0.0064530  0.0447427  -0.144  0.88534    
+    ## real_emotionstability.tste_16_1   -0.0421366  0.0420109  -1.003  0.31598    
+    ## real_emotionstability.tste_16_2   -0.0088375  0.0399025  -0.221  0.82474    
+    ## real_emotionstability.tste_16_3   -0.0005567  0.0419913  -0.013  0.98942    
+    ## real_emotionstability.tste_16_4   -0.1088037  0.0381246  -2.854  0.00436 ** 
+    ## real_emotionstability.tste_16_5    0.0530622  0.0418582   1.268  0.20506    
+    ## real_emotionstability.tste_16_6    0.0189523  0.0393016   0.482  0.62970    
+    ## real_emotionstability.tste_16_7   -0.0266673  0.0370636  -0.720  0.47191    
+    ## real_emotionstability.tste_16_8   -0.0685973  0.0423851  -1.618  0.10573    
+    ## real_emotionstability.tste_16_9    0.0152302  0.0378846   0.402  0.68771    
+    ## real_emotionstability.tste_16_10   0.0022090  0.0388992   0.057  0.95472    
+    ## real_emotionstability.tste_16_11  -0.0139615  0.0422609  -0.330  0.74116    
+    ## real_emotionstability.tste_16_12  -0.0285755  0.0413530  -0.691  0.48964    
+    ## real_emotionstability.tste_16_13  -0.0539824  0.0461877  -1.169  0.24264    
+    ## real_emotionstability.tste_16_14  -0.0669695  0.0398248  -1.682  0.09280 .  
+    ## real_emotionstability.tste_16_15   0.1127129  0.0453587   2.485  0.01304 *  
+    ## real_openness.tste_16_0           -0.0246936  0.0379945  -0.650  0.51581    
+    ## real_openness.tste_16_1           -0.0275748  0.0353226  -0.781  0.43510    
+    ## real_openness.tste_16_2           -0.0409307  0.0327616  -1.249  0.21168    
+    ## real_openness.tste_16_3           -0.0065904  0.0351224  -0.188  0.85118    
+    ## real_openness.tste_16_4           -0.0197625  0.0323046  -0.612  0.54077    
+    ## real_openness.tste_16_5           -0.0075615  0.0368297  -0.205  0.83735    
+    ## real_openness.tste_16_6           -0.0541465  0.0331183  -1.635  0.10222    
+    ## real_openness.tste_16_7           -0.0373968  0.0340662  -1.098  0.27244    
+    ## real_openness.tste_16_8           -0.0650542  0.0376294  -1.729  0.08400 .  
+    ## real_openness.tste_16_9            0.0900615  0.0329815   2.731  0.00638 ** 
+    ## real_openness.tste_16_10           0.0134471  0.0323954   0.415  0.67812    
+    ## real_openness.tste_16_11          -0.0014676  0.0349782  -0.042  0.96654    
+    ## real_openness.tste_16_12          -0.0714739  0.0363925  -1.964  0.04967 *  
+    ## real_openness.tste_16_13           0.0175959  0.0397108   0.443  0.65774    
+    ## real_openness.tste_16_14           0.0325127  0.0340190   0.956  0.33933    
+    ## real_openness.tste_16_15           0.0800342  0.0382989   2.090  0.03677 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -2350,244 +1762,125 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -5.0917 -0.6947  0.2380  0.9712  2.9965 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       31.360029  18.519343   1.693 0.090540
-    ## age                               -0.011330   0.004613  -2.456 0.014132
-    ## education                          0.018843   0.026553   0.710 0.478019
-    ## income                             0.012038   0.016866   0.714 0.475473
-    ## race2                              0.050080   0.132738   0.377 0.706002
-    ## race4                             -0.196829   0.143431  -1.372 0.170126
-    ## race6                             -1.063743   0.350076  -3.039 0.002407
-    ## race7                             -0.115647   0.135685  -0.852 0.394137
-    ## sex2                              -0.124201   0.071854  -1.729 0.084047
-    ## release                           -0.013516   0.009061  -1.492 0.135938
-    ## star_user                          0.045546   0.067223   0.678 0.498142
-    ## real_extraversion                  0.053218   0.020515   2.594 0.009554
-    ## real_agreeableness                -0.009623   0.028038  -0.343 0.731468
-    ## real_conscientiousness             0.074860   0.030335   2.468 0.013676
-    ## real_emotionstability             -0.009119   0.030840  -0.296 0.767511
-    ## real_openness                      0.115148   0.025387   4.536 6.08e-06
-    ## tste_17_0                          0.358752   0.443273   0.809 0.418424
-    ## tste_17_1                          0.338470   0.392631   0.862 0.388759
-    ## tste_17_2                         -0.230993   0.455563  -0.507 0.612176
-    ## tste_17_3                          0.762205   0.409640   1.861 0.062936
-    ## tste_17_4                          0.019680   0.448329   0.044 0.964991
-    ## tste_17_5                         -0.758520   0.388135  -1.954 0.050807
-    ## tste_17_6                         -0.433203   0.447354  -0.968 0.332976
-    ## tste_17_7                          0.161915   0.408417   0.396 0.691818
-    ## tste_17_8                         -0.661344   0.414520  -1.595 0.110769
-    ## tste_17_9                         -0.050600   0.418701  -0.121 0.903821
-    ## tste_17_10                         0.296161   0.381751   0.776 0.437961
-    ## tste_17_11                         0.310110   0.395968   0.783 0.433621
-    ## tste_17_12                        -0.261030   0.355557  -0.734 0.462946
-    ## tste_17_13                        -0.029101   0.417598  -0.070 0.944449
-    ## tste_17_14                         1.060963   0.395578   2.682 0.007377
-    ## tste_17_15                        -0.222207   0.456599  -0.487 0.626554
-    ## tste_17_16                        -0.128612   0.353408  -0.364 0.715955
-    ## real_extraversion.tste_17_0       -0.038594   0.030020  -1.286 0.198725
-    ## real_extraversion.tste_17_1        0.035567   0.025557   1.392 0.164169
-    ## real_extraversion.tste_17_2       -0.003399   0.031976  -0.106 0.915366
-    ## real_extraversion.tste_17_3       -0.012571   0.028089  -0.448 0.654519
-    ## real_extraversion.tste_17_4       -0.027449   0.031458  -0.873 0.383018
-    ## real_extraversion.tste_17_5       -0.001781   0.026226  -0.068 0.945876
-    ## real_extraversion.tste_17_6        0.039483   0.029674   1.331 0.183488
-    ## real_extraversion.tste_17_7       -0.005792   0.027809  -0.208 0.835026
-    ## real_extraversion.tste_17_8       -0.027096   0.029927  -0.905 0.365360
-    ## real_extraversion.tste_17_9       -0.005686   0.028639  -0.199 0.842645
-    ## real_extraversion.tste_17_10      -0.046312   0.025906  -1.788 0.073969
-    ## real_extraversion.tste_17_11       0.035169   0.027537   1.277 0.201689
-    ## real_extraversion.tste_17_12      -0.002714   0.024566  -0.110 0.912031
-    ## real_extraversion.tste_17_13      -0.037514   0.028607  -1.311 0.189888
-    ## real_extraversion.tste_17_14      -0.007039   0.026392  -0.267 0.789721
-    ## real_extraversion.tste_17_15      -0.006503   0.031691  -0.205 0.837431
-    ## real_extraversion.tste_17_16       0.006765   0.024471   0.276 0.782245
-    ## real_agreeableness.tste_17_0       0.004142   0.039780   0.104 0.917085
-    ## real_agreeableness.tste_17_1      -0.021969   0.036507  -0.602 0.547398
-    ## real_agreeableness.tste_17_2      -0.006318   0.042315  -0.149 0.881319
-    ## real_agreeableness.tste_17_3       0.005325   0.038222   0.139 0.889210
-    ## real_agreeableness.tste_17_4       0.020523   0.043523   0.472 0.637303
-    ## real_agreeableness.tste_17_5      -0.006530   0.035280  -0.185 0.853189
-    ## real_agreeableness.tste_17_6       0.060230   0.042829   1.406 0.159793
-    ## real_agreeableness.tste_17_7      -0.013562   0.037738  -0.359 0.719348
-    ## real_agreeableness.tste_17_8       0.111635   0.040662   2.745 0.006097
-    ## real_agreeableness.tste_17_9       0.073726   0.039463   1.868 0.061873
-    ## real_agreeableness.tste_17_10      0.030625   0.035509   0.862 0.388544
-    ## real_agreeableness.tste_17_11     -0.022066   0.036611  -0.603 0.546767
-    ## real_agreeableness.tste_17_12      0.037196   0.033946   1.096 0.273332
-    ## real_agreeableness.tste_17_13      0.007504   0.037259   0.201 0.840405
-    ## real_agreeableness.tste_17_14      0.047895   0.035501   1.349 0.177454
-    ## real_agreeableness.tste_17_15     -0.010833   0.044669  -0.243 0.808403
-    ## real_agreeableness.tste_17_16     -0.027917   0.033091  -0.844 0.398969
-    ## real_conscientiousness.tste_17_0  -0.029010   0.044310  -0.655 0.512731
-    ## real_conscientiousness.tste_17_1  -0.002680   0.039375  -0.068 0.945734
-    ## real_conscientiousness.tste_17_2   0.039369   0.046483   0.847 0.397119
-    ## real_conscientiousness.tste_17_3  -0.070084   0.041472  -1.690 0.091198
-    ## real_conscientiousness.tste_17_4   0.011892   0.045022   0.264 0.791708
-    ## real_conscientiousness.tste_17_5   0.055429   0.039914   1.389 0.165079
-    ## real_conscientiousness.tste_17_6   0.054710   0.046775   1.170 0.242276
-    ## real_conscientiousness.tste_17_7  -0.006628   0.040547  -0.163 0.870174
-    ## real_conscientiousness.tste_17_8   0.069686   0.042078   1.656 0.097856
-    ## real_conscientiousness.tste_17_9   0.001084   0.042319   0.026 0.979572
-    ## real_conscientiousness.tste_17_10  0.044906   0.039455   1.138 0.255196
-    ## real_conscientiousness.tste_17_11 -0.051177   0.040718  -1.257 0.208944
-    ## real_conscientiousness.tste_17_12 -0.058468   0.035699  -1.638 0.101612
-    ## real_conscientiousness.tste_17_13  0.012968   0.043131   0.301 0.763696
-    ## real_conscientiousness.tste_17_14 -0.091923   0.039851  -2.307 0.021174
-    ## real_conscientiousness.tste_17_15  0.008332   0.047358   0.176 0.860368
-    ## real_conscientiousness.tste_17_16  0.037990   0.036272   1.047 0.295060
-    ## real_emotionstability.tste_17_0    0.008769   0.043016   0.204 0.838487
-    ## real_emotionstability.tste_17_1    0.012027   0.037946   0.317 0.751313
-    ## real_emotionstability.tste_17_2   -0.020817   0.046393  -0.449 0.653693
-    ## real_emotionstability.tste_17_3   -0.056689   0.043706  -1.297 0.194761
-    ## real_emotionstability.tste_17_4    0.011338   0.044056   0.257 0.796932
-    ## real_emotionstability.tste_17_5    0.078573   0.039387   1.995 0.046189
-    ## real_emotionstability.tste_17_6   -0.005799   0.043025  -0.135 0.892792
-    ## real_emotionstability.tste_17_7    0.007858   0.040992   0.192 0.848008
-    ## real_emotionstability.tste_17_8   -0.012893   0.041541  -0.310 0.756317
-    ## real_emotionstability.tste_17_9   -0.048103   0.040816  -1.179 0.238722
-    ## real_emotionstability.tste_17_10  -0.043094   0.038229  -1.127 0.259760
-    ## real_emotionstability.tste_17_11   0.012111   0.039556   0.306 0.759510
-    ## real_emotionstability.tste_17_12  -0.018930   0.035939  -0.527 0.598438
-    ## real_emotionstability.tste_17_13  -0.017748   0.043063  -0.412 0.680282
-    ## real_emotionstability.tste_17_14  -0.133269   0.038372  -3.473 0.000525
-    ## real_emotionstability.tste_17_15   0.102477   0.045803   2.237 0.025373
-    ## real_emotionstability.tste_17_16   0.014029   0.036267   0.387 0.698930
-    ## real_openness.tste_17_0            0.032728   0.037987   0.862 0.389030
-    ## real_openness.tste_17_1           -0.066274   0.032329  -2.050 0.040495
-    ## real_openness.tste_17_2            0.009826   0.038264   0.257 0.797367
-    ## real_openness.tste_17_3           -0.033790   0.036406  -0.928 0.353445
-    ## real_openness.tste_17_4           -0.001290   0.039072  -0.033 0.973660
-    ## real_openness.tste_17_5            0.045182   0.032832   1.376 0.168932
-    ## real_openness.tste_17_6           -0.041418   0.035997  -1.151 0.250039
-    ## real_openness.tste_17_7           -0.002607   0.034002  -0.077 0.938903
-    ## real_openness.tste_17_8            0.013057   0.035552   0.367 0.713473
-    ## real_openness.tste_17_9           -0.020630   0.034849  -0.592 0.553929
-    ## real_openness.tste_17_10          -0.047115   0.032977  -1.429 0.153228
-    ## real_openness.tste_17_11          -0.013978   0.034491  -0.405 0.685317
-    ## real_openness.tste_17_12           0.074899   0.031512   2.377 0.017556
-    ## real_openness.tste_17_13           0.036856   0.034869   1.057 0.290645
-    ## real_openness.tste_17_14          -0.048163   0.032546  -1.480 0.139076
-    ## real_openness.tste_17_15          -0.027662   0.038848  -0.712 0.476510
-    ## real_openness.tste_17_16          -0.011007   0.031028  -0.355 0.722814
-    ##                                      
-    ## (Intercept)                       .  
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 ** 
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_17_0                            
-    ## tste_17_1                            
-    ## tste_17_2                            
-    ## tste_17_3                         .  
-    ## tste_17_4                            
-    ## tste_17_5                         .  
-    ## tste_17_6                            
-    ## tste_17_7                            
-    ## tste_17_8                            
-    ## tste_17_9                            
-    ## tste_17_10                           
-    ## tste_17_11                           
-    ## tste_17_12                           
-    ## tste_17_13                           
-    ## tste_17_14                        ** 
-    ## tste_17_15                           
-    ## tste_17_16                           
-    ## real_extraversion.tste_17_0          
-    ## real_extraversion.tste_17_1          
-    ## real_extraversion.tste_17_2          
-    ## real_extraversion.tste_17_3          
-    ## real_extraversion.tste_17_4          
-    ## real_extraversion.tste_17_5          
-    ## real_extraversion.tste_17_6          
-    ## real_extraversion.tste_17_7          
-    ## real_extraversion.tste_17_8          
-    ## real_extraversion.tste_17_9          
-    ## real_extraversion.tste_17_10      .  
-    ## real_extraversion.tste_17_11         
-    ## real_extraversion.tste_17_12         
-    ## real_extraversion.tste_17_13         
-    ## real_extraversion.tste_17_14         
-    ## real_extraversion.tste_17_15         
-    ## real_extraversion.tste_17_16         
-    ## real_agreeableness.tste_17_0         
-    ## real_agreeableness.tste_17_1         
-    ## real_agreeableness.tste_17_2         
-    ## real_agreeableness.tste_17_3         
-    ## real_agreeableness.tste_17_4         
-    ## real_agreeableness.tste_17_5         
-    ## real_agreeableness.tste_17_6         
-    ## real_agreeableness.tste_17_7         
-    ## real_agreeableness.tste_17_8      ** 
-    ## real_agreeableness.tste_17_9      .  
-    ## real_agreeableness.tste_17_10        
-    ## real_agreeableness.tste_17_11        
-    ## real_agreeableness.tste_17_12        
-    ## real_agreeableness.tste_17_13        
-    ## real_agreeableness.tste_17_14        
-    ## real_agreeableness.tste_17_15        
-    ## real_agreeableness.tste_17_16        
-    ## real_conscientiousness.tste_17_0     
-    ## real_conscientiousness.tste_17_1     
-    ## real_conscientiousness.tste_17_2     
-    ## real_conscientiousness.tste_17_3  .  
-    ## real_conscientiousness.tste_17_4     
-    ## real_conscientiousness.tste_17_5     
-    ## real_conscientiousness.tste_17_6     
-    ## real_conscientiousness.tste_17_7     
-    ## real_conscientiousness.tste_17_8  .  
-    ## real_conscientiousness.tste_17_9     
-    ## real_conscientiousness.tste_17_10    
-    ## real_conscientiousness.tste_17_11    
-    ## real_conscientiousness.tste_17_12    
-    ## real_conscientiousness.tste_17_13    
-    ## real_conscientiousness.tste_17_14 *  
-    ## real_conscientiousness.tste_17_15    
-    ## real_conscientiousness.tste_17_16    
-    ## real_emotionstability.tste_17_0      
-    ## real_emotionstability.tste_17_1      
-    ## real_emotionstability.tste_17_2      
-    ## real_emotionstability.tste_17_3      
-    ## real_emotionstability.tste_17_4      
-    ## real_emotionstability.tste_17_5   *  
-    ## real_emotionstability.tste_17_6      
-    ## real_emotionstability.tste_17_7      
-    ## real_emotionstability.tste_17_8      
-    ## real_emotionstability.tste_17_9      
-    ## real_emotionstability.tste_17_10     
-    ## real_emotionstability.tste_17_11     
-    ## real_emotionstability.tste_17_12     
-    ## real_emotionstability.tste_17_13     
-    ## real_emotionstability.tste_17_14  ***
-    ## real_emotionstability.tste_17_15  *  
-    ## real_emotionstability.tste_17_16     
-    ## real_openness.tste_17_0              
-    ## real_openness.tste_17_1           *  
-    ## real_openness.tste_17_2              
-    ## real_openness.tste_17_3              
-    ## real_openness.tste_17_4              
-    ## real_openness.tste_17_5              
-    ## real_openness.tste_17_6              
-    ## real_openness.tste_17_7              
-    ## real_openness.tste_17_8              
-    ## real_openness.tste_17_9              
-    ## real_openness.tste_17_10             
-    ## real_openness.tste_17_11             
-    ## real_openness.tste_17_12          *  
-    ## real_openness.tste_17_13             
-    ## real_openness.tste_17_14             
-    ## real_openness.tste_17_15             
-    ## real_openness.tste_17_16             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       31.360029  18.519343   1.693 0.090540 .  
+    ## age                               -0.011330   0.004613  -2.456 0.014132 *  
+    ## education                          0.018843   0.026553   0.710 0.478019    
+    ## income                             0.012038   0.016866   0.714 0.475473    
+    ## race2                              0.050080   0.132738   0.377 0.706002    
+    ## race4                             -0.196829   0.143431  -1.372 0.170126    
+    ## race6                             -1.063743   0.350076  -3.039 0.002407 ** 
+    ## race7                             -0.115647   0.135685  -0.852 0.394137    
+    ## sex2                              -0.124201   0.071854  -1.729 0.084047 .  
+    ## release                           -0.013516   0.009061  -1.492 0.135938    
+    ## star_user                          0.045546   0.067223   0.678 0.498142    
+    ## real_extraversion                  0.053218   0.020515   2.594 0.009554 ** 
+    ## real_agreeableness                -0.009623   0.028038  -0.343 0.731468    
+    ## real_conscientiousness             0.074860   0.030335   2.468 0.013676 *  
+    ## real_emotionstability             -0.009119   0.030840  -0.296 0.767511    
+    ## real_openness                      0.115148   0.025387   4.536 6.08e-06 ***
+    ## tste_17_0                          0.358752   0.443273   0.809 0.418424    
+    ## tste_17_1                          0.338470   0.392631   0.862 0.388759    
+    ## tste_17_2                         -0.230993   0.455563  -0.507 0.612176    
+    ## tste_17_3                          0.762205   0.409640   1.861 0.062936 .  
+    ## tste_17_4                          0.019680   0.448329   0.044 0.964991    
+    ## tste_17_5                         -0.758520   0.388135  -1.954 0.050807 .  
+    ## tste_17_6                         -0.433203   0.447354  -0.968 0.332976    
+    ## tste_17_7                          0.161915   0.408417   0.396 0.691818    
+    ## tste_17_8                         -0.661344   0.414520  -1.595 0.110769    
+    ## tste_17_9                         -0.050600   0.418701  -0.121 0.903821    
+    ## tste_17_10                         0.296161   0.381751   0.776 0.437961    
+    ## tste_17_11                         0.310110   0.395968   0.783 0.433621    
+    ## tste_17_12                        -0.261030   0.355557  -0.734 0.462946    
+    ## tste_17_13                        -0.029101   0.417598  -0.070 0.944449    
+    ## tste_17_14                         1.060963   0.395578   2.682 0.007377 ** 
+    ## tste_17_15                        -0.222207   0.456599  -0.487 0.626554    
+    ## tste_17_16                        -0.128612   0.353408  -0.364 0.715955    
+    ## real_extraversion.tste_17_0       -0.038594   0.030020  -1.286 0.198725    
+    ## real_extraversion.tste_17_1        0.035567   0.025557   1.392 0.164169    
+    ## real_extraversion.tste_17_2       -0.003399   0.031976  -0.106 0.915366    
+    ## real_extraversion.tste_17_3       -0.012571   0.028089  -0.448 0.654519    
+    ## real_extraversion.tste_17_4       -0.027449   0.031458  -0.873 0.383018    
+    ## real_extraversion.tste_17_5       -0.001781   0.026226  -0.068 0.945876    
+    ## real_extraversion.tste_17_6        0.039483   0.029674   1.331 0.183488    
+    ## real_extraversion.tste_17_7       -0.005792   0.027809  -0.208 0.835026    
+    ## real_extraversion.tste_17_8       -0.027096   0.029927  -0.905 0.365360    
+    ## real_extraversion.tste_17_9       -0.005686   0.028639  -0.199 0.842645    
+    ## real_extraversion.tste_17_10      -0.046312   0.025906  -1.788 0.073969 .  
+    ## real_extraversion.tste_17_11       0.035169   0.027537   1.277 0.201689    
+    ## real_extraversion.tste_17_12      -0.002714   0.024566  -0.110 0.912031    
+    ## real_extraversion.tste_17_13      -0.037514   0.028607  -1.311 0.189888    
+    ## real_extraversion.tste_17_14      -0.007039   0.026392  -0.267 0.789721    
+    ## real_extraversion.tste_17_15      -0.006503   0.031691  -0.205 0.837431    
+    ## real_extraversion.tste_17_16       0.006765   0.024471   0.276 0.782245    
+    ## real_agreeableness.tste_17_0       0.004142   0.039780   0.104 0.917085    
+    ## real_agreeableness.tste_17_1      -0.021969   0.036507  -0.602 0.547398    
+    ## real_agreeableness.tste_17_2      -0.006318   0.042315  -0.149 0.881319    
+    ## real_agreeableness.tste_17_3       0.005325   0.038222   0.139 0.889210    
+    ## real_agreeableness.tste_17_4       0.020523   0.043523   0.472 0.637303    
+    ## real_agreeableness.tste_17_5      -0.006530   0.035280  -0.185 0.853189    
+    ## real_agreeableness.tste_17_6       0.060230   0.042829   1.406 0.159793    
+    ## real_agreeableness.tste_17_7      -0.013562   0.037738  -0.359 0.719348    
+    ## real_agreeableness.tste_17_8       0.111635   0.040662   2.745 0.006097 ** 
+    ## real_agreeableness.tste_17_9       0.073726   0.039463   1.868 0.061873 .  
+    ## real_agreeableness.tste_17_10      0.030625   0.035509   0.862 0.388544    
+    ## real_agreeableness.tste_17_11     -0.022066   0.036611  -0.603 0.546767    
+    ## real_agreeableness.tste_17_12      0.037196   0.033946   1.096 0.273332    
+    ## real_agreeableness.tste_17_13      0.007504   0.037259   0.201 0.840405    
+    ## real_agreeableness.tste_17_14      0.047895   0.035501   1.349 0.177454    
+    ## real_agreeableness.tste_17_15     -0.010833   0.044669  -0.243 0.808403    
+    ## real_agreeableness.tste_17_16     -0.027917   0.033091  -0.844 0.398969    
+    ## real_conscientiousness.tste_17_0  -0.029010   0.044310  -0.655 0.512731    
+    ## real_conscientiousness.tste_17_1  -0.002680   0.039375  -0.068 0.945734    
+    ## real_conscientiousness.tste_17_2   0.039369   0.046483   0.847 0.397119    
+    ## real_conscientiousness.tste_17_3  -0.070084   0.041472  -1.690 0.091198 .  
+    ## real_conscientiousness.tste_17_4   0.011892   0.045022   0.264 0.791708    
+    ## real_conscientiousness.tste_17_5   0.055429   0.039914   1.389 0.165079    
+    ## real_conscientiousness.tste_17_6   0.054710   0.046775   1.170 0.242276    
+    ## real_conscientiousness.tste_17_7  -0.006628   0.040547  -0.163 0.870174    
+    ## real_conscientiousness.tste_17_8   0.069686   0.042078   1.656 0.097856 .  
+    ## real_conscientiousness.tste_17_9   0.001084   0.042319   0.026 0.979572    
+    ## real_conscientiousness.tste_17_10  0.044906   0.039455   1.138 0.255196    
+    ## real_conscientiousness.tste_17_11 -0.051177   0.040718  -1.257 0.208944    
+    ## real_conscientiousness.tste_17_12 -0.058468   0.035699  -1.638 0.101612    
+    ## real_conscientiousness.tste_17_13  0.012968   0.043131   0.301 0.763696    
+    ## real_conscientiousness.tste_17_14 -0.091923   0.039851  -2.307 0.021174 *  
+    ## real_conscientiousness.tste_17_15  0.008332   0.047358   0.176 0.860368    
+    ## real_conscientiousness.tste_17_16  0.037990   0.036272   1.047 0.295060    
+    ## real_emotionstability.tste_17_0    0.008769   0.043016   0.204 0.838487    
+    ## real_emotionstability.tste_17_1    0.012027   0.037946   0.317 0.751313    
+    ## real_emotionstability.tste_17_2   -0.020817   0.046393  -0.449 0.653693    
+    ## real_emotionstability.tste_17_3   -0.056689   0.043706  -1.297 0.194761    
+    ## real_emotionstability.tste_17_4    0.011338   0.044056   0.257 0.796932    
+    ## real_emotionstability.tste_17_5    0.078573   0.039387   1.995 0.046189 *  
+    ## real_emotionstability.tste_17_6   -0.005799   0.043025  -0.135 0.892792    
+    ## real_emotionstability.tste_17_7    0.007858   0.040992   0.192 0.848008    
+    ## real_emotionstability.tste_17_8   -0.012893   0.041541  -0.310 0.756317    
+    ## real_emotionstability.tste_17_9   -0.048103   0.040816  -1.179 0.238722    
+    ## real_emotionstability.tste_17_10  -0.043094   0.038229  -1.127 0.259760    
+    ## real_emotionstability.tste_17_11   0.012111   0.039556   0.306 0.759510    
+    ## real_emotionstability.tste_17_12  -0.018930   0.035939  -0.527 0.598438    
+    ## real_emotionstability.tste_17_13  -0.017748   0.043063  -0.412 0.680282    
+    ## real_emotionstability.tste_17_14  -0.133269   0.038372  -3.473 0.000525 ***
+    ## real_emotionstability.tste_17_15   0.102477   0.045803   2.237 0.025373 *  
+    ## real_emotionstability.tste_17_16   0.014029   0.036267   0.387 0.698930    
+    ## real_openness.tste_17_0            0.032728   0.037987   0.862 0.389030    
+    ## real_openness.tste_17_1           -0.066274   0.032329  -2.050 0.040495 *  
+    ## real_openness.tste_17_2            0.009826   0.038264   0.257 0.797367    
+    ## real_openness.tste_17_3           -0.033790   0.036406  -0.928 0.353445    
+    ## real_openness.tste_17_4           -0.001290   0.039072  -0.033 0.973660    
+    ## real_openness.tste_17_5            0.045182   0.032832   1.376 0.168932    
+    ## real_openness.tste_17_6           -0.041418   0.035997  -1.151 0.250039    
+    ## real_openness.tste_17_7           -0.002607   0.034002  -0.077 0.938903    
+    ## real_openness.tste_17_8            0.013057   0.035552   0.367 0.713473    
+    ## real_openness.tste_17_9           -0.020630   0.034849  -0.592 0.553929    
+    ## real_openness.tste_17_10          -0.047115   0.032977  -1.429 0.153228    
+    ## real_openness.tste_17_11          -0.013978   0.034491  -0.405 0.685317    
+    ## real_openness.tste_17_12           0.074899   0.031512   2.377 0.017556 *  
+    ## real_openness.tste_17_13           0.036856   0.034869   1.057 0.290645    
+    ## real_openness.tste_17_14          -0.048163   0.032546  -1.480 0.139076    
+    ## real_openness.tste_17_15          -0.027662   0.038848  -0.712 0.476510    
+    ## real_openness.tste_17_16          -0.011007   0.031028  -0.355 0.722814    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -2604,256 +1897,131 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -5.0569 -0.6908  0.2277  0.9854  3.0603 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       42.8239742 18.1976878   2.353  0.01871
-    ## age                               -0.0108129  0.0046086  -2.346  0.01906
-    ## education                          0.0161755  0.0264568   0.611  0.54101
-    ## income                             0.0125132  0.0168607   0.742  0.45808
-    ## race2                              0.0275401  0.1328674   0.207  0.83582
-    ## race4                             -0.1945660  0.1434585  -1.356  0.17517
-    ## race6                             -1.0761174  0.3487415  -3.086  0.00206
-    ## race7                             -0.1234170  0.1352164  -0.913  0.36149
-    ## sex2                              -0.1183536  0.0718473  -1.647  0.09965
-    ## release                           -0.0188936  0.0089137  -2.120  0.03416
-    ## star_user                         -0.0264991  0.0683434  -0.388  0.69825
-    ## real_extraversion                  0.0518667  0.0205297   2.526  0.01160
-    ## real_agreeableness                -0.0163862  0.0279862  -0.586  0.55827
-    ## real_conscientiousness             0.0701116  0.0304318   2.304  0.02133
-    ## real_emotionstability             -0.0111754  0.0308845  -0.362  0.71751
-    ## real_openness                      0.1119031  0.0253891   4.408  1.1e-05
-    ## tste_18_0                         -0.1899489  0.4250993  -0.447  0.65504
-    ## tste_18_1                          0.6821458  0.3844524   1.774  0.07616
-    ## tste_18_2                          0.4247958  0.3736670   1.137  0.25574
-    ## tste_18_3                         -0.0176210  0.3883350  -0.045  0.96381
-    ## tste_18_4                          0.4553333  0.4567133   0.997  0.31889
-    ## tste_18_5                         -0.0942366  0.4393276  -0.215  0.83018
-    ## tste_18_6                          0.5289226  0.4250987   1.244  0.21356
-    ## tste_18_7                         -0.6861105  0.3762594  -1.824  0.06838
-    ## tste_18_8                          0.2977196  0.4221291   0.705  0.48072
-    ## tste_18_9                          0.1458762  0.4234349   0.345  0.73050
-    ## tste_18_10                         0.2049388  0.4288613   0.478  0.63280
-    ## tste_18_11                         0.0820500  0.3989248   0.206  0.83706
-    ## tste_18_12                         0.1174791  0.4158406   0.283  0.77758
-    ## tste_18_13                         0.1725492  0.4274973   0.404  0.68653
-    ## tste_18_14                         0.5141264  0.4481616   1.147  0.25144
-    ## tste_18_15                        -0.3936099  0.4826313  -0.816  0.41485
-    ## tste_18_16                        -0.9700392  0.4322314  -2.244  0.02492
-    ## tste_18_17                         0.1793923  0.4252957   0.422  0.67321
-    ## real_extraversion.tste_18_0        0.0548735  0.0294356   1.864  0.06244
-    ## real_extraversion.tste_18_1        0.0081998  0.0266586   0.308  0.75843
-    ## real_extraversion.tste_18_2        0.0131398  0.0252092   0.521  0.60226
-    ## real_extraversion.tste_18_3        0.0405199  0.0276258   1.467  0.14260
-    ## real_extraversion.tste_18_4       -0.0307774  0.0304956  -1.009  0.31298
-    ## real_extraversion.tste_18_5       -0.0047674  0.0294307  -0.162  0.87133
-    ## real_extraversion.tste_18_6       -0.0103522  0.0295892  -0.350  0.72648
-    ## real_extraversion.tste_18_7        0.0197521  0.0263488   0.750  0.45356
-    ## real_extraversion.tste_18_8        0.0149557  0.0293172   0.510  0.61001
-    ## real_extraversion.tste_18_9        0.0456262  0.0293208   1.556  0.11984
-    ## real_extraversion.tste_18_10      -0.0163786  0.0292708  -0.560  0.57585
-    ## real_extraversion.tste_18_11      -0.0014623  0.0279303  -0.052  0.95825
-    ## real_extraversion.tste_18_12      -0.0005188  0.0289333  -0.018  0.98570
-    ## real_extraversion.tste_18_13      -0.0337831  0.0291340  -1.160  0.24636
-    ## real_extraversion.tste_18_14       0.0369119  0.0305285   1.209  0.22677
-    ## real_extraversion.tste_18_15       0.0144562  0.0322270   0.449  0.65379
-    ## real_extraversion.tste_18_16       0.0289126  0.0303614   0.952  0.34107
-    ## real_extraversion.tste_18_17       0.0304298  0.0286377   1.063  0.28810
-    ## real_agreeableness.tste_18_0       0.0177034  0.0383998   0.461  0.64483
-    ## real_agreeableness.tste_18_1      -0.0161125  0.0358786  -0.449  0.65342
-    ## real_agreeableness.tste_18_2       0.0130107  0.0349665   0.372  0.70986
-    ## real_agreeableness.tste_18_3      -0.0664833  0.0380895  -1.745  0.08106
-    ## real_agreeableness.tste_18_4      -0.1001119  0.0411328  -2.434  0.01502
-    ## real_agreeableness.tste_18_5      -0.0430121  0.0409535  -1.050  0.29372
-    ## real_agreeableness.tste_18_6       0.0351362  0.0387380   0.907  0.36450
-    ## real_agreeableness.tste_18_7       0.0108363  0.0372145   0.291  0.77094
-    ## real_agreeableness.tste_18_8       0.0148838  0.0392631   0.379  0.70467
-    ## real_agreeableness.tste_18_9      -0.0134049  0.0395397  -0.339  0.73463
-    ## real_agreeableness.tste_18_10      0.0329571  0.0395258   0.834  0.40449
-    ## real_agreeableness.tste_18_11      0.0145587  0.0380592   0.383  0.70211
-    ## real_agreeableness.tste_18_12      0.0198743  0.0395294   0.503  0.61518
-    ## real_agreeableness.tste_18_13      0.0741381  0.0400464   1.851  0.06427
-    ## real_agreeableness.tste_18_14     -0.0406472  0.0404648  -1.005  0.31526
-    ## real_agreeableness.tste_18_15      0.0039872  0.0432528   0.092  0.92656
-    ## real_agreeableness.tste_18_16      0.0451830  0.0398962   1.133  0.25755
-    ## real_agreeableness.tste_18_17     -0.0273558  0.0392989  -0.696  0.48645
-    ## real_conscientiousness.tste_18_0  -0.0527227  0.0430588  -1.224  0.22093
-    ## real_conscientiousness.tste_18_1  -0.0212084  0.0391738  -0.541  0.58830
-    ## real_conscientiousness.tste_18_2  -0.0512327  0.0372654  -1.375  0.16934
-    ## real_conscientiousness.tste_18_3   0.0329792  0.0396734   0.831  0.40592
-    ## real_conscientiousness.tste_18_4  -0.0131587  0.0459613  -0.286  0.77468
-    ## real_conscientiousness.tste_18_5  -0.0522938  0.0446143  -1.172  0.24128
-    ## real_conscientiousness.tste_18_6  -0.0785003  0.0430571  -1.823  0.06843
-    ## real_conscientiousness.tste_18_7   0.0694121  0.0384243   1.806  0.07100
-    ## real_conscientiousness.tste_18_8   0.0143564  0.0428883   0.335  0.73786
-    ## real_conscientiousness.tste_18_9  -0.0532187  0.0424330  -1.254  0.20992
-    ## real_conscientiousness.tste_18_10 -0.0723456  0.0434107  -1.667  0.09576
-    ## real_conscientiousness.tste_18_11  0.0069763  0.0394284   0.177  0.85958
-    ## real_conscientiousness.tste_18_12 -0.0497656  0.0416880  -1.194  0.23271
-    ## real_conscientiousness.tste_18_13  0.0045917  0.0428628   0.107  0.91470
-    ## real_conscientiousness.tste_18_14 -0.0664370  0.0467727  -1.420  0.15564
-    ## real_conscientiousness.tste_18_15 -0.0024028  0.0487383  -0.049  0.96068
-    ## real_conscientiousness.tste_18_16  0.0703366  0.0451036   1.559  0.11905
-    ## real_conscientiousness.tste_18_17 -0.0305346  0.0433993  -0.704  0.48178
-    ## real_emotionstability.tste_18_0    0.0275816  0.0427224   0.646  0.51861
-    ## real_emotionstability.tste_18_1   -0.0610221  0.0381981  -1.598  0.11031
-    ## real_emotionstability.tste_18_2   -0.0666209  0.0365860  -1.821  0.06876
-    ## real_emotionstability.tste_18_3    0.0099221  0.0393058   0.252  0.80073
-    ## real_emotionstability.tste_18_4    0.0057195  0.0441512   0.130  0.89694
-    ## real_emotionstability.tste_18_5    0.0715371  0.0431909   1.656  0.09782
-    ## real_emotionstability.tste_18_6   -0.0255018  0.0425908  -0.599  0.54940
-    ## real_emotionstability.tste_18_7    0.0512914  0.0372537   1.377  0.16872
-    ## real_emotionstability.tste_18_8   -0.0216486  0.0432683  -0.500  0.61689
-    ## real_emotionstability.tste_18_9   -0.0755876  0.0428856  -1.763  0.07813
-    ## real_emotionstability.tste_18_10  -0.0107379  0.0432702  -0.248  0.80404
-    ## real_emotionstability.tste_18_11   0.0025167  0.0403548   0.062  0.95028
-    ## real_emotionstability.tste_18_12  -0.0428551  0.0424970  -1.008  0.31337
-    ## real_emotionstability.tste_18_13  -0.0756257  0.0414711  -1.824  0.06836
-    ## real_emotionstability.tste_18_14   0.0427619  0.0450614   0.949  0.34275
-    ## real_emotionstability.tste_18_15   0.0042704  0.0484733   0.088  0.92981
-    ## real_emotionstability.tste_18_16   0.0313101  0.0433361   0.722  0.47008
-    ## real_emotionstability.tste_18_17  -0.0263013  0.0408167  -0.644  0.51941
-    ## real_openness.tste_18_0            0.0069219  0.0361754   0.191  0.84828
-    ## real_openness.tste_18_1           -0.0389649  0.0330488  -1.179  0.23853
-    ## real_openness.tste_18_2           -0.0059754  0.0322288  -0.185  0.85293
-    ## real_openness.tste_18_3           -0.0273616  0.0332707  -0.822  0.41095
-    ## real_openness.tste_18_4            0.0154769  0.0391361   0.395  0.69254
-    ## real_openness.tste_18_5            0.0505511  0.0359761   1.405  0.16014
-    ## real_openness.tste_18_6           -0.0270556  0.0363914  -0.743  0.45729
-    ## real_openness.tste_18_7            0.0024082  0.0327901   0.073  0.94146
-    ## real_openness.tste_18_8           -0.0624528  0.0369676  -1.689  0.09130
-    ## real_openness.tste_18_9            0.0288090  0.0359419   0.802  0.42291
-    ## real_openness.tste_18_10           0.0506639  0.0363929   1.392  0.16403
-    ## real_openness.tste_18_11          -0.0178630  0.0341676  -0.523  0.60117
-    ## real_openness.tste_18_12           0.0266898  0.0362351   0.737  0.46147
-    ## real_openness.tste_18_13          -0.0164575  0.0367823  -0.447  0.65461
-    ## real_openness.tste_18_14          -0.0491312  0.0378231  -1.299  0.19410
-    ## real_openness.tste_18_15           0.0970607  0.0401609   2.417  0.01575
-    ## real_openness.tste_18_16          -0.0011164  0.0372986  -0.030  0.97613
-    ## real_openness.tste_18_17           0.0157401  0.0349542   0.450  0.65254
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                              .  
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                 *  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_18_0                            
-    ## tste_18_1                         .  
-    ## tste_18_2                            
-    ## tste_18_3                            
-    ## tste_18_4                            
-    ## tste_18_5                            
-    ## tste_18_6                            
-    ## tste_18_7                         .  
-    ## tste_18_8                            
-    ## tste_18_9                            
-    ## tste_18_10                           
-    ## tste_18_11                           
-    ## tste_18_12                           
-    ## tste_18_13                           
-    ## tste_18_14                           
-    ## tste_18_15                           
-    ## tste_18_16                        *  
-    ## tste_18_17                           
-    ## real_extraversion.tste_18_0       .  
-    ## real_extraversion.tste_18_1          
-    ## real_extraversion.tste_18_2          
-    ## real_extraversion.tste_18_3          
-    ## real_extraversion.tste_18_4          
-    ## real_extraversion.tste_18_5          
-    ## real_extraversion.tste_18_6          
-    ## real_extraversion.tste_18_7          
-    ## real_extraversion.tste_18_8          
-    ## real_extraversion.tste_18_9          
-    ## real_extraversion.tste_18_10         
-    ## real_extraversion.tste_18_11         
-    ## real_extraversion.tste_18_12         
-    ## real_extraversion.tste_18_13         
-    ## real_extraversion.tste_18_14         
-    ## real_extraversion.tste_18_15         
-    ## real_extraversion.tste_18_16         
-    ## real_extraversion.tste_18_17         
-    ## real_agreeableness.tste_18_0         
-    ## real_agreeableness.tste_18_1         
-    ## real_agreeableness.tste_18_2         
-    ## real_agreeableness.tste_18_3      .  
-    ## real_agreeableness.tste_18_4      *  
-    ## real_agreeableness.tste_18_5         
-    ## real_agreeableness.tste_18_6         
-    ## real_agreeableness.tste_18_7         
-    ## real_agreeableness.tste_18_8         
-    ## real_agreeableness.tste_18_9         
-    ## real_agreeableness.tste_18_10        
-    ## real_agreeableness.tste_18_11        
-    ## real_agreeableness.tste_18_12        
-    ## real_agreeableness.tste_18_13     .  
-    ## real_agreeableness.tste_18_14        
-    ## real_agreeableness.tste_18_15        
-    ## real_agreeableness.tste_18_16        
-    ## real_agreeableness.tste_18_17        
-    ## real_conscientiousness.tste_18_0     
-    ## real_conscientiousness.tste_18_1     
-    ## real_conscientiousness.tste_18_2     
-    ## real_conscientiousness.tste_18_3     
-    ## real_conscientiousness.tste_18_4     
-    ## real_conscientiousness.tste_18_5     
-    ## real_conscientiousness.tste_18_6  .  
-    ## real_conscientiousness.tste_18_7  .  
-    ## real_conscientiousness.tste_18_8     
-    ## real_conscientiousness.tste_18_9     
-    ## real_conscientiousness.tste_18_10 .  
-    ## real_conscientiousness.tste_18_11    
-    ## real_conscientiousness.tste_18_12    
-    ## real_conscientiousness.tste_18_13    
-    ## real_conscientiousness.tste_18_14    
-    ## real_conscientiousness.tste_18_15    
-    ## real_conscientiousness.tste_18_16    
-    ## real_conscientiousness.tste_18_17    
-    ## real_emotionstability.tste_18_0      
-    ## real_emotionstability.tste_18_1      
-    ## real_emotionstability.tste_18_2   .  
-    ## real_emotionstability.tste_18_3      
-    ## real_emotionstability.tste_18_4      
-    ## real_emotionstability.tste_18_5   .  
-    ## real_emotionstability.tste_18_6      
-    ## real_emotionstability.tste_18_7      
-    ## real_emotionstability.tste_18_8      
-    ## real_emotionstability.tste_18_9   .  
-    ## real_emotionstability.tste_18_10     
-    ## real_emotionstability.tste_18_11     
-    ## real_emotionstability.tste_18_12     
-    ## real_emotionstability.tste_18_13  .  
-    ## real_emotionstability.tste_18_14     
-    ## real_emotionstability.tste_18_15     
-    ## real_emotionstability.tste_18_16     
-    ## real_emotionstability.tste_18_17     
-    ## real_openness.tste_18_0              
-    ## real_openness.tste_18_1              
-    ## real_openness.tste_18_2              
-    ## real_openness.tste_18_3              
-    ## real_openness.tste_18_4              
-    ## real_openness.tste_18_5              
-    ## real_openness.tste_18_6              
-    ## real_openness.tste_18_7              
-    ## real_openness.tste_18_8           .  
-    ## real_openness.tste_18_9              
-    ## real_openness.tste_18_10             
-    ## real_openness.tste_18_11             
-    ## real_openness.tste_18_12             
-    ## real_openness.tste_18_13             
-    ## real_openness.tste_18_14             
-    ## real_openness.tste_18_15          *  
-    ## real_openness.tste_18_16             
-    ## real_openness.tste_18_17             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       42.8239742 18.1976878   2.353  0.01871 *  
+    ## age                               -0.0108129  0.0046086  -2.346  0.01906 *  
+    ## education                          0.0161755  0.0264568   0.611  0.54101    
+    ## income                             0.0125132  0.0168607   0.742  0.45808    
+    ## race2                              0.0275401  0.1328674   0.207  0.83582    
+    ## race4                             -0.1945660  0.1434585  -1.356  0.17517    
+    ## race6                             -1.0761174  0.3487415  -3.086  0.00206 ** 
+    ## race7                             -0.1234170  0.1352164  -0.913  0.36149    
+    ## sex2                              -0.1183536  0.0718473  -1.647  0.09965 .  
+    ## release                           -0.0188936  0.0089137  -2.120  0.03416 *  
+    ## star_user                         -0.0264991  0.0683434  -0.388  0.69825    
+    ## real_extraversion                  0.0518667  0.0205297   2.526  0.01160 *  
+    ## real_agreeableness                -0.0163862  0.0279862  -0.586  0.55827    
+    ## real_conscientiousness             0.0701116  0.0304318   2.304  0.02133 *  
+    ## real_emotionstability             -0.0111754  0.0308845  -0.362  0.71751    
+    ## real_openness                      0.1119031  0.0253891   4.408  1.1e-05 ***
+    ## tste_18_0                         -0.1899489  0.4250993  -0.447  0.65504    
+    ## tste_18_1                          0.6821458  0.3844524   1.774  0.07616 .  
+    ## tste_18_2                          0.4247958  0.3736670   1.137  0.25574    
+    ## tste_18_3                         -0.0176210  0.3883350  -0.045  0.96381    
+    ## tste_18_4                          0.4553333  0.4567133   0.997  0.31889    
+    ## tste_18_5                         -0.0942366  0.4393276  -0.215  0.83018    
+    ## tste_18_6                          0.5289226  0.4250987   1.244  0.21356    
+    ## tste_18_7                         -0.6861105  0.3762594  -1.824  0.06838 .  
+    ## tste_18_8                          0.2977196  0.4221291   0.705  0.48072    
+    ## tste_18_9                          0.1458762  0.4234349   0.345  0.73050    
+    ## tste_18_10                         0.2049388  0.4288613   0.478  0.63280    
+    ## tste_18_11                         0.0820500  0.3989248   0.206  0.83706    
+    ## tste_18_12                         0.1174791  0.4158406   0.283  0.77758    
+    ## tste_18_13                         0.1725492  0.4274973   0.404  0.68653    
+    ## tste_18_14                         0.5141264  0.4481616   1.147  0.25144    
+    ## tste_18_15                        -0.3936099  0.4826313  -0.816  0.41485    
+    ## tste_18_16                        -0.9700392  0.4322314  -2.244  0.02492 *  
+    ## tste_18_17                         0.1793923  0.4252957   0.422  0.67321    
+    ## real_extraversion.tste_18_0        0.0548735  0.0294356   1.864  0.06244 .  
+    ## real_extraversion.tste_18_1        0.0081998  0.0266586   0.308  0.75843    
+    ## real_extraversion.tste_18_2        0.0131398  0.0252092   0.521  0.60226    
+    ## real_extraversion.tste_18_3        0.0405199  0.0276258   1.467  0.14260    
+    ## real_extraversion.tste_18_4       -0.0307774  0.0304956  -1.009  0.31298    
+    ## real_extraversion.tste_18_5       -0.0047674  0.0294307  -0.162  0.87133    
+    ## real_extraversion.tste_18_6       -0.0103522  0.0295892  -0.350  0.72648    
+    ## real_extraversion.tste_18_7        0.0197521  0.0263488   0.750  0.45356    
+    ## real_extraversion.tste_18_8        0.0149557  0.0293172   0.510  0.61001    
+    ## real_extraversion.tste_18_9        0.0456262  0.0293208   1.556  0.11984    
+    ## real_extraversion.tste_18_10      -0.0163786  0.0292708  -0.560  0.57585    
+    ## real_extraversion.tste_18_11      -0.0014623  0.0279303  -0.052  0.95825    
+    ## real_extraversion.tste_18_12      -0.0005188  0.0289333  -0.018  0.98570    
+    ## real_extraversion.tste_18_13      -0.0337831  0.0291340  -1.160  0.24636    
+    ## real_extraversion.tste_18_14       0.0369119  0.0305285   1.209  0.22677    
+    ## real_extraversion.tste_18_15       0.0144562  0.0322270   0.449  0.65379    
+    ## real_extraversion.tste_18_16       0.0289126  0.0303614   0.952  0.34107    
+    ## real_extraversion.tste_18_17       0.0304298  0.0286377   1.063  0.28810    
+    ## real_agreeableness.tste_18_0       0.0177034  0.0383998   0.461  0.64483    
+    ## real_agreeableness.tste_18_1      -0.0161125  0.0358786  -0.449  0.65342    
+    ## real_agreeableness.tste_18_2       0.0130107  0.0349665   0.372  0.70986    
+    ## real_agreeableness.tste_18_3      -0.0664833  0.0380895  -1.745  0.08106 .  
+    ## real_agreeableness.tste_18_4      -0.1001119  0.0411328  -2.434  0.01502 *  
+    ## real_agreeableness.tste_18_5      -0.0430121  0.0409535  -1.050  0.29372    
+    ## real_agreeableness.tste_18_6       0.0351362  0.0387380   0.907  0.36450    
+    ## real_agreeableness.tste_18_7       0.0108363  0.0372145   0.291  0.77094    
+    ## real_agreeableness.tste_18_8       0.0148838  0.0392631   0.379  0.70467    
+    ## real_agreeableness.tste_18_9      -0.0134049  0.0395397  -0.339  0.73463    
+    ## real_agreeableness.tste_18_10      0.0329571  0.0395258   0.834  0.40449    
+    ## real_agreeableness.tste_18_11      0.0145587  0.0380592   0.383  0.70211    
+    ## real_agreeableness.tste_18_12      0.0198743  0.0395294   0.503  0.61518    
+    ## real_agreeableness.tste_18_13      0.0741381  0.0400464   1.851  0.06427 .  
+    ## real_agreeableness.tste_18_14     -0.0406472  0.0404648  -1.005  0.31526    
+    ## real_agreeableness.tste_18_15      0.0039872  0.0432528   0.092  0.92656    
+    ## real_agreeableness.tste_18_16      0.0451830  0.0398962   1.133  0.25755    
+    ## real_agreeableness.tste_18_17     -0.0273558  0.0392989  -0.696  0.48645    
+    ## real_conscientiousness.tste_18_0  -0.0527227  0.0430588  -1.224  0.22093    
+    ## real_conscientiousness.tste_18_1  -0.0212084  0.0391738  -0.541  0.58830    
+    ## real_conscientiousness.tste_18_2  -0.0512327  0.0372654  -1.375  0.16934    
+    ## real_conscientiousness.tste_18_3   0.0329792  0.0396734   0.831  0.40592    
+    ## real_conscientiousness.tste_18_4  -0.0131587  0.0459613  -0.286  0.77468    
+    ## real_conscientiousness.tste_18_5  -0.0522938  0.0446143  -1.172  0.24128    
+    ## real_conscientiousness.tste_18_6  -0.0785003  0.0430571  -1.823  0.06843 .  
+    ## real_conscientiousness.tste_18_7   0.0694121  0.0384243   1.806  0.07100 .  
+    ## real_conscientiousness.tste_18_8   0.0143564  0.0428883   0.335  0.73786    
+    ## real_conscientiousness.tste_18_9  -0.0532187  0.0424330  -1.254  0.20992    
+    ## real_conscientiousness.tste_18_10 -0.0723456  0.0434107  -1.667  0.09576 .  
+    ## real_conscientiousness.tste_18_11  0.0069763  0.0394284   0.177  0.85958    
+    ## real_conscientiousness.tste_18_12 -0.0497656  0.0416880  -1.194  0.23271    
+    ## real_conscientiousness.tste_18_13  0.0045917  0.0428628   0.107  0.91470    
+    ## real_conscientiousness.tste_18_14 -0.0664370  0.0467727  -1.420  0.15564    
+    ## real_conscientiousness.tste_18_15 -0.0024028  0.0487383  -0.049  0.96068    
+    ## real_conscientiousness.tste_18_16  0.0703366  0.0451036   1.559  0.11905    
+    ## real_conscientiousness.tste_18_17 -0.0305346  0.0433993  -0.704  0.48178    
+    ## real_emotionstability.tste_18_0    0.0275816  0.0427224   0.646  0.51861    
+    ## real_emotionstability.tste_18_1   -0.0610221  0.0381981  -1.598  0.11031    
+    ## real_emotionstability.tste_18_2   -0.0666209  0.0365860  -1.821  0.06876 .  
+    ## real_emotionstability.tste_18_3    0.0099221  0.0393058   0.252  0.80073    
+    ## real_emotionstability.tste_18_4    0.0057195  0.0441512   0.130  0.89694    
+    ## real_emotionstability.tste_18_5    0.0715371  0.0431909   1.656  0.09782 .  
+    ## real_emotionstability.tste_18_6   -0.0255018  0.0425908  -0.599  0.54940    
+    ## real_emotionstability.tste_18_7    0.0512914  0.0372537   1.377  0.16872    
+    ## real_emotionstability.tste_18_8   -0.0216486  0.0432683  -0.500  0.61689    
+    ## real_emotionstability.tste_18_9   -0.0755876  0.0428856  -1.763  0.07813 .  
+    ## real_emotionstability.tste_18_10  -0.0107379  0.0432702  -0.248  0.80404    
+    ## real_emotionstability.tste_18_11   0.0025167  0.0403548   0.062  0.95028    
+    ## real_emotionstability.tste_18_12  -0.0428551  0.0424970  -1.008  0.31337    
+    ## real_emotionstability.tste_18_13  -0.0756257  0.0414711  -1.824  0.06836 .  
+    ## real_emotionstability.tste_18_14   0.0427619  0.0450614   0.949  0.34275    
+    ## real_emotionstability.tste_18_15   0.0042704  0.0484733   0.088  0.92981    
+    ## real_emotionstability.tste_18_16   0.0313101  0.0433361   0.722  0.47008    
+    ## real_emotionstability.tste_18_17  -0.0263013  0.0408167  -0.644  0.51941    
+    ## real_openness.tste_18_0            0.0069219  0.0361754   0.191  0.84828    
+    ## real_openness.tste_18_1           -0.0389649  0.0330488  -1.179  0.23853    
+    ## real_openness.tste_18_2           -0.0059754  0.0322288  -0.185  0.85293    
+    ## real_openness.tste_18_3           -0.0273616  0.0332707  -0.822  0.41095    
+    ## real_openness.tste_18_4            0.0154769  0.0391361   0.395  0.69254    
+    ## real_openness.tste_18_5            0.0505511  0.0359761   1.405  0.16014    
+    ## real_openness.tste_18_6           -0.0270556  0.0363914  -0.743  0.45729    
+    ## real_openness.tste_18_7            0.0024082  0.0327901   0.073  0.94146    
+    ## real_openness.tste_18_8           -0.0624528  0.0369676  -1.689  0.09130 .  
+    ## real_openness.tste_18_9            0.0288090  0.0359419   0.802  0.42291    
+    ## real_openness.tste_18_10           0.0506639  0.0363929   1.392  0.16403    
+    ## real_openness.tste_18_11          -0.0178630  0.0341676  -0.523  0.60117    
+    ## real_openness.tste_18_12           0.0266898  0.0362351   0.737  0.46147    
+    ## real_openness.tste_18_13          -0.0164575  0.0367823  -0.447  0.65461    
+    ## real_openness.tste_18_14          -0.0491312  0.0378231  -1.299  0.19410    
+    ## real_openness.tste_18_15           0.0970607  0.0401609   2.417  0.01575 *  
+    ## real_openness.tste_18_16          -0.0011164  0.0372986  -0.030  0.97613    
+    ## real_openness.tste_18_17           0.0157401  0.0349542   0.450  0.65254    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -2870,268 +2038,137 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -5.2908 -0.6863  0.2388  0.9624  3.1391 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       34.286006  18.749954   1.829  0.06761
-    ## age                               -0.010722   0.004641  -2.310  0.02098
-    ## education                          0.019243   0.026654   0.722  0.47041
-    ## income                             0.014712   0.016931   0.869  0.38497
-    ## race2                              0.034040   0.133189   0.256  0.79830
-    ## race4                             -0.215123   0.143962  -1.494  0.13525
-    ## race6                             -1.028789   0.350762  -2.933  0.00339
-    ## race7                             -0.127190   0.136322  -0.933  0.35093
-    ## sex2                              -0.114914   0.072142  -1.593  0.11134
-    ## release                           -0.014949   0.009193  -1.626  0.10406
-    ## star_user                          0.034066   0.067188   0.507  0.61219
-    ## real_extraversion                  0.053681   0.020615   2.604  0.00928
-    ## real_agreeableness                -0.014637   0.028121  -0.520  0.60278
-    ## real_conscientiousness             0.075702   0.030491   2.483  0.01312
-    ## real_emotionstability             -0.004965   0.031100  -0.160  0.87316
-    ## real_openness                      0.117991   0.025479   4.631 3.87e-06
-    ## tste_19_0                         -0.267051   0.398138  -0.671  0.50246
-    ## tste_19_1                         -0.121892   0.478086  -0.255  0.79878
-    ## tste_19_2                          0.024378   0.439312   0.055  0.95575
-    ## tste_19_3                         -0.013445   0.421001  -0.032  0.97453
-    ## tste_19_4                         -0.649654   0.443032  -1.466  0.14270
-    ## tste_19_5                          0.135255   0.465024   0.291  0.77119
-    ## tste_19_6                          0.724632   0.438243   1.653  0.09839
-    ## tste_19_7                         -0.916614   0.400754  -2.287  0.02229
-    ## tste_19_8                          0.467415   0.424476   1.101  0.27096
-    ## tste_19_9                         -1.003988   0.448951  -2.236  0.02544
-    ## tste_19_10                        -0.020824   0.421990  -0.049  0.96065
-    ## tste_19_11                        -0.161365   0.410037  -0.394  0.69396
-    ## tste_19_12                         1.045571   0.376774   2.775  0.00557
-    ## tste_19_13                         0.038703   0.391992   0.099  0.92136
-    ## tste_19_14                         0.176227   0.389139   0.453  0.65070
-    ## tste_19_15                        -0.718535   0.401173  -1.791  0.07343
-    ## tste_19_16                         0.420413   0.426280   0.986  0.32414
-    ## tste_19_17                        -0.136461   0.438090  -0.311  0.75546
-    ## tste_19_18                         0.372582   0.368517   1.011  0.31212
-    ## real_extraversion.tste_19_0       -0.004949   0.025889  -0.191  0.84842
-    ## real_extraversion.tste_19_1       -0.002028   0.031361  -0.065  0.94845
-    ## real_extraversion.tste_19_2       -0.002356   0.030494  -0.077  0.93843
-    ## real_extraversion.tste_19_3        0.004574   0.028065   0.163  0.87056
-    ## real_extraversion.tste_19_4       -0.004939   0.031662  -0.156  0.87606
-    ## real_extraversion.tste_19_5        0.004617   0.031327   0.147  0.88284
-    ## real_extraversion.tste_19_6       -0.053665   0.029972  -1.790  0.07353
-    ## real_extraversion.tste_19_7       -0.014661   0.028362  -0.517  0.60526
-    ## real_extraversion.tste_19_8       -0.001272   0.028845  -0.044  0.96484
-    ## real_extraversion.tste_19_9       -0.016717   0.030724  -0.544  0.58644
-    ## real_extraversion.tste_19_10       0.041918   0.028935   1.449  0.14759
-    ## real_extraversion.tste_19_11       0.024296   0.026745   0.908  0.36377
-    ## real_extraversion.tste_19_12      -0.042076   0.026061  -1.615  0.10657
-    ## real_extraversion.tste_19_13       0.028159   0.027113   1.039  0.29913
-    ## real_extraversion.tste_19_14      -0.053514   0.027545  -1.943  0.05219
-    ## real_extraversion.tste_19_15       0.024196   0.027273   0.887  0.37509
-    ## real_extraversion.tste_19_16       0.001427   0.028970   0.049  0.96071
-    ## real_extraversion.tste_19_17      -0.029521   0.029317  -1.007  0.31407
-    ## real_extraversion.tste_19_18       0.013772   0.025129   0.548  0.58371
-    ## real_agreeableness.tste_19_0       0.024809   0.036794   0.674  0.50022
-    ## real_agreeableness.tste_19_1      -0.036692   0.041501  -0.884  0.37674
-    ## real_agreeableness.tste_19_2      -0.044976   0.041563  -1.082  0.27933
-    ## real_agreeableness.tste_19_3       0.067545   0.038719   1.744  0.08123
-    ## real_agreeableness.tste_19_4       0.002966   0.040006   0.074  0.94091
-    ## real_agreeableness.tste_19_5       0.028011   0.041819   0.670  0.50305
-    ## real_agreeableness.tste_19_6       0.056223   0.041269   1.362  0.17323
-    ## real_agreeableness.tste_19_7       0.040200   0.037295   1.078  0.28121
-    ## real_agreeableness.tste_19_8       0.015228   0.038463   0.396  0.69221
-    ## real_agreeableness.tste_19_9       0.011359   0.041009   0.277  0.78182
-    ## real_agreeableness.tste_19_10     -0.025558   0.040195  -0.636  0.52494
-    ## real_agreeableness.tste_19_11      0.016660   0.036510   0.456  0.64821
-    ## real_agreeableness.tste_19_12     -0.042123   0.036770  -1.146  0.25211
-    ## real_agreeableness.tste_19_13      0.002490   0.037228   0.067  0.94669
-    ## real_agreeableness.tste_19_14      0.023180   0.039719   0.584  0.55955
-    ## real_agreeableness.tste_19_15     -0.001922   0.038567  -0.050  0.96026
-    ## real_agreeableness.tste_19_16     -0.089407   0.038276  -2.336  0.01960
-    ## real_agreeableness.tste_19_17     -0.049733   0.041185  -1.208  0.22737
-    ## real_agreeableness.tste_19_18     -0.017124   0.033485  -0.511  0.60913
-    ## real_conscientiousness.tste_19_0   0.025624   0.041364   0.619  0.53567
-    ## real_conscientiousness.tste_19_1   0.059185   0.048909   1.210  0.22638
-    ## real_conscientiousness.tste_19_2  -0.022021   0.043541  -0.506  0.61309
-    ## real_conscientiousness.tste_19_3  -0.008331   0.042880  -0.194  0.84598
-    ## real_conscientiousness.tste_19_4   0.066029   0.044619   1.480  0.13907
-    ## real_conscientiousness.tste_19_5  -0.006640   0.047859  -0.139  0.88967
-    ## real_conscientiousness.tste_19_6  -0.026612   0.045068  -0.590  0.55494
-    ## real_conscientiousness.tste_19_7   0.118260   0.041024   2.883  0.00398
-    ## real_conscientiousness.tste_19_8  -0.077363   0.041778  -1.852  0.06421
-    ## real_conscientiousness.tste_19_9   0.097703   0.045116   2.166  0.03046
-    ## real_conscientiousness.tste_19_10 -0.019540   0.042430  -0.461  0.64519
-    ## real_conscientiousness.tste_19_11 -0.028947   0.039831  -0.727  0.46746
-    ## real_conscientiousness.tste_19_12 -0.021211   0.037744  -0.562  0.57420
-    ## real_conscientiousness.tste_19_13  0.066062   0.039592   1.669  0.09536
-    ## real_conscientiousness.tste_19_14  0.010707   0.039500   0.271  0.78636
-    ## real_conscientiousness.tste_19_15  0.028793   0.040381   0.713  0.47590
-    ## real_conscientiousness.tste_19_16 -0.030875   0.043612  -0.708  0.47906
-    ## real_conscientiousness.tste_19_17  0.007012   0.044003   0.159  0.87341
-    ## real_conscientiousness.tste_19_18 -0.008686   0.037406  -0.232  0.81641
-    ## real_emotionstability.tste_19_0    0.006394   0.040064   0.160  0.87323
-    ## real_emotionstability.tste_19_1    0.061540   0.047374   1.299  0.19409
-    ## real_emotionstability.tste_19_2    0.040123   0.045431   0.883  0.37726
-    ## real_emotionstability.tste_19_3   -0.039771   0.040315  -0.987  0.32400
-    ## real_emotionstability.tste_19_4    0.024566   0.045461   0.540  0.58900
-    ## real_emotionstability.tste_19_5   -0.097410   0.047186  -2.064  0.03911
-    ## real_emotionstability.tste_19_6   -0.068211   0.043807  -1.557  0.11962
-    ## real_emotionstability.tste_19_7    0.072529   0.040507   1.791  0.07352
-    ## real_emotionstability.tste_19_8   -0.028032   0.042435  -0.661  0.50895
-    ## real_emotionstability.tste_19_9    0.043681   0.045006   0.971  0.33189
-    ## real_emotionstability.tste_19_10   0.059846   0.040437   1.480  0.13903
-    ## real_emotionstability.tste_19_11   0.010265   0.041172   0.249  0.80314
-    ## real_emotionstability.tste_19_12  -0.067977   0.038037  -1.787  0.07407
-    ## real_emotionstability.tste_19_13  -0.025081   0.038931  -0.644  0.51949
-    ## real_emotionstability.tste_19_14  -0.004144   0.038772  -0.107  0.91490
-    ## real_emotionstability.tste_19_15   0.097621   0.038871   2.511  0.01210
-    ## real_emotionstability.tste_19_16   0.028719   0.043939   0.654  0.51343
-    ## real_emotionstability.tste_19_17   0.014230   0.043728   0.325  0.74490
-    ## real_emotionstability.tste_19_18  -0.025752   0.036380  -0.708  0.47911
-    ## real_openness.tste_19_0            0.008532   0.032874   0.260  0.79525
-    ## real_openness.tste_19_1           -0.039672   0.039597  -1.002  0.31651
-    ## real_openness.tste_19_2            0.023984   0.037857   0.634  0.52645
-    ## real_openness.tste_19_3           -0.022494   0.035039  -0.642  0.52097
-    ## real_openness.tste_19_4            0.023655   0.037434   0.632  0.52752
-    ## real_openness.tste_19_5            0.018506   0.038445   0.481  0.63031
-    ## real_openness.tste_19_6           -0.054828   0.036313  -1.510  0.13123
-    ## real_openness.tste_19_7            0.018317   0.034209   0.535  0.59241
-    ## real_openness.tste_19_8            0.001161   0.036019   0.032  0.97430
-    ## real_openness.tste_19_9            0.060000   0.037823   1.586  0.11282
-    ## real_openness.tste_19_10           0.003347   0.036565   0.092  0.92708
-    ## real_openness.tste_19_11           0.044928   0.033466   1.343  0.17958
-    ## real_openness.tste_19_12          -0.048376   0.033187  -1.458  0.14508
-    ## real_openness.tste_19_13          -0.080200   0.033701  -2.380  0.01742
-    ## real_openness.tste_19_14           0.015529   0.033376   0.465  0.64178
-    ## real_openness.tste_19_15           0.036905   0.033528   1.101  0.27114
-    ## real_openness.tste_19_16          -0.008715   0.036077  -0.242  0.80914
-    ## real_openness.tste_19_17           0.065987   0.036749   1.796  0.07270
-    ## real_openness.tste_19_18          -0.045038   0.031307  -1.439  0.15043
-    ##                                      
-    ## (Intercept)                       .  
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 ** 
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_19_0                            
-    ## tste_19_1                            
-    ## tste_19_2                            
-    ## tste_19_3                            
-    ## tste_19_4                            
-    ## tste_19_5                            
-    ## tste_19_6                         .  
-    ## tste_19_7                         *  
-    ## tste_19_8                            
-    ## tste_19_9                         *  
-    ## tste_19_10                           
-    ## tste_19_11                           
-    ## tste_19_12                        ** 
-    ## tste_19_13                           
-    ## tste_19_14                           
-    ## tste_19_15                        .  
-    ## tste_19_16                           
-    ## tste_19_17                           
-    ## tste_19_18                           
-    ## real_extraversion.tste_19_0          
-    ## real_extraversion.tste_19_1          
-    ## real_extraversion.tste_19_2          
-    ## real_extraversion.tste_19_3          
-    ## real_extraversion.tste_19_4          
-    ## real_extraversion.tste_19_5          
-    ## real_extraversion.tste_19_6       .  
-    ## real_extraversion.tste_19_7          
-    ## real_extraversion.tste_19_8          
-    ## real_extraversion.tste_19_9          
-    ## real_extraversion.tste_19_10         
-    ## real_extraversion.tste_19_11         
-    ## real_extraversion.tste_19_12         
-    ## real_extraversion.tste_19_13         
-    ## real_extraversion.tste_19_14      .  
-    ## real_extraversion.tste_19_15         
-    ## real_extraversion.tste_19_16         
-    ## real_extraversion.tste_19_17         
-    ## real_extraversion.tste_19_18         
-    ## real_agreeableness.tste_19_0         
-    ## real_agreeableness.tste_19_1         
-    ## real_agreeableness.tste_19_2         
-    ## real_agreeableness.tste_19_3      .  
-    ## real_agreeableness.tste_19_4         
-    ## real_agreeableness.tste_19_5         
-    ## real_agreeableness.tste_19_6         
-    ## real_agreeableness.tste_19_7         
-    ## real_agreeableness.tste_19_8         
-    ## real_agreeableness.tste_19_9         
-    ## real_agreeableness.tste_19_10        
-    ## real_agreeableness.tste_19_11        
-    ## real_agreeableness.tste_19_12        
-    ## real_agreeableness.tste_19_13        
-    ## real_agreeableness.tste_19_14        
-    ## real_agreeableness.tste_19_15        
-    ## real_agreeableness.tste_19_16     *  
-    ## real_agreeableness.tste_19_17        
-    ## real_agreeableness.tste_19_18        
-    ## real_conscientiousness.tste_19_0     
-    ## real_conscientiousness.tste_19_1     
-    ## real_conscientiousness.tste_19_2     
-    ## real_conscientiousness.tste_19_3     
-    ## real_conscientiousness.tste_19_4     
-    ## real_conscientiousness.tste_19_5     
-    ## real_conscientiousness.tste_19_6     
-    ## real_conscientiousness.tste_19_7  ** 
-    ## real_conscientiousness.tste_19_8  .  
-    ## real_conscientiousness.tste_19_9  *  
-    ## real_conscientiousness.tste_19_10    
-    ## real_conscientiousness.tste_19_11    
-    ## real_conscientiousness.tste_19_12    
-    ## real_conscientiousness.tste_19_13 .  
-    ## real_conscientiousness.tste_19_14    
-    ## real_conscientiousness.tste_19_15    
-    ## real_conscientiousness.tste_19_16    
-    ## real_conscientiousness.tste_19_17    
-    ## real_conscientiousness.tste_19_18    
-    ## real_emotionstability.tste_19_0      
-    ## real_emotionstability.tste_19_1      
-    ## real_emotionstability.tste_19_2      
-    ## real_emotionstability.tste_19_3      
-    ## real_emotionstability.tste_19_4      
-    ## real_emotionstability.tste_19_5   *  
-    ## real_emotionstability.tste_19_6      
-    ## real_emotionstability.tste_19_7   .  
-    ## real_emotionstability.tste_19_8      
-    ## real_emotionstability.tste_19_9      
-    ## real_emotionstability.tste_19_10     
-    ## real_emotionstability.tste_19_11     
-    ## real_emotionstability.tste_19_12  .  
-    ## real_emotionstability.tste_19_13     
-    ## real_emotionstability.tste_19_14     
-    ## real_emotionstability.tste_19_15  *  
-    ## real_emotionstability.tste_19_16     
-    ## real_emotionstability.tste_19_17     
-    ## real_emotionstability.tste_19_18     
-    ## real_openness.tste_19_0              
-    ## real_openness.tste_19_1              
-    ## real_openness.tste_19_2              
-    ## real_openness.tste_19_3              
-    ## real_openness.tste_19_4              
-    ## real_openness.tste_19_5              
-    ## real_openness.tste_19_6              
-    ## real_openness.tste_19_7              
-    ## real_openness.tste_19_8              
-    ## real_openness.tste_19_9              
-    ## real_openness.tste_19_10             
-    ## real_openness.tste_19_11             
-    ## real_openness.tste_19_12             
-    ## real_openness.tste_19_13          *  
-    ## real_openness.tste_19_14             
-    ## real_openness.tste_19_15             
-    ## real_openness.tste_19_16             
-    ## real_openness.tste_19_17          .  
-    ## real_openness.tste_19_18             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       34.286006  18.749954   1.829  0.06761 .  
+    ## age                               -0.010722   0.004641  -2.310  0.02098 *  
+    ## education                          0.019243   0.026654   0.722  0.47041    
+    ## income                             0.014712   0.016931   0.869  0.38497    
+    ## race2                              0.034040   0.133189   0.256  0.79830    
+    ## race4                             -0.215123   0.143962  -1.494  0.13525    
+    ## race6                             -1.028789   0.350762  -2.933  0.00339 ** 
+    ## race7                             -0.127190   0.136322  -0.933  0.35093    
+    ## sex2                              -0.114914   0.072142  -1.593  0.11134    
+    ## release                           -0.014949   0.009193  -1.626  0.10406    
+    ## star_user                          0.034066   0.067188   0.507  0.61219    
+    ## real_extraversion                  0.053681   0.020615   2.604  0.00928 ** 
+    ## real_agreeableness                -0.014637   0.028121  -0.520  0.60278    
+    ## real_conscientiousness             0.075702   0.030491   2.483  0.01312 *  
+    ## real_emotionstability             -0.004965   0.031100  -0.160  0.87316    
+    ## real_openness                      0.117991   0.025479   4.631 3.87e-06 ***
+    ## tste_19_0                         -0.267051   0.398138  -0.671  0.50246    
+    ## tste_19_1                         -0.121892   0.478086  -0.255  0.79878    
+    ## tste_19_2                          0.024378   0.439312   0.055  0.95575    
+    ## tste_19_3                         -0.013445   0.421001  -0.032  0.97453    
+    ## tste_19_4                         -0.649654   0.443032  -1.466  0.14270    
+    ## tste_19_5                          0.135255   0.465024   0.291  0.77119    
+    ## tste_19_6                          0.724632   0.438243   1.653  0.09839 .  
+    ## tste_19_7                         -0.916614   0.400754  -2.287  0.02229 *  
+    ## tste_19_8                          0.467415   0.424476   1.101  0.27096    
+    ## tste_19_9                         -1.003988   0.448951  -2.236  0.02544 *  
+    ## tste_19_10                        -0.020824   0.421990  -0.049  0.96065    
+    ## tste_19_11                        -0.161365   0.410037  -0.394  0.69396    
+    ## tste_19_12                         1.045571   0.376774   2.775  0.00557 ** 
+    ## tste_19_13                         0.038703   0.391992   0.099  0.92136    
+    ## tste_19_14                         0.176227   0.389139   0.453  0.65070    
+    ## tste_19_15                        -0.718535   0.401173  -1.791  0.07343 .  
+    ## tste_19_16                         0.420413   0.426280   0.986  0.32414    
+    ## tste_19_17                        -0.136461   0.438090  -0.311  0.75546    
+    ## tste_19_18                         0.372582   0.368517   1.011  0.31212    
+    ## real_extraversion.tste_19_0       -0.004949   0.025889  -0.191  0.84842    
+    ## real_extraversion.tste_19_1       -0.002028   0.031361  -0.065  0.94845    
+    ## real_extraversion.tste_19_2       -0.002356   0.030494  -0.077  0.93843    
+    ## real_extraversion.tste_19_3        0.004574   0.028065   0.163  0.87056    
+    ## real_extraversion.tste_19_4       -0.004939   0.031662  -0.156  0.87606    
+    ## real_extraversion.tste_19_5        0.004617   0.031327   0.147  0.88284    
+    ## real_extraversion.tste_19_6       -0.053665   0.029972  -1.790  0.07353 .  
+    ## real_extraversion.tste_19_7       -0.014661   0.028362  -0.517  0.60526    
+    ## real_extraversion.tste_19_8       -0.001272   0.028845  -0.044  0.96484    
+    ## real_extraversion.tste_19_9       -0.016717   0.030724  -0.544  0.58644    
+    ## real_extraversion.tste_19_10       0.041918   0.028935   1.449  0.14759    
+    ## real_extraversion.tste_19_11       0.024296   0.026745   0.908  0.36377    
+    ## real_extraversion.tste_19_12      -0.042076   0.026061  -1.615  0.10657    
+    ## real_extraversion.tste_19_13       0.028159   0.027113   1.039  0.29913    
+    ## real_extraversion.tste_19_14      -0.053514   0.027545  -1.943  0.05219 .  
+    ## real_extraversion.tste_19_15       0.024196   0.027273   0.887  0.37509    
+    ## real_extraversion.tste_19_16       0.001427   0.028970   0.049  0.96071    
+    ## real_extraversion.tste_19_17      -0.029521   0.029317  -1.007  0.31407    
+    ## real_extraversion.tste_19_18       0.013772   0.025129   0.548  0.58371    
+    ## real_agreeableness.tste_19_0       0.024809   0.036794   0.674  0.50022    
+    ## real_agreeableness.tste_19_1      -0.036692   0.041501  -0.884  0.37674    
+    ## real_agreeableness.tste_19_2      -0.044976   0.041563  -1.082  0.27933    
+    ## real_agreeableness.tste_19_3       0.067545   0.038719   1.744  0.08123 .  
+    ## real_agreeableness.tste_19_4       0.002966   0.040006   0.074  0.94091    
+    ## real_agreeableness.tste_19_5       0.028011   0.041819   0.670  0.50305    
+    ## real_agreeableness.tste_19_6       0.056223   0.041269   1.362  0.17323    
+    ## real_agreeableness.tste_19_7       0.040200   0.037295   1.078  0.28121    
+    ## real_agreeableness.tste_19_8       0.015228   0.038463   0.396  0.69221    
+    ## real_agreeableness.tste_19_9       0.011359   0.041009   0.277  0.78182    
+    ## real_agreeableness.tste_19_10     -0.025558   0.040195  -0.636  0.52494    
+    ## real_agreeableness.tste_19_11      0.016660   0.036510   0.456  0.64821    
+    ## real_agreeableness.tste_19_12     -0.042123   0.036770  -1.146  0.25211    
+    ## real_agreeableness.tste_19_13      0.002490   0.037228   0.067  0.94669    
+    ## real_agreeableness.tste_19_14      0.023180   0.039719   0.584  0.55955    
+    ## real_agreeableness.tste_19_15     -0.001922   0.038567  -0.050  0.96026    
+    ## real_agreeableness.tste_19_16     -0.089407   0.038276  -2.336  0.01960 *  
+    ## real_agreeableness.tste_19_17     -0.049733   0.041185  -1.208  0.22737    
+    ## real_agreeableness.tste_19_18     -0.017124   0.033485  -0.511  0.60913    
+    ## real_conscientiousness.tste_19_0   0.025624   0.041364   0.619  0.53567    
+    ## real_conscientiousness.tste_19_1   0.059185   0.048909   1.210  0.22638    
+    ## real_conscientiousness.tste_19_2  -0.022021   0.043541  -0.506  0.61309    
+    ## real_conscientiousness.tste_19_3  -0.008331   0.042880  -0.194  0.84598    
+    ## real_conscientiousness.tste_19_4   0.066029   0.044619   1.480  0.13907    
+    ## real_conscientiousness.tste_19_5  -0.006640   0.047859  -0.139  0.88967    
+    ## real_conscientiousness.tste_19_6  -0.026612   0.045068  -0.590  0.55494    
+    ## real_conscientiousness.tste_19_7   0.118260   0.041024   2.883  0.00398 ** 
+    ## real_conscientiousness.tste_19_8  -0.077363   0.041778  -1.852  0.06421 .  
+    ## real_conscientiousness.tste_19_9   0.097703   0.045116   2.166  0.03046 *  
+    ## real_conscientiousness.tste_19_10 -0.019540   0.042430  -0.461  0.64519    
+    ## real_conscientiousness.tste_19_11 -0.028947   0.039831  -0.727  0.46746    
+    ## real_conscientiousness.tste_19_12 -0.021211   0.037744  -0.562  0.57420    
+    ## real_conscientiousness.tste_19_13  0.066062   0.039592   1.669  0.09536 .  
+    ## real_conscientiousness.tste_19_14  0.010707   0.039500   0.271  0.78636    
+    ## real_conscientiousness.tste_19_15  0.028793   0.040381   0.713  0.47590    
+    ## real_conscientiousness.tste_19_16 -0.030875   0.043612  -0.708  0.47906    
+    ## real_conscientiousness.tste_19_17  0.007012   0.044003   0.159  0.87341    
+    ## real_conscientiousness.tste_19_18 -0.008686   0.037406  -0.232  0.81641    
+    ## real_emotionstability.tste_19_0    0.006394   0.040064   0.160  0.87323    
+    ## real_emotionstability.tste_19_1    0.061540   0.047374   1.299  0.19409    
+    ## real_emotionstability.tste_19_2    0.040123   0.045431   0.883  0.37726    
+    ## real_emotionstability.tste_19_3   -0.039771   0.040315  -0.987  0.32400    
+    ## real_emotionstability.tste_19_4    0.024566   0.045461   0.540  0.58900    
+    ## real_emotionstability.tste_19_5   -0.097410   0.047186  -2.064  0.03911 *  
+    ## real_emotionstability.tste_19_6   -0.068211   0.043807  -1.557  0.11962    
+    ## real_emotionstability.tste_19_7    0.072529   0.040507   1.791  0.07352 .  
+    ## real_emotionstability.tste_19_8   -0.028032   0.042435  -0.661  0.50895    
+    ## real_emotionstability.tste_19_9    0.043681   0.045006   0.971  0.33189    
+    ## real_emotionstability.tste_19_10   0.059846   0.040437   1.480  0.13903    
+    ## real_emotionstability.tste_19_11   0.010265   0.041172   0.249  0.80314    
+    ## real_emotionstability.tste_19_12  -0.067977   0.038037  -1.787  0.07407 .  
+    ## real_emotionstability.tste_19_13  -0.025081   0.038931  -0.644  0.51949    
+    ## real_emotionstability.tste_19_14  -0.004144   0.038772  -0.107  0.91490    
+    ## real_emotionstability.tste_19_15   0.097621   0.038871   2.511  0.01210 *  
+    ## real_emotionstability.tste_19_16   0.028719   0.043939   0.654  0.51343    
+    ## real_emotionstability.tste_19_17   0.014230   0.043728   0.325  0.74490    
+    ## real_emotionstability.tste_19_18  -0.025752   0.036380  -0.708  0.47911    
+    ## real_openness.tste_19_0            0.008532   0.032874   0.260  0.79525    
+    ## real_openness.tste_19_1           -0.039672   0.039597  -1.002  0.31651    
+    ## real_openness.tste_19_2            0.023984   0.037857   0.634  0.52645    
+    ## real_openness.tste_19_3           -0.022494   0.035039  -0.642  0.52097    
+    ## real_openness.tste_19_4            0.023655   0.037434   0.632  0.52752    
+    ## real_openness.tste_19_5            0.018506   0.038445   0.481  0.63031    
+    ## real_openness.tste_19_6           -0.054828   0.036313  -1.510  0.13123    
+    ## real_openness.tste_19_7            0.018317   0.034209   0.535  0.59241    
+    ## real_openness.tste_19_8            0.001161   0.036019   0.032  0.97430    
+    ## real_openness.tste_19_9            0.060000   0.037823   1.586  0.11282    
+    ## real_openness.tste_19_10           0.003347   0.036565   0.092  0.92708    
+    ## real_openness.tste_19_11           0.044928   0.033466   1.343  0.17958    
+    ## real_openness.tste_19_12          -0.048376   0.033187  -1.458  0.14508    
+    ## real_openness.tste_19_13          -0.080200   0.033701  -2.380  0.01742 *  
+    ## real_openness.tste_19_14           0.015529   0.033376   0.465  0.64178    
+    ## real_openness.tste_19_15           0.036905   0.033528   1.101  0.27114    
+    ## real_openness.tste_19_16          -0.008715   0.036077  -0.242  0.80914    
+    ## real_openness.tste_19_17           0.065987   0.036749   1.796  0.07270 .  
+    ## real_openness.tste_19_18          -0.045038   0.031307  -1.439  0.15043    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -3148,280 +2185,143 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## -5.2137 -0.6900  0.2355  0.9671  3.1698 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       32.4082021 19.4616391   1.665 0.096022
-    ## age                               -0.0105273  0.0046256  -2.276 0.022960
-    ## education                          0.0175347  0.0266128   0.659 0.510048
-    ## income                             0.0144709  0.0168995   0.856 0.391939
-    ## race2                              0.0519199  0.1330686   0.390 0.696449
-    ## race4                             -0.1928324  0.1437477  -1.341 0.179922
-    ## race6                             -1.0542862  0.3511240  -3.003 0.002710
-    ## race7                             -0.1486486  0.1360803  -1.092 0.274807
-    ## sex2                              -0.1036430  0.0720588  -1.438 0.150502
-    ## release                           -0.0140131  0.0095341  -1.470 0.141776
-    ## star_user                          0.0330572  0.0693342   0.477 0.633570
-    ## real_extraversion                  0.0539815  0.0206007   2.620 0.008850
-    ## real_agreeableness                -0.0134072  0.0280893  -0.477 0.633195
-    ## real_conscientiousness             0.0756011  0.0304278   2.485 0.013050
-    ## real_emotionstability             -0.0030846  0.0310819  -0.099 0.920956
-    ## real_openness                      0.1155925  0.0254819   4.536 6.07e-06
-    ## tste_20_0                          0.1075228  0.4512458   0.238 0.811688
-    ## tste_20_1                          0.3774654  0.4133824   0.913 0.361292
-    ## tste_20_2                         -0.4115956  0.3880802  -1.061 0.289002
-    ## tste_20_3                         -0.0446531  0.4394847  -0.102 0.919082
-    ## tste_20_4                         -0.2121722  0.3929354  -0.540 0.589280
-    ## tste_20_5                         -0.1135980  0.3956695  -0.287 0.774063
-    ## tste_20_6                          0.0656201  0.4598849   0.143 0.886551
-    ## tste_20_7                         -0.8884873  0.4836375  -1.837 0.066344
-    ## tste_20_8                          0.3922819  0.4631332   0.847 0.397087
-    ## tste_20_9                          0.7696813  0.4072811   1.890 0.058929
-    ## tste_20_10                         0.3993416  0.4433291   0.901 0.367814
-    ## tste_20_11                        -0.3254418  0.3833201  -0.849 0.395978
-    ## tste_20_12                         0.0749846  0.4216025   0.178 0.858854
-    ## tste_20_13                         0.6464498  0.4596004   1.407 0.159717
-    ## tste_20_14                        -0.8925075  0.3758087  -2.375 0.017648
-    ## tste_20_15                         0.1297659  0.4443875   0.292 0.770309
-    ## tste_20_16                        -0.4881470  0.4062103  -1.202 0.229618
-    ## tste_20_17                        -0.3653350  0.3752416  -0.974 0.330373
-    ## tste_20_18                         0.6342344  0.3683898   1.722 0.085289
-    ## tste_20_19                        -0.1819823  0.4121324  -0.442 0.658853
-    ## real_extraversion.tste_20_0        0.0232174  0.0305637   0.760 0.447560
-    ## real_extraversion.tste_20_1        0.0233853  0.0278045   0.841 0.400415
-    ## real_extraversion.tste_20_2       -0.0147232  0.0262174  -0.562 0.574464
-    ## real_extraversion.tste_20_3       -0.0246229  0.0301217  -0.817 0.413770
-    ## real_extraversion.tste_20_4        0.0257520  0.0262985   0.979 0.327591
-    ## real_extraversion.tste_20_5       -0.0001866  0.0272183  -0.007 0.994532
-    ## real_extraversion.tste_20_6       -0.0068018  0.0318476  -0.214 0.830902
-    ## real_extraversion.tste_20_7        0.0061287  0.0319405   0.192 0.847857
-    ## real_extraversion.tste_20_8        0.0153681  0.0305927   0.502 0.615480
-    ## real_extraversion.tste_20_9       -0.0550421  0.0279709  -1.968 0.049225
-    ## real_extraversion.tste_20_10       0.0137741  0.0302889   0.455 0.649332
-    ## real_extraversion.tste_20_11      -0.0301192  0.0275568  -1.093 0.274532
-    ## real_extraversion.tste_20_12      -0.0382876  0.0296090  -1.293 0.196125
-    ## real_extraversion.tste_20_13       0.0321292  0.0310917   1.033 0.301556
-    ## real_extraversion.tste_20_14      -0.0097423  0.0257870  -0.378 0.705618
-    ## real_extraversion.tste_20_15      -0.0146489  0.0318416  -0.460 0.645526
-    ## real_extraversion.tste_20_16       0.0457823  0.0277563   1.649 0.099215
-    ## real_extraversion.tste_20_17      -0.0111107  0.0250091  -0.444 0.656897
-    ## real_extraversion.tste_20_18      -0.0378994  0.0264394  -1.433 0.151887
-    ## real_extraversion.tste_20_19      -0.0037106  0.0288024  -0.129 0.897505
-    ## real_agreeableness.tste_20_0      -0.0386001  0.0414771  -0.931 0.352154
-    ## real_agreeableness.tste_20_1       0.0117342  0.0382512   0.307 0.759052
-    ## real_agreeableness.tste_20_2       0.0282233  0.0367152   0.769 0.442156
-    ## real_agreeableness.tste_20_3      -0.0015812  0.0400149  -0.040 0.968484
-    ## real_agreeableness.tste_20_4      -0.0060435  0.0372160  -0.162 0.871015
-    ## real_agreeableness.tste_20_5      -0.0420136  0.0388192  -1.082 0.279254
-    ## real_agreeableness.tste_20_6      -0.0338876  0.0414653  -0.817 0.413883
-    ## real_agreeableness.tste_20_7       0.0521379  0.0454082   1.148 0.251021
-    ## real_agreeableness.tste_20_8       0.0637090  0.0404934   1.573 0.115803
-    ## real_agreeableness.tste_20_9       0.0082486  0.0388085   0.213 0.831702
-    ## real_agreeableness.tste_20_10     -0.0614895  0.0400935  -1.534 0.125274
-    ## real_agreeableness.tste_20_11      0.0444366  0.0370730   1.199 0.230816
-    ## real_agreeableness.tste_20_12     -0.0135966  0.0395788  -0.344 0.731234
-    ## real_agreeableness.tste_20_13     -0.0596008  0.0423590  -1.407 0.159571
-    ## real_agreeableness.tste_20_14     -0.0063941  0.0346362  -0.185 0.853557
-    ## real_agreeableness.tste_20_15     -0.0343880  0.0426207  -0.807 0.419856
-    ## real_agreeableness.tste_20_16      0.0712181  0.0381121   1.869 0.061817
-    ## real_agreeableness.tste_20_17      0.0040233  0.0356661   0.113 0.910196
-    ## real_agreeableness.tste_20_18      0.0165707  0.0353715   0.468 0.639494
-    ## real_agreeableness.tste_20_19     -0.0231704  0.0384438  -0.603 0.546770
-    ## real_conscientiousness.tste_20_0  -0.0290621  0.0469164  -0.619 0.535695
-    ## real_conscientiousness.tste_20_1  -0.0178559  0.0410904  -0.435 0.663935
-    ## real_conscientiousness.tste_20_2   0.0636543  0.0399400   1.594 0.111150
-    ## real_conscientiousness.tste_20_3   0.0078415  0.0442227   0.177 0.859276
-    ## real_conscientiousness.tste_20_4   0.0325515  0.0403274   0.807 0.419659
-    ## real_conscientiousness.tste_20_5   0.0336032  0.0406835   0.826 0.408922
-    ## real_conscientiousness.tste_20_6   0.0059643  0.0479103   0.124 0.900942
-    ## real_conscientiousness.tste_20_7   0.0598811  0.0473182   1.265 0.205840
-    ## real_conscientiousness.tste_20_8  -0.0312393  0.0472416  -0.661 0.508517
-    ## real_conscientiousness.tste_20_9  -0.0595062  0.0419401  -1.419 0.156103
-    ## real_conscientiousness.tste_20_10 -0.0341347  0.0453681  -0.752 0.451902
-    ## real_conscientiousness.tste_20_11  0.0382221  0.0403309   0.948 0.343390
-    ## real_conscientiousness.tste_20_12  0.0334473  0.0418424   0.799 0.424174
-    ## real_conscientiousness.tste_20_13 -0.0855654  0.0472751  -1.810 0.070454
-    ## real_conscientiousness.tste_20_14  0.1278461  0.0377246   3.389 0.000715
-    ## real_conscientiousness.tste_20_15  0.0623803  0.0443400   1.407 0.159623
-    ## real_conscientiousness.tste_20_16  0.0153433  0.0414730   0.370 0.711453
-    ## real_conscientiousness.tste_20_17 -0.0140777  0.0381344  -0.369 0.712048
-    ## real_conscientiousness.tste_20_18  0.0091657  0.0364940   0.251 0.801719
-    ## real_conscientiousness.tste_20_19 -0.0153641  0.0425194  -0.361 0.717880
-    ## real_emotionstability.tste_20_0    0.0470903  0.0463517   1.016 0.309783
-    ## real_emotionstability.tste_20_1   -0.0416080  0.0411676  -1.011 0.312283
-    ## real_emotionstability.tste_20_2    0.0662378  0.0376632   1.759 0.078784
-    ## real_emotionstability.tste_20_3    0.0528864  0.0435610   1.214 0.224862
-    ## real_emotionstability.tste_20_4    0.0077819  0.0380592   0.204 0.838009
-    ## real_emotionstability.tste_20_5    0.0378057  0.0414546   0.912 0.361890
-    ## real_emotionstability.tste_20_6   -0.0372162  0.0497466  -0.748 0.454479
-    ## real_emotionstability.tste_20_7    0.0126600  0.0496318   0.255 0.798688
-    ## real_emotionstability.tste_20_8   -0.0793845  0.0456905  -1.737 0.082463
-    ## real_emotionstability.tste_20_9   -0.1022344  0.0396898  -2.576 0.010071
-    ## real_emotionstability.tste_20_10   0.0193383  0.0436831   0.443 0.658034
-    ## real_emotionstability.tste_20_11  -0.0166964  0.0380875  -0.438 0.661165
-    ## real_emotionstability.tste_20_12   0.0483583  0.0424886   1.138 0.255195
-    ## real_emotionstability.tste_20_13   0.0081610  0.0449274   0.182 0.855878
-    ## real_emotionstability.tste_20_14   0.0599237  0.0379133   1.581 0.114139
-    ## real_emotionstability.tste_20_15  -0.0201066  0.0461017  -0.436 0.662786
-    ## real_emotionstability.tste_20_16  -0.0275148  0.0407775  -0.675 0.499909
-    ## real_emotionstability.tste_20_17   0.0387710  0.0373234   1.039 0.299030
-    ## real_emotionstability.tste_20_18  -0.0551484  0.0384612  -1.434 0.151765
-    ## real_emotionstability.tste_20_19   0.0392286  0.0435425   0.901 0.367737
-    ## real_openness.tste_20_0            0.0040000  0.0381441   0.105 0.916493
-    ## real_openness.tste_20_1           -0.0357918  0.0344679  -1.038 0.299206
-    ## real_openness.tste_20_2           -0.0144199  0.0317863  -0.454 0.650130
-    ## real_openness.tste_20_3            0.0154631  0.0381573   0.405 0.685340
-    ## real_openness.tste_20_4           -0.0022337  0.0337243  -0.066 0.947199
-    ## real_openness.tste_20_5           -0.0225900  0.0338286  -0.668 0.504351
-    ## real_openness.tste_20_6            0.0317763  0.0391046   0.813 0.416545
-    ## real_openness.tste_20_7            0.1040950  0.0420192   2.477 0.013319
-    ## real_openness.tste_20_8           -0.0494990  0.0378312  -1.308 0.190882
-    ## real_openness.tste_20_9            0.0233977  0.0338399   0.691 0.489379
-    ## real_openness.tste_20_10          -0.0181100  0.0359548  -0.504 0.614535
-    ## real_openness.tste_20_11           0.0037494  0.0328168   0.114 0.909049
-    ## real_openness.tste_20_12          -0.0246650  0.0365890  -0.674 0.500319
-    ## real_openness.tste_20_13          -0.0078957  0.0382148  -0.207 0.836333
-    ## real_openness.tste_20_14           0.0004899  0.0324565   0.015 0.987960
-    ## real_openness.tste_20_15          -0.0278174  0.0388148  -0.717 0.473661
-    ## real_openness.tste_20_16           0.0130927  0.0347437   0.377 0.706336
-    ## real_openness.tste_20_17           0.0685050  0.0321167   2.133 0.033046
-    ## real_openness.tste_20_18          -0.0553825  0.0332544  -1.665 0.095985
-    ## real_openness.tste_20_19           0.0385185  0.0365474   1.054 0.292041
-    ##                                      
-    ## (Intercept)                       .  
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 ** 
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## tste_20_0                            
-    ## tste_20_1                            
-    ## tste_20_2                            
-    ## tste_20_3                            
-    ## tste_20_4                            
-    ## tste_20_5                            
-    ## tste_20_6                            
-    ## tste_20_7                         .  
-    ## tste_20_8                            
-    ## tste_20_9                         .  
-    ## tste_20_10                           
-    ## tste_20_11                           
-    ## tste_20_12                           
-    ## tste_20_13                           
-    ## tste_20_14                        *  
-    ## tste_20_15                           
-    ## tste_20_16                           
-    ## tste_20_17                           
-    ## tste_20_18                        .  
-    ## tste_20_19                           
-    ## real_extraversion.tste_20_0          
-    ## real_extraversion.tste_20_1          
-    ## real_extraversion.tste_20_2          
-    ## real_extraversion.tste_20_3          
-    ## real_extraversion.tste_20_4          
-    ## real_extraversion.tste_20_5          
-    ## real_extraversion.tste_20_6          
-    ## real_extraversion.tste_20_7          
-    ## real_extraversion.tste_20_8          
-    ## real_extraversion.tste_20_9       *  
-    ## real_extraversion.tste_20_10         
-    ## real_extraversion.tste_20_11         
-    ## real_extraversion.tste_20_12         
-    ## real_extraversion.tste_20_13         
-    ## real_extraversion.tste_20_14         
-    ## real_extraversion.tste_20_15         
-    ## real_extraversion.tste_20_16      .  
-    ## real_extraversion.tste_20_17         
-    ## real_extraversion.tste_20_18         
-    ## real_extraversion.tste_20_19         
-    ## real_agreeableness.tste_20_0         
-    ## real_agreeableness.tste_20_1         
-    ## real_agreeableness.tste_20_2         
-    ## real_agreeableness.tste_20_3         
-    ## real_agreeableness.tste_20_4         
-    ## real_agreeableness.tste_20_5         
-    ## real_agreeableness.tste_20_6         
-    ## real_agreeableness.tste_20_7         
-    ## real_agreeableness.tste_20_8         
-    ## real_agreeableness.tste_20_9         
-    ## real_agreeableness.tste_20_10        
-    ## real_agreeableness.tste_20_11        
-    ## real_agreeableness.tste_20_12        
-    ## real_agreeableness.tste_20_13        
-    ## real_agreeableness.tste_20_14        
-    ## real_agreeableness.tste_20_15        
-    ## real_agreeableness.tste_20_16     .  
-    ## real_agreeableness.tste_20_17        
-    ## real_agreeableness.tste_20_18        
-    ## real_agreeableness.tste_20_19        
-    ## real_conscientiousness.tste_20_0     
-    ## real_conscientiousness.tste_20_1     
-    ## real_conscientiousness.tste_20_2     
-    ## real_conscientiousness.tste_20_3     
-    ## real_conscientiousness.tste_20_4     
-    ## real_conscientiousness.tste_20_5     
-    ## real_conscientiousness.tste_20_6     
-    ## real_conscientiousness.tste_20_7     
-    ## real_conscientiousness.tste_20_8     
-    ## real_conscientiousness.tste_20_9     
-    ## real_conscientiousness.tste_20_10    
-    ## real_conscientiousness.tste_20_11    
-    ## real_conscientiousness.tste_20_12    
-    ## real_conscientiousness.tste_20_13 .  
-    ## real_conscientiousness.tste_20_14 ***
-    ## real_conscientiousness.tste_20_15    
-    ## real_conscientiousness.tste_20_16    
-    ## real_conscientiousness.tste_20_17    
-    ## real_conscientiousness.tste_20_18    
-    ## real_conscientiousness.tste_20_19    
-    ## real_emotionstability.tste_20_0      
-    ## real_emotionstability.tste_20_1      
-    ## real_emotionstability.tste_20_2   .  
-    ## real_emotionstability.tste_20_3      
-    ## real_emotionstability.tste_20_4      
-    ## real_emotionstability.tste_20_5      
-    ## real_emotionstability.tste_20_6      
-    ## real_emotionstability.tste_20_7      
-    ## real_emotionstability.tste_20_8   .  
-    ## real_emotionstability.tste_20_9   *  
-    ## real_emotionstability.tste_20_10     
-    ## real_emotionstability.tste_20_11     
-    ## real_emotionstability.tste_20_12     
-    ## real_emotionstability.tste_20_13     
-    ## real_emotionstability.tste_20_14     
-    ## real_emotionstability.tste_20_15     
-    ## real_emotionstability.tste_20_16     
-    ## real_emotionstability.tste_20_17     
-    ## real_emotionstability.tste_20_18     
-    ## real_emotionstability.tste_20_19     
-    ## real_openness.tste_20_0              
-    ## real_openness.tste_20_1              
-    ## real_openness.tste_20_2              
-    ## real_openness.tste_20_3              
-    ## real_openness.tste_20_4              
-    ## real_openness.tste_20_5              
-    ## real_openness.tste_20_6              
-    ## real_openness.tste_20_7           *  
-    ## real_openness.tste_20_8              
-    ## real_openness.tste_20_9              
-    ## real_openness.tste_20_10             
-    ## real_openness.tste_20_11             
-    ## real_openness.tste_20_12             
-    ## real_openness.tste_20_13             
-    ## real_openness.tste_20_14             
-    ## real_openness.tste_20_15             
-    ## real_openness.tste_20_16             
-    ## real_openness.tste_20_17          *  
-    ## real_openness.tste_20_18          .  
-    ## real_openness.tste_20_19             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       32.4082021 19.4616391   1.665 0.096022 .  
+    ## age                               -0.0105273  0.0046256  -2.276 0.022960 *  
+    ## education                          0.0175347  0.0266128   0.659 0.510048    
+    ## income                             0.0144709  0.0168995   0.856 0.391939    
+    ## race2                              0.0519199  0.1330686   0.390 0.696449    
+    ## race4                             -0.1928324  0.1437477  -1.341 0.179922    
+    ## race6                             -1.0542862  0.3511240  -3.003 0.002710 ** 
+    ## race7                             -0.1486486  0.1360803  -1.092 0.274807    
+    ## sex2                              -0.1036430  0.0720588  -1.438 0.150502    
+    ## release                           -0.0140131  0.0095341  -1.470 0.141776    
+    ## star_user                          0.0330572  0.0693342   0.477 0.633570    
+    ## real_extraversion                  0.0539815  0.0206007   2.620 0.008850 ** 
+    ## real_agreeableness                -0.0134072  0.0280893  -0.477 0.633195    
+    ## real_conscientiousness             0.0756011  0.0304278   2.485 0.013050 *  
+    ## real_emotionstability             -0.0030846  0.0310819  -0.099 0.920956    
+    ## real_openness                      0.1155925  0.0254819   4.536 6.07e-06 ***
+    ## tste_20_0                          0.1075228  0.4512458   0.238 0.811688    
+    ## tste_20_1                          0.3774654  0.4133824   0.913 0.361292    
+    ## tste_20_2                         -0.4115956  0.3880802  -1.061 0.289002    
+    ## tste_20_3                         -0.0446531  0.4394847  -0.102 0.919082    
+    ## tste_20_4                         -0.2121722  0.3929354  -0.540 0.589280    
+    ## tste_20_5                         -0.1135980  0.3956695  -0.287 0.774063    
+    ## tste_20_6                          0.0656201  0.4598849   0.143 0.886551    
+    ## tste_20_7                         -0.8884873  0.4836375  -1.837 0.066344 .  
+    ## tste_20_8                          0.3922819  0.4631332   0.847 0.397087    
+    ## tste_20_9                          0.7696813  0.4072811   1.890 0.058929 .  
+    ## tste_20_10                         0.3993416  0.4433291   0.901 0.367814    
+    ## tste_20_11                        -0.3254418  0.3833201  -0.849 0.395978    
+    ## tste_20_12                         0.0749846  0.4216025   0.178 0.858854    
+    ## tste_20_13                         0.6464498  0.4596004   1.407 0.159717    
+    ## tste_20_14                        -0.8925075  0.3758087  -2.375 0.017648 *  
+    ## tste_20_15                         0.1297659  0.4443875   0.292 0.770309    
+    ## tste_20_16                        -0.4881470  0.4062103  -1.202 0.229618    
+    ## tste_20_17                        -0.3653350  0.3752416  -0.974 0.330373    
+    ## tste_20_18                         0.6342344  0.3683898   1.722 0.085289 .  
+    ## tste_20_19                        -0.1819823  0.4121324  -0.442 0.658853    
+    ## real_extraversion.tste_20_0        0.0232174  0.0305637   0.760 0.447560    
+    ## real_extraversion.tste_20_1        0.0233853  0.0278045   0.841 0.400415    
+    ## real_extraversion.tste_20_2       -0.0147232  0.0262174  -0.562 0.574464    
+    ## real_extraversion.tste_20_3       -0.0246229  0.0301217  -0.817 0.413770    
+    ## real_extraversion.tste_20_4        0.0257520  0.0262985   0.979 0.327591    
+    ## real_extraversion.tste_20_5       -0.0001866  0.0272183  -0.007 0.994532    
+    ## real_extraversion.tste_20_6       -0.0068018  0.0318476  -0.214 0.830902    
+    ## real_extraversion.tste_20_7        0.0061287  0.0319405   0.192 0.847857    
+    ## real_extraversion.tste_20_8        0.0153681  0.0305927   0.502 0.615480    
+    ## real_extraversion.tste_20_9       -0.0550421  0.0279709  -1.968 0.049225 *  
+    ## real_extraversion.tste_20_10       0.0137741  0.0302889   0.455 0.649332    
+    ## real_extraversion.tste_20_11      -0.0301192  0.0275568  -1.093 0.274532    
+    ## real_extraversion.tste_20_12      -0.0382876  0.0296090  -1.293 0.196125    
+    ## real_extraversion.tste_20_13       0.0321292  0.0310917   1.033 0.301556    
+    ## real_extraversion.tste_20_14      -0.0097423  0.0257870  -0.378 0.705618    
+    ## real_extraversion.tste_20_15      -0.0146489  0.0318416  -0.460 0.645526    
+    ## real_extraversion.tste_20_16       0.0457823  0.0277563   1.649 0.099215 .  
+    ## real_extraversion.tste_20_17      -0.0111107  0.0250091  -0.444 0.656897    
+    ## real_extraversion.tste_20_18      -0.0378994  0.0264394  -1.433 0.151887    
+    ## real_extraversion.tste_20_19      -0.0037106  0.0288024  -0.129 0.897505    
+    ## real_agreeableness.tste_20_0      -0.0386001  0.0414771  -0.931 0.352154    
+    ## real_agreeableness.tste_20_1       0.0117342  0.0382512   0.307 0.759052    
+    ## real_agreeableness.tste_20_2       0.0282233  0.0367152   0.769 0.442156    
+    ## real_agreeableness.tste_20_3      -0.0015812  0.0400149  -0.040 0.968484    
+    ## real_agreeableness.tste_20_4      -0.0060435  0.0372160  -0.162 0.871015    
+    ## real_agreeableness.tste_20_5      -0.0420136  0.0388192  -1.082 0.279254    
+    ## real_agreeableness.tste_20_6      -0.0338876  0.0414653  -0.817 0.413883    
+    ## real_agreeableness.tste_20_7       0.0521379  0.0454082   1.148 0.251021    
+    ## real_agreeableness.tste_20_8       0.0637090  0.0404934   1.573 0.115803    
+    ## real_agreeableness.tste_20_9       0.0082486  0.0388085   0.213 0.831702    
+    ## real_agreeableness.tste_20_10     -0.0614895  0.0400935  -1.534 0.125274    
+    ## real_agreeableness.tste_20_11      0.0444366  0.0370730   1.199 0.230816    
+    ## real_agreeableness.tste_20_12     -0.0135966  0.0395788  -0.344 0.731234    
+    ## real_agreeableness.tste_20_13     -0.0596008  0.0423590  -1.407 0.159571    
+    ## real_agreeableness.tste_20_14     -0.0063941  0.0346362  -0.185 0.853557    
+    ## real_agreeableness.tste_20_15     -0.0343880  0.0426207  -0.807 0.419856    
+    ## real_agreeableness.tste_20_16      0.0712181  0.0381121   1.869 0.061817 .  
+    ## real_agreeableness.tste_20_17      0.0040233  0.0356661   0.113 0.910196    
+    ## real_agreeableness.tste_20_18      0.0165707  0.0353715   0.468 0.639494    
+    ## real_agreeableness.tste_20_19     -0.0231704  0.0384438  -0.603 0.546770    
+    ## real_conscientiousness.tste_20_0  -0.0290621  0.0469164  -0.619 0.535695    
+    ## real_conscientiousness.tste_20_1  -0.0178559  0.0410904  -0.435 0.663935    
+    ## real_conscientiousness.tste_20_2   0.0636543  0.0399400   1.594 0.111150    
+    ## real_conscientiousness.tste_20_3   0.0078415  0.0442227   0.177 0.859276    
+    ## real_conscientiousness.tste_20_4   0.0325515  0.0403274   0.807 0.419659    
+    ## real_conscientiousness.tste_20_5   0.0336032  0.0406835   0.826 0.408922    
+    ## real_conscientiousness.tste_20_6   0.0059643  0.0479103   0.124 0.900942    
+    ## real_conscientiousness.tste_20_7   0.0598811  0.0473182   1.265 0.205840    
+    ## real_conscientiousness.tste_20_8  -0.0312393  0.0472416  -0.661 0.508517    
+    ## real_conscientiousness.tste_20_9  -0.0595062  0.0419401  -1.419 0.156103    
+    ## real_conscientiousness.tste_20_10 -0.0341347  0.0453681  -0.752 0.451902    
+    ## real_conscientiousness.tste_20_11  0.0382221  0.0403309   0.948 0.343390    
+    ## real_conscientiousness.tste_20_12  0.0334473  0.0418424   0.799 0.424174    
+    ## real_conscientiousness.tste_20_13 -0.0855654  0.0472751  -1.810 0.070454 .  
+    ## real_conscientiousness.tste_20_14  0.1278461  0.0377246   3.389 0.000715 ***
+    ## real_conscientiousness.tste_20_15  0.0623803  0.0443400   1.407 0.159623    
+    ## real_conscientiousness.tste_20_16  0.0153433  0.0414730   0.370 0.711453    
+    ## real_conscientiousness.tste_20_17 -0.0140777  0.0381344  -0.369 0.712048    
+    ## real_conscientiousness.tste_20_18  0.0091657  0.0364940   0.251 0.801719    
+    ## real_conscientiousness.tste_20_19 -0.0153641  0.0425194  -0.361 0.717880    
+    ## real_emotionstability.tste_20_0    0.0470903  0.0463517   1.016 0.309783    
+    ## real_emotionstability.tste_20_1   -0.0416080  0.0411676  -1.011 0.312283    
+    ## real_emotionstability.tste_20_2    0.0662378  0.0376632   1.759 0.078784 .  
+    ## real_emotionstability.tste_20_3    0.0528864  0.0435610   1.214 0.224862    
+    ## real_emotionstability.tste_20_4    0.0077819  0.0380592   0.204 0.838009    
+    ## real_emotionstability.tste_20_5    0.0378057  0.0414546   0.912 0.361890    
+    ## real_emotionstability.tste_20_6   -0.0372162  0.0497466  -0.748 0.454479    
+    ## real_emotionstability.tste_20_7    0.0126600  0.0496318   0.255 0.798688    
+    ## real_emotionstability.tste_20_8   -0.0793845  0.0456905  -1.737 0.082463 .  
+    ## real_emotionstability.tste_20_9   -0.1022344  0.0396898  -2.576 0.010071 *  
+    ## real_emotionstability.tste_20_10   0.0193383  0.0436831   0.443 0.658034    
+    ## real_emotionstability.tste_20_11  -0.0166964  0.0380875  -0.438 0.661165    
+    ## real_emotionstability.tste_20_12   0.0483583  0.0424886   1.138 0.255195    
+    ## real_emotionstability.tste_20_13   0.0081610  0.0449274   0.182 0.855878    
+    ## real_emotionstability.tste_20_14   0.0599237  0.0379133   1.581 0.114139    
+    ## real_emotionstability.tste_20_15  -0.0201066  0.0461017  -0.436 0.662786    
+    ## real_emotionstability.tste_20_16  -0.0275148  0.0407775  -0.675 0.499909    
+    ## real_emotionstability.tste_20_17   0.0387710  0.0373234   1.039 0.299030    
+    ## real_emotionstability.tste_20_18  -0.0551484  0.0384612  -1.434 0.151765    
+    ## real_emotionstability.tste_20_19   0.0392286  0.0435425   0.901 0.367737    
+    ## real_openness.tste_20_0            0.0040000  0.0381441   0.105 0.916493    
+    ## real_openness.tste_20_1           -0.0357918  0.0344679  -1.038 0.299206    
+    ## real_openness.tste_20_2           -0.0144199  0.0317863  -0.454 0.650130    
+    ## real_openness.tste_20_3            0.0154631  0.0381573   0.405 0.685340    
+    ## real_openness.tste_20_4           -0.0022337  0.0337243  -0.066 0.947199    
+    ## real_openness.tste_20_5           -0.0225900  0.0338286  -0.668 0.504351    
+    ## real_openness.tste_20_6            0.0317763  0.0391046   0.813 0.416545    
+    ## real_openness.tste_20_7            0.1040950  0.0420192   2.477 0.013319 *  
+    ## real_openness.tste_20_8           -0.0494990  0.0378312  -1.308 0.190882    
+    ## real_openness.tste_20_9            0.0233977  0.0338399   0.691 0.489379    
+    ## real_openness.tste_20_10          -0.0181100  0.0359548  -0.504 0.614535    
+    ## real_openness.tste_20_11           0.0037494  0.0328168   0.114 0.909049    
+    ## real_openness.tste_20_12          -0.0246650  0.0365890  -0.674 0.500319    
+    ## real_openness.tste_20_13          -0.0078957  0.0382148  -0.207 0.836333    
+    ## real_openness.tste_20_14           0.0004899  0.0324565   0.015 0.987960    
+    ## real_openness.tste_20_15          -0.0278174  0.0388148  -0.717 0.473661    
+    ## real_openness.tste_20_16           0.0130927  0.0347437   0.377 0.706336    
+    ## real_openness.tste_20_17           0.0685050  0.0321167   2.133 0.033046 *  
+    ## real_openness.tste_20_18          -0.0553825  0.0332544  -1.665 0.095985 .  
+    ## real_openness.tste_20_19           0.0385185  0.0365474   1.054 0.292041    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -3429,7 +2329,7 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## Multiple R-squared:  0.1508, Adjusted R-squared:  0.09359 
     ## F-statistic: 2.634 on 135 and 2002 DF,  p-value: < 2.2e-16
 
-### preference ~ tste + real + game + game\*tste
+### preference: tste & real & game & game\*tste
 
 ``` r
 #Summary
@@ -4013,170 +2913,88 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.9698 -0.6807  0.2559  1.0109  2.9546 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       5.444e+01  1.575e+01   3.455 0.000561
-    ## age                              -1.447e-02  4.625e-03  -3.129 0.001777
-    ## education                        -1.167e-04  2.675e-02  -0.004 0.996519
-    ## income                            1.137e-02  1.726e-02   0.658 0.510418
-    ## race2                             7.596e-02  1.335e-01   0.569 0.569549
-    ## race4                            -2.169e-01  1.429e-01  -1.518 0.129224
-    ## race6                            -9.228e-01  3.501e-01  -2.636 0.008459
-    ## race7                            -1.314e-01  1.372e-01  -0.958 0.338222
-    ## sex2                             -5.325e-02  7.301e-02  -0.729 0.465929
-    ## release                          -2.479e-02  7.736e-03  -3.204 0.001375
-    ## star_user                         1.533e-02  5.970e-02   0.257 0.797323
-    ## real_extraversion                 3.673e-02  2.338e-02   1.571 0.116287
-    ## real_agreeableness               -5.413e-02  3.338e-02  -1.622 0.105053
-    ## real_conscientiousness            7.932e-02  3.715e-02   2.135 0.032877
-    ## real_emotionstability            -3.621e-05  3.356e-02  -0.001 0.999139
-    ## real_openness                     1.468e-01  3.333e-02   4.404 1.12e-05
-    ## game_extraversion                 1.268e-02  2.621e-02   0.484 0.628650
-    ## game_agreeableness                6.069e-02  3.439e-02   1.765 0.077789
-    ## game_conscientiousness            8.111e-03  4.040e-02   0.201 0.840901
-    ## game_emotionstability            -4.100e-02  3.240e-02  -1.265 0.205888
-    ## game_openness                    -4.725e-02  4.415e-02  -1.070 0.284578
-    ## tste_10_0                        -1.241e-01  3.858e-01  -0.322 0.747675
-    ## tste_10_1                         3.383e-01  4.095e-01   0.826 0.408815
-    ## tste_10_2                        -3.988e-01  4.497e-01  -0.887 0.375322
-    ## tste_10_3                        -1.512e-01  4.355e-01  -0.347 0.728590
-    ## tste_10_4                         1.394e-01  4.577e-01   0.304 0.760778
-    ## tste_10_5                         3.698e-01  4.297e-01   0.861 0.389578
-    ## tste_10_6                         2.766e-01  4.129e-01   0.670 0.503027
-    ## tste_10_7                        -3.824e-01  3.820e-01  -1.001 0.316874
-    ## tste_10_8                         5.178e-01  4.742e-01   1.092 0.275032
-    ## tste_10_9                        -3.113e-01  4.477e-01  -0.695 0.486941
-    ## game_extraversion.tste_10_0       7.056e-02  3.009e-02   2.345 0.019139
-    ## game_extraversion.tste_10_1      -5.100e-02  3.321e-02  -1.536 0.124800
-    ## game_extraversion.tste_10_2       1.852e-02  3.649e-02   0.508 0.611805
-    ## game_extraversion.tste_10_3      -5.980e-03  3.386e-02  -0.177 0.859834
-    ## game_extraversion.tste_10_4       4.629e-02  3.453e-02   1.340 0.180235
-    ## game_extraversion.tste_10_5       2.237e-02  3.399e-02   0.658 0.510471
-    ## game_extraversion.tste_10_6       1.439e-02  3.337e-02   0.431 0.666259
-    ## game_extraversion.tste_10_7       4.575e-02  3.017e-02   1.517 0.129546
-    ## game_extraversion.tste_10_8       3.175e-02  3.608e-02   0.880 0.379078
-    ## game_extraversion.tste_10_9       2.707e-02  3.338e-02   0.811 0.417512
-    ## game_agreeableness.tste_10_0     -4.220e-02  3.927e-02  -1.075 0.282659
-    ## game_agreeableness.tste_10_1     -7.079e-03  4.126e-02  -0.172 0.863795
-    ## game_agreeableness.tste_10_2      8.117e-02  4.414e-02   1.839 0.066083
-    ## game_agreeableness.tste_10_3     -1.235e-02  4.382e-02  -0.282 0.778152
-    ## game_agreeableness.tste_10_4     -3.412e-02  4.618e-02  -0.739 0.460000
-    ## game_agreeableness.tste_10_5      3.045e-02  4.383e-02   0.695 0.487269
-    ## game_agreeableness.tste_10_6      3.372e-02  4.283e-02   0.787 0.431255
-    ## game_agreeableness.tste_10_7      3.304e-02  3.797e-02   0.870 0.384349
-    ## game_agreeableness.tste_10_8     -2.018e-02  4.793e-02  -0.421 0.673735
-    ## game_agreeableness.tste_10_9     -2.265e-02  4.342e-02  -0.522 0.602036
-    ## game_conscientiousness.tste_10_0 -3.787e-02  4.247e-02  -0.892 0.372606
-    ## game_conscientiousness.tste_10_1 -4.782e-02  4.622e-02  -1.035 0.300962
-    ## game_conscientiousness.tste_10_2  2.796e-02  5.079e-02   0.551 0.582015
-    ## game_conscientiousness.tste_10_3 -3.518e-02  4.971e-02  -0.708 0.479269
-    ## game_conscientiousness.tste_10_4 -5.624e-02  4.935e-02  -1.140 0.254619
-    ## game_conscientiousness.tste_10_5 -4.607e-02  4.937e-02  -0.933 0.350871
-    ## game_conscientiousness.tste_10_6 -6.301e-02  4.907e-02  -1.284 0.199299
-    ## game_conscientiousness.tste_10_7  1.970e-02  4.271e-02   0.461 0.644580
-    ## game_conscientiousness.tste_10_8  7.886e-03  5.108e-02   0.154 0.877304
-    ## game_conscientiousness.tste_10_9  2.865e-02  4.980e-02   0.575 0.565188
-    ## game_emotionstability.tste_10_0  -4.370e-03  3.853e-02  -0.113 0.909690
-    ## game_emotionstability.tste_10_1  -8.818e-03  4.217e-02  -0.209 0.834404
-    ## game_emotionstability.tste_10_2   2.996e-02  4.440e-02   0.675 0.499868
-    ## game_emotionstability.tste_10_3   1.843e-02  4.347e-02   0.424 0.671621
-    ## game_emotionstability.tste_10_4   9.539e-03  4.494e-02   0.212 0.831946
-    ## game_emotionstability.tste_10_5  -5.090e-02  4.487e-02  -1.134 0.256760
-    ## game_emotionstability.tste_10_6  -3.159e-02  4.456e-02  -0.709 0.478465
-    ## game_emotionstability.tste_10_7   2.249e-02  3.771e-02   0.596 0.550932
-    ## game_emotionstability.tste_10_8   1.033e-02  4.707e-02   0.219 0.826315
-    ## game_emotionstability.tste_10_9   5.937e-02  4.404e-02   1.348 0.177759
-    ## game_openness.tste_10_0           2.194e-02  4.590e-02   0.478 0.632785
-    ## game_openness.tste_10_1           6.695e-02  4.938e-02   1.356 0.175336
-    ## game_openness.tste_10_2          -6.575e-02  5.455e-02  -1.205 0.228189
-    ## game_openness.tste_10_3           3.875e-02  5.087e-02   0.762 0.446321
-    ## game_openness.tste_10_4          -5.676e-03  5.303e-02  -0.107 0.914784
-    ## game_openness.tste_10_5          -3.052e-02  4.991e-02  -0.612 0.540893
-    ## game_openness.tste_10_6          -3.322e-02  5.010e-02  -0.663 0.507334
-    ## game_openness.tste_10_7          -1.494e-03  4.388e-02  -0.034 0.972841
-    ## game_openness.tste_10_8          -1.143e-01  5.618e-02  -2.035 0.041988
-    ## game_openness.tste_10_9           8.278e-03  5.087e-02   0.163 0.870757
-    ##                                     
-    ## (Intercept)                      ***
-    ## age                              ** 
-    ## education                           
-    ## income                              
-    ## race2                               
-    ## race4                               
-    ## race6                            ** 
-    ## race7                               
-    ## sex2                                
-    ## release                          ** 
-    ## star_user                           
-    ## real_extraversion                   
-    ## real_agreeableness                  
-    ## real_conscientiousness           *  
-    ## real_emotionstability               
-    ## real_openness                    ***
-    ## game_extraversion                   
-    ## game_agreeableness               .  
-    ## game_conscientiousness              
-    ## game_emotionstability               
-    ## game_openness                       
-    ## tste_10_0                           
-    ## tste_10_1                           
-    ## tste_10_2                           
-    ## tste_10_3                           
-    ## tste_10_4                           
-    ## tste_10_5                           
-    ## tste_10_6                           
-    ## tste_10_7                           
-    ## tste_10_8                           
-    ## tste_10_9                           
-    ## game_extraversion.tste_10_0      *  
-    ## game_extraversion.tste_10_1         
-    ## game_extraversion.tste_10_2         
-    ## game_extraversion.tste_10_3         
-    ## game_extraversion.tste_10_4         
-    ## game_extraversion.tste_10_5         
-    ## game_extraversion.tste_10_6         
-    ## game_extraversion.tste_10_7         
-    ## game_extraversion.tste_10_8         
-    ## game_extraversion.tste_10_9         
-    ## game_agreeableness.tste_10_0        
-    ## game_agreeableness.tste_10_1        
-    ## game_agreeableness.tste_10_2     .  
-    ## game_agreeableness.tste_10_3        
-    ## game_agreeableness.tste_10_4        
-    ## game_agreeableness.tste_10_5        
-    ## game_agreeableness.tste_10_6        
-    ## game_agreeableness.tste_10_7        
-    ## game_agreeableness.tste_10_8        
-    ## game_agreeableness.tste_10_9        
-    ## game_conscientiousness.tste_10_0    
-    ## game_conscientiousness.tste_10_1    
-    ## game_conscientiousness.tste_10_2    
-    ## game_conscientiousness.tste_10_3    
-    ## game_conscientiousness.tste_10_4    
-    ## game_conscientiousness.tste_10_5    
-    ## game_conscientiousness.tste_10_6    
-    ## game_conscientiousness.tste_10_7    
-    ## game_conscientiousness.tste_10_8    
-    ## game_conscientiousness.tste_10_9    
-    ## game_emotionstability.tste_10_0     
-    ## game_emotionstability.tste_10_1     
-    ## game_emotionstability.tste_10_2     
-    ## game_emotionstability.tste_10_3     
-    ## game_emotionstability.tste_10_4     
-    ## game_emotionstability.tste_10_5     
-    ## game_emotionstability.tste_10_6     
-    ## game_emotionstability.tste_10_7     
-    ## game_emotionstability.tste_10_8     
-    ## game_emotionstability.tste_10_9     
-    ## game_openness.tste_10_0             
-    ## game_openness.tste_10_1             
-    ## game_openness.tste_10_2             
-    ## game_openness.tste_10_3             
-    ## game_openness.tste_10_4             
-    ## game_openness.tste_10_5             
-    ## game_openness.tste_10_6             
-    ## game_openness.tste_10_7             
-    ## game_openness.tste_10_8          *  
-    ## game_openness.tste_10_9             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       5.444e+01  1.575e+01   3.455 0.000561 ***
+    ## age                              -1.447e-02  4.625e-03  -3.129 0.001777 ** 
+    ## education                        -1.167e-04  2.675e-02  -0.004 0.996519    
+    ## income                            1.137e-02  1.726e-02   0.658 0.510418    
+    ## race2                             7.596e-02  1.335e-01   0.569 0.569549    
+    ## race4                            -2.169e-01  1.429e-01  -1.518 0.129224    
+    ## race6                            -9.228e-01  3.501e-01  -2.636 0.008459 ** 
+    ## race7                            -1.314e-01  1.372e-01  -0.958 0.338222    
+    ## sex2                             -5.325e-02  7.301e-02  -0.729 0.465929    
+    ## release                          -2.479e-02  7.736e-03  -3.204 0.001375 ** 
+    ## star_user                         1.533e-02  5.970e-02   0.257 0.797323    
+    ## real_extraversion                 3.673e-02  2.338e-02   1.571 0.116287    
+    ## real_agreeableness               -5.413e-02  3.338e-02  -1.622 0.105053    
+    ## real_conscientiousness            7.932e-02  3.715e-02   2.135 0.032877 *  
+    ## real_emotionstability            -3.621e-05  3.356e-02  -0.001 0.999139    
+    ## real_openness                     1.468e-01  3.333e-02   4.404 1.12e-05 ***
+    ## game_extraversion                 1.268e-02  2.621e-02   0.484 0.628650    
+    ## game_agreeableness                6.069e-02  3.439e-02   1.765 0.077789 .  
+    ## game_conscientiousness            8.111e-03  4.040e-02   0.201 0.840901    
+    ## game_emotionstability            -4.100e-02  3.240e-02  -1.265 0.205888    
+    ## game_openness                    -4.725e-02  4.415e-02  -1.070 0.284578    
+    ## tste_10_0                        -1.241e-01  3.858e-01  -0.322 0.747675    
+    ## tste_10_1                         3.383e-01  4.095e-01   0.826 0.408815    
+    ## tste_10_2                        -3.988e-01  4.497e-01  -0.887 0.375322    
+    ## tste_10_3                        -1.512e-01  4.355e-01  -0.347 0.728590    
+    ## tste_10_4                         1.394e-01  4.577e-01   0.304 0.760778    
+    ## tste_10_5                         3.698e-01  4.297e-01   0.861 0.389578    
+    ## tste_10_6                         2.766e-01  4.129e-01   0.670 0.503027    
+    ## tste_10_7                        -3.824e-01  3.820e-01  -1.001 0.316874    
+    ## tste_10_8                         5.178e-01  4.742e-01   1.092 0.275032    
+    ## tste_10_9                        -3.113e-01  4.477e-01  -0.695 0.486941    
+    ## game_extraversion.tste_10_0       7.056e-02  3.009e-02   2.345 0.019139 *  
+    ## game_extraversion.tste_10_1      -5.100e-02  3.321e-02  -1.536 0.124800    
+    ## game_extraversion.tste_10_2       1.852e-02  3.649e-02   0.508 0.611805    
+    ## game_extraversion.tste_10_3      -5.980e-03  3.386e-02  -0.177 0.859834    
+    ## game_extraversion.tste_10_4       4.629e-02  3.453e-02   1.340 0.180235    
+    ## game_extraversion.tste_10_5       2.237e-02  3.399e-02   0.658 0.510471    
+    ## game_extraversion.tste_10_6       1.439e-02  3.337e-02   0.431 0.666259    
+    ## game_extraversion.tste_10_7       4.575e-02  3.017e-02   1.517 0.129546    
+    ## game_extraversion.tste_10_8       3.175e-02  3.608e-02   0.880 0.379078    
+    ## game_extraversion.tste_10_9       2.707e-02  3.338e-02   0.811 0.417512    
+    ## game_agreeableness.tste_10_0     -4.220e-02  3.927e-02  -1.075 0.282659    
+    ## game_agreeableness.tste_10_1     -7.079e-03  4.126e-02  -0.172 0.863795    
+    ## game_agreeableness.tste_10_2      8.117e-02  4.414e-02   1.839 0.066083 .  
+    ## game_agreeableness.tste_10_3     -1.235e-02  4.382e-02  -0.282 0.778152    
+    ## game_agreeableness.tste_10_4     -3.412e-02  4.618e-02  -0.739 0.460000    
+    ## game_agreeableness.tste_10_5      3.045e-02  4.383e-02   0.695 0.487269    
+    ## game_agreeableness.tste_10_6      3.372e-02  4.283e-02   0.787 0.431255    
+    ## game_agreeableness.tste_10_7      3.304e-02  3.797e-02   0.870 0.384349    
+    ## game_agreeableness.tste_10_8     -2.018e-02  4.793e-02  -0.421 0.673735    
+    ## game_agreeableness.tste_10_9     -2.265e-02  4.342e-02  -0.522 0.602036    
+    ## game_conscientiousness.tste_10_0 -3.787e-02  4.247e-02  -0.892 0.372606    
+    ## game_conscientiousness.tste_10_1 -4.782e-02  4.622e-02  -1.035 0.300962    
+    ## game_conscientiousness.tste_10_2  2.796e-02  5.079e-02   0.551 0.582015    
+    ## game_conscientiousness.tste_10_3 -3.518e-02  4.971e-02  -0.708 0.479269    
+    ## game_conscientiousness.tste_10_4 -5.624e-02  4.935e-02  -1.140 0.254619    
+    ## game_conscientiousness.tste_10_5 -4.607e-02  4.937e-02  -0.933 0.350871    
+    ## game_conscientiousness.tste_10_6 -6.301e-02  4.907e-02  -1.284 0.199299    
+    ## game_conscientiousness.tste_10_7  1.970e-02  4.271e-02   0.461 0.644580    
+    ## game_conscientiousness.tste_10_8  7.886e-03  5.108e-02   0.154 0.877304    
+    ## game_conscientiousness.tste_10_9  2.865e-02  4.980e-02   0.575 0.565188    
+    ## game_emotionstability.tste_10_0  -4.370e-03  3.853e-02  -0.113 0.909690    
+    ## game_emotionstability.tste_10_1  -8.818e-03  4.217e-02  -0.209 0.834404    
+    ## game_emotionstability.tste_10_2   2.996e-02  4.440e-02   0.675 0.499868    
+    ## game_emotionstability.tste_10_3   1.843e-02  4.347e-02   0.424 0.671621    
+    ## game_emotionstability.tste_10_4   9.539e-03  4.494e-02   0.212 0.831946    
+    ## game_emotionstability.tste_10_5  -5.090e-02  4.487e-02  -1.134 0.256760    
+    ## game_emotionstability.tste_10_6  -3.159e-02  4.456e-02  -0.709 0.478465    
+    ## game_emotionstability.tste_10_7   2.249e-02  3.771e-02   0.596 0.550932    
+    ## game_emotionstability.tste_10_8   1.033e-02  4.707e-02   0.219 0.826315    
+    ## game_emotionstability.tste_10_9   5.937e-02  4.404e-02   1.348 0.177759    
+    ## game_openness.tste_10_0           2.194e-02  4.590e-02   0.478 0.632785    
+    ## game_openness.tste_10_1           6.695e-02  4.938e-02   1.356 0.175336    
+    ## game_openness.tste_10_2          -6.575e-02  5.455e-02  -1.205 0.228189    
+    ## game_openness.tste_10_3           3.875e-02  5.087e-02   0.762 0.446321    
+    ## game_openness.tste_10_4          -5.676e-03  5.303e-02  -0.107 0.914784    
+    ## game_openness.tste_10_5          -3.052e-02  4.991e-02  -0.612 0.540893    
+    ## game_openness.tste_10_6          -3.322e-02  5.010e-02  -0.663 0.507334    
+    ## game_openness.tste_10_7          -1.494e-03  4.388e-02  -0.034 0.972841    
+    ## game_openness.tste_10_8          -1.143e-01  5.618e-02  -2.035 0.041988 *  
+    ## game_openness.tste_10_9           8.278e-03  5.087e-02   0.163 0.870757    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -4193,182 +3011,94 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.9523 -0.6825  0.2653  1.0039  3.0698 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                        5.463e+01  1.600e+01   3.415 0.000651
-    ## age                               -1.467e-02  4.616e-03  -3.179 0.001502
-    ## education                         -3.060e-04  2.675e-02  -0.011 0.990873
-    ## income                             1.185e-02  1.725e-02   0.687 0.492226
-    ## race2                              6.820e-02  1.333e-01   0.511 0.609071
-    ## race4                             -2.082e-01  1.427e-01  -1.458 0.144938
-    ## race6                             -9.197e-01  3.499e-01  -2.628 0.008646
-    ## race7                             -1.406e-01  1.371e-01  -1.025 0.305406
-    ## sex2                              -4.878e-02  7.301e-02  -0.668 0.504116
-    ## release                           -2.486e-02  7.855e-03  -3.165 0.001572
-    ## star_user                          1.280e-02  6.216e-02   0.206 0.836840
-    ## real_extraversion                  3.583e-02  2.337e-02   1.533 0.125358
-    ## real_agreeableness                -5.169e-02  3.334e-02  -1.550 0.121219
-    ## real_conscientiousness             8.491e-02  3.718e-02   2.284 0.022476
-    ## real_emotionstability              1.643e-04  3.354e-02   0.005 0.996091
-    ## real_openness                      1.515e-01  3.331e-02   4.549  5.7e-06
-    ## game_extraversion                  1.401e-02  2.620e-02   0.535 0.592872
-    ## game_agreeableness                 5.777e-02  3.436e-02   1.681 0.092907
-    ## game_conscientiousness             1.108e-03  4.031e-02   0.027 0.978075
-    ## game_emotionstability             -4.342e-02  3.244e-02  -1.338 0.180896
-    ## game_openness                     -5.313e-02  4.433e-02  -1.199 0.230846
-    ## tste_11_0                          5.229e-01  4.730e-01   1.105 0.269077
-    ## tste_11_1                         -6.707e-01  4.456e-01  -1.505 0.132453
-    ## tste_11_2                         -3.129e-01  3.936e-01  -0.795 0.426803
-    ## tste_11_3                         -1.486e-01  4.690e-01  -0.317 0.751355
-    ## tste_11_4                          3.750e-01  4.697e-01   0.798 0.424757
-    ## tste_11_5                         -5.594e-01  4.200e-01  -1.332 0.183113
-    ## tste_11_6                         -7.062e-02  4.147e-01  -0.170 0.864793
-    ## tste_11_7                         -8.969e-04  4.460e-01  -0.002 0.998396
-    ## tste_11_8                         -4.284e-01  3.552e-01  -1.206 0.227879
-    ## tste_11_9                         -1.106e-01  4.379e-01  -0.252 0.800692
-    ## tste_11_10                        -2.753e-01  4.108e-01  -0.670 0.502901
-    ## game_extraversion.tste_11_0        2.518e-02  3.690e-02   0.682 0.495069
-    ## game_extraversion.tste_11_1        3.948e-02  3.292e-02   1.199 0.230572
-    ## game_extraversion.tste_11_2        8.959e-02  3.029e-02   2.958 0.003132
-    ## game_extraversion.tste_11_3        1.309e-02  3.574e-02   0.366 0.714269
-    ## game_extraversion.tste_11_4        3.504e-02  3.593e-02   0.975 0.329586
-    ## game_extraversion.tste_11_5        1.235e-02  3.272e-02   0.378 0.705797
-    ## game_extraversion.tste_11_6        2.107e-02  3.165e-02   0.666 0.505590
-    ## game_extraversion.tste_11_7       -2.002e-03  3.735e-02  -0.054 0.957258
-    ## game_extraversion.tste_11_8       -6.959e-05  2.781e-02  -0.003 0.998004
-    ## game_extraversion.tste_11_9       -2.969e-02  3.398e-02  -0.874 0.382264
-    ## game_extraversion.tste_11_10       4.850e-02  3.314e-02   1.463 0.143506
-    ## game_agreeableness.tste_11_0       6.552e-02  5.027e-02   1.303 0.192620
-    ## game_agreeableness.tste_11_1      -2.111e-02  4.419e-02  -0.478 0.632956
-    ## game_agreeableness.tste_11_2       3.227e-02  3.857e-02   0.837 0.402909
-    ## game_agreeableness.tste_11_3       1.181e-02  4.581e-02   0.258 0.796521
-    ## game_agreeableness.tste_11_4      -5.993e-02  4.633e-02  -1.294 0.195942
-    ## game_agreeableness.tste_11_5      -1.088e-02  4.228e-02  -0.257 0.796856
-    ## game_agreeableness.tste_11_6      -5.815e-02  4.067e-02  -1.430 0.152993
-    ## game_agreeableness.tste_11_7       2.269e-02  4.557e-02   0.498 0.618699
-    ## game_agreeableness.tste_11_8       2.817e-02  3.660e-02   0.770 0.441574
-    ## game_agreeableness.tste_11_9       9.687e-03  4.413e-02   0.219 0.826286
-    ## game_agreeableness.tste_11_10     -4.841e-02  4.238e-02  -1.142 0.253476
-    ## game_conscientiousness.tste_11_0   1.047e-02  5.284e-02   0.198 0.842928
-    ## game_conscientiousness.tste_11_1   8.637e-02  4.797e-02   1.801 0.071916
-    ## game_conscientiousness.tste_11_2  -3.868e-02  4.466e-02  -0.866 0.386574
-    ## game_conscientiousness.tste_11_3   4.458e-02  5.141e-02   0.867 0.385984
-    ## game_conscientiousness.tste_11_4  -5.705e-02  5.231e-02  -1.091 0.275573
-    ## game_conscientiousness.tste_11_5   2.261e-02  4.655e-02   0.486 0.627225
-    ## game_conscientiousness.tste_11_6  -1.681e-02  4.589e-02  -0.366 0.714161
-    ## game_conscientiousness.tste_11_7   1.228e-02  5.143e-02   0.239 0.811329
-    ## game_conscientiousness.tste_11_8   9.013e-03  3.997e-02   0.225 0.821642
-    ## game_conscientiousness.tste_11_9   1.772e-03  4.891e-02   0.036 0.971113
-    ## game_conscientiousness.tste_11_10  3.441e-02  4.812e-02   0.715 0.474617
-    ## game_emotionstability.tste_11_0   -8.851e-02  4.680e-02  -1.891 0.058717
-    ## game_emotionstability.tste_11_1    9.260e-02  4.322e-02   2.143 0.032258
-    ## game_emotionstability.tste_11_2    1.556e-02  3.994e-02   0.390 0.696853
-    ## game_emotionstability.tste_11_3    8.650e-02  4.466e-02   1.937 0.052891
-    ## game_emotionstability.tste_11_4    1.530e-02  4.553e-02   0.336 0.736960
-    ## game_emotionstability.tste_11_5    2.911e-02  4.329e-02   0.672 0.501368
-    ## game_emotionstability.tste_11_6    3.442e-02  4.184e-02   0.823 0.410847
-    ## game_emotionstability.tste_11_7    6.613e-03  4.607e-02   0.144 0.885865
-    ## game_emotionstability.tste_11_8    4.434e-02  3.514e-02   1.262 0.207167
-    ## game_emotionstability.tste_11_9    1.772e-02  4.470e-02   0.396 0.691793
-    ## game_emotionstability.tste_11_10   5.531e-02  4.304e-02   1.285 0.198912
-    ## game_openness.tste_11_0           -1.208e-01  5.556e-02  -2.175 0.029752
-    ## game_openness.tste_11_1           -2.503e-02  5.185e-02  -0.483 0.629276
-    ## game_openness.tste_11_2           -2.172e-02  4.591e-02  -0.473 0.636259
-    ## game_openness.tste_11_3           -7.884e-02  5.614e-02  -1.404 0.160397
-    ## game_openness.tste_11_4           -3.664e-02  5.414e-02  -0.677 0.498692
-    ## game_openness.tste_11_5            4.928e-02  4.821e-02   1.022 0.306796
-    ## game_openness.tste_11_6            4.878e-02  4.805e-02   1.015 0.310161
-    ## game_openness.tste_11_7           -1.591e-02  5.472e-02  -0.291 0.771263
-    ## game_openness.tste_11_8           -7.319e-03  4.256e-02  -0.172 0.863489
-    ## game_openness.tste_11_9            5.918e-02  5.189e-02   1.140 0.254242
-    ## game_openness.tste_11_10          -1.078e-02  4.829e-02  -0.223 0.823408
-    ##                                      
-    ## (Intercept)                       ***
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           ** 
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_11_0                            
-    ## tste_11_1                            
-    ## tste_11_2                            
-    ## tste_11_3                            
-    ## tste_11_4                            
-    ## tste_11_5                            
-    ## tste_11_6                            
-    ## tste_11_7                            
-    ## tste_11_8                            
-    ## tste_11_9                            
-    ## tste_11_10                           
-    ## game_extraversion.tste_11_0          
-    ## game_extraversion.tste_11_1          
-    ## game_extraversion.tste_11_2       ** 
-    ## game_extraversion.tste_11_3          
-    ## game_extraversion.tste_11_4          
-    ## game_extraversion.tste_11_5          
-    ## game_extraversion.tste_11_6          
-    ## game_extraversion.tste_11_7          
-    ## game_extraversion.tste_11_8          
-    ## game_extraversion.tste_11_9          
-    ## game_extraversion.tste_11_10         
-    ## game_agreeableness.tste_11_0         
-    ## game_agreeableness.tste_11_1         
-    ## game_agreeableness.tste_11_2         
-    ## game_agreeableness.tste_11_3         
-    ## game_agreeableness.tste_11_4         
-    ## game_agreeableness.tste_11_5         
-    ## game_agreeableness.tste_11_6         
-    ## game_agreeableness.tste_11_7         
-    ## game_agreeableness.tste_11_8         
-    ## game_agreeableness.tste_11_9         
-    ## game_agreeableness.tste_11_10        
-    ## game_conscientiousness.tste_11_0     
-    ## game_conscientiousness.tste_11_1  .  
-    ## game_conscientiousness.tste_11_2     
-    ## game_conscientiousness.tste_11_3     
-    ## game_conscientiousness.tste_11_4     
-    ## game_conscientiousness.tste_11_5     
-    ## game_conscientiousness.tste_11_6     
-    ## game_conscientiousness.tste_11_7     
-    ## game_conscientiousness.tste_11_8     
-    ## game_conscientiousness.tste_11_9     
-    ## game_conscientiousness.tste_11_10    
-    ## game_emotionstability.tste_11_0   .  
-    ## game_emotionstability.tste_11_1   *  
-    ## game_emotionstability.tste_11_2      
-    ## game_emotionstability.tste_11_3   .  
-    ## game_emotionstability.tste_11_4      
-    ## game_emotionstability.tste_11_5      
-    ## game_emotionstability.tste_11_6      
-    ## game_emotionstability.tste_11_7      
-    ## game_emotionstability.tste_11_8      
-    ## game_emotionstability.tste_11_9      
-    ## game_emotionstability.tste_11_10     
-    ## game_openness.tste_11_0           *  
-    ## game_openness.tste_11_1              
-    ## game_openness.tste_11_2              
-    ## game_openness.tste_11_3              
-    ## game_openness.tste_11_4              
-    ## game_openness.tste_11_5              
-    ## game_openness.tste_11_6              
-    ## game_openness.tste_11_7              
-    ## game_openness.tste_11_8              
-    ## game_openness.tste_11_9              
-    ## game_openness.tste_11_10             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                        5.463e+01  1.600e+01   3.415 0.000651 ***
+    ## age                               -1.467e-02  4.616e-03  -3.179 0.001502 ** 
+    ## education                         -3.060e-04  2.675e-02  -0.011 0.990873    
+    ## income                             1.185e-02  1.725e-02   0.687 0.492226    
+    ## race2                              6.820e-02  1.333e-01   0.511 0.609071    
+    ## race4                             -2.082e-01  1.427e-01  -1.458 0.144938    
+    ## race6                             -9.197e-01  3.499e-01  -2.628 0.008646 ** 
+    ## race7                             -1.406e-01  1.371e-01  -1.025 0.305406    
+    ## sex2                              -4.878e-02  7.301e-02  -0.668 0.504116    
+    ## release                           -2.486e-02  7.855e-03  -3.165 0.001572 ** 
+    ## star_user                          1.280e-02  6.216e-02   0.206 0.836840    
+    ## real_extraversion                  3.583e-02  2.337e-02   1.533 0.125358    
+    ## real_agreeableness                -5.169e-02  3.334e-02  -1.550 0.121219    
+    ## real_conscientiousness             8.491e-02  3.718e-02   2.284 0.022476 *  
+    ## real_emotionstability              1.643e-04  3.354e-02   0.005 0.996091    
+    ## real_openness                      1.515e-01  3.331e-02   4.549  5.7e-06 ***
+    ## game_extraversion                  1.401e-02  2.620e-02   0.535 0.592872    
+    ## game_agreeableness                 5.777e-02  3.436e-02   1.681 0.092907 .  
+    ## game_conscientiousness             1.108e-03  4.031e-02   0.027 0.978075    
+    ## game_emotionstability             -4.342e-02  3.244e-02  -1.338 0.180896    
+    ## game_openness                     -5.313e-02  4.433e-02  -1.199 0.230846    
+    ## tste_11_0                          5.229e-01  4.730e-01   1.105 0.269077    
+    ## tste_11_1                         -6.707e-01  4.456e-01  -1.505 0.132453    
+    ## tste_11_2                         -3.129e-01  3.936e-01  -0.795 0.426803    
+    ## tste_11_3                         -1.486e-01  4.690e-01  -0.317 0.751355    
+    ## tste_11_4                          3.750e-01  4.697e-01   0.798 0.424757    
+    ## tste_11_5                         -5.594e-01  4.200e-01  -1.332 0.183113    
+    ## tste_11_6                         -7.062e-02  4.147e-01  -0.170 0.864793    
+    ## tste_11_7                         -8.969e-04  4.460e-01  -0.002 0.998396    
+    ## tste_11_8                         -4.284e-01  3.552e-01  -1.206 0.227879    
+    ## tste_11_9                         -1.106e-01  4.379e-01  -0.252 0.800692    
+    ## tste_11_10                        -2.753e-01  4.108e-01  -0.670 0.502901    
+    ## game_extraversion.tste_11_0        2.518e-02  3.690e-02   0.682 0.495069    
+    ## game_extraversion.tste_11_1        3.948e-02  3.292e-02   1.199 0.230572    
+    ## game_extraversion.tste_11_2        8.959e-02  3.029e-02   2.958 0.003132 ** 
+    ## game_extraversion.tste_11_3        1.309e-02  3.574e-02   0.366 0.714269    
+    ## game_extraversion.tste_11_4        3.504e-02  3.593e-02   0.975 0.329586    
+    ## game_extraversion.tste_11_5        1.235e-02  3.272e-02   0.378 0.705797    
+    ## game_extraversion.tste_11_6        2.107e-02  3.165e-02   0.666 0.505590    
+    ## game_extraversion.tste_11_7       -2.002e-03  3.735e-02  -0.054 0.957258    
+    ## game_extraversion.tste_11_8       -6.959e-05  2.781e-02  -0.003 0.998004    
+    ## game_extraversion.tste_11_9       -2.969e-02  3.398e-02  -0.874 0.382264    
+    ## game_extraversion.tste_11_10       4.850e-02  3.314e-02   1.463 0.143506    
+    ## game_agreeableness.tste_11_0       6.552e-02  5.027e-02   1.303 0.192620    
+    ## game_agreeableness.tste_11_1      -2.111e-02  4.419e-02  -0.478 0.632956    
+    ## game_agreeableness.tste_11_2       3.227e-02  3.857e-02   0.837 0.402909    
+    ## game_agreeableness.tste_11_3       1.181e-02  4.581e-02   0.258 0.796521    
+    ## game_agreeableness.tste_11_4      -5.993e-02  4.633e-02  -1.294 0.195942    
+    ## game_agreeableness.tste_11_5      -1.088e-02  4.228e-02  -0.257 0.796856    
+    ## game_agreeableness.tste_11_6      -5.815e-02  4.067e-02  -1.430 0.152993    
+    ## game_agreeableness.tste_11_7       2.269e-02  4.557e-02   0.498 0.618699    
+    ## game_agreeableness.tste_11_8       2.817e-02  3.660e-02   0.770 0.441574    
+    ## game_agreeableness.tste_11_9       9.687e-03  4.413e-02   0.219 0.826286    
+    ## game_agreeableness.tste_11_10     -4.841e-02  4.238e-02  -1.142 0.253476    
+    ## game_conscientiousness.tste_11_0   1.047e-02  5.284e-02   0.198 0.842928    
+    ## game_conscientiousness.tste_11_1   8.637e-02  4.797e-02   1.801 0.071916 .  
+    ## game_conscientiousness.tste_11_2  -3.868e-02  4.466e-02  -0.866 0.386574    
+    ## game_conscientiousness.tste_11_3   4.458e-02  5.141e-02   0.867 0.385984    
+    ## game_conscientiousness.tste_11_4  -5.705e-02  5.231e-02  -1.091 0.275573    
+    ## game_conscientiousness.tste_11_5   2.261e-02  4.655e-02   0.486 0.627225    
+    ## game_conscientiousness.tste_11_6  -1.681e-02  4.589e-02  -0.366 0.714161    
+    ## game_conscientiousness.tste_11_7   1.228e-02  5.143e-02   0.239 0.811329    
+    ## game_conscientiousness.tste_11_8   9.013e-03  3.997e-02   0.225 0.821642    
+    ## game_conscientiousness.tste_11_9   1.772e-03  4.891e-02   0.036 0.971113    
+    ## game_conscientiousness.tste_11_10  3.441e-02  4.812e-02   0.715 0.474617    
+    ## game_emotionstability.tste_11_0   -8.851e-02  4.680e-02  -1.891 0.058717 .  
+    ## game_emotionstability.tste_11_1    9.260e-02  4.322e-02   2.143 0.032258 *  
+    ## game_emotionstability.tste_11_2    1.556e-02  3.994e-02   0.390 0.696853    
+    ## game_emotionstability.tste_11_3    8.650e-02  4.466e-02   1.937 0.052891 .  
+    ## game_emotionstability.tste_11_4    1.530e-02  4.553e-02   0.336 0.736960    
+    ## game_emotionstability.tste_11_5    2.911e-02  4.329e-02   0.672 0.501368    
+    ## game_emotionstability.tste_11_6    3.442e-02  4.184e-02   0.823 0.410847    
+    ## game_emotionstability.tste_11_7    6.613e-03  4.607e-02   0.144 0.885865    
+    ## game_emotionstability.tste_11_8    4.434e-02  3.514e-02   1.262 0.207167    
+    ## game_emotionstability.tste_11_9    1.772e-02  4.470e-02   0.396 0.691793    
+    ## game_emotionstability.tste_11_10   5.531e-02  4.304e-02   1.285 0.198912    
+    ## game_openness.tste_11_0           -1.208e-01  5.556e-02  -2.175 0.029752 *  
+    ## game_openness.tste_11_1           -2.503e-02  5.185e-02  -0.483 0.629276    
+    ## game_openness.tste_11_2           -2.172e-02  4.591e-02  -0.473 0.636259    
+    ## game_openness.tste_11_3           -7.884e-02  5.614e-02  -1.404 0.160397    
+    ## game_openness.tste_11_4           -3.664e-02  5.414e-02  -0.677 0.498692    
+    ## game_openness.tste_11_5            4.928e-02  4.821e-02   1.022 0.306796    
+    ## game_openness.tste_11_6            4.878e-02  4.805e-02   1.015 0.310161    
+    ## game_openness.tste_11_7           -1.591e-02  5.472e-02  -0.291 0.771263    
+    ## game_openness.tste_11_8           -7.319e-03  4.256e-02  -0.172 0.863489    
+    ## game_openness.tste_11_9            5.918e-02  5.189e-02   1.140 0.254242    
+    ## game_openness.tste_11_10          -1.078e-02  4.829e-02  -0.223 0.823408    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -4385,194 +3115,100 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.9512 -0.6802  0.2697  1.0100  3.2893 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       46.0189834 16.4391957   2.799  0.00517
-    ## age                               -0.0142641  0.0046176  -3.089  0.00203
-    ## education                          0.0024011  0.0267799   0.090  0.92857
-    ## income                             0.0111563  0.0172392   0.647  0.51761
-    ## race2                              0.0514772  0.1341018   0.384  0.70112
-    ## race4                             -0.2172563  0.1430144  -1.519  0.12889
-    ## race6                             -0.9365699  0.3517984  -2.662  0.00782
-    ## race7                             -0.1329142  0.1374608  -0.967  0.33370
-    ## sex2                              -0.0582035  0.0730185  -0.797  0.42548
-    ## release                           -0.0207971  0.0080588  -2.581  0.00993
-    ## star_user                          0.0549511  0.0629290   0.873  0.38264
-    ## real_extraversion                  0.0345899  0.0234839   1.473  0.14093
-    ## real_agreeableness                -0.0494042  0.0334351  -1.478  0.13967
-    ## real_conscientiousness             0.0897347  0.0372097   2.412  0.01597
-    ## real_emotionstability             -0.0007114  0.0336210  -0.021  0.98312
-    ## real_openness                      0.1474719  0.0333044   4.428    1e-05
-    ## game_extraversion                  0.0137111  0.0263437   0.520  0.60279
-    ## game_agreeableness                 0.0596977  0.0342946   1.741  0.08188
-    ## game_conscientiousness             0.0014577  0.0405468   0.036  0.97132
-    ## game_emotionstability             -0.0406348  0.0324507  -1.252  0.21064
-    ## game_openness                     -0.0416482  0.0445059  -0.936  0.34949
-    ## tste_12_0                         -0.1578235  0.4394105  -0.359  0.71950
-    ## tste_12_1                         -0.3326091  0.3917320  -0.849  0.39594
-    ## tste_12_2                          0.3694201  0.4097972   0.901  0.36744
-    ## tste_12_3                         -0.3646499  0.4650340  -0.784  0.43305
-    ## tste_12_4                         -0.2320987  0.4446158  -0.522  0.60171
-    ## tste_12_5                          0.3136738  0.4542137   0.691  0.48990
-    ## tste_12_6                         -0.5135104  0.4566553  -1.125  0.26093
-    ## tste_12_7                         -0.4045305  0.4500235  -0.899  0.36881
-    ## tste_12_8                         -0.3901231  0.3842092  -1.015  0.31004
-    ## tste_12_9                         -0.9391537  0.4511467  -2.082  0.03749
-    ## tste_12_10                        -0.1892326  0.3839019  -0.493  0.62212
-    ## tste_12_11                         0.2349275  0.4137561   0.568  0.57024
-    ## game_extraversion.tste_12_0       -0.0204686  0.0364106  -0.562  0.57407
-    ## game_extraversion.tste_12_1        0.0230901  0.0307340   0.751  0.45256
-    ## game_extraversion.tste_12_2        0.0266992  0.0318358   0.839  0.40176
-    ## game_extraversion.tste_12_3       -0.0290417  0.0355352  -0.817  0.41387
-    ## game_extraversion.tste_12_4       -0.0087838  0.0337269  -0.260  0.79455
-    ## game_extraversion.tste_12_5        0.0489996  0.0345761   1.417  0.15659
-    ## game_extraversion.tste_12_6       -0.0301380  0.0361344  -0.834  0.40435
-    ## game_extraversion.tste_12_7        0.0018996  0.0363892   0.052  0.95837
-    ## game_extraversion.tste_12_8        0.0231773  0.0295042   0.786  0.43222
-    ## game_extraversion.tste_12_9        0.0506442  0.0348855   1.452  0.14673
-    ## game_extraversion.tste_12_10      -0.0842105  0.0284072  -2.964  0.00307
-    ## game_extraversion.tste_12_11      -0.0130964  0.0318097  -0.412  0.68060
-    ## game_agreeableness.tste_12_0       0.0211567  0.0452842   0.467  0.64041
-    ## game_agreeableness.tste_12_1      -0.0595853  0.0400474  -1.488  0.13694
-    ## game_agreeableness.tste_12_2      -0.0021219  0.0410274  -0.052  0.95876
-    ## game_agreeableness.tste_12_3       0.0078944  0.0463075   0.170  0.86465
-    ## game_agreeableness.tste_12_4      -0.0100179  0.0430365  -0.233  0.81596
-    ## game_agreeableness.tste_12_5       0.0075129  0.0455293   0.165  0.86895
-    ## game_agreeableness.tste_12_6       0.0730582  0.0465765   1.569  0.11690
-    ## game_agreeableness.tste_12_7      -0.0380141  0.0461734  -0.823  0.41044
-    ## game_agreeableness.tste_12_8      -0.0390899  0.0381821  -1.024  0.30606
-    ## game_agreeableness.tste_12_9      -0.0250201  0.0456234  -0.548  0.58347
-    ## game_agreeableness.tste_12_10     -0.0341437  0.0386229  -0.884  0.37678
-    ## game_agreeableness.tste_12_11     -0.0289065  0.0402448  -0.718  0.47267
-    ## game_conscientiousness.tste_12_0   0.0414401  0.0505754   0.819  0.41267
-    ## game_conscientiousness.tste_12_1   0.0567492  0.0436120   1.301  0.19333
-    ## game_conscientiousness.tste_12_2  -0.0275298  0.0464835  -0.592  0.55375
-    ## game_conscientiousness.tste_12_3   0.0381166  0.0524312   0.727  0.46732
-    ## game_conscientiousness.tste_12_4  -0.0232187  0.0494041  -0.470  0.63842
-    ## game_conscientiousness.tste_12_5   0.0407251  0.0472832   0.861  0.38917
-    ## game_conscientiousness.tste_12_6   0.0711314  0.0549521   1.294  0.19566
-    ## game_conscientiousness.tste_12_7   0.0100663  0.0506986   0.199  0.84263
-    ## game_conscientiousness.tste_12_8   0.0283919  0.0433945   0.654  0.51301
-    ## game_conscientiousness.tste_12_9   0.0802182  0.0488519   1.642  0.10073
-    ## game_conscientiousness.tste_12_10  0.0434040  0.0421487   1.030  0.30323
-    ## game_conscientiousness.tste_12_11  0.0091992  0.0460719   0.200  0.84176
-    ## game_emotionstability.tste_12_0    0.0446415  0.0452537   0.986  0.32402
-    ## game_emotionstability.tste_12_1    0.0639659  0.0391360   1.634  0.10232
-    ## game_emotionstability.tste_12_2   -0.0080011  0.0413528  -0.193  0.84660
-    ## game_emotionstability.tste_12_3    0.0735877  0.0462974   1.589  0.11211
-    ## game_emotionstability.tste_12_4    0.0231076  0.0429586   0.538  0.59070
-    ## game_emotionstability.tste_12_5    0.0566916  0.0439153   1.291  0.19687
-    ## game_emotionstability.tste_12_6   -0.0088928  0.0480397  -0.185  0.85316
-    ## game_emotionstability.tste_12_7    0.0800646  0.0450668   1.777  0.07579
-    ## game_emotionstability.tste_12_8    0.0135759  0.0377321   0.360  0.71904
-    ## game_emotionstability.tste_12_9    0.1115180  0.0448236   2.488  0.01293
-    ## game_emotionstability.tste_12_10   0.0296984  0.0386613   0.768  0.44247
-    ## game_emotionstability.tste_12_11   0.0032535  0.0410126   0.079  0.93678
-    ## game_openness.tste_12_0           -0.0189380  0.0522324  -0.363  0.71696
-    ## game_openness.tste_12_1           -0.0055823  0.0446628  -0.125  0.90055
-    ## game_openness.tste_12_2           -0.0418352  0.0484924  -0.863  0.38839
-    ## game_openness.tste_12_3            0.0122676  0.0550666   0.223  0.82373
-    ## game_openness.tste_12_4            0.0521637  0.0523323   0.997  0.31899
-    ## game_openness.tste_12_5           -0.1580917  0.0543583  -2.908  0.00367
-    ## game_openness.tste_12_6            0.0062600  0.0529159   0.118  0.90584
-    ## game_openness.tste_12_7            0.0448493  0.0544944   0.823  0.41060
-    ## game_openness.tste_12_8            0.0690779  0.0454601   1.520  0.12878
-    ## game_openness.tste_12_9           -0.0038618  0.0543605  -0.071  0.94337
-    ## game_openness.tste_12_10           0.0970367  0.0436464   2.223  0.02631
-    ## game_openness.tste_12_11          -0.0528922  0.0477055  -1.109  0.26768
-    ##                                      
-    ## (Intercept)                       ** 
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           ** 
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_12_0                            
-    ## tste_12_1                            
-    ## tste_12_2                            
-    ## tste_12_3                            
-    ## tste_12_4                            
-    ## tste_12_5                            
-    ## tste_12_6                            
-    ## tste_12_7                            
-    ## tste_12_8                            
-    ## tste_12_9                         *  
-    ## tste_12_10                           
-    ## tste_12_11                           
-    ## game_extraversion.tste_12_0          
-    ## game_extraversion.tste_12_1          
-    ## game_extraversion.tste_12_2          
-    ## game_extraversion.tste_12_3          
-    ## game_extraversion.tste_12_4          
-    ## game_extraversion.tste_12_5          
-    ## game_extraversion.tste_12_6          
-    ## game_extraversion.tste_12_7          
-    ## game_extraversion.tste_12_8          
-    ## game_extraversion.tste_12_9          
-    ## game_extraversion.tste_12_10      ** 
-    ## game_extraversion.tste_12_11         
-    ## game_agreeableness.tste_12_0         
-    ## game_agreeableness.tste_12_1         
-    ## game_agreeableness.tste_12_2         
-    ## game_agreeableness.tste_12_3         
-    ## game_agreeableness.tste_12_4         
-    ## game_agreeableness.tste_12_5         
-    ## game_agreeableness.tste_12_6         
-    ## game_agreeableness.tste_12_7         
-    ## game_agreeableness.tste_12_8         
-    ## game_agreeableness.tste_12_9         
-    ## game_agreeableness.tste_12_10        
-    ## game_agreeableness.tste_12_11        
-    ## game_conscientiousness.tste_12_0     
-    ## game_conscientiousness.tste_12_1     
-    ## game_conscientiousness.tste_12_2     
-    ## game_conscientiousness.tste_12_3     
-    ## game_conscientiousness.tste_12_4     
-    ## game_conscientiousness.tste_12_5     
-    ## game_conscientiousness.tste_12_6     
-    ## game_conscientiousness.tste_12_7     
-    ## game_conscientiousness.tste_12_8     
-    ## game_conscientiousness.tste_12_9     
-    ## game_conscientiousness.tste_12_10    
-    ## game_conscientiousness.tste_12_11    
-    ## game_emotionstability.tste_12_0      
-    ## game_emotionstability.tste_12_1      
-    ## game_emotionstability.tste_12_2      
-    ## game_emotionstability.tste_12_3      
-    ## game_emotionstability.tste_12_4      
-    ## game_emotionstability.tste_12_5      
-    ## game_emotionstability.tste_12_6      
-    ## game_emotionstability.tste_12_7   .  
-    ## game_emotionstability.tste_12_8      
-    ## game_emotionstability.tste_12_9   *  
-    ## game_emotionstability.tste_12_10     
-    ## game_emotionstability.tste_12_11     
-    ## game_openness.tste_12_0              
-    ## game_openness.tste_12_1              
-    ## game_openness.tste_12_2              
-    ## game_openness.tste_12_3              
-    ## game_openness.tste_12_4              
-    ## game_openness.tste_12_5           ** 
-    ## game_openness.tste_12_6              
-    ## game_openness.tste_12_7              
-    ## game_openness.tste_12_8              
-    ## game_openness.tste_12_9              
-    ## game_openness.tste_12_10          *  
-    ## game_openness.tste_12_11             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       46.0189834 16.4391957   2.799  0.00517 ** 
+    ## age                               -0.0142641  0.0046176  -3.089  0.00203 ** 
+    ## education                          0.0024011  0.0267799   0.090  0.92857    
+    ## income                             0.0111563  0.0172392   0.647  0.51761    
+    ## race2                              0.0514772  0.1341018   0.384  0.70112    
+    ## race4                             -0.2172563  0.1430144  -1.519  0.12889    
+    ## race6                             -0.9365699  0.3517984  -2.662  0.00782 ** 
+    ## race7                             -0.1329142  0.1374608  -0.967  0.33370    
+    ## sex2                              -0.0582035  0.0730185  -0.797  0.42548    
+    ## release                           -0.0207971  0.0080588  -2.581  0.00993 ** 
+    ## star_user                          0.0549511  0.0629290   0.873  0.38264    
+    ## real_extraversion                  0.0345899  0.0234839   1.473  0.14093    
+    ## real_agreeableness                -0.0494042  0.0334351  -1.478  0.13967    
+    ## real_conscientiousness             0.0897347  0.0372097   2.412  0.01597 *  
+    ## real_emotionstability             -0.0007114  0.0336210  -0.021  0.98312    
+    ## real_openness                      0.1474719  0.0333044   4.428    1e-05 ***
+    ## game_extraversion                  0.0137111  0.0263437   0.520  0.60279    
+    ## game_agreeableness                 0.0596977  0.0342946   1.741  0.08188 .  
+    ## game_conscientiousness             0.0014577  0.0405468   0.036  0.97132    
+    ## game_emotionstability             -0.0406348  0.0324507  -1.252  0.21064    
+    ## game_openness                     -0.0416482  0.0445059  -0.936  0.34949    
+    ## tste_12_0                         -0.1578235  0.4394105  -0.359  0.71950    
+    ## tste_12_1                         -0.3326091  0.3917320  -0.849  0.39594    
+    ## tste_12_2                          0.3694201  0.4097972   0.901  0.36744    
+    ## tste_12_3                         -0.3646499  0.4650340  -0.784  0.43305    
+    ## tste_12_4                         -0.2320987  0.4446158  -0.522  0.60171    
+    ## tste_12_5                          0.3136738  0.4542137   0.691  0.48990    
+    ## tste_12_6                         -0.5135104  0.4566553  -1.125  0.26093    
+    ## tste_12_7                         -0.4045305  0.4500235  -0.899  0.36881    
+    ## tste_12_8                         -0.3901231  0.3842092  -1.015  0.31004    
+    ## tste_12_9                         -0.9391537  0.4511467  -2.082  0.03749 *  
+    ## tste_12_10                        -0.1892326  0.3839019  -0.493  0.62212    
+    ## tste_12_11                         0.2349275  0.4137561   0.568  0.57024    
+    ## game_extraversion.tste_12_0       -0.0204686  0.0364106  -0.562  0.57407    
+    ## game_extraversion.tste_12_1        0.0230901  0.0307340   0.751  0.45256    
+    ## game_extraversion.tste_12_2        0.0266992  0.0318358   0.839  0.40176    
+    ## game_extraversion.tste_12_3       -0.0290417  0.0355352  -0.817  0.41387    
+    ## game_extraversion.tste_12_4       -0.0087838  0.0337269  -0.260  0.79455    
+    ## game_extraversion.tste_12_5        0.0489996  0.0345761   1.417  0.15659    
+    ## game_extraversion.tste_12_6       -0.0301380  0.0361344  -0.834  0.40435    
+    ## game_extraversion.tste_12_7        0.0018996  0.0363892   0.052  0.95837    
+    ## game_extraversion.tste_12_8        0.0231773  0.0295042   0.786  0.43222    
+    ## game_extraversion.tste_12_9        0.0506442  0.0348855   1.452  0.14673    
+    ## game_extraversion.tste_12_10      -0.0842105  0.0284072  -2.964  0.00307 ** 
+    ## game_extraversion.tste_12_11      -0.0130964  0.0318097  -0.412  0.68060    
+    ## game_agreeableness.tste_12_0       0.0211567  0.0452842   0.467  0.64041    
+    ## game_agreeableness.tste_12_1      -0.0595853  0.0400474  -1.488  0.13694    
+    ## game_agreeableness.tste_12_2      -0.0021219  0.0410274  -0.052  0.95876    
+    ## game_agreeableness.tste_12_3       0.0078944  0.0463075   0.170  0.86465    
+    ## game_agreeableness.tste_12_4      -0.0100179  0.0430365  -0.233  0.81596    
+    ## game_agreeableness.tste_12_5       0.0075129  0.0455293   0.165  0.86895    
+    ## game_agreeableness.tste_12_6       0.0730582  0.0465765   1.569  0.11690    
+    ## game_agreeableness.tste_12_7      -0.0380141  0.0461734  -0.823  0.41044    
+    ## game_agreeableness.tste_12_8      -0.0390899  0.0381821  -1.024  0.30606    
+    ## game_agreeableness.tste_12_9      -0.0250201  0.0456234  -0.548  0.58347    
+    ## game_agreeableness.tste_12_10     -0.0341437  0.0386229  -0.884  0.37678    
+    ## game_agreeableness.tste_12_11     -0.0289065  0.0402448  -0.718  0.47267    
+    ## game_conscientiousness.tste_12_0   0.0414401  0.0505754   0.819  0.41267    
+    ## game_conscientiousness.tste_12_1   0.0567492  0.0436120   1.301  0.19333    
+    ## game_conscientiousness.tste_12_2  -0.0275298  0.0464835  -0.592  0.55375    
+    ## game_conscientiousness.tste_12_3   0.0381166  0.0524312   0.727  0.46732    
+    ## game_conscientiousness.tste_12_4  -0.0232187  0.0494041  -0.470  0.63842    
+    ## game_conscientiousness.tste_12_5   0.0407251  0.0472832   0.861  0.38917    
+    ## game_conscientiousness.tste_12_6   0.0711314  0.0549521   1.294  0.19566    
+    ## game_conscientiousness.tste_12_7   0.0100663  0.0506986   0.199  0.84263    
+    ## game_conscientiousness.tste_12_8   0.0283919  0.0433945   0.654  0.51301    
+    ## game_conscientiousness.tste_12_9   0.0802182  0.0488519   1.642  0.10073    
+    ## game_conscientiousness.tste_12_10  0.0434040  0.0421487   1.030  0.30323    
+    ## game_conscientiousness.tste_12_11  0.0091992  0.0460719   0.200  0.84176    
+    ## game_emotionstability.tste_12_0    0.0446415  0.0452537   0.986  0.32402    
+    ## game_emotionstability.tste_12_1    0.0639659  0.0391360   1.634  0.10232    
+    ## game_emotionstability.tste_12_2   -0.0080011  0.0413528  -0.193  0.84660    
+    ## game_emotionstability.tste_12_3    0.0735877  0.0462974   1.589  0.11211    
+    ## game_emotionstability.tste_12_4    0.0231076  0.0429586   0.538  0.59070    
+    ## game_emotionstability.tste_12_5    0.0566916  0.0439153   1.291  0.19687    
+    ## game_emotionstability.tste_12_6   -0.0088928  0.0480397  -0.185  0.85316    
+    ## game_emotionstability.tste_12_7    0.0800646  0.0450668   1.777  0.07579 .  
+    ## game_emotionstability.tste_12_8    0.0135759  0.0377321   0.360  0.71904    
+    ## game_emotionstability.tste_12_9    0.1115180  0.0448236   2.488  0.01293 *  
+    ## game_emotionstability.tste_12_10   0.0296984  0.0386613   0.768  0.44247    
+    ## game_emotionstability.tste_12_11   0.0032535  0.0410126   0.079  0.93678    
+    ## game_openness.tste_12_0           -0.0189380  0.0522324  -0.363  0.71696    
+    ## game_openness.tste_12_1           -0.0055823  0.0446628  -0.125  0.90055    
+    ## game_openness.tste_12_2           -0.0418352  0.0484924  -0.863  0.38839    
+    ## game_openness.tste_12_3            0.0122676  0.0550666   0.223  0.82373    
+    ## game_openness.tste_12_4            0.0521637  0.0523323   0.997  0.31899    
+    ## game_openness.tste_12_5           -0.1580917  0.0543583  -2.908  0.00367 ** 
+    ## game_openness.tste_12_6            0.0062600  0.0529159   0.118  0.90584    
+    ## game_openness.tste_12_7            0.0448493  0.0544944   0.823  0.41060    
+    ## game_openness.tste_12_8            0.0690779  0.0454601   1.520  0.12878    
+    ## game_openness.tste_12_9           -0.0038618  0.0543605  -0.071  0.94337    
+    ## game_openness.tste_12_10           0.0970367  0.0436464   2.223  0.02631 *  
+    ## game_openness.tste_12_11          -0.0528922  0.0477055  -1.109  0.26768    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -4589,206 +3225,106 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.9643 -0.6931  0.2709  0.9963  3.0575 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       40.861517  16.969928   2.408  0.01613
-    ## age                               -0.013999   0.004627  -3.026  0.00251
-    ## education                          0.004404   0.026906   0.164  0.87000
-    ## income                             0.009896   0.017278   0.573  0.56689
-    ## race2                              0.030700   0.134446   0.228  0.81940
-    ## race4                             -0.191197   0.143161  -1.336  0.18185
-    ## race6                             -0.990138   0.352211  -2.811  0.00498
-    ## race7                             -0.126338   0.137762  -0.917  0.35921
-    ## sex2                              -0.069636   0.073426  -0.948  0.34305
-    ## release                           -0.018182   0.008317  -2.186  0.02892
-    ## star_user                          0.038065   0.061454   0.619  0.53572
-    ## real_extraversion                  0.035594   0.023493   1.515  0.12990
-    ## real_agreeableness                -0.044980   0.033453  -1.345  0.17891
-    ## real_conscientiousness             0.091420   0.037470   2.440  0.01478
-    ## real_emotionstability              0.001111   0.033774   0.033  0.97376
-    ## real_openness                      0.139810   0.033425   4.183    3e-05
-    ## game_extraversion                  0.010514   0.026381   0.399  0.69027
-    ## game_agreeableness                 0.060030   0.034446   1.743  0.08153
-    ## game_conscientiousness             0.005242   0.040806   0.128  0.89780
-    ## game_emotionstability             -0.038242   0.032685  -1.170  0.24213
-    ## game_openness                     -0.033997   0.044737  -0.760  0.44739
-    ## tste_13_0                         -0.184310   0.419243  -0.440  0.66026
-    ## tste_13_1                         -0.036087   0.401780  -0.090  0.92844
-    ## tste_13_2                         -0.067326   0.382028  -0.176  0.86013
-    ## tste_13_3                          0.369844   0.411676   0.898  0.36909
-    ## tste_13_4                          0.719865   0.426869   1.686  0.09187
-    ## tste_13_5                          0.453128   0.433041   1.046  0.29551
-    ## tste_13_6                          0.085490   0.462645   0.185  0.85342
-    ## tste_13_7                         -0.427964   0.429231  -0.997  0.31886
-    ## tste_13_8                          0.467660   0.395246   1.183  0.23686
-    ## tste_13_9                          0.202325   0.491550   0.412  0.68067
-    ## tste_13_10                        -0.265923   0.405882  -0.655  0.51243
-    ## tste_13_11                         0.337807   0.451290   0.749  0.45422
-    ## tste_13_12                         0.412425   0.443463   0.930  0.35248
-    ## game_extraversion.tste_13_0        0.030957   0.032437   0.954  0.34000
-    ## game_extraversion.tste_13_1        0.092871   0.029689   3.128  0.00178
-    ## game_extraversion.tste_13_2       -0.019833   0.031352  -0.633  0.52708
-    ## game_extraversion.tste_13_3        0.043890   0.031858   1.378  0.16846
-    ## game_extraversion.tste_13_4       -0.014738   0.034120  -0.432  0.66583
-    ## game_extraversion.tste_13_5        0.019023   0.033664   0.565  0.57208
-    ## game_extraversion.tste_13_6        0.019660   0.034547   0.569  0.56938
-    ## game_extraversion.tste_13_7       -0.030909   0.033217  -0.931  0.35221
-    ## game_extraversion.tste_13_8       -0.040178   0.030961  -1.298  0.19453
-    ## game_extraversion.tste_13_9       -0.041716   0.037952  -1.099  0.27182
-    ## game_extraversion.tste_13_10       0.015698   0.031804   0.494  0.62165
-    ## game_extraversion.tste_13_11       0.010094   0.035712   0.283  0.77748
-    ## game_extraversion.tste_13_12       0.025263   0.034664   0.729  0.46620
-    ## game_agreeableness.tste_13_0      -0.082653   0.041602  -1.987  0.04709
-    ## game_agreeableness.tste_13_1       0.001395   0.036642   0.038  0.96963
-    ## game_agreeableness.tste_13_2      -0.017300   0.040095  -0.431  0.66616
-    ## game_agreeableness.tste_13_3      -0.014778   0.041426  -0.357  0.72133
-    ## game_agreeableness.tste_13_4      -0.072142   0.043655  -1.653  0.09858
-    ## game_agreeableness.tste_13_5       0.025947   0.041878   0.620  0.53559
-    ## game_agreeableness.tste_13_6      -0.058847   0.045969  -1.280  0.20064
-    ## game_agreeableness.tste_13_7       0.043222   0.043475   0.994  0.32026
-    ## game_agreeableness.tste_13_8       0.042838   0.040412   1.060  0.28926
-    ## game_agreeableness.tste_13_9       0.107708   0.052385   2.056  0.03990
-    ## game_agreeableness.tste_13_10     -0.085278   0.040932  -2.083  0.03734
-    ## game_agreeableness.tste_13_11     -0.025265   0.046437  -0.544  0.58645
-    ## game_agreeableness.tste_13_12     -0.004004   0.043509  -0.092  0.92668
-    ## game_conscientiousness.tste_13_0  -0.060722   0.046929  -1.294  0.19584
-    ## game_conscientiousness.tste_13_1  -0.038650   0.043697  -0.884  0.37653
-    ## game_conscientiousness.tste_13_2   0.023891   0.044023   0.543  0.58739
-    ## game_conscientiousness.tste_13_3   0.015912   0.044260   0.360  0.71924
-    ## game_conscientiousness.tste_13_4  -0.104860   0.052079  -2.013  0.04419
-    ## game_conscientiousness.tste_13_5  -0.031755   0.048830  -0.650  0.51556
-    ## game_conscientiousness.tste_13_6  -0.047053   0.050733  -0.927  0.35380
-    ## game_conscientiousness.tste_13_7   0.017778   0.049500   0.359  0.71952
-    ## game_conscientiousness.tste_13_8  -0.046550   0.043385  -1.073  0.28342
-    ## game_conscientiousness.tste_13_9   0.004463   0.053789   0.083  0.93388
-    ## game_conscientiousness.tste_13_10  0.005064   0.046206   0.110  0.91273
-    ## game_conscientiousness.tste_13_11 -0.028090   0.051911  -0.541  0.58848
-    ## game_conscientiousness.tste_13_12  0.031209   0.049657   0.628  0.52975
-    ## game_emotionstability.tste_13_0    0.027394   0.042346   0.647  0.51776
-    ## game_emotionstability.tste_13_1    0.027352   0.038628   0.708  0.47897
-    ## game_emotionstability.tste_13_2    0.036620   0.040219   0.911  0.36265
-    ## game_emotionstability.tste_13_3   -0.026169   0.041223  -0.635  0.52562
-    ## game_emotionstability.tste_13_4   -0.022180   0.044023  -0.504  0.61443
-    ## game_emotionstability.tste_13_5   -0.018692   0.044397  -0.421  0.67379
-    ## game_emotionstability.tste_13_6    0.021697   0.044573   0.487  0.62647
-    ## game_emotionstability.tste_13_7    0.005523   0.043908   0.126  0.89991
-    ## game_emotionstability.tste_13_8   -0.115389   0.040423  -2.855  0.00435
-    ## game_emotionstability.tste_13_9   -0.104848   0.047182  -2.222  0.02638
-    ## game_emotionstability.tste_13_10   0.043232   0.040815   1.059  0.28962
-    ## game_emotionstability.tste_13_11   0.042572   0.044686   0.953  0.34086
-    ## game_emotionstability.tste_13_12  -0.009622   0.044005  -0.219  0.82694
-    ## game_openness.tste_13_0            0.099111   0.049184   2.015  0.04402
-    ## game_openness.tste_13_1           -0.058607   0.047927  -1.223  0.22154
-    ## game_openness.tste_13_2            0.019217   0.046025   0.418  0.67632
-    ## game_openness.tste_13_3           -0.087814   0.049334  -1.780  0.07523
-    ## game_openness.tste_13_4            0.022269   0.049927   0.446  0.65563
-    ## game_openness.tste_13_5           -0.058250   0.050729  -1.148  0.25100
-    ## game_openness.tste_13_6            0.029652   0.054962   0.539  0.58960
-    ## game_openness.tste_13_7            0.048942   0.049483   0.989  0.32275
-    ## game_openness.tste_13_8            0.044587   0.047382   0.941  0.34681
-    ## game_openness.tste_13_9            0.009332   0.056757   0.164  0.86942
-    ## game_openness.tste_13_10           0.089480   0.048205   1.856  0.06356
-    ## game_openness.tste_13_11          -0.037276   0.052900  -0.705  0.48111
-    ## game_openness.tste_13_12          -0.107254   0.051486  -2.083  0.03736
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_13_0                            
-    ## tste_13_1                            
-    ## tste_13_2                            
-    ## tste_13_3                            
-    ## tste_13_4                         .  
-    ## tste_13_5                            
-    ## tste_13_6                            
-    ## tste_13_7                            
-    ## tste_13_8                            
-    ## tste_13_9                            
-    ## tste_13_10                           
-    ## tste_13_11                           
-    ## tste_13_12                           
-    ## game_extraversion.tste_13_0          
-    ## game_extraversion.tste_13_1       ** 
-    ## game_extraversion.tste_13_2          
-    ## game_extraversion.tste_13_3          
-    ## game_extraversion.tste_13_4          
-    ## game_extraversion.tste_13_5          
-    ## game_extraversion.tste_13_6          
-    ## game_extraversion.tste_13_7          
-    ## game_extraversion.tste_13_8          
-    ## game_extraversion.tste_13_9          
-    ## game_extraversion.tste_13_10         
-    ## game_extraversion.tste_13_11         
-    ## game_extraversion.tste_13_12         
-    ## game_agreeableness.tste_13_0      *  
-    ## game_agreeableness.tste_13_1         
-    ## game_agreeableness.tste_13_2         
-    ## game_agreeableness.tste_13_3         
-    ## game_agreeableness.tste_13_4      .  
-    ## game_agreeableness.tste_13_5         
-    ## game_agreeableness.tste_13_6         
-    ## game_agreeableness.tste_13_7         
-    ## game_agreeableness.tste_13_8         
-    ## game_agreeableness.tste_13_9      *  
-    ## game_agreeableness.tste_13_10     *  
-    ## game_agreeableness.tste_13_11        
-    ## game_agreeableness.tste_13_12        
-    ## game_conscientiousness.tste_13_0     
-    ## game_conscientiousness.tste_13_1     
-    ## game_conscientiousness.tste_13_2     
-    ## game_conscientiousness.tste_13_3     
-    ## game_conscientiousness.tste_13_4  *  
-    ## game_conscientiousness.tste_13_5     
-    ## game_conscientiousness.tste_13_6     
-    ## game_conscientiousness.tste_13_7     
-    ## game_conscientiousness.tste_13_8     
-    ## game_conscientiousness.tste_13_9     
-    ## game_conscientiousness.tste_13_10    
-    ## game_conscientiousness.tste_13_11    
-    ## game_conscientiousness.tste_13_12    
-    ## game_emotionstability.tste_13_0      
-    ## game_emotionstability.tste_13_1      
-    ## game_emotionstability.tste_13_2      
-    ## game_emotionstability.tste_13_3      
-    ## game_emotionstability.tste_13_4      
-    ## game_emotionstability.tste_13_5      
-    ## game_emotionstability.tste_13_6      
-    ## game_emotionstability.tste_13_7      
-    ## game_emotionstability.tste_13_8   ** 
-    ## game_emotionstability.tste_13_9   *  
-    ## game_emotionstability.tste_13_10     
-    ## game_emotionstability.tste_13_11     
-    ## game_emotionstability.tste_13_12     
-    ## game_openness.tste_13_0           *  
-    ## game_openness.tste_13_1              
-    ## game_openness.tste_13_2              
-    ## game_openness.tste_13_3           .  
-    ## game_openness.tste_13_4              
-    ## game_openness.tste_13_5              
-    ## game_openness.tste_13_6              
-    ## game_openness.tste_13_7              
-    ## game_openness.tste_13_8              
-    ## game_openness.tste_13_9              
-    ## game_openness.tste_13_10          .  
-    ## game_openness.tste_13_11             
-    ## game_openness.tste_13_12          *  
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       40.861517  16.969928   2.408  0.01613 *  
+    ## age                               -0.013999   0.004627  -3.026  0.00251 ** 
+    ## education                          0.004404   0.026906   0.164  0.87000    
+    ## income                             0.009896   0.017278   0.573  0.56689    
+    ## race2                              0.030700   0.134446   0.228  0.81940    
+    ## race4                             -0.191197   0.143161  -1.336  0.18185    
+    ## race6                             -0.990138   0.352211  -2.811  0.00498 ** 
+    ## race7                             -0.126338   0.137762  -0.917  0.35921    
+    ## sex2                              -0.069636   0.073426  -0.948  0.34305    
+    ## release                           -0.018182   0.008317  -2.186  0.02892 *  
+    ## star_user                          0.038065   0.061454   0.619  0.53572    
+    ## real_extraversion                  0.035594   0.023493   1.515  0.12990    
+    ## real_agreeableness                -0.044980   0.033453  -1.345  0.17891    
+    ## real_conscientiousness             0.091420   0.037470   2.440  0.01478 *  
+    ## real_emotionstability              0.001111   0.033774   0.033  0.97376    
+    ## real_openness                      0.139810   0.033425   4.183    3e-05 ***
+    ## game_extraversion                  0.010514   0.026381   0.399  0.69027    
+    ## game_agreeableness                 0.060030   0.034446   1.743  0.08153 .  
+    ## game_conscientiousness             0.005242   0.040806   0.128  0.89780    
+    ## game_emotionstability             -0.038242   0.032685  -1.170  0.24213    
+    ## game_openness                     -0.033997   0.044737  -0.760  0.44739    
+    ## tste_13_0                         -0.184310   0.419243  -0.440  0.66026    
+    ## tste_13_1                         -0.036087   0.401780  -0.090  0.92844    
+    ## tste_13_2                         -0.067326   0.382028  -0.176  0.86013    
+    ## tste_13_3                          0.369844   0.411676   0.898  0.36909    
+    ## tste_13_4                          0.719865   0.426869   1.686  0.09187 .  
+    ## tste_13_5                          0.453128   0.433041   1.046  0.29551    
+    ## tste_13_6                          0.085490   0.462645   0.185  0.85342    
+    ## tste_13_7                         -0.427964   0.429231  -0.997  0.31886    
+    ## tste_13_8                          0.467660   0.395246   1.183  0.23686    
+    ## tste_13_9                          0.202325   0.491550   0.412  0.68067    
+    ## tste_13_10                        -0.265923   0.405882  -0.655  0.51243    
+    ## tste_13_11                         0.337807   0.451290   0.749  0.45422    
+    ## tste_13_12                         0.412425   0.443463   0.930  0.35248    
+    ## game_extraversion.tste_13_0        0.030957   0.032437   0.954  0.34000    
+    ## game_extraversion.tste_13_1        0.092871   0.029689   3.128  0.00178 ** 
+    ## game_extraversion.tste_13_2       -0.019833   0.031352  -0.633  0.52708    
+    ## game_extraversion.tste_13_3        0.043890   0.031858   1.378  0.16846    
+    ## game_extraversion.tste_13_4       -0.014738   0.034120  -0.432  0.66583    
+    ## game_extraversion.tste_13_5        0.019023   0.033664   0.565  0.57208    
+    ## game_extraversion.tste_13_6        0.019660   0.034547   0.569  0.56938    
+    ## game_extraversion.tste_13_7       -0.030909   0.033217  -0.931  0.35221    
+    ## game_extraversion.tste_13_8       -0.040178   0.030961  -1.298  0.19453    
+    ## game_extraversion.tste_13_9       -0.041716   0.037952  -1.099  0.27182    
+    ## game_extraversion.tste_13_10       0.015698   0.031804   0.494  0.62165    
+    ## game_extraversion.tste_13_11       0.010094   0.035712   0.283  0.77748    
+    ## game_extraversion.tste_13_12       0.025263   0.034664   0.729  0.46620    
+    ## game_agreeableness.tste_13_0      -0.082653   0.041602  -1.987  0.04709 *  
+    ## game_agreeableness.tste_13_1       0.001395   0.036642   0.038  0.96963    
+    ## game_agreeableness.tste_13_2      -0.017300   0.040095  -0.431  0.66616    
+    ## game_agreeableness.tste_13_3      -0.014778   0.041426  -0.357  0.72133    
+    ## game_agreeableness.tste_13_4      -0.072142   0.043655  -1.653  0.09858 .  
+    ## game_agreeableness.tste_13_5       0.025947   0.041878   0.620  0.53559    
+    ## game_agreeableness.tste_13_6      -0.058847   0.045969  -1.280  0.20064    
+    ## game_agreeableness.tste_13_7       0.043222   0.043475   0.994  0.32026    
+    ## game_agreeableness.tste_13_8       0.042838   0.040412   1.060  0.28926    
+    ## game_agreeableness.tste_13_9       0.107708   0.052385   2.056  0.03990 *  
+    ## game_agreeableness.tste_13_10     -0.085278   0.040932  -2.083  0.03734 *  
+    ## game_agreeableness.tste_13_11     -0.025265   0.046437  -0.544  0.58645    
+    ## game_agreeableness.tste_13_12     -0.004004   0.043509  -0.092  0.92668    
+    ## game_conscientiousness.tste_13_0  -0.060722   0.046929  -1.294  0.19584    
+    ## game_conscientiousness.tste_13_1  -0.038650   0.043697  -0.884  0.37653    
+    ## game_conscientiousness.tste_13_2   0.023891   0.044023   0.543  0.58739    
+    ## game_conscientiousness.tste_13_3   0.015912   0.044260   0.360  0.71924    
+    ## game_conscientiousness.tste_13_4  -0.104860   0.052079  -2.013  0.04419 *  
+    ## game_conscientiousness.tste_13_5  -0.031755   0.048830  -0.650  0.51556    
+    ## game_conscientiousness.tste_13_6  -0.047053   0.050733  -0.927  0.35380    
+    ## game_conscientiousness.tste_13_7   0.017778   0.049500   0.359  0.71952    
+    ## game_conscientiousness.tste_13_8  -0.046550   0.043385  -1.073  0.28342    
+    ## game_conscientiousness.tste_13_9   0.004463   0.053789   0.083  0.93388    
+    ## game_conscientiousness.tste_13_10  0.005064   0.046206   0.110  0.91273    
+    ## game_conscientiousness.tste_13_11 -0.028090   0.051911  -0.541  0.58848    
+    ## game_conscientiousness.tste_13_12  0.031209   0.049657   0.628  0.52975    
+    ## game_emotionstability.tste_13_0    0.027394   0.042346   0.647  0.51776    
+    ## game_emotionstability.tste_13_1    0.027352   0.038628   0.708  0.47897    
+    ## game_emotionstability.tste_13_2    0.036620   0.040219   0.911  0.36265    
+    ## game_emotionstability.tste_13_3   -0.026169   0.041223  -0.635  0.52562    
+    ## game_emotionstability.tste_13_4   -0.022180   0.044023  -0.504  0.61443    
+    ## game_emotionstability.tste_13_5   -0.018692   0.044397  -0.421  0.67379    
+    ## game_emotionstability.tste_13_6    0.021697   0.044573   0.487  0.62647    
+    ## game_emotionstability.tste_13_7    0.005523   0.043908   0.126  0.89991    
+    ## game_emotionstability.tste_13_8   -0.115389   0.040423  -2.855  0.00435 ** 
+    ## game_emotionstability.tste_13_9   -0.104848   0.047182  -2.222  0.02638 *  
+    ## game_emotionstability.tste_13_10   0.043232   0.040815   1.059  0.28962    
+    ## game_emotionstability.tste_13_11   0.042572   0.044686   0.953  0.34086    
+    ## game_emotionstability.tste_13_12  -0.009622   0.044005  -0.219  0.82694    
+    ## game_openness.tste_13_0            0.099111   0.049184   2.015  0.04402 *  
+    ## game_openness.tste_13_1           -0.058607   0.047927  -1.223  0.22154    
+    ## game_openness.tste_13_2            0.019217   0.046025   0.418  0.67632    
+    ## game_openness.tste_13_3           -0.087814   0.049334  -1.780  0.07523 .  
+    ## game_openness.tste_13_4            0.022269   0.049927   0.446  0.65563    
+    ## game_openness.tste_13_5           -0.058250   0.050729  -1.148  0.25100    
+    ## game_openness.tste_13_6            0.029652   0.054962   0.539  0.58960    
+    ## game_openness.tste_13_7            0.048942   0.049483   0.989  0.32275    
+    ## game_openness.tste_13_8            0.044587   0.047382   0.941  0.34681    
+    ## game_openness.tste_13_9            0.009332   0.056757   0.164  0.86942    
+    ## game_openness.tste_13_10           0.089480   0.048205   1.856  0.06356 .  
+    ## game_openness.tste_13_11          -0.037276   0.052900  -0.705  0.48111    
+    ## game_openness.tste_13_12          -0.107254   0.051486  -2.083  0.03736 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -4805,218 +3341,112 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -5.1132 -0.6698  0.2748  1.0100  3.2117 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       37.7406816 16.8557694   2.239  0.02526
-    ## age                               -0.0132632  0.0046337  -2.862  0.00425
-    ## education                          0.0029968  0.0269096   0.111  0.91134
-    ## income                             0.0108319  0.0172759   0.627  0.53073
-    ## race2                              0.0158848  0.1347312   0.118  0.90616
-    ## race4                             -0.2160181  0.1434946  -1.505  0.13237
-    ## race6                             -0.9918814  0.3527904  -2.812  0.00498
-    ## race7                             -0.1362043  0.1380103  -0.987  0.32380
-    ## sex2                              -0.0582332  0.0734081  -0.793  0.42771
-    ## release                           -0.0167149  0.0082701  -2.021  0.04340
-    ## star_user                          0.0589598  0.0621924   0.948  0.34323
-    ## real_extraversion                  0.0354471  0.0235709   1.504  0.13278
-    ## real_agreeableness                -0.0450969  0.0334638  -1.348  0.17793
-    ## real_conscientiousness             0.0905827  0.0375089   2.415  0.01582
-    ## real_emotionstability              0.0009147  0.0338058   0.027  0.97842
-    ## real_openness                      0.1425700  0.0335523   4.249 2.24e-05
-    ## game_extraversion                  0.0167079  0.0265247   0.630  0.52883
-    ## game_agreeableness                 0.0557818  0.0344354   1.620  0.10541
-    ## game_conscientiousness             0.0022929  0.0409349   0.056  0.95534
-    ## game_emotionstability             -0.0402858  0.0326935  -1.232  0.21801
-    ## game_openness                     -0.0385566  0.0448184  -0.860  0.38973
-    ## tste_14_0                         -0.6728606  0.4309558  -1.561  0.11860
-    ## tste_14_1                         -0.1978147  0.4125722  -0.479  0.63166
-    ## tste_14_2                         -0.4928223  0.4025115  -1.224  0.22096
-    ## tste_14_3                         -0.0925828  0.3937713  -0.235  0.81414
-    ## tste_14_4                          0.0255720  0.3918403   0.065  0.94797
-    ## tste_14_5                          0.7476557  0.4613183   1.621  0.10524
-    ## tste_14_6                         -0.0880103  0.4121654  -0.214  0.83093
-    ## tste_14_7                         -0.0389785  0.4751306  -0.082  0.93462
-    ## tste_14_8                         -0.1051438  0.3732575  -0.282  0.77821
-    ## tste_14_9                          0.6211466  0.4151068   1.496  0.13472
-    ## tste_14_10                         0.1712945  0.4369603   0.392  0.69509
-    ## tste_14_11                         0.1896534  0.4282025   0.443  0.65788
-    ## tste_14_12                         0.2742323  0.4223620   0.649  0.51623
-    ## tste_14_13                         0.1388744  0.4314029   0.322  0.74755
-    ## game_extraversion.tste_14_0       -0.0289016  0.0326547  -0.885  0.37622
-    ## game_extraversion.tste_14_1       -0.0171861  0.0320487  -0.536  0.59184
-    ## game_extraversion.tste_14_2       -0.0226114  0.0311863  -0.725  0.46851
-    ## game_extraversion.tste_14_3        0.0159119  0.0307376   0.518  0.60475
-    ## game_extraversion.tste_14_4       -0.0588378  0.0298505  -1.971  0.04885
-    ## game_extraversion.tste_14_5       -0.0163887  0.0351225  -0.467  0.64082
-    ## game_extraversion.tste_14_6       -0.0216685  0.0327117  -0.662  0.50778
-    ## game_extraversion.tste_14_7       -0.0204852  0.0379019  -0.540  0.58892
-    ## game_extraversion.tste_14_8       -0.0013152  0.0289154  -0.045  0.96373
-    ## game_extraversion.tste_14_9        0.0335312  0.0348733   0.962  0.33641
-    ## game_extraversion.tste_14_10      -0.0619540  0.0338358  -1.831  0.06724
-    ## game_extraversion.tste_14_11       0.0030541  0.0313756   0.097  0.92246
-    ## game_extraversion.tste_14_12      -0.0287057  0.0334272  -0.859  0.39058
-    ## game_extraversion.tste_14_13      -0.0413814  0.0327526  -1.263  0.20657
-    ## game_agreeableness.tste_14_0      -0.0360409  0.0444881  -0.810  0.41796
-    ## game_agreeableness.tste_14_1      -0.0021464  0.0409514  -0.052  0.95820
-    ## game_agreeableness.tste_14_2      -0.0677457  0.0418891  -1.617  0.10598
-    ## game_agreeableness.tste_14_3       0.0351120  0.0387107   0.907  0.36449
-    ## game_agreeableness.tste_14_4       0.0243490  0.0380198   0.640  0.52197
-    ## game_agreeableness.tste_14_5      -0.0155328  0.0468875  -0.331  0.74047
-    ## game_agreeableness.tste_14_6      -0.0046075  0.0413384  -0.111  0.91126
-    ## game_agreeableness.tste_14_7       0.0844993  0.0493138   1.714  0.08677
-    ## game_agreeableness.tste_14_8      -0.0120302  0.0357303  -0.337  0.73638
-    ## game_agreeableness.tste_14_9      -0.0975262  0.0433092  -2.252  0.02444
-    ## game_agreeableness.tste_14_10      0.0602700  0.0454292   1.327  0.18476
-    ## game_agreeableness.tste_14_11      0.0017490  0.0401295   0.044  0.96524
-    ## game_agreeableness.tste_14_12     -0.0002562  0.0434772  -0.006  0.99530
-    ## game_agreeableness.tste_14_13     -0.0107269  0.0430646  -0.249  0.80332
-    ## game_conscientiousness.tste_14_0   0.0421233  0.0490725   0.858  0.39078
-    ## game_conscientiousness.tste_14_1   0.0155304  0.0474362   0.327  0.74340
-    ## game_conscientiousness.tste_14_2  -0.0167694  0.0446216  -0.376  0.70709
-    ## game_conscientiousness.tste_14_3   0.0253610  0.0461304   0.550  0.58254
-    ## game_conscientiousness.tste_14_4   0.0529189  0.0438368   1.207  0.22750
-    ## game_conscientiousness.tste_14_5  -0.0549129  0.0510553  -1.076  0.28225
-    ## game_conscientiousness.tste_14_6   0.0664345  0.0468065   1.419  0.15595
-    ## game_conscientiousness.tste_14_7  -0.0533236  0.0542016  -0.984  0.32533
-    ## game_conscientiousness.tste_14_8   0.0639847  0.0425550   1.504  0.13285
-    ## game_conscientiousness.tste_14_9  -0.0326235  0.0484175  -0.674  0.50052
-    ## game_conscientiousness.tste_14_10  0.0370729  0.0479678   0.773  0.43969
-    ## game_conscientiousness.tste_14_11 -0.0269961  0.0467226  -0.578  0.56347
-    ## game_conscientiousness.tste_14_12 -0.0610944  0.0467840  -1.306  0.19174
-    ## game_conscientiousness.tste_14_13 -0.0106790  0.0484518  -0.220  0.82558
-    ## game_emotionstability.tste_14_0    0.0771431  0.0445553   1.731  0.08353
-    ## game_emotionstability.tste_14_1   -0.0094737  0.0413235  -0.229  0.81869
-    ## game_emotionstability.tste_14_2    0.0402388  0.0407075   0.988  0.32303
-    ## game_emotionstability.tste_14_3   -0.0386127  0.0408310  -0.946  0.34443
-    ## game_emotionstability.tste_14_4   -0.0448164  0.0380246  -1.179  0.23869
-    ## game_emotionstability.tste_14_5   -0.0906278  0.0451510  -2.007  0.04486
-    ## game_emotionstability.tste_14_6    0.0246742  0.0412601   0.598  0.54990
-    ## game_emotionstability.tste_14_7   -0.0701245  0.0474165  -1.479  0.13932
-    ## game_emotionstability.tste_14_8    0.0084607  0.0371207   0.228  0.81973
-    ## game_emotionstability.tste_14_9    0.0028680  0.0423571   0.068  0.94602
-    ## game_emotionstability.tste_14_10  -0.0414878  0.0442534  -0.938  0.34861
-    ## game_emotionstability.tste_14_11  -0.0579043  0.0424576  -1.364  0.17278
-    ## game_emotionstability.tste_14_12  -0.0157372  0.0415394  -0.379  0.70484
-    ## game_emotionstability.tste_14_13  -0.0344651  0.0420141  -0.820  0.41213
-    ## game_openness.tste_14_0            0.0707729  0.0507473   1.395  0.16328
-    ## game_openness.tste_14_1            0.0479163  0.0466928   1.026  0.30492
-    ## game_openness.tste_14_2            0.1476929  0.0479172   3.082  0.00208
-    ## game_openness.tste_14_3            0.0035263  0.0458792   0.077  0.93874
-    ## game_openness.tste_14_4            0.0050359  0.0473191   0.106  0.91526
-    ## game_openness.tste_14_5           -0.0176453  0.0547053  -0.323  0.74707
-    ## game_openness.tste_14_6           -0.0381240  0.0495979  -0.769  0.44218
-    ## game_openness.tste_14_7            0.0289639  0.0542136   0.534  0.59322
-    ## game_openness.tste_14_8           -0.0164055  0.0447251  -0.367  0.71380
-    ## game_openness.tste_14_9           -0.0515782  0.0495792  -1.040  0.29831
-    ## game_openness.tste_14_10          -0.0101875  0.0503515  -0.202  0.83968
-    ## game_openness.tste_14_11           0.0148163  0.0515323   0.288  0.77375
-    ## game_openness.tste_14_12           0.0513187  0.0495521   1.036  0.30049
-    ## game_openness.tste_14_13           0.0641389  0.0485581   1.321  0.18669
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                   
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_14_0                            
-    ## tste_14_1                            
-    ## tste_14_2                            
-    ## tste_14_3                            
-    ## tste_14_4                            
-    ## tste_14_5                            
-    ## tste_14_6                            
-    ## tste_14_7                            
-    ## tste_14_8                            
-    ## tste_14_9                            
-    ## tste_14_10                           
-    ## tste_14_11                           
-    ## tste_14_12                           
-    ## tste_14_13                           
-    ## game_extraversion.tste_14_0          
-    ## game_extraversion.tste_14_1          
-    ## game_extraversion.tste_14_2          
-    ## game_extraversion.tste_14_3          
-    ## game_extraversion.tste_14_4       *  
-    ## game_extraversion.tste_14_5          
-    ## game_extraversion.tste_14_6          
-    ## game_extraversion.tste_14_7          
-    ## game_extraversion.tste_14_8          
-    ## game_extraversion.tste_14_9          
-    ## game_extraversion.tste_14_10      .  
-    ## game_extraversion.tste_14_11         
-    ## game_extraversion.tste_14_12         
-    ## game_extraversion.tste_14_13         
-    ## game_agreeableness.tste_14_0         
-    ## game_agreeableness.tste_14_1         
-    ## game_agreeableness.tste_14_2         
-    ## game_agreeableness.tste_14_3         
-    ## game_agreeableness.tste_14_4         
-    ## game_agreeableness.tste_14_5         
-    ## game_agreeableness.tste_14_6         
-    ## game_agreeableness.tste_14_7      .  
-    ## game_agreeableness.tste_14_8         
-    ## game_agreeableness.tste_14_9      *  
-    ## game_agreeableness.tste_14_10        
-    ## game_agreeableness.tste_14_11        
-    ## game_agreeableness.tste_14_12        
-    ## game_agreeableness.tste_14_13        
-    ## game_conscientiousness.tste_14_0     
-    ## game_conscientiousness.tste_14_1     
-    ## game_conscientiousness.tste_14_2     
-    ## game_conscientiousness.tste_14_3     
-    ## game_conscientiousness.tste_14_4     
-    ## game_conscientiousness.tste_14_5     
-    ## game_conscientiousness.tste_14_6     
-    ## game_conscientiousness.tste_14_7     
-    ## game_conscientiousness.tste_14_8     
-    ## game_conscientiousness.tste_14_9     
-    ## game_conscientiousness.tste_14_10    
-    ## game_conscientiousness.tste_14_11    
-    ## game_conscientiousness.tste_14_12    
-    ## game_conscientiousness.tste_14_13    
-    ## game_emotionstability.tste_14_0   .  
-    ## game_emotionstability.tste_14_1      
-    ## game_emotionstability.tste_14_2      
-    ## game_emotionstability.tste_14_3      
-    ## game_emotionstability.tste_14_4      
-    ## game_emotionstability.tste_14_5   *  
-    ## game_emotionstability.tste_14_6      
-    ## game_emotionstability.tste_14_7      
-    ## game_emotionstability.tste_14_8      
-    ## game_emotionstability.tste_14_9      
-    ## game_emotionstability.tste_14_10     
-    ## game_emotionstability.tste_14_11     
-    ## game_emotionstability.tste_14_12     
-    ## game_emotionstability.tste_14_13     
-    ## game_openness.tste_14_0              
-    ## game_openness.tste_14_1              
-    ## game_openness.tste_14_2           ** 
-    ## game_openness.tste_14_3              
-    ## game_openness.tste_14_4              
-    ## game_openness.tste_14_5              
-    ## game_openness.tste_14_6              
-    ## game_openness.tste_14_7              
-    ## game_openness.tste_14_8              
-    ## game_openness.tste_14_9              
-    ## game_openness.tste_14_10             
-    ## game_openness.tste_14_11             
-    ## game_openness.tste_14_12             
-    ## game_openness.tste_14_13             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       37.7406816 16.8557694   2.239  0.02526 *  
+    ## age                               -0.0132632  0.0046337  -2.862  0.00425 ** 
+    ## education                          0.0029968  0.0269096   0.111  0.91134    
+    ## income                             0.0108319  0.0172759   0.627  0.53073    
+    ## race2                              0.0158848  0.1347312   0.118  0.90616    
+    ## race4                             -0.2160181  0.1434946  -1.505  0.13237    
+    ## race6                             -0.9918814  0.3527904  -2.812  0.00498 ** 
+    ## race7                             -0.1362043  0.1380103  -0.987  0.32380    
+    ## sex2                              -0.0582332  0.0734081  -0.793  0.42771    
+    ## release                           -0.0167149  0.0082701  -2.021  0.04340 *  
+    ## star_user                          0.0589598  0.0621924   0.948  0.34323    
+    ## real_extraversion                  0.0354471  0.0235709   1.504  0.13278    
+    ## real_agreeableness                -0.0450969  0.0334638  -1.348  0.17793    
+    ## real_conscientiousness             0.0905827  0.0375089   2.415  0.01582 *  
+    ## real_emotionstability              0.0009147  0.0338058   0.027  0.97842    
+    ## real_openness                      0.1425700  0.0335523   4.249 2.24e-05 ***
+    ## game_extraversion                  0.0167079  0.0265247   0.630  0.52883    
+    ## game_agreeableness                 0.0557818  0.0344354   1.620  0.10541    
+    ## game_conscientiousness             0.0022929  0.0409349   0.056  0.95534    
+    ## game_emotionstability             -0.0402858  0.0326935  -1.232  0.21801    
+    ## game_openness                     -0.0385566  0.0448184  -0.860  0.38973    
+    ## tste_14_0                         -0.6728606  0.4309558  -1.561  0.11860    
+    ## tste_14_1                         -0.1978147  0.4125722  -0.479  0.63166    
+    ## tste_14_2                         -0.4928223  0.4025115  -1.224  0.22096    
+    ## tste_14_3                         -0.0925828  0.3937713  -0.235  0.81414    
+    ## tste_14_4                          0.0255720  0.3918403   0.065  0.94797    
+    ## tste_14_5                          0.7476557  0.4613183   1.621  0.10524    
+    ## tste_14_6                         -0.0880103  0.4121654  -0.214  0.83093    
+    ## tste_14_7                         -0.0389785  0.4751306  -0.082  0.93462    
+    ## tste_14_8                         -0.1051438  0.3732575  -0.282  0.77821    
+    ## tste_14_9                          0.6211466  0.4151068   1.496  0.13472    
+    ## tste_14_10                         0.1712945  0.4369603   0.392  0.69509    
+    ## tste_14_11                         0.1896534  0.4282025   0.443  0.65788    
+    ## tste_14_12                         0.2742323  0.4223620   0.649  0.51623    
+    ## tste_14_13                         0.1388744  0.4314029   0.322  0.74755    
+    ## game_extraversion.tste_14_0       -0.0289016  0.0326547  -0.885  0.37622    
+    ## game_extraversion.tste_14_1       -0.0171861  0.0320487  -0.536  0.59184    
+    ## game_extraversion.tste_14_2       -0.0226114  0.0311863  -0.725  0.46851    
+    ## game_extraversion.tste_14_3        0.0159119  0.0307376   0.518  0.60475    
+    ## game_extraversion.tste_14_4       -0.0588378  0.0298505  -1.971  0.04885 *  
+    ## game_extraversion.tste_14_5       -0.0163887  0.0351225  -0.467  0.64082    
+    ## game_extraversion.tste_14_6       -0.0216685  0.0327117  -0.662  0.50778    
+    ## game_extraversion.tste_14_7       -0.0204852  0.0379019  -0.540  0.58892    
+    ## game_extraversion.tste_14_8       -0.0013152  0.0289154  -0.045  0.96373    
+    ## game_extraversion.tste_14_9        0.0335312  0.0348733   0.962  0.33641    
+    ## game_extraversion.tste_14_10      -0.0619540  0.0338358  -1.831  0.06724 .  
+    ## game_extraversion.tste_14_11       0.0030541  0.0313756   0.097  0.92246    
+    ## game_extraversion.tste_14_12      -0.0287057  0.0334272  -0.859  0.39058    
+    ## game_extraversion.tste_14_13      -0.0413814  0.0327526  -1.263  0.20657    
+    ## game_agreeableness.tste_14_0      -0.0360409  0.0444881  -0.810  0.41796    
+    ## game_agreeableness.tste_14_1      -0.0021464  0.0409514  -0.052  0.95820    
+    ## game_agreeableness.tste_14_2      -0.0677457  0.0418891  -1.617  0.10598    
+    ## game_agreeableness.tste_14_3       0.0351120  0.0387107   0.907  0.36449    
+    ## game_agreeableness.tste_14_4       0.0243490  0.0380198   0.640  0.52197    
+    ## game_agreeableness.tste_14_5      -0.0155328  0.0468875  -0.331  0.74047    
+    ## game_agreeableness.tste_14_6      -0.0046075  0.0413384  -0.111  0.91126    
+    ## game_agreeableness.tste_14_7       0.0844993  0.0493138   1.714  0.08677 .  
+    ## game_agreeableness.tste_14_8      -0.0120302  0.0357303  -0.337  0.73638    
+    ## game_agreeableness.tste_14_9      -0.0975262  0.0433092  -2.252  0.02444 *  
+    ## game_agreeableness.tste_14_10      0.0602700  0.0454292   1.327  0.18476    
+    ## game_agreeableness.tste_14_11      0.0017490  0.0401295   0.044  0.96524    
+    ## game_agreeableness.tste_14_12     -0.0002562  0.0434772  -0.006  0.99530    
+    ## game_agreeableness.tste_14_13     -0.0107269  0.0430646  -0.249  0.80332    
+    ## game_conscientiousness.tste_14_0   0.0421233  0.0490725   0.858  0.39078    
+    ## game_conscientiousness.tste_14_1   0.0155304  0.0474362   0.327  0.74340    
+    ## game_conscientiousness.tste_14_2  -0.0167694  0.0446216  -0.376  0.70709    
+    ## game_conscientiousness.tste_14_3   0.0253610  0.0461304   0.550  0.58254    
+    ## game_conscientiousness.tste_14_4   0.0529189  0.0438368   1.207  0.22750    
+    ## game_conscientiousness.tste_14_5  -0.0549129  0.0510553  -1.076  0.28225    
+    ## game_conscientiousness.tste_14_6   0.0664345  0.0468065   1.419  0.15595    
+    ## game_conscientiousness.tste_14_7  -0.0533236  0.0542016  -0.984  0.32533    
+    ## game_conscientiousness.tste_14_8   0.0639847  0.0425550   1.504  0.13285    
+    ## game_conscientiousness.tste_14_9  -0.0326235  0.0484175  -0.674  0.50052    
+    ## game_conscientiousness.tste_14_10  0.0370729  0.0479678   0.773  0.43969    
+    ## game_conscientiousness.tste_14_11 -0.0269961  0.0467226  -0.578  0.56347    
+    ## game_conscientiousness.tste_14_12 -0.0610944  0.0467840  -1.306  0.19174    
+    ## game_conscientiousness.tste_14_13 -0.0106790  0.0484518  -0.220  0.82558    
+    ## game_emotionstability.tste_14_0    0.0771431  0.0445553   1.731  0.08353 .  
+    ## game_emotionstability.tste_14_1   -0.0094737  0.0413235  -0.229  0.81869    
+    ## game_emotionstability.tste_14_2    0.0402388  0.0407075   0.988  0.32303    
+    ## game_emotionstability.tste_14_3   -0.0386127  0.0408310  -0.946  0.34443    
+    ## game_emotionstability.tste_14_4   -0.0448164  0.0380246  -1.179  0.23869    
+    ## game_emotionstability.tste_14_5   -0.0906278  0.0451510  -2.007  0.04486 *  
+    ## game_emotionstability.tste_14_6    0.0246742  0.0412601   0.598  0.54990    
+    ## game_emotionstability.tste_14_7   -0.0701245  0.0474165  -1.479  0.13932    
+    ## game_emotionstability.tste_14_8    0.0084607  0.0371207   0.228  0.81973    
+    ## game_emotionstability.tste_14_9    0.0028680  0.0423571   0.068  0.94602    
+    ## game_emotionstability.tste_14_10  -0.0414878  0.0442534  -0.938  0.34861    
+    ## game_emotionstability.tste_14_11  -0.0579043  0.0424576  -1.364  0.17278    
+    ## game_emotionstability.tste_14_12  -0.0157372  0.0415394  -0.379  0.70484    
+    ## game_emotionstability.tste_14_13  -0.0344651  0.0420141  -0.820  0.41213    
+    ## game_openness.tste_14_0            0.0707729  0.0507473   1.395  0.16328    
+    ## game_openness.tste_14_1            0.0479163  0.0466928   1.026  0.30492    
+    ## game_openness.tste_14_2            0.1476929  0.0479172   3.082  0.00208 ** 
+    ## game_openness.tste_14_3            0.0035263  0.0458792   0.077  0.93874    
+    ## game_openness.tste_14_4            0.0050359  0.0473191   0.106  0.91526    
+    ## game_openness.tste_14_5           -0.0176453  0.0547053  -0.323  0.74707    
+    ## game_openness.tste_14_6           -0.0381240  0.0495979  -0.769  0.44218    
+    ## game_openness.tste_14_7            0.0289639  0.0542136   0.534  0.59322    
+    ## game_openness.tste_14_8           -0.0164055  0.0447251  -0.367  0.71380    
+    ## game_openness.tste_14_9           -0.0515782  0.0495792  -1.040  0.29831    
+    ## game_openness.tste_14_10          -0.0101875  0.0503515  -0.202  0.83968    
+    ## game_openness.tste_14_11           0.0148163  0.0515323   0.288  0.77375    
+    ## game_openness.tste_14_12           0.0513187  0.0495521   1.036  0.30049    
+    ## game_openness.tste_14_13           0.0641389  0.0485581   1.321  0.18669    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -5033,230 +3463,118 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -5.0097 -0.6747  0.2716  0.9986  3.1445 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       44.1134094 17.8476448   2.472  0.01353
-    ## age                               -0.0130964  0.0046457  -2.819  0.00486
-    ## education                          0.0008042  0.0269645   0.030  0.97621
-    ## income                             0.0106344  0.0173633   0.612  0.54030
-    ## race2                              0.0142543  0.1351757   0.105  0.91603
-    ## race4                             -0.2096483  0.1436598  -1.459  0.14463
-    ## race6                             -0.9670102  0.3538887  -2.733  0.00634
-    ## race7                             -0.1195163  0.1380965  -0.865  0.38689
-    ## sex2                              -0.0622090  0.0735779  -0.845  0.39794
-    ## release                           -0.0196966  0.0087445  -2.252  0.02440
-    ## star_user                          0.0121997  0.0663153   0.184  0.85406
-    ## real_extraversion                  0.0350693  0.0235949   1.486  0.13735
-    ## real_agreeableness                -0.0475495  0.0335216  -1.418  0.15621
-    ## real_conscientiousness             0.0905405  0.0375791   2.409  0.01607
-    ## real_emotionstability              0.0010586  0.0339108   0.031  0.97510
-    ## real_openness                      0.1412942  0.0336837   4.195 2.85e-05
-    ## game_extraversion                  0.0155333  0.0266934   0.582  0.56069
-    ## game_agreeableness                 0.0592808  0.0345664   1.715  0.08650
-    ## game_conscientiousness             0.0008217  0.0411558   0.020  0.98407
-    ## game_emotionstability             -0.0395642  0.0328984  -1.203  0.22926
-    ## game_openness                     -0.0357478  0.0451971  -0.791  0.42908
-    ## tste_15_0                          0.0816908  0.4176299   0.196  0.84494
-    ## tste_15_1                         -0.1012492  0.4286119  -0.236  0.81328
-    ## tste_15_2                         -0.0060845  0.4203096  -0.014  0.98845
-    ## tste_15_3                         -0.3346489  0.4241282  -0.789  0.43019
-    ## tste_15_4                         -0.4900533  0.4004322  -1.224  0.22117
-    ## tste_15_5                          0.5142229  0.4410289   1.166  0.24377
-    ## tste_15_6                         -0.0261995  0.3948877  -0.066  0.94711
-    ## tste_15_7                          0.2113661  0.4097527   0.516  0.60602
-    ## tste_15_8                         -0.7434033  0.4646645  -1.600  0.10978
-    ## tste_15_9                          0.0692298  0.4109071   0.168  0.86622
-    ## tste_15_10                         0.1191502  0.4389944   0.271  0.78610
-    ## tste_15_11                        -0.2766736  0.4729608  -0.585  0.55862
-    ## tste_15_12                        -0.1434887  0.3149403  -0.456  0.64872
-    ## tste_15_13                         0.3632434  0.3836449   0.947  0.34384
-    ## tste_15_14                        -0.2709512  0.3738485  -0.725  0.46868
-    ## game_extraversion.tste_15_0        0.0144815  0.0327676   0.442  0.65857
-    ## game_extraversion.tste_15_1        0.0557956  0.0324833   1.718  0.08601
-    ## game_extraversion.tste_15_2       -0.0223549  0.0317046  -0.705  0.48083
-    ## game_extraversion.tste_15_3       -0.0470559  0.0338275  -1.391  0.16436
-    ## game_extraversion.tste_15_4        0.0084707  0.0300074   0.282  0.77775
-    ## game_extraversion.tste_15_5        0.0003086  0.0338458   0.009  0.99273
-    ## game_extraversion.tste_15_6       -0.0508854  0.0306277  -1.661  0.09678
-    ## game_extraversion.tste_15_7        0.0314273  0.0329513   0.954  0.34032
-    ## game_extraversion.tste_15_8       -0.0015139  0.0351180  -0.043  0.96562
-    ## game_extraversion.tste_15_9       -0.0490127  0.0329432  -1.488  0.13696
-    ## game_extraversion.tste_15_10       0.0173426  0.0346838   0.500  0.61712
-    ## game_extraversion.tste_15_11       0.0228634  0.0360019   0.635  0.52546
-    ## game_extraversion.tste_15_12       0.0053334  0.0268039   0.199  0.84230
-    ## game_extraversion.tste_15_13       0.0412312  0.0294371   1.401  0.16147
-    ## game_extraversion.tste_15_14       0.0169623  0.0285946   0.593  0.55311
-    ## game_agreeableness.tste_15_0      -0.0876576  0.0425092  -2.062  0.03933
-    ## game_agreeableness.tste_15_1      -0.0027027  0.0443689  -0.061  0.95143
-    ## game_agreeableness.tste_15_2      -0.0024199  0.0400062  -0.060  0.95177
-    ## game_agreeableness.tste_15_3      -0.0421128  0.0438181  -0.961  0.33663
-    ## game_agreeableness.tste_15_4      -0.0210771  0.0385183  -0.547  0.58430
-    ## game_agreeableness.tste_15_5       0.0117812  0.0436618   0.270  0.78732
-    ## game_agreeableness.tste_15_6      -0.0386021  0.0399139  -0.967  0.33359
-    ## game_agreeableness.tste_15_7       0.0046263  0.0417438   0.111  0.91177
-    ## game_agreeableness.tste_15_8       0.0153924  0.0463235   0.332  0.73971
-    ## game_agreeableness.tste_15_9       0.0804734  0.0420147   1.915  0.05559
-    ## game_agreeableness.tste_15_10     -0.0303789  0.0441348  -0.688  0.49133
-    ## game_agreeableness.tste_15_11     -0.0363987  0.0469957  -0.775  0.43872
-    ## game_agreeableness.tste_15_12     -0.0429652  0.0333959  -1.287  0.19840
-    ## game_agreeableness.tste_15_13     -0.0210354  0.0374535  -0.562  0.57442
-    ## game_agreeableness.tste_15_14     -0.0163659  0.0376118  -0.435  0.66352
-    ## game_conscientiousness.tste_15_0  -0.0397708  0.0481317  -0.826  0.40874
-    ## game_conscientiousness.tste_15_1   0.0424787  0.0458309   0.927  0.35411
-    ## game_conscientiousness.tste_15_2   0.0415685  0.0490488   0.847  0.39682
-    ## game_conscientiousness.tste_15_3   0.0505250  0.0496085   1.018  0.30857
-    ## game_conscientiousness.tste_15_4   0.0324647  0.0450874   0.720  0.47158
-    ## game_conscientiousness.tste_15_5  -0.1060705  0.0496762  -2.135  0.03286
-    ## game_conscientiousness.tste_15_6  -0.0174275  0.0428474  -0.407  0.68425
-    ## game_conscientiousness.tste_15_7  -0.0290880  0.0467795  -0.622  0.53414
-    ## game_conscientiousness.tste_15_8   0.0043453  0.0517924   0.084  0.93315
-    ## game_conscientiousness.tste_15_9   0.0576431  0.0464403   1.241  0.21466
-    ## game_conscientiousness.tste_15_10 -0.0058487  0.0500239  -0.117  0.90694
-    ## game_conscientiousness.tste_15_11 -0.0413515  0.0516635  -0.800  0.42357
-    ## game_conscientiousness.tste_15_12  0.0002834  0.0370397   0.008  0.99390
-    ## game_conscientiousness.tste_15_13 -0.0482873  0.0451431  -1.070  0.28490
-    ## game_conscientiousness.tste_15_14  0.0304786  0.0409374   0.745  0.45665
-    ## game_emotionstability.tste_15_0    0.0675689  0.0409120   1.652  0.09878
-    ## game_emotionstability.tste_15_1    0.0240331  0.0433840   0.554  0.57967
-    ## game_emotionstability.tste_15_2   -0.0318469  0.0420899  -0.757  0.44935
-    ## game_emotionstability.tste_15_3    0.0471106  0.0438088   1.075  0.28234
-    ## game_emotionstability.tste_15_4    0.0366469  0.0391308   0.937  0.34912
-    ## game_emotionstability.tste_15_5   -0.0719995  0.0449698  -1.601  0.10952
-    ## game_emotionstability.tste_15_6   -0.0281867  0.0389892  -0.723  0.46980
-    ## game_emotionstability.tste_15_7   -0.0035598  0.0413738  -0.086  0.93144
-    ## game_emotionstability.tste_15_8    0.0638917  0.0462592   1.381  0.16738
-    ## game_emotionstability.tste_15_9   -0.0312379  0.0423655  -0.737  0.46100
-    ## game_emotionstability.tste_15_10  -0.0069704  0.0438259  -0.159  0.87365
-    ## game_emotionstability.tste_15_11   0.0494648  0.0486443   1.017  0.30934
-    ## game_emotionstability.tste_15_12   0.0236067  0.0330402   0.714  0.47501
-    ## game_emotionstability.tste_15_13  -0.0164211  0.0387524  -0.424  0.67180
-    ## game_emotionstability.tste_15_14   0.0565191  0.0370359   1.526  0.12715
-    ## game_openness.tste_15_0            0.0134573  0.0486642   0.277  0.78217
-    ## game_openness.tste_15_1           -0.0978133  0.0509332  -1.920  0.05494
-    ## game_openness.tste_15_2            0.0215630  0.0498545   0.433  0.66541
-    ## game_openness.tste_15_3            0.0601985  0.0493544   1.220  0.22271
-    ## game_openness.tste_15_4            0.0477801  0.0459622   1.040  0.29867
-    ## game_openness.tste_15_5            0.0245651  0.0538121   0.456  0.64808
-    ## game_openness.tste_15_6            0.0849857  0.0473998   1.793  0.07313
-    ## game_openness.tste_15_7           -0.0502375  0.0491086  -1.023  0.30644
-    ## game_openness.tste_15_8            0.0722840  0.0530868   1.362  0.17347
-    ## game_openness.tste_15_9           -0.0573815  0.0489058  -1.173  0.24081
-    ## game_openness.tste_15_10          -0.0007011  0.0499564  -0.014  0.98880
-    ## game_openness.tste_15_11           0.0974378  0.0542012   1.798  0.07237
-    ## game_openness.tste_15_12           0.0253925  0.0360916   0.704  0.48179
-    ## game_openness.tste_15_13          -0.0245003  0.0458712  -0.534  0.59332
-    ## game_openness.tste_15_14          -0.0127150  0.0448266  -0.284  0.77671
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           *  
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_15_0                            
-    ## tste_15_1                            
-    ## tste_15_2                            
-    ## tste_15_3                            
-    ## tste_15_4                            
-    ## tste_15_5                            
-    ## tste_15_6                            
-    ## tste_15_7                            
-    ## tste_15_8                            
-    ## tste_15_9                            
-    ## tste_15_10                           
-    ## tste_15_11                           
-    ## tste_15_12                           
-    ## tste_15_13                           
-    ## tste_15_14                           
-    ## game_extraversion.tste_15_0          
-    ## game_extraversion.tste_15_1       .  
-    ## game_extraversion.tste_15_2          
-    ## game_extraversion.tste_15_3          
-    ## game_extraversion.tste_15_4          
-    ## game_extraversion.tste_15_5          
-    ## game_extraversion.tste_15_6       .  
-    ## game_extraversion.tste_15_7          
-    ## game_extraversion.tste_15_8          
-    ## game_extraversion.tste_15_9          
-    ## game_extraversion.tste_15_10         
-    ## game_extraversion.tste_15_11         
-    ## game_extraversion.tste_15_12         
-    ## game_extraversion.tste_15_13         
-    ## game_extraversion.tste_15_14         
-    ## game_agreeableness.tste_15_0      *  
-    ## game_agreeableness.tste_15_1         
-    ## game_agreeableness.tste_15_2         
-    ## game_agreeableness.tste_15_3         
-    ## game_agreeableness.tste_15_4         
-    ## game_agreeableness.tste_15_5         
-    ## game_agreeableness.tste_15_6         
-    ## game_agreeableness.tste_15_7         
-    ## game_agreeableness.tste_15_8         
-    ## game_agreeableness.tste_15_9      .  
-    ## game_agreeableness.tste_15_10        
-    ## game_agreeableness.tste_15_11        
-    ## game_agreeableness.tste_15_12        
-    ## game_agreeableness.tste_15_13        
-    ## game_agreeableness.tste_15_14        
-    ## game_conscientiousness.tste_15_0     
-    ## game_conscientiousness.tste_15_1     
-    ## game_conscientiousness.tste_15_2     
-    ## game_conscientiousness.tste_15_3     
-    ## game_conscientiousness.tste_15_4     
-    ## game_conscientiousness.tste_15_5  *  
-    ## game_conscientiousness.tste_15_6     
-    ## game_conscientiousness.tste_15_7     
-    ## game_conscientiousness.tste_15_8     
-    ## game_conscientiousness.tste_15_9     
-    ## game_conscientiousness.tste_15_10    
-    ## game_conscientiousness.tste_15_11    
-    ## game_conscientiousness.tste_15_12    
-    ## game_conscientiousness.tste_15_13    
-    ## game_conscientiousness.tste_15_14    
-    ## game_emotionstability.tste_15_0   .  
-    ## game_emotionstability.tste_15_1      
-    ## game_emotionstability.tste_15_2      
-    ## game_emotionstability.tste_15_3      
-    ## game_emotionstability.tste_15_4      
-    ## game_emotionstability.tste_15_5      
-    ## game_emotionstability.tste_15_6      
-    ## game_emotionstability.tste_15_7      
-    ## game_emotionstability.tste_15_8      
-    ## game_emotionstability.tste_15_9      
-    ## game_emotionstability.tste_15_10     
-    ## game_emotionstability.tste_15_11     
-    ## game_emotionstability.tste_15_12     
-    ## game_emotionstability.tste_15_13     
-    ## game_emotionstability.tste_15_14     
-    ## game_openness.tste_15_0              
-    ## game_openness.tste_15_1           .  
-    ## game_openness.tste_15_2              
-    ## game_openness.tste_15_3              
-    ## game_openness.tste_15_4              
-    ## game_openness.tste_15_5              
-    ## game_openness.tste_15_6           .  
-    ## game_openness.tste_15_7              
-    ## game_openness.tste_15_8              
-    ## game_openness.tste_15_9              
-    ## game_openness.tste_15_10             
-    ## game_openness.tste_15_11          .  
-    ## game_openness.tste_15_12             
-    ## game_openness.tste_15_13             
-    ## game_openness.tste_15_14             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       44.1134094 17.8476448   2.472  0.01353 *  
+    ## age                               -0.0130964  0.0046457  -2.819  0.00486 ** 
+    ## education                          0.0008042  0.0269645   0.030  0.97621    
+    ## income                             0.0106344  0.0173633   0.612  0.54030    
+    ## race2                              0.0142543  0.1351757   0.105  0.91603    
+    ## race4                             -0.2096483  0.1436598  -1.459  0.14463    
+    ## race6                             -0.9670102  0.3538887  -2.733  0.00634 ** 
+    ## race7                             -0.1195163  0.1380965  -0.865  0.38689    
+    ## sex2                              -0.0622090  0.0735779  -0.845  0.39794    
+    ## release                           -0.0196966  0.0087445  -2.252  0.02440 *  
+    ## star_user                          0.0121997  0.0663153   0.184  0.85406    
+    ## real_extraversion                  0.0350693  0.0235949   1.486  0.13735    
+    ## real_agreeableness                -0.0475495  0.0335216  -1.418  0.15621    
+    ## real_conscientiousness             0.0905405  0.0375791   2.409  0.01607 *  
+    ## real_emotionstability              0.0010586  0.0339108   0.031  0.97510    
+    ## real_openness                      0.1412942  0.0336837   4.195 2.85e-05 ***
+    ## game_extraversion                  0.0155333  0.0266934   0.582  0.56069    
+    ## game_agreeableness                 0.0592808  0.0345664   1.715  0.08650 .  
+    ## game_conscientiousness             0.0008217  0.0411558   0.020  0.98407    
+    ## game_emotionstability             -0.0395642  0.0328984  -1.203  0.22926    
+    ## game_openness                     -0.0357478  0.0451971  -0.791  0.42908    
+    ## tste_15_0                          0.0816908  0.4176299   0.196  0.84494    
+    ## tste_15_1                         -0.1012492  0.4286119  -0.236  0.81328    
+    ## tste_15_2                         -0.0060845  0.4203096  -0.014  0.98845    
+    ## tste_15_3                         -0.3346489  0.4241282  -0.789  0.43019    
+    ## tste_15_4                         -0.4900533  0.4004322  -1.224  0.22117    
+    ## tste_15_5                          0.5142229  0.4410289   1.166  0.24377    
+    ## tste_15_6                         -0.0261995  0.3948877  -0.066  0.94711    
+    ## tste_15_7                          0.2113661  0.4097527   0.516  0.60602    
+    ## tste_15_8                         -0.7434033  0.4646645  -1.600  0.10978    
+    ## tste_15_9                          0.0692298  0.4109071   0.168  0.86622    
+    ## tste_15_10                         0.1191502  0.4389944   0.271  0.78610    
+    ## tste_15_11                        -0.2766736  0.4729608  -0.585  0.55862    
+    ## tste_15_12                        -0.1434887  0.3149403  -0.456  0.64872    
+    ## tste_15_13                         0.3632434  0.3836449   0.947  0.34384    
+    ## tste_15_14                        -0.2709512  0.3738485  -0.725  0.46868    
+    ## game_extraversion.tste_15_0        0.0144815  0.0327676   0.442  0.65857    
+    ## game_extraversion.tste_15_1        0.0557956  0.0324833   1.718  0.08601 .  
+    ## game_extraversion.tste_15_2       -0.0223549  0.0317046  -0.705  0.48083    
+    ## game_extraversion.tste_15_3       -0.0470559  0.0338275  -1.391  0.16436    
+    ## game_extraversion.tste_15_4        0.0084707  0.0300074   0.282  0.77775    
+    ## game_extraversion.tste_15_5        0.0003086  0.0338458   0.009  0.99273    
+    ## game_extraversion.tste_15_6       -0.0508854  0.0306277  -1.661  0.09678 .  
+    ## game_extraversion.tste_15_7        0.0314273  0.0329513   0.954  0.34032    
+    ## game_extraversion.tste_15_8       -0.0015139  0.0351180  -0.043  0.96562    
+    ## game_extraversion.tste_15_9       -0.0490127  0.0329432  -1.488  0.13696    
+    ## game_extraversion.tste_15_10       0.0173426  0.0346838   0.500  0.61712    
+    ## game_extraversion.tste_15_11       0.0228634  0.0360019   0.635  0.52546    
+    ## game_extraversion.tste_15_12       0.0053334  0.0268039   0.199  0.84230    
+    ## game_extraversion.tste_15_13       0.0412312  0.0294371   1.401  0.16147    
+    ## game_extraversion.tste_15_14       0.0169623  0.0285946   0.593  0.55311    
+    ## game_agreeableness.tste_15_0      -0.0876576  0.0425092  -2.062  0.03933 *  
+    ## game_agreeableness.tste_15_1      -0.0027027  0.0443689  -0.061  0.95143    
+    ## game_agreeableness.tste_15_2      -0.0024199  0.0400062  -0.060  0.95177    
+    ## game_agreeableness.tste_15_3      -0.0421128  0.0438181  -0.961  0.33663    
+    ## game_agreeableness.tste_15_4      -0.0210771  0.0385183  -0.547  0.58430    
+    ## game_agreeableness.tste_15_5       0.0117812  0.0436618   0.270  0.78732    
+    ## game_agreeableness.tste_15_6      -0.0386021  0.0399139  -0.967  0.33359    
+    ## game_agreeableness.tste_15_7       0.0046263  0.0417438   0.111  0.91177    
+    ## game_agreeableness.tste_15_8       0.0153924  0.0463235   0.332  0.73971    
+    ## game_agreeableness.tste_15_9       0.0804734  0.0420147   1.915  0.05559 .  
+    ## game_agreeableness.tste_15_10     -0.0303789  0.0441348  -0.688  0.49133    
+    ## game_agreeableness.tste_15_11     -0.0363987  0.0469957  -0.775  0.43872    
+    ## game_agreeableness.tste_15_12     -0.0429652  0.0333959  -1.287  0.19840    
+    ## game_agreeableness.tste_15_13     -0.0210354  0.0374535  -0.562  0.57442    
+    ## game_agreeableness.tste_15_14     -0.0163659  0.0376118  -0.435  0.66352    
+    ## game_conscientiousness.tste_15_0  -0.0397708  0.0481317  -0.826  0.40874    
+    ## game_conscientiousness.tste_15_1   0.0424787  0.0458309   0.927  0.35411    
+    ## game_conscientiousness.tste_15_2   0.0415685  0.0490488   0.847  0.39682    
+    ## game_conscientiousness.tste_15_3   0.0505250  0.0496085   1.018  0.30857    
+    ## game_conscientiousness.tste_15_4   0.0324647  0.0450874   0.720  0.47158    
+    ## game_conscientiousness.tste_15_5  -0.1060705  0.0496762  -2.135  0.03286 *  
+    ## game_conscientiousness.tste_15_6  -0.0174275  0.0428474  -0.407  0.68425    
+    ## game_conscientiousness.tste_15_7  -0.0290880  0.0467795  -0.622  0.53414    
+    ## game_conscientiousness.tste_15_8   0.0043453  0.0517924   0.084  0.93315    
+    ## game_conscientiousness.tste_15_9   0.0576431  0.0464403   1.241  0.21466    
+    ## game_conscientiousness.tste_15_10 -0.0058487  0.0500239  -0.117  0.90694    
+    ## game_conscientiousness.tste_15_11 -0.0413515  0.0516635  -0.800  0.42357    
+    ## game_conscientiousness.tste_15_12  0.0002834  0.0370397   0.008  0.99390    
+    ## game_conscientiousness.tste_15_13 -0.0482873  0.0451431  -1.070  0.28490    
+    ## game_conscientiousness.tste_15_14  0.0304786  0.0409374   0.745  0.45665    
+    ## game_emotionstability.tste_15_0    0.0675689  0.0409120   1.652  0.09878 .  
+    ## game_emotionstability.tste_15_1    0.0240331  0.0433840   0.554  0.57967    
+    ## game_emotionstability.tste_15_2   -0.0318469  0.0420899  -0.757  0.44935    
+    ## game_emotionstability.tste_15_3    0.0471106  0.0438088   1.075  0.28234    
+    ## game_emotionstability.tste_15_4    0.0366469  0.0391308   0.937  0.34912    
+    ## game_emotionstability.tste_15_5   -0.0719995  0.0449698  -1.601  0.10952    
+    ## game_emotionstability.tste_15_6   -0.0281867  0.0389892  -0.723  0.46980    
+    ## game_emotionstability.tste_15_7   -0.0035598  0.0413738  -0.086  0.93144    
+    ## game_emotionstability.tste_15_8    0.0638917  0.0462592   1.381  0.16738    
+    ## game_emotionstability.tste_15_9   -0.0312379  0.0423655  -0.737  0.46100    
+    ## game_emotionstability.tste_15_10  -0.0069704  0.0438259  -0.159  0.87365    
+    ## game_emotionstability.tste_15_11   0.0494648  0.0486443   1.017  0.30934    
+    ## game_emotionstability.tste_15_12   0.0236067  0.0330402   0.714  0.47501    
+    ## game_emotionstability.tste_15_13  -0.0164211  0.0387524  -0.424  0.67180    
+    ## game_emotionstability.tste_15_14   0.0565191  0.0370359   1.526  0.12715    
+    ## game_openness.tste_15_0            0.0134573  0.0486642   0.277  0.78217    
+    ## game_openness.tste_15_1           -0.0978133  0.0509332  -1.920  0.05494 .  
+    ## game_openness.tste_15_2            0.0215630  0.0498545   0.433  0.66541    
+    ## game_openness.tste_15_3            0.0601985  0.0493544   1.220  0.22271    
+    ## game_openness.tste_15_4            0.0477801  0.0459622   1.040  0.29867    
+    ## game_openness.tste_15_5            0.0245651  0.0538121   0.456  0.64808    
+    ## game_openness.tste_15_6            0.0849857  0.0473998   1.793  0.07313 .  
+    ## game_openness.tste_15_7           -0.0502375  0.0491086  -1.023  0.30644    
+    ## game_openness.tste_15_8            0.0722840  0.0530868   1.362  0.17347    
+    ## game_openness.tste_15_9           -0.0573815  0.0489058  -1.173  0.24081    
+    ## game_openness.tste_15_10          -0.0007011  0.0499564  -0.014  0.98880    
+    ## game_openness.tste_15_11           0.0974378  0.0542012   1.798  0.07237 .  
+    ## game_openness.tste_15_12           0.0253925  0.0360916   0.704  0.48179    
+    ## game_openness.tste_15_13          -0.0245003  0.0458712  -0.534  0.59332    
+    ## game_openness.tste_15_14          -0.0127150  0.0448266  -0.284  0.77671    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -5273,242 +3591,124 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.8915 -0.7099  0.2564  1.0170  2.9926 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       26.1100017 17.9628565   1.454  0.14622
-    ## age                               -0.0123166  0.0046407  -2.654  0.00802
-    ## education                         -0.0029992  0.0269140  -0.111  0.91128
-    ## income                             0.0139181  0.0173350   0.803  0.42213
-    ## race2                              0.0319363  0.1347144   0.237  0.81263
-    ## race4                             -0.1947133  0.1433569  -1.358  0.17454
-    ## race6                             -0.9443982  0.3534243  -2.672  0.00760
-    ## race7                             -0.1266203  0.1378782  -0.918  0.35855
-    ## sex2                              -0.0601552  0.0732121  -0.822  0.41137
-    ## release                           -0.0108171  0.0088106  -1.228  0.21969
-    ## star_user                          0.0307075  0.0636064   0.483  0.62931
-    ## real_extraversion                  0.0385898  0.0235514   1.639  0.10147
-    ## real_agreeableness                -0.0501668  0.0334564  -1.499  0.13391
-    ## real_conscientiousness             0.0904311  0.0374544   2.414  0.01585
-    ## real_emotionstability              0.0034632  0.0337886   0.102  0.91837
-    ## real_openness                      0.1398144  0.0335197   4.171 3.16e-05
-    ## game_extraversion                  0.0121825  0.0265811   0.458  0.64678
-    ## game_agreeableness                 0.0584717  0.0344339   1.698  0.08965
-    ## game_conscientiousness            -0.0024514  0.0408284  -0.060  0.95213
-    ## game_emotionstability             -0.0343466  0.0326641  -1.052  0.29315
-    ## game_openness                     -0.0326267  0.0449200  -0.726  0.46772
-    ## tste_16_0                          0.1090885  0.4188822   0.260  0.79456
-    ## tste_16_1                          0.6752060  0.3801343   1.776  0.07585
-    ## tste_16_2                          0.0006274  0.3722840   0.002  0.99866
-    ## tste_16_3                         -0.5623937  0.3872162  -1.452  0.14655
-    ## tste_16_4                          0.4227763  0.3722470   1.136  0.25620
-    ## tste_16_5                          0.2952175  0.4172961   0.707  0.47937
-    ## tste_16_6                         -0.0000131  0.3833413   0.000  0.99997
-    ## tste_16_7                         -0.0702803  0.3784757  -0.186  0.85270
-    ## tste_16_8                          0.3225697  0.4303887   0.749  0.45365
-    ## tste_16_9                         -0.0694310  0.3663838  -0.190  0.84972
-    ## tste_16_10                        -0.2539903  0.3701501  -0.686  0.49268
-    ## tste_16_11                        -0.1562835  0.4047123  -0.386  0.69942
-    ## tste_16_12                         0.3390293  0.4095631   0.828  0.40789
-    ## tste_16_13                        -0.3396231  0.4362885  -0.778  0.43640
-    ## tste_16_14                         0.0416453  0.3800133   0.110  0.91275
-    ## tste_16_15                        -0.3500518  0.4270845  -0.820  0.41252
-    ## game_extraversion.tste_16_0       -0.0151514  0.0337272  -0.449  0.65331
-    ## game_extraversion.tste_16_1        0.0077039  0.0312900   0.246  0.80554
-    ## game_extraversion.tste_16_2        0.0445709  0.0296174   1.505  0.13251
-    ## game_extraversion.tste_16_3       -0.0036298  0.0315151  -0.115  0.90832
-    ## game_extraversion.tste_16_4        0.0165298  0.0276788   0.597  0.55044
-    ## game_extraversion.tste_16_5        0.0016363  0.0314744   0.052  0.95854
-    ## game_extraversion.tste_16_6        0.0398676  0.0304771   1.308  0.19098
-    ## game_extraversion.tste_16_7       -0.0212672  0.0286998  -0.741  0.45876
-    ## game_extraversion.tste_16_8       -0.0014336  0.0324273  -0.044  0.96474
-    ## game_extraversion.tste_16_9       -0.0423542  0.0289285  -1.464  0.14332
-    ## game_extraversion.tste_16_10       0.0066309  0.0287819   0.230  0.81782
-    ## game_extraversion.tste_16_11       0.0650567  0.0312059   2.085  0.03722
-    ## game_extraversion.tste_16_12      -0.0170076  0.0312702  -0.544  0.58658
-    ## game_extraversion.tste_16_13      -0.0019197  0.0332645  -0.058  0.95398
-    ## game_extraversion.tste_16_14       0.0059203  0.0292286   0.203  0.83951
-    ## game_extraversion.tste_16_15      -0.0435177  0.0338317  -1.286  0.19849
-    ## game_agreeableness.tste_16_0       0.0064822  0.0430440   0.151  0.88031
-    ## game_agreeableness.tste_16_1      -0.0448743  0.0390533  -1.149  0.25067
-    ## game_agreeableness.tste_16_2      -0.0482661  0.0375432  -1.286  0.19872
-    ## game_agreeableness.tste_16_3      -0.0025586  0.0405829  -0.063  0.94974
-    ## game_agreeableness.tste_16_4       0.0642376  0.0365614   1.757  0.07907
-    ## game_agreeableness.tste_16_5      -0.0636850  0.0414198  -1.538  0.12432
-    ## game_agreeableness.tste_16_6       0.0015317  0.0398502   0.038  0.96934
-    ## game_agreeableness.tste_16_7       0.0141160  0.0367304   0.384  0.70079
-    ## game_agreeableness.tste_16_8       0.0583420  0.0438813   1.330  0.18382
-    ## game_agreeableness.tste_16_9      -0.0681823  0.0395165  -1.725  0.08461
-    ## game_agreeableness.tste_16_10      0.0477342  0.0357175   1.336  0.18156
-    ## game_agreeableness.tste_16_11     -0.0480160  0.0396485  -1.211  0.22602
-    ## game_agreeableness.tste_16_12      0.0358374  0.0400054   0.896  0.37046
-    ## game_agreeableness.tste_16_13      0.0177146  0.0425058   0.417  0.67690
-    ## game_agreeableness.tste_16_14     -0.0101860  0.0384742  -0.265  0.79123
-    ## game_agreeableness.tste_16_15     -0.0510955  0.0438075  -1.166  0.24360
-    ## game_conscientiousness.tste_16_0  -0.0086609  0.0503653  -0.172  0.86349
-    ## game_conscientiousness.tste_16_1  -0.0892992  0.0454515  -1.965  0.04958
-    ## game_conscientiousness.tste_16_2  -0.0227058  0.0436085  -0.521  0.60265
-    ## game_conscientiousness.tste_16_3  -0.0013312  0.0442465  -0.030  0.97600
-    ## game_conscientiousness.tste_16_4  -0.0870708  0.0410845  -2.119  0.03419
-    ## game_conscientiousness.tste_16_5   0.0260038  0.0468441   0.555  0.57888
-    ## game_conscientiousness.tste_16_6  -0.0181825  0.0424367  -0.428  0.66836
-    ## game_conscientiousness.tste_16_7   0.0165719  0.0418130   0.396  0.69190
-    ## game_conscientiousness.tste_16_8   0.0467206  0.0459973   1.016  0.30988
-    ## game_conscientiousness.tste_16_9  -0.0344377  0.0410847  -0.838  0.40201
-    ## game_conscientiousness.tste_16_10  0.0066903  0.0419172   0.160  0.87321
-    ## game_conscientiousness.tste_16_11 -0.0071547  0.0456088  -0.157  0.87536
-    ## game_conscientiousness.tste_16_12  0.0444852  0.0449562   0.990  0.32253
-    ## game_conscientiousness.tste_16_13 -0.0098808  0.0502936  -0.196  0.84427
-    ## game_conscientiousness.tste_16_14 -0.0249022  0.0423803  -0.588  0.55687
-    ## game_conscientiousness.tste_16_15  0.0459085  0.0490252   0.936  0.34917
-    ## game_emotionstability.tste_16_0    0.0123328  0.0441187   0.280  0.77986
-    ## game_emotionstability.tste_16_1   -0.0422293  0.0400659  -1.054  0.29201
-    ## game_emotionstability.tste_16_2    0.0693795  0.0394299   1.760  0.07863
-    ## game_emotionstability.tste_16_3    0.0231450  0.0401695   0.576  0.56456
-    ## game_emotionstability.tste_16_4   -0.0679130  0.0364263  -1.864  0.06241
-    ## game_emotionstability.tste_16_5    0.0393754  0.0405572   0.971  0.33173
-    ## game_emotionstability.tste_16_6    0.0239040  0.0370439   0.645  0.51881
-    ## game_emotionstability.tste_16_7    0.0293474  0.0368200   0.797  0.42552
-    ## game_emotionstability.tste_16_8   -0.1007363  0.0435126  -2.315  0.02071
-    ## game_emotionstability.tste_16_9    0.0053832  0.0370520   0.145  0.88450
-    ## game_emotionstability.tste_16_10   0.0152873  0.0367491   0.416  0.67746
-    ## game_emotionstability.tste_16_11   0.0642296  0.0398209   1.613  0.10691
-    ## game_emotionstability.tste_16_12  -0.0342260  0.0399331  -0.857  0.39150
-    ## game_emotionstability.tste_16_13   0.0303761  0.0442393   0.687  0.49239
-    ## game_emotionstability.tste_16_14  -0.0061589  0.0381801  -0.161  0.87186
-    ## game_emotionstability.tste_16_15   0.0660392  0.0444241   1.487  0.13729
-    ## game_openness.tste_16_0            0.0183709  0.0491899   0.373  0.70884
-    ## game_openness.tste_16_1           -0.0137193  0.0458527  -0.299  0.76482
-    ## game_openness.tste_16_2           -0.0282019  0.0443899  -0.635  0.52529
-    ## game_openness.tste_16_3            0.0742583  0.0465617   1.595  0.11091
-    ## game_openness.tste_16_4           -0.0334860  0.0433810  -0.772  0.44026
-    ## game_openness.tste_16_5           -0.0441553  0.0480477  -0.919  0.35821
-    ## game_openness.tste_16_6           -0.0126225  0.0427356  -0.295  0.76775
-    ## game_openness.tste_16_7           -0.0020199  0.0440032  -0.046  0.96339
-    ## game_openness.tste_16_8           -0.0918672  0.0501088  -1.833  0.06690
-    ## game_openness.tste_16_9            0.1403229  0.0435846   3.220  0.00130
-    ## game_openness.tste_16_10          -0.0196307  0.0438357  -0.448  0.65433
-    ## game_openness.tste_16_11          -0.0006564  0.0457950  -0.014  0.98857
-    ## game_openness.tste_16_12          -0.0784689  0.0478370  -1.640  0.10109
-    ## game_openness.tste_16_13           0.0592657  0.0514722   1.151  0.24970
-    ## game_openness.tste_16_14           0.0427271  0.0468259   0.912  0.36163
-    ## game_openness.tste_16_15           0.0477385  0.0513953   0.929  0.35308
-    ##                                      
-    ## (Intercept)                          
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_16_0                            
-    ## tste_16_1                         .  
-    ## tste_16_2                            
-    ## tste_16_3                            
-    ## tste_16_4                            
-    ## tste_16_5                            
-    ## tste_16_6                            
-    ## tste_16_7                            
-    ## tste_16_8                            
-    ## tste_16_9                            
-    ## tste_16_10                           
-    ## tste_16_11                           
-    ## tste_16_12                           
-    ## tste_16_13                           
-    ## tste_16_14                           
-    ## tste_16_15                           
-    ## game_extraversion.tste_16_0          
-    ## game_extraversion.tste_16_1          
-    ## game_extraversion.tste_16_2          
-    ## game_extraversion.tste_16_3          
-    ## game_extraversion.tste_16_4          
-    ## game_extraversion.tste_16_5          
-    ## game_extraversion.tste_16_6          
-    ## game_extraversion.tste_16_7          
-    ## game_extraversion.tste_16_8          
-    ## game_extraversion.tste_16_9          
-    ## game_extraversion.tste_16_10         
-    ## game_extraversion.tste_16_11      *  
-    ## game_extraversion.tste_16_12         
-    ## game_extraversion.tste_16_13         
-    ## game_extraversion.tste_16_14         
-    ## game_extraversion.tste_16_15         
-    ## game_agreeableness.tste_16_0         
-    ## game_agreeableness.tste_16_1         
-    ## game_agreeableness.tste_16_2         
-    ## game_agreeableness.tste_16_3         
-    ## game_agreeableness.tste_16_4      .  
-    ## game_agreeableness.tste_16_5         
-    ## game_agreeableness.tste_16_6         
-    ## game_agreeableness.tste_16_7         
-    ## game_agreeableness.tste_16_8         
-    ## game_agreeableness.tste_16_9      .  
-    ## game_agreeableness.tste_16_10        
-    ## game_agreeableness.tste_16_11        
-    ## game_agreeableness.tste_16_12        
-    ## game_agreeableness.tste_16_13        
-    ## game_agreeableness.tste_16_14        
-    ## game_agreeableness.tste_16_15        
-    ## game_conscientiousness.tste_16_0     
-    ## game_conscientiousness.tste_16_1  *  
-    ## game_conscientiousness.tste_16_2     
-    ## game_conscientiousness.tste_16_3     
-    ## game_conscientiousness.tste_16_4  *  
-    ## game_conscientiousness.tste_16_5     
-    ## game_conscientiousness.tste_16_6     
-    ## game_conscientiousness.tste_16_7     
-    ## game_conscientiousness.tste_16_8     
-    ## game_conscientiousness.tste_16_9     
-    ## game_conscientiousness.tste_16_10    
-    ## game_conscientiousness.tste_16_11    
-    ## game_conscientiousness.tste_16_12    
-    ## game_conscientiousness.tste_16_13    
-    ## game_conscientiousness.tste_16_14    
-    ## game_conscientiousness.tste_16_15    
-    ## game_emotionstability.tste_16_0      
-    ## game_emotionstability.tste_16_1      
-    ## game_emotionstability.tste_16_2   .  
-    ## game_emotionstability.tste_16_3      
-    ## game_emotionstability.tste_16_4   .  
-    ## game_emotionstability.tste_16_5      
-    ## game_emotionstability.tste_16_6      
-    ## game_emotionstability.tste_16_7      
-    ## game_emotionstability.tste_16_8   *  
-    ## game_emotionstability.tste_16_9      
-    ## game_emotionstability.tste_16_10     
-    ## game_emotionstability.tste_16_11     
-    ## game_emotionstability.tste_16_12     
-    ## game_emotionstability.tste_16_13     
-    ## game_emotionstability.tste_16_14     
-    ## game_emotionstability.tste_16_15     
-    ## game_openness.tste_16_0              
-    ## game_openness.tste_16_1              
-    ## game_openness.tste_16_2              
-    ## game_openness.tste_16_3              
-    ## game_openness.tste_16_4              
-    ## game_openness.tste_16_5              
-    ## game_openness.tste_16_6              
-    ## game_openness.tste_16_7              
-    ## game_openness.tste_16_8           .  
-    ## game_openness.tste_16_9           ** 
-    ## game_openness.tste_16_10             
-    ## game_openness.tste_16_11             
-    ## game_openness.tste_16_12             
-    ## game_openness.tste_16_13             
-    ## game_openness.tste_16_14             
-    ## game_openness.tste_16_15             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       26.1100017 17.9628565   1.454  0.14622    
+    ## age                               -0.0123166  0.0046407  -2.654  0.00802 ** 
+    ## education                         -0.0029992  0.0269140  -0.111  0.91128    
+    ## income                             0.0139181  0.0173350   0.803  0.42213    
+    ## race2                              0.0319363  0.1347144   0.237  0.81263    
+    ## race4                             -0.1947133  0.1433569  -1.358  0.17454    
+    ## race6                             -0.9443982  0.3534243  -2.672  0.00760 ** 
+    ## race7                             -0.1266203  0.1378782  -0.918  0.35855    
+    ## sex2                              -0.0601552  0.0732121  -0.822  0.41137    
+    ## release                           -0.0108171  0.0088106  -1.228  0.21969    
+    ## star_user                          0.0307075  0.0636064   0.483  0.62931    
+    ## real_extraversion                  0.0385898  0.0235514   1.639  0.10147    
+    ## real_agreeableness                -0.0501668  0.0334564  -1.499  0.13391    
+    ## real_conscientiousness             0.0904311  0.0374544   2.414  0.01585 *  
+    ## real_emotionstability              0.0034632  0.0337886   0.102  0.91837    
+    ## real_openness                      0.1398144  0.0335197   4.171 3.16e-05 ***
+    ## game_extraversion                  0.0121825  0.0265811   0.458  0.64678    
+    ## game_agreeableness                 0.0584717  0.0344339   1.698  0.08965 .  
+    ## game_conscientiousness            -0.0024514  0.0408284  -0.060  0.95213    
+    ## game_emotionstability             -0.0343466  0.0326641  -1.052  0.29315    
+    ## game_openness                     -0.0326267  0.0449200  -0.726  0.46772    
+    ## tste_16_0                          0.1090885  0.4188822   0.260  0.79456    
+    ## tste_16_1                          0.6752060  0.3801343   1.776  0.07585 .  
+    ## tste_16_2                          0.0006274  0.3722840   0.002  0.99866    
+    ## tste_16_3                         -0.5623937  0.3872162  -1.452  0.14655    
+    ## tste_16_4                          0.4227763  0.3722470   1.136  0.25620    
+    ## tste_16_5                          0.2952175  0.4172961   0.707  0.47937    
+    ## tste_16_6                         -0.0000131  0.3833413   0.000  0.99997    
+    ## tste_16_7                         -0.0702803  0.3784757  -0.186  0.85270    
+    ## tste_16_8                          0.3225697  0.4303887   0.749  0.45365    
+    ## tste_16_9                         -0.0694310  0.3663838  -0.190  0.84972    
+    ## tste_16_10                        -0.2539903  0.3701501  -0.686  0.49268    
+    ## tste_16_11                        -0.1562835  0.4047123  -0.386  0.69942    
+    ## tste_16_12                         0.3390293  0.4095631   0.828  0.40789    
+    ## tste_16_13                        -0.3396231  0.4362885  -0.778  0.43640    
+    ## tste_16_14                         0.0416453  0.3800133   0.110  0.91275    
+    ## tste_16_15                        -0.3500518  0.4270845  -0.820  0.41252    
+    ## game_extraversion.tste_16_0       -0.0151514  0.0337272  -0.449  0.65331    
+    ## game_extraversion.tste_16_1        0.0077039  0.0312900   0.246  0.80554    
+    ## game_extraversion.tste_16_2        0.0445709  0.0296174   1.505  0.13251    
+    ## game_extraversion.tste_16_3       -0.0036298  0.0315151  -0.115  0.90832    
+    ## game_extraversion.tste_16_4        0.0165298  0.0276788   0.597  0.55044    
+    ## game_extraversion.tste_16_5        0.0016363  0.0314744   0.052  0.95854    
+    ## game_extraversion.tste_16_6        0.0398676  0.0304771   1.308  0.19098    
+    ## game_extraversion.tste_16_7       -0.0212672  0.0286998  -0.741  0.45876    
+    ## game_extraversion.tste_16_8       -0.0014336  0.0324273  -0.044  0.96474    
+    ## game_extraversion.tste_16_9       -0.0423542  0.0289285  -1.464  0.14332    
+    ## game_extraversion.tste_16_10       0.0066309  0.0287819   0.230  0.81782    
+    ## game_extraversion.tste_16_11       0.0650567  0.0312059   2.085  0.03722 *  
+    ## game_extraversion.tste_16_12      -0.0170076  0.0312702  -0.544  0.58658    
+    ## game_extraversion.tste_16_13      -0.0019197  0.0332645  -0.058  0.95398    
+    ## game_extraversion.tste_16_14       0.0059203  0.0292286   0.203  0.83951    
+    ## game_extraversion.tste_16_15      -0.0435177  0.0338317  -1.286  0.19849    
+    ## game_agreeableness.tste_16_0       0.0064822  0.0430440   0.151  0.88031    
+    ## game_agreeableness.tste_16_1      -0.0448743  0.0390533  -1.149  0.25067    
+    ## game_agreeableness.tste_16_2      -0.0482661  0.0375432  -1.286  0.19872    
+    ## game_agreeableness.tste_16_3      -0.0025586  0.0405829  -0.063  0.94974    
+    ## game_agreeableness.tste_16_4       0.0642376  0.0365614   1.757  0.07907 .  
+    ## game_agreeableness.tste_16_5      -0.0636850  0.0414198  -1.538  0.12432    
+    ## game_agreeableness.tste_16_6       0.0015317  0.0398502   0.038  0.96934    
+    ## game_agreeableness.tste_16_7       0.0141160  0.0367304   0.384  0.70079    
+    ## game_agreeableness.tste_16_8       0.0583420  0.0438813   1.330  0.18382    
+    ## game_agreeableness.tste_16_9      -0.0681823  0.0395165  -1.725  0.08461 .  
+    ## game_agreeableness.tste_16_10      0.0477342  0.0357175   1.336  0.18156    
+    ## game_agreeableness.tste_16_11     -0.0480160  0.0396485  -1.211  0.22602    
+    ## game_agreeableness.tste_16_12      0.0358374  0.0400054   0.896  0.37046    
+    ## game_agreeableness.tste_16_13      0.0177146  0.0425058   0.417  0.67690    
+    ## game_agreeableness.tste_16_14     -0.0101860  0.0384742  -0.265  0.79123    
+    ## game_agreeableness.tste_16_15     -0.0510955  0.0438075  -1.166  0.24360    
+    ## game_conscientiousness.tste_16_0  -0.0086609  0.0503653  -0.172  0.86349    
+    ## game_conscientiousness.tste_16_1  -0.0892992  0.0454515  -1.965  0.04958 *  
+    ## game_conscientiousness.tste_16_2  -0.0227058  0.0436085  -0.521  0.60265    
+    ## game_conscientiousness.tste_16_3  -0.0013312  0.0442465  -0.030  0.97600    
+    ## game_conscientiousness.tste_16_4  -0.0870708  0.0410845  -2.119  0.03419 *  
+    ## game_conscientiousness.tste_16_5   0.0260038  0.0468441   0.555  0.57888    
+    ## game_conscientiousness.tste_16_6  -0.0181825  0.0424367  -0.428  0.66836    
+    ## game_conscientiousness.tste_16_7   0.0165719  0.0418130   0.396  0.69190    
+    ## game_conscientiousness.tste_16_8   0.0467206  0.0459973   1.016  0.30988    
+    ## game_conscientiousness.tste_16_9  -0.0344377  0.0410847  -0.838  0.40201    
+    ## game_conscientiousness.tste_16_10  0.0066903  0.0419172   0.160  0.87321    
+    ## game_conscientiousness.tste_16_11 -0.0071547  0.0456088  -0.157  0.87536    
+    ## game_conscientiousness.tste_16_12  0.0444852  0.0449562   0.990  0.32253    
+    ## game_conscientiousness.tste_16_13 -0.0098808  0.0502936  -0.196  0.84427    
+    ## game_conscientiousness.tste_16_14 -0.0249022  0.0423803  -0.588  0.55687    
+    ## game_conscientiousness.tste_16_15  0.0459085  0.0490252   0.936  0.34917    
+    ## game_emotionstability.tste_16_0    0.0123328  0.0441187   0.280  0.77986    
+    ## game_emotionstability.tste_16_1   -0.0422293  0.0400659  -1.054  0.29201    
+    ## game_emotionstability.tste_16_2    0.0693795  0.0394299   1.760  0.07863 .  
+    ## game_emotionstability.tste_16_3    0.0231450  0.0401695   0.576  0.56456    
+    ## game_emotionstability.tste_16_4   -0.0679130  0.0364263  -1.864  0.06241 .  
+    ## game_emotionstability.tste_16_5    0.0393754  0.0405572   0.971  0.33173    
+    ## game_emotionstability.tste_16_6    0.0239040  0.0370439   0.645  0.51881    
+    ## game_emotionstability.tste_16_7    0.0293474  0.0368200   0.797  0.42552    
+    ## game_emotionstability.tste_16_8   -0.1007363  0.0435126  -2.315  0.02071 *  
+    ## game_emotionstability.tste_16_9    0.0053832  0.0370520   0.145  0.88450    
+    ## game_emotionstability.tste_16_10   0.0152873  0.0367491   0.416  0.67746    
+    ## game_emotionstability.tste_16_11   0.0642296  0.0398209   1.613  0.10691    
+    ## game_emotionstability.tste_16_12  -0.0342260  0.0399331  -0.857  0.39150    
+    ## game_emotionstability.tste_16_13   0.0303761  0.0442393   0.687  0.49239    
+    ## game_emotionstability.tste_16_14  -0.0061589  0.0381801  -0.161  0.87186    
+    ## game_emotionstability.tste_16_15   0.0660392  0.0444241   1.487  0.13729    
+    ## game_openness.tste_16_0            0.0183709  0.0491899   0.373  0.70884    
+    ## game_openness.tste_16_1           -0.0137193  0.0458527  -0.299  0.76482    
+    ## game_openness.tste_16_2           -0.0282019  0.0443899  -0.635  0.52529    
+    ## game_openness.tste_16_3            0.0742583  0.0465617   1.595  0.11091    
+    ## game_openness.tste_16_4           -0.0334860  0.0433810  -0.772  0.44026    
+    ## game_openness.tste_16_5           -0.0441553  0.0480477  -0.919  0.35821    
+    ## game_openness.tste_16_6           -0.0126225  0.0427356  -0.295  0.76775    
+    ## game_openness.tste_16_7           -0.0020199  0.0440032  -0.046  0.96339    
+    ## game_openness.tste_16_8           -0.0918672  0.0501088  -1.833  0.06690 .  
+    ## game_openness.tste_16_9            0.1403229  0.0435846   3.220  0.00130 ** 
+    ## game_openness.tste_16_10          -0.0196307  0.0438357  -0.448  0.65433    
+    ## game_openness.tste_16_11          -0.0006564  0.0457950  -0.014  0.98857    
+    ## game_openness.tste_16_12          -0.0784689  0.0478370  -1.640  0.10109    
+    ## game_openness.tste_16_13           0.0592657  0.0514722   1.151  0.24970    
+    ## game_openness.tste_16_14           0.0427271  0.0468259   0.912  0.36163    
+    ## game_openness.tste_16_15           0.0477385  0.0513953   0.929  0.35308    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -5525,254 +3725,130 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -5.0203 -0.6867  0.2611  0.9990  2.9955 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       28.6997400 18.5585446   1.546  0.12215
-    ## age                               -0.0127689  0.0046459  -2.748  0.00604
-    ## education                          0.0011394  0.0269191   0.042  0.96624
-    ## income                             0.0149023  0.0173256   0.860  0.38982
-    ## race2                              0.0262663  0.1348360   0.195  0.84557
-    ## race4                             -0.1985534  0.1435983  -1.383  0.16691
-    ## race6                             -0.9782785  0.3549357  -2.756  0.00590
-    ## race7                             -0.1211046  0.1380279  -0.877  0.38038
-    ## sex2                              -0.0736558  0.0732940  -1.005  0.31505
-    ## release                           -0.0121578  0.0090807  -1.339  0.18077
-    ## star_user                          0.0400693  0.0671880   0.596  0.55099
-    ## real_extraversion                  0.0396139  0.0235490   1.682  0.09269
-    ## real_agreeableness                -0.0450448  0.0335113  -1.344  0.17905
-    ## real_conscientiousness             0.0934313  0.0375362   2.489  0.01289
-    ## real_emotionstability             -0.0006758  0.0337707  -0.020  0.98404
-    ## real_openness                      0.1426791  0.0335796   4.249 2.25e-05
-    ## game_extraversion                  0.0086264  0.0266007   0.324  0.74575
-    ## game_agreeableness                 0.0574978  0.0344699   1.668  0.09546
-    ## game_conscientiousness            -0.0067042  0.0411647  -0.163  0.87064
-    ## game_emotionstability             -0.0298352  0.0326980  -0.912  0.36164
-    ## game_openness                     -0.0292137  0.0449767  -0.650  0.51607
-    ## tste_17_0                          0.4319616  0.4317432   1.001  0.31719
-    ## tste_17_1                          0.4615878  0.3666007   1.259  0.20814
-    ## tste_17_2                          0.4337136  0.4253519   1.020  0.30801
-    ## tste_17_3                          0.3373844  0.3879681   0.870  0.38461
-    ## tste_17_4                          0.4089166  0.4448204   0.919  0.35806
-    ## tste_17_5                         -0.1790047  0.3742717  -0.478  0.63251
-    ## tste_17_6                         -0.1117359  0.4213603  -0.265  0.79090
-    ## tste_17_7                          0.2534451  0.3918410   0.647  0.51783
-    ## tste_17_8                         -0.1384689  0.3936475  -0.352  0.72506
-    ## tste_17_9                          0.3414811  0.3942632   0.866  0.38652
-    ## tste_17_10                        -0.3746371  0.3577251  -1.047  0.29510
-    ## tste_17_11                        -0.2530194  0.3885493  -0.651  0.51500
-    ## tste_17_12                        -0.3261890  0.3592958  -0.908  0.36406
-    ## tste_17_13                        -0.0035712  0.3930856  -0.009  0.99275
-    ## tste_17_14                         0.6422799  0.3775277   1.701  0.08904
-    ## tste_17_15                         0.2709528  0.4288302   0.632  0.52756
-    ## tste_17_16                         0.1290550  0.3369106   0.383  0.70172
-    ## game_extraversion.tste_17_0       -0.0496645  0.0321946  -1.543  0.12308
-    ## game_extraversion.tste_17_1        0.0318645  0.0282284   1.129  0.25911
-    ## game_extraversion.tste_17_2       -0.0540735  0.0348708  -1.551  0.12113
-    ## game_extraversion.tste_17_3       -0.0030882  0.0306879  -0.101  0.91985
-    ## game_extraversion.tste_17_4       -0.0383238  0.0334098  -1.147  0.25148
-    ## game_extraversion.tste_17_5        0.0300425  0.0280106   1.073  0.28361
-    ## game_extraversion.tste_17_6        0.0312342  0.0341727   0.914  0.36082
-    ## game_extraversion.tste_17_7       -0.0135077  0.0290424  -0.465  0.64191
-    ## game_extraversion.tste_17_8       -0.0023214  0.0321873  -0.072  0.94251
-    ## game_extraversion.tste_17_9        0.0144710  0.0309156   0.468  0.63978
-    ## game_extraversion.tste_17_10      -0.0221460  0.0288615  -0.767  0.44298
-    ## game_extraversion.tste_17_11       0.0359137  0.0292250   1.229  0.21926
-    ## game_extraversion.tste_17_12      -0.0261732  0.0263217  -0.994  0.32017
-    ## game_extraversion.tste_17_13      -0.0479541  0.0302870  -1.583  0.11350
-    ## game_extraversion.tste_17_14       0.0550344  0.0275699   1.996  0.04605
-    ## game_extraversion.tste_17_15       0.0249251  0.0358645   0.695  0.48715
-    ## game_extraversion.tste_17_16      -0.0117318  0.0271606  -0.432  0.66583
-    ## game_agreeableness.tste_17_0      -0.0218059  0.0413469  -0.527  0.59798
-    ## game_agreeableness.tste_17_1      -0.0762825  0.0365405  -2.088  0.03696
-    ## game_agreeableness.tste_17_2       0.0172563  0.0434083   0.398  0.69102
-    ## game_agreeableness.tste_17_3      -0.0053623  0.0389825  -0.138  0.89060
-    ## game_agreeableness.tste_17_4      -0.0348035  0.0443172  -0.785  0.43235
-    ## game_agreeableness.tste_17_5      -0.0373146  0.0372205  -1.003  0.31621
-    ## game_agreeableness.tste_17_6       0.0764752  0.0441435   1.732  0.08335
-    ## game_agreeableness.tste_17_7      -0.0582907  0.0389723  -1.496  0.13489
-    ## game_agreeableness.tste_17_8       0.0603017  0.0415681   1.451  0.14703
-    ## game_agreeableness.tste_17_9       0.0299872  0.0398946   0.752  0.45234
-    ## game_agreeableness.tste_17_10      0.1162555  0.0368759   3.153  0.00164
-    ## game_agreeableness.tste_17_11     -0.0137536  0.0369200  -0.373  0.70954
-    ## game_agreeableness.tste_17_12      0.0319254  0.0349467   0.914  0.36106
-    ## game_agreeableness.tste_17_13      0.0273418  0.0381292   0.717  0.47341
-    ## game_agreeableness.tste_17_14      0.0112911  0.0373088   0.303  0.76220
-    ## game_agreeableness.tste_17_15     -0.0356845  0.0459661  -0.776  0.43765
-    ## game_agreeableness.tste_17_16     -0.0122066  0.0341551  -0.357  0.72084
-    ## game_conscientiousness.tste_17_0  -0.0137029  0.0466707  -0.294  0.76909
-    ## game_conscientiousness.tste_17_1  -0.0365294  0.0417290  -0.875  0.38146
-    ## game_conscientiousness.tste_17_2  -0.0145612  0.0494401  -0.295  0.76839
-    ## game_conscientiousness.tste_17_3  -0.0278576  0.0450721  -0.618  0.53660
-    ## game_conscientiousness.tste_17_4  -0.0301136  0.0506752  -0.594  0.55241
-    ## game_conscientiousness.tste_17_5  -0.0025622  0.0433014  -0.059  0.95282
-    ## game_conscientiousness.tste_17_6  -0.0055818  0.0498072  -0.112  0.91078
-    ## game_conscientiousness.tste_17_7  -0.0069234  0.0423724  -0.163  0.87022
-    ## game_conscientiousness.tste_17_8   0.0627387  0.0456012   1.376  0.16903
-    ## game_conscientiousness.tste_17_9  -0.0303888  0.0439081  -0.692  0.48895
-    ## game_conscientiousness.tste_17_10  0.0697699  0.0424190   1.645  0.10017
-    ## game_conscientiousness.tste_17_11  0.0493617  0.0442095   1.117  0.26432
-    ## game_conscientiousness.tste_17_12 -0.0478477  0.0376001  -1.273  0.20333
-    ## game_conscientiousness.tste_17_13  0.0428864  0.0452078   0.949  0.34291
-    ## game_conscientiousness.tste_17_14 -0.0831923  0.0415639  -2.002  0.04547
-    ## game_conscientiousness.tste_17_15  0.0263692  0.0513930   0.513  0.60794
-    ## game_conscientiousness.tste_17_16  0.0107703  0.0383041   0.281  0.77860
-    ## game_emotionstability.tste_17_0   -0.0026916  0.0416408  -0.065  0.94847
-    ## game_emotionstability.tste_17_1    0.0605505  0.0356961   1.696  0.08999
-    ## game_emotionstability.tste_17_2   -0.0785241  0.0450398  -1.743  0.08141
-    ## game_emotionstability.tste_17_3   -0.0282197  0.0411088  -0.686  0.49250
-    ## game_emotionstability.tste_17_4    0.0293319  0.0430525   0.681  0.49576
-    ## game_emotionstability.tste_17_5    0.0395959  0.0382391   1.035  0.30057
-    ## game_emotionstability.tste_17_6   -0.0279109  0.0430333  -0.649  0.51668
-    ## game_emotionstability.tste_17_7    0.0356941  0.0373947   0.955  0.33993
-    ## game_emotionstability.tste_17_8   -0.0711635  0.0394781  -1.803  0.07160
-    ## game_emotionstability.tste_17_9    0.0031294  0.0386869   0.081  0.93554
-    ## game_emotionstability.tste_17_10  -0.0348336  0.0367572  -0.948  0.34341
-    ## game_emotionstability.tste_17_11   0.0683548  0.0405076   1.687  0.09167
-    ## game_emotionstability.tste_17_12  -0.0042661  0.0344495  -0.124  0.90146
-    ## game_emotionstability.tste_17_13  -0.0062693  0.0383463  -0.163  0.87015
-    ## game_emotionstability.tste_17_14  -0.0543687  0.0376290  -1.445  0.14865
-    ## game_emotionstability.tste_17_15   0.0404541  0.0445649   0.908  0.36411
-    ## game_emotionstability.tste_17_16  -0.0014636  0.0348929  -0.042  0.96655
-    ## game_openness.tste_17_0            0.0422545  0.0513681   0.823  0.41084
-    ## game_openness.tste_17_1           -0.0492198  0.0416668  -1.181  0.23763
-    ## game_openness.tste_17_2            0.0041703  0.0497418   0.084  0.93319
-    ## game_openness.tste_17_3           -0.0107347  0.0475020  -0.226  0.82124
-    ## game_openness.tste_17_4            0.0043141  0.0512257   0.084  0.93289
-    ## game_openness.tste_17_5            0.0098660  0.0437209   0.226  0.82149
-    ## game_openness.tste_17_6           -0.0396526  0.0478267  -0.829  0.40715
-    ## game_openness.tste_17_7            0.0008864  0.0466080   0.019  0.98483
-    ## game_openness.tste_17_8           -0.0382410  0.0463203  -0.826  0.40914
-    ## game_openness.tste_17_9           -0.0804981  0.0469912  -1.713  0.08686
-    ## game_openness.tste_17_10          -0.0178899  0.0419791  -0.426  0.67004
-    ## game_openness.tste_17_11          -0.0463260  0.0454796  -1.019  0.30851
-    ## game_openness.tste_17_12           0.0821502  0.0422013   1.947  0.05172
-    ## game_openness.tste_17_13          -0.0017791  0.0453290  -0.039  0.96870
-    ## game_openness.tste_17_14          -0.0540867  0.0440629  -1.227  0.21978
-    ## game_openness.tste_17_15          -0.1079986  0.0513122  -2.105  0.03544
-    ## game_openness.tste_17_16          -0.0157176  0.0410731  -0.383  0.70200
-    ##                                      
-    ## (Intercept)                          
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 .  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_17_0                            
-    ## tste_17_1                            
-    ## tste_17_2                            
-    ## tste_17_3                            
-    ## tste_17_4                            
-    ## tste_17_5                            
-    ## tste_17_6                            
-    ## tste_17_7                            
-    ## tste_17_8                            
-    ## tste_17_9                            
-    ## tste_17_10                           
-    ## tste_17_11                           
-    ## tste_17_12                           
-    ## tste_17_13                           
-    ## tste_17_14                        .  
-    ## tste_17_15                           
-    ## tste_17_16                           
-    ## game_extraversion.tste_17_0          
-    ## game_extraversion.tste_17_1          
-    ## game_extraversion.tste_17_2          
-    ## game_extraversion.tste_17_3          
-    ## game_extraversion.tste_17_4          
-    ## game_extraversion.tste_17_5          
-    ## game_extraversion.tste_17_6          
-    ## game_extraversion.tste_17_7          
-    ## game_extraversion.tste_17_8          
-    ## game_extraversion.tste_17_9          
-    ## game_extraversion.tste_17_10         
-    ## game_extraversion.tste_17_11         
-    ## game_extraversion.tste_17_12         
-    ## game_extraversion.tste_17_13         
-    ## game_extraversion.tste_17_14      *  
-    ## game_extraversion.tste_17_15         
-    ## game_extraversion.tste_17_16         
-    ## game_agreeableness.tste_17_0         
-    ## game_agreeableness.tste_17_1      *  
-    ## game_agreeableness.tste_17_2         
-    ## game_agreeableness.tste_17_3         
-    ## game_agreeableness.tste_17_4         
-    ## game_agreeableness.tste_17_5         
-    ## game_agreeableness.tste_17_6      .  
-    ## game_agreeableness.tste_17_7         
-    ## game_agreeableness.tste_17_8         
-    ## game_agreeableness.tste_17_9         
-    ## game_agreeableness.tste_17_10     ** 
-    ## game_agreeableness.tste_17_11        
-    ## game_agreeableness.tste_17_12        
-    ## game_agreeableness.tste_17_13        
-    ## game_agreeableness.tste_17_14        
-    ## game_agreeableness.tste_17_15        
-    ## game_agreeableness.tste_17_16        
-    ## game_conscientiousness.tste_17_0     
-    ## game_conscientiousness.tste_17_1     
-    ## game_conscientiousness.tste_17_2     
-    ## game_conscientiousness.tste_17_3     
-    ## game_conscientiousness.tste_17_4     
-    ## game_conscientiousness.tste_17_5     
-    ## game_conscientiousness.tste_17_6     
-    ## game_conscientiousness.tste_17_7     
-    ## game_conscientiousness.tste_17_8     
-    ## game_conscientiousness.tste_17_9     
-    ## game_conscientiousness.tste_17_10    
-    ## game_conscientiousness.tste_17_11    
-    ## game_conscientiousness.tste_17_12    
-    ## game_conscientiousness.tste_17_13    
-    ## game_conscientiousness.tste_17_14 *  
-    ## game_conscientiousness.tste_17_15    
-    ## game_conscientiousness.tste_17_16    
-    ## game_emotionstability.tste_17_0      
-    ## game_emotionstability.tste_17_1   .  
-    ## game_emotionstability.tste_17_2   .  
-    ## game_emotionstability.tste_17_3      
-    ## game_emotionstability.tste_17_4      
-    ## game_emotionstability.tste_17_5      
-    ## game_emotionstability.tste_17_6      
-    ## game_emotionstability.tste_17_7      
-    ## game_emotionstability.tste_17_8   .  
-    ## game_emotionstability.tste_17_9      
-    ## game_emotionstability.tste_17_10     
-    ## game_emotionstability.tste_17_11  .  
-    ## game_emotionstability.tste_17_12     
-    ## game_emotionstability.tste_17_13     
-    ## game_emotionstability.tste_17_14     
-    ## game_emotionstability.tste_17_15     
-    ## game_emotionstability.tste_17_16     
-    ## game_openness.tste_17_0              
-    ## game_openness.tste_17_1              
-    ## game_openness.tste_17_2              
-    ## game_openness.tste_17_3              
-    ## game_openness.tste_17_4              
-    ## game_openness.tste_17_5              
-    ## game_openness.tste_17_6              
-    ## game_openness.tste_17_7              
-    ## game_openness.tste_17_8              
-    ## game_openness.tste_17_9           .  
-    ## game_openness.tste_17_10             
-    ## game_openness.tste_17_11             
-    ## game_openness.tste_17_12          .  
-    ## game_openness.tste_17_13             
-    ## game_openness.tste_17_14             
-    ## game_openness.tste_17_15          *  
-    ## game_openness.tste_17_16             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       28.6997400 18.5585446   1.546  0.12215    
+    ## age                               -0.0127689  0.0046459  -2.748  0.00604 ** 
+    ## education                          0.0011394  0.0269191   0.042  0.96624    
+    ## income                             0.0149023  0.0173256   0.860  0.38982    
+    ## race2                              0.0262663  0.1348360   0.195  0.84557    
+    ## race4                             -0.1985534  0.1435983  -1.383  0.16691    
+    ## race6                             -0.9782785  0.3549357  -2.756  0.00590 ** 
+    ## race7                             -0.1211046  0.1380279  -0.877  0.38038    
+    ## sex2                              -0.0736558  0.0732940  -1.005  0.31505    
+    ## release                           -0.0121578  0.0090807  -1.339  0.18077    
+    ## star_user                          0.0400693  0.0671880   0.596  0.55099    
+    ## real_extraversion                  0.0396139  0.0235490   1.682  0.09269 .  
+    ## real_agreeableness                -0.0450448  0.0335113  -1.344  0.17905    
+    ## real_conscientiousness             0.0934313  0.0375362   2.489  0.01289 *  
+    ## real_emotionstability             -0.0006758  0.0337707  -0.020  0.98404    
+    ## real_openness                      0.1426791  0.0335796   4.249 2.25e-05 ***
+    ## game_extraversion                  0.0086264  0.0266007   0.324  0.74575    
+    ## game_agreeableness                 0.0574978  0.0344699   1.668  0.09546 .  
+    ## game_conscientiousness            -0.0067042  0.0411647  -0.163  0.87064    
+    ## game_emotionstability             -0.0298352  0.0326980  -0.912  0.36164    
+    ## game_openness                     -0.0292137  0.0449767  -0.650  0.51607    
+    ## tste_17_0                          0.4319616  0.4317432   1.001  0.31719    
+    ## tste_17_1                          0.4615878  0.3666007   1.259  0.20814    
+    ## tste_17_2                          0.4337136  0.4253519   1.020  0.30801    
+    ## tste_17_3                          0.3373844  0.3879681   0.870  0.38461    
+    ## tste_17_4                          0.4089166  0.4448204   0.919  0.35806    
+    ## tste_17_5                         -0.1790047  0.3742717  -0.478  0.63251    
+    ## tste_17_6                         -0.1117359  0.4213603  -0.265  0.79090    
+    ## tste_17_7                          0.2534451  0.3918410   0.647  0.51783    
+    ## tste_17_8                         -0.1384689  0.3936475  -0.352  0.72506    
+    ## tste_17_9                          0.3414811  0.3942632   0.866  0.38652    
+    ## tste_17_10                        -0.3746371  0.3577251  -1.047  0.29510    
+    ## tste_17_11                        -0.2530194  0.3885493  -0.651  0.51500    
+    ## tste_17_12                        -0.3261890  0.3592958  -0.908  0.36406    
+    ## tste_17_13                        -0.0035712  0.3930856  -0.009  0.99275    
+    ## tste_17_14                         0.6422799  0.3775277   1.701  0.08904 .  
+    ## tste_17_15                         0.2709528  0.4288302   0.632  0.52756    
+    ## tste_17_16                         0.1290550  0.3369106   0.383  0.70172    
+    ## game_extraversion.tste_17_0       -0.0496645  0.0321946  -1.543  0.12308    
+    ## game_extraversion.tste_17_1        0.0318645  0.0282284   1.129  0.25911    
+    ## game_extraversion.tste_17_2       -0.0540735  0.0348708  -1.551  0.12113    
+    ## game_extraversion.tste_17_3       -0.0030882  0.0306879  -0.101  0.91985    
+    ## game_extraversion.tste_17_4       -0.0383238  0.0334098  -1.147  0.25148    
+    ## game_extraversion.tste_17_5        0.0300425  0.0280106   1.073  0.28361    
+    ## game_extraversion.tste_17_6        0.0312342  0.0341727   0.914  0.36082    
+    ## game_extraversion.tste_17_7       -0.0135077  0.0290424  -0.465  0.64191    
+    ## game_extraversion.tste_17_8       -0.0023214  0.0321873  -0.072  0.94251    
+    ## game_extraversion.tste_17_9        0.0144710  0.0309156   0.468  0.63978    
+    ## game_extraversion.tste_17_10      -0.0221460  0.0288615  -0.767  0.44298    
+    ## game_extraversion.tste_17_11       0.0359137  0.0292250   1.229  0.21926    
+    ## game_extraversion.tste_17_12      -0.0261732  0.0263217  -0.994  0.32017    
+    ## game_extraversion.tste_17_13      -0.0479541  0.0302870  -1.583  0.11350    
+    ## game_extraversion.tste_17_14       0.0550344  0.0275699   1.996  0.04605 *  
+    ## game_extraversion.tste_17_15       0.0249251  0.0358645   0.695  0.48715    
+    ## game_extraversion.tste_17_16      -0.0117318  0.0271606  -0.432  0.66583    
+    ## game_agreeableness.tste_17_0      -0.0218059  0.0413469  -0.527  0.59798    
+    ## game_agreeableness.tste_17_1      -0.0762825  0.0365405  -2.088  0.03696 *  
+    ## game_agreeableness.tste_17_2       0.0172563  0.0434083   0.398  0.69102    
+    ## game_agreeableness.tste_17_3      -0.0053623  0.0389825  -0.138  0.89060    
+    ## game_agreeableness.tste_17_4      -0.0348035  0.0443172  -0.785  0.43235    
+    ## game_agreeableness.tste_17_5      -0.0373146  0.0372205  -1.003  0.31621    
+    ## game_agreeableness.tste_17_6       0.0764752  0.0441435   1.732  0.08335 .  
+    ## game_agreeableness.tste_17_7      -0.0582907  0.0389723  -1.496  0.13489    
+    ## game_agreeableness.tste_17_8       0.0603017  0.0415681   1.451  0.14703    
+    ## game_agreeableness.tste_17_9       0.0299872  0.0398946   0.752  0.45234    
+    ## game_agreeableness.tste_17_10      0.1162555  0.0368759   3.153  0.00164 ** 
+    ## game_agreeableness.tste_17_11     -0.0137536  0.0369200  -0.373  0.70954    
+    ## game_agreeableness.tste_17_12      0.0319254  0.0349467   0.914  0.36106    
+    ## game_agreeableness.tste_17_13      0.0273418  0.0381292   0.717  0.47341    
+    ## game_agreeableness.tste_17_14      0.0112911  0.0373088   0.303  0.76220    
+    ## game_agreeableness.tste_17_15     -0.0356845  0.0459661  -0.776  0.43765    
+    ## game_agreeableness.tste_17_16     -0.0122066  0.0341551  -0.357  0.72084    
+    ## game_conscientiousness.tste_17_0  -0.0137029  0.0466707  -0.294  0.76909    
+    ## game_conscientiousness.tste_17_1  -0.0365294  0.0417290  -0.875  0.38146    
+    ## game_conscientiousness.tste_17_2  -0.0145612  0.0494401  -0.295  0.76839    
+    ## game_conscientiousness.tste_17_3  -0.0278576  0.0450721  -0.618  0.53660    
+    ## game_conscientiousness.tste_17_4  -0.0301136  0.0506752  -0.594  0.55241    
+    ## game_conscientiousness.tste_17_5  -0.0025622  0.0433014  -0.059  0.95282    
+    ## game_conscientiousness.tste_17_6  -0.0055818  0.0498072  -0.112  0.91078    
+    ## game_conscientiousness.tste_17_7  -0.0069234  0.0423724  -0.163  0.87022    
+    ## game_conscientiousness.tste_17_8   0.0627387  0.0456012   1.376  0.16903    
+    ## game_conscientiousness.tste_17_9  -0.0303888  0.0439081  -0.692  0.48895    
+    ## game_conscientiousness.tste_17_10  0.0697699  0.0424190   1.645  0.10017    
+    ## game_conscientiousness.tste_17_11  0.0493617  0.0442095   1.117  0.26432    
+    ## game_conscientiousness.tste_17_12 -0.0478477  0.0376001  -1.273  0.20333    
+    ## game_conscientiousness.tste_17_13  0.0428864  0.0452078   0.949  0.34291    
+    ## game_conscientiousness.tste_17_14 -0.0831923  0.0415639  -2.002  0.04547 *  
+    ## game_conscientiousness.tste_17_15  0.0263692  0.0513930   0.513  0.60794    
+    ## game_conscientiousness.tste_17_16  0.0107703  0.0383041   0.281  0.77860    
+    ## game_emotionstability.tste_17_0   -0.0026916  0.0416408  -0.065  0.94847    
+    ## game_emotionstability.tste_17_1    0.0605505  0.0356961   1.696  0.08999 .  
+    ## game_emotionstability.tste_17_2   -0.0785241  0.0450398  -1.743  0.08141 .  
+    ## game_emotionstability.tste_17_3   -0.0282197  0.0411088  -0.686  0.49250    
+    ## game_emotionstability.tste_17_4    0.0293319  0.0430525   0.681  0.49576    
+    ## game_emotionstability.tste_17_5    0.0395959  0.0382391   1.035  0.30057    
+    ## game_emotionstability.tste_17_6   -0.0279109  0.0430333  -0.649  0.51668    
+    ## game_emotionstability.tste_17_7    0.0356941  0.0373947   0.955  0.33993    
+    ## game_emotionstability.tste_17_8   -0.0711635  0.0394781  -1.803  0.07160 .  
+    ## game_emotionstability.tste_17_9    0.0031294  0.0386869   0.081  0.93554    
+    ## game_emotionstability.tste_17_10  -0.0348336  0.0367572  -0.948  0.34341    
+    ## game_emotionstability.tste_17_11   0.0683548  0.0405076   1.687  0.09167 .  
+    ## game_emotionstability.tste_17_12  -0.0042661  0.0344495  -0.124  0.90146    
+    ## game_emotionstability.tste_17_13  -0.0062693  0.0383463  -0.163  0.87015    
+    ## game_emotionstability.tste_17_14  -0.0543687  0.0376290  -1.445  0.14865    
+    ## game_emotionstability.tste_17_15   0.0404541  0.0445649   0.908  0.36411    
+    ## game_emotionstability.tste_17_16  -0.0014636  0.0348929  -0.042  0.96655    
+    ## game_openness.tste_17_0            0.0422545  0.0513681   0.823  0.41084    
+    ## game_openness.tste_17_1           -0.0492198  0.0416668  -1.181  0.23763    
+    ## game_openness.tste_17_2            0.0041703  0.0497418   0.084  0.93319    
+    ## game_openness.tste_17_3           -0.0107347  0.0475020  -0.226  0.82124    
+    ## game_openness.tste_17_4            0.0043141  0.0512257   0.084  0.93289    
+    ## game_openness.tste_17_5            0.0098660  0.0437209   0.226  0.82149    
+    ## game_openness.tste_17_6           -0.0396526  0.0478267  -0.829  0.40715    
+    ## game_openness.tste_17_7            0.0008864  0.0466080   0.019  0.98483    
+    ## game_openness.tste_17_8           -0.0382410  0.0463203  -0.826  0.40914    
+    ## game_openness.tste_17_9           -0.0804981  0.0469912  -1.713  0.08686 .  
+    ## game_openness.tste_17_10          -0.0178899  0.0419791  -0.426  0.67004    
+    ## game_openness.tste_17_11          -0.0463260  0.0454796  -1.019  0.30851    
+    ## game_openness.tste_17_12           0.0821502  0.0422013   1.947  0.05172 .  
+    ## game_openness.tste_17_13          -0.0017791  0.0453290  -0.039  0.96870    
+    ## game_openness.tste_17_14          -0.0540867  0.0440629  -1.227  0.21978    
+    ## game_openness.tste_17_15          -0.1079986  0.0513122  -2.105  0.03544 *  
+    ## game_openness.tste_17_16          -0.0157176  0.0410731  -0.383  0.70200    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -5789,266 +3865,136 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -4.9206 -0.7170  0.2322  1.0238  2.8901 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       38.4854306 18.2400967   2.110  0.03499
-    ## age                               -0.0123329  0.0046418  -2.657  0.00795
-    ## education                         -0.0040186  0.0268591  -0.150  0.88108
-    ## income                             0.0159463  0.0173070   0.921  0.35696
-    ## race2                              0.0012380  0.1350462   0.009  0.99269
-    ## race4                             -0.2035287  0.1436485  -1.417  0.15668
-    ## race6                             -0.9728310  0.3539347  -2.749  0.00604
-    ## race7                             -0.1379994  0.1378615  -1.001  0.31695
-    ## sex2                              -0.0712727  0.0733161  -0.972  0.33110
-    ## release                           -0.0167530  0.0089352  -1.875  0.06095
-    ## star_user                         -0.0173676  0.0682253  -0.255  0.79909
-    ## real_extraversion                  0.0383447  0.0235238   1.630  0.10325
-    ## real_agreeableness                -0.0469817  0.0335001  -1.402  0.16094
-    ## real_conscientiousness             0.0906197  0.0375548   2.413  0.01591
-    ## real_emotionstability              0.0017693  0.0337981   0.052  0.95825
-    ## real_openness                      0.1457063  0.0335753   4.340  1.5e-05
-    ## game_extraversion                  0.0104157  0.0265971   0.392  0.69539
-    ## game_agreeableness                 0.0546582  0.0344942   1.585  0.11322
-    ## game_conscientiousness            -0.0079761  0.0410686  -0.194  0.84603
-    ## game_emotionstability             -0.0331577  0.0327430  -1.013  0.31134
-    ## game_openness                     -0.0391753  0.0449858  -0.871  0.38395
-    ## tste_18_0                         -0.1174128  0.4137518  -0.284  0.77661
-    ## tste_18_1                          0.4709197  0.3729270   1.263  0.20682
-    ## tste_18_2                         -0.3305469  0.3510469  -0.942  0.34651
-    ## tste_18_3                          0.2640809  0.3633530   0.727  0.46744
-    ## tste_18_4                          0.1345444  0.4392247   0.306  0.75939
-    ## tste_18_5                         -0.5938813  0.4110857  -1.445  0.14871
-    ## tste_18_6                          0.5876979  0.4173196   1.408  0.15921
-    ## tste_18_7                         -0.4005721  0.3645096  -1.099  0.27193
-    ## tste_18_8                         -0.1553217  0.4035496  -0.385  0.70036
-    ## tste_18_9                         -0.6040667  0.4029728  -1.499  0.13402
-    ## tste_18_10                         0.2583684  0.4055485   0.637  0.52414
-    ## tste_18_11                        -0.3058935  0.3754002  -0.815  0.41526
-    ## tste_18_12                         0.2209458  0.3973540   0.556  0.57824
-    ## tste_18_13                         0.1080568  0.4156457   0.260  0.79491
-    ## tste_18_14                         0.1489435  0.4341394   0.343  0.73158
-    ## tste_18_15                        -0.0366947  0.4598072  -0.080  0.93640
-    ## tste_18_16                        -0.2170259  0.4229425  -0.513  0.60791
-    ## tste_18_17                        -0.2993261  0.3940347  -0.760  0.44756
-    ## game_extraversion.tste_18_0        0.0158622  0.0310448   0.511  0.60944
-    ## game_extraversion.tste_18_1       -0.0203366  0.0285336  -0.713  0.47610
-    ## game_extraversion.tste_18_2        0.0392842  0.0272456   1.442  0.14950
-    ## game_extraversion.tste_18_3        0.0252166  0.0303866   0.830  0.40672
-    ## game_extraversion.tste_18_4       -0.0399746  0.0337339  -1.185  0.23616
-    ## game_extraversion.tste_18_5       -0.0226186  0.0313166  -0.722  0.47022
-    ## game_extraversion.tste_18_6        0.0100567  0.0306521   0.328  0.74288
-    ## game_extraversion.tste_18_7       -0.0085823  0.0288425  -0.298  0.76607
-    ## game_extraversion.tste_18_8        0.0691735  0.0315278   2.194  0.02835
-    ## game_extraversion.tste_18_9        0.0183794  0.0309707   0.593  0.55295
-    ## game_extraversion.tste_18_10      -0.0105254  0.0319862  -0.329  0.74214
-    ## game_extraversion.tste_18_11      -0.0072126  0.0293473  -0.246  0.80589
-    ## game_extraversion.tste_18_12      -0.0051280  0.0309738  -0.166  0.86852
-    ## game_extraversion.tste_18_13      -0.0410530  0.0322125  -1.274  0.20265
-    ## game_extraversion.tste_18_14       0.0430122  0.0330234   1.302  0.19290
-    ## game_extraversion.tste_18_15      -0.0397092  0.0351389  -1.130  0.25858
-    ## game_extraversion.tste_18_16       0.0250588  0.0320733   0.781  0.43472
-    ## game_extraversion.tste_18_17       0.0055885  0.0305191   0.183  0.85473
-    ## game_agreeableness.tste_18_0       0.0046283  0.0386249   0.120  0.90463
-    ## game_agreeableness.tste_18_1      -0.0365412  0.0386497  -0.945  0.34454
-    ## game_agreeableness.tste_18_2       0.0823239  0.0362381   2.272  0.02321
-    ## game_agreeableness.tste_18_3      -0.0797384  0.0380764  -2.094  0.03637
-    ## game_agreeableness.tste_18_4      -0.0781196  0.0417958  -1.869  0.06176
-    ## game_agreeableness.tste_18_5       0.0229010  0.0433989   0.528  0.59778
-    ## game_agreeableness.tste_18_6       0.0457257  0.0414139   1.104  0.26968
-    ## game_agreeableness.tste_18_7       0.0256664  0.0377049   0.681  0.49613
-    ## game_agreeableness.tste_18_8      -0.0016088  0.0395514  -0.041  0.96756
-    ## game_agreeableness.tste_18_9       0.0120304  0.0411066   0.293  0.76981
-    ## game_agreeableness.tste_18_10     -0.0529967  0.0414275  -1.279  0.20095
-    ## game_agreeableness.tste_18_11      0.0551034  0.0384235   1.434  0.15170
-    ## game_agreeableness.tste_18_12     -0.0012260  0.0397675  -0.031  0.97541
-    ## game_agreeableness.tste_18_13      0.0934652  0.0423149   2.209  0.02730
-    ## game_agreeableness.tste_18_14     -0.0651764  0.0426061  -1.530  0.12624
-    ## game_agreeableness.tste_18_15     -0.0517148  0.0445050  -1.162  0.24537
-    ## game_agreeableness.tste_18_16      0.0444250  0.0413541   1.074  0.28284
-    ## game_agreeableness.tste_18_17     -0.0248107  0.0395191  -0.628  0.53020
-    ## game_conscientiousness.tste_18_0  -0.0175633  0.0464501  -0.378  0.70539
-    ## game_conscientiousness.tste_18_1  -0.0389747  0.0416432  -0.936  0.34943
-    ## game_conscientiousness.tste_18_2   0.0153125  0.0389641   0.393  0.69437
-    ## game_conscientiousness.tste_18_3  -0.0101795  0.0420475  -0.242  0.80873
-    ## game_conscientiousness.tste_18_4   0.0398318  0.0481395   0.827  0.40810
-    ## game_conscientiousness.tste_18_5   0.0177123  0.0458451   0.386  0.69928
-    ## game_conscientiousness.tste_18_6  -0.0482162  0.0460573  -1.047  0.29528
-    ## game_conscientiousness.tste_18_7   0.0517454  0.0428179   1.208  0.22700
-    ## game_conscientiousness.tste_18_8   0.0475082  0.0458065   1.037  0.29979
-    ## game_conscientiousness.tste_18_9  -0.0165865  0.0451022  -0.368  0.71310
-    ## game_conscientiousness.tste_18_10 -0.0592394  0.0458728  -1.291  0.19672
-    ## game_conscientiousness.tste_18_11  0.0052709  0.0420578   0.125  0.90028
-    ## game_conscientiousness.tste_18_12 -0.0726448  0.0448856  -1.618  0.10572
-    ## game_conscientiousness.tste_18_13  0.0437230  0.0452032   0.967  0.33353
-    ## game_conscientiousness.tste_18_14 -0.0167014  0.0498352  -0.335  0.73756
-    ## game_conscientiousness.tste_18_15 -0.0004213  0.0535552  -0.008  0.99372
-    ## game_conscientiousness.tste_18_16  0.0081703  0.0494556   0.165  0.86880
-    ## game_conscientiousness.tste_18_17 -0.0253261  0.0449681  -0.563  0.57336
-    ## game_emotionstability.tste_18_0    0.0448035  0.0404271   1.108  0.26788
-    ## game_emotionstability.tste_18_1    0.0048409  0.0367430   0.132  0.89519
-    ## game_emotionstability.tste_18_2   -0.0621579  0.0346897  -1.792  0.07331
-    ## game_emotionstability.tste_18_3   -0.0226786  0.0365020  -0.621  0.53447
-    ## game_emotionstability.tste_18_4    0.0457813  0.0439623   1.041  0.29783
-    ## game_emotionstability.tste_18_5    0.0019957  0.0418077   0.048  0.96193
-    ## game_emotionstability.tste_18_6   -0.0635799  0.0407461  -1.560  0.11882
-    ## game_emotionstability.tste_18_7    0.0163799  0.0377588   0.434  0.66448
-    ## game_emotionstability.tste_18_8    0.0295735  0.0411411   0.719  0.47233
-    ## game_emotionstability.tste_18_9    0.0348695  0.0410739   0.849  0.39601
-    ## game_emotionstability.tste_18_10   0.0208403  0.0411875   0.506  0.61292
-    ## game_emotionstability.tste_18_11  -0.0073676  0.0388151  -0.190  0.84948
-    ## game_emotionstability.tste_18_12  -0.0557912  0.0397386  -1.404  0.16049
-    ## game_emotionstability.tste_18_13  -0.1016150  0.0405581  -2.505  0.01231
-    ## game_emotionstability.tste_18_14   0.0724394  0.0434334   1.668  0.09551
-    ## game_emotionstability.tste_18_15   0.0504074  0.0458104   1.100  0.27131
-    ## game_emotionstability.tste_18_16  -0.0441372  0.0421679  -1.047  0.29536
-    ## game_emotionstability.tste_18_17  -0.0138499  0.0384138  -0.361  0.71848
-    ## game_openness.tste_18_0           -0.0190816  0.0476023  -0.401  0.68857
-    ## game_openness.tste_18_1            0.0161197  0.0432870   0.372  0.70964
-    ## game_openness.tste_18_2           -0.0003666  0.0417302  -0.009  0.99299
-    ## game_openness.tste_18_3           -0.0003452  0.0441530  -0.008  0.99376
-    ## game_openness.tste_18_4            0.0064347  0.0518633   0.124  0.90127
-    ## game_openness.tste_18_5            0.0856101  0.0484539   1.767  0.07741
-    ## game_openness.tste_18_6           -0.0650689  0.0482559  -1.348  0.17768
-    ## game_openness.tste_18_7           -0.0012192  0.0424287  -0.029  0.97708
-    ## game_openness.tste_18_8           -0.0752909  0.0486339  -1.548  0.12175
-    ## game_openness.tste_18_9            0.0628604  0.0479070   1.312  0.18962
-    ## game_openness.tste_18_10           0.0539022  0.0489910   1.100  0.27136
-    ## game_openness.tste_18_11           0.0383645  0.0434001   0.884  0.37682
-    ## game_openness.tste_18_12           0.0489248  0.0480528   1.018  0.30873
-    ## game_openness.tste_18_13          -0.0323664  0.0484651  -0.668  0.50432
-    ## game_openness.tste_18_14          -0.0363198  0.0502135  -0.723  0.46958
-    ## game_openness.tste_18_15           0.0760144  0.0531648   1.430  0.15293
-    ## game_openness.tste_18_16          -0.0419093  0.0485164  -0.864  0.38779
-    ## game_openness.tste_18_17           0.1048450  0.0458903   2.285  0.02243
-    ##                                      
-    ## (Intercept)                       *  
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                           .  
-    ## star_user                            
-    ## real_extraversion                    
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                   
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_18_0                            
-    ## tste_18_1                            
-    ## tste_18_2                            
-    ## tste_18_3                            
-    ## tste_18_4                            
-    ## tste_18_5                            
-    ## tste_18_6                            
-    ## tste_18_7                            
-    ## tste_18_8                            
-    ## tste_18_9                            
-    ## tste_18_10                           
-    ## tste_18_11                           
-    ## tste_18_12                           
-    ## tste_18_13                           
-    ## tste_18_14                           
-    ## tste_18_15                           
-    ## tste_18_16                           
-    ## tste_18_17                           
-    ## game_extraversion.tste_18_0          
-    ## game_extraversion.tste_18_1          
-    ## game_extraversion.tste_18_2          
-    ## game_extraversion.tste_18_3          
-    ## game_extraversion.tste_18_4          
-    ## game_extraversion.tste_18_5          
-    ## game_extraversion.tste_18_6          
-    ## game_extraversion.tste_18_7          
-    ## game_extraversion.tste_18_8       *  
-    ## game_extraversion.tste_18_9          
-    ## game_extraversion.tste_18_10         
-    ## game_extraversion.tste_18_11         
-    ## game_extraversion.tste_18_12         
-    ## game_extraversion.tste_18_13         
-    ## game_extraversion.tste_18_14         
-    ## game_extraversion.tste_18_15         
-    ## game_extraversion.tste_18_16         
-    ## game_extraversion.tste_18_17         
-    ## game_agreeableness.tste_18_0         
-    ## game_agreeableness.tste_18_1         
-    ## game_agreeableness.tste_18_2      *  
-    ## game_agreeableness.tste_18_3      *  
-    ## game_agreeableness.tste_18_4      .  
-    ## game_agreeableness.tste_18_5         
-    ## game_agreeableness.tste_18_6         
-    ## game_agreeableness.tste_18_7         
-    ## game_agreeableness.tste_18_8         
-    ## game_agreeableness.tste_18_9         
-    ## game_agreeableness.tste_18_10        
-    ## game_agreeableness.tste_18_11        
-    ## game_agreeableness.tste_18_12        
-    ## game_agreeableness.tste_18_13     *  
-    ## game_agreeableness.tste_18_14        
-    ## game_agreeableness.tste_18_15        
-    ## game_agreeableness.tste_18_16        
-    ## game_agreeableness.tste_18_17        
-    ## game_conscientiousness.tste_18_0     
-    ## game_conscientiousness.tste_18_1     
-    ## game_conscientiousness.tste_18_2     
-    ## game_conscientiousness.tste_18_3     
-    ## game_conscientiousness.tste_18_4     
-    ## game_conscientiousness.tste_18_5     
-    ## game_conscientiousness.tste_18_6     
-    ## game_conscientiousness.tste_18_7     
-    ## game_conscientiousness.tste_18_8     
-    ## game_conscientiousness.tste_18_9     
-    ## game_conscientiousness.tste_18_10    
-    ## game_conscientiousness.tste_18_11    
-    ## game_conscientiousness.tste_18_12    
-    ## game_conscientiousness.tste_18_13    
-    ## game_conscientiousness.tste_18_14    
-    ## game_conscientiousness.tste_18_15    
-    ## game_conscientiousness.tste_18_16    
-    ## game_conscientiousness.tste_18_17    
-    ## game_emotionstability.tste_18_0      
-    ## game_emotionstability.tste_18_1      
-    ## game_emotionstability.tste_18_2   .  
-    ## game_emotionstability.tste_18_3      
-    ## game_emotionstability.tste_18_4      
-    ## game_emotionstability.tste_18_5      
-    ## game_emotionstability.tste_18_6      
-    ## game_emotionstability.tste_18_7      
-    ## game_emotionstability.tste_18_8      
-    ## game_emotionstability.tste_18_9      
-    ## game_emotionstability.tste_18_10     
-    ## game_emotionstability.tste_18_11     
-    ## game_emotionstability.tste_18_12     
-    ## game_emotionstability.tste_18_13  *  
-    ## game_emotionstability.tste_18_14  .  
-    ## game_emotionstability.tste_18_15     
-    ## game_emotionstability.tste_18_16     
-    ## game_emotionstability.tste_18_17     
-    ## game_openness.tste_18_0              
-    ## game_openness.tste_18_1              
-    ## game_openness.tste_18_2              
-    ## game_openness.tste_18_3              
-    ## game_openness.tste_18_4              
-    ## game_openness.tste_18_5           .  
-    ## game_openness.tste_18_6              
-    ## game_openness.tste_18_7              
-    ## game_openness.tste_18_8              
-    ## game_openness.tste_18_9              
-    ## game_openness.tste_18_10             
-    ## game_openness.tste_18_11             
-    ## game_openness.tste_18_12             
-    ## game_openness.tste_18_13             
-    ## game_openness.tste_18_14             
-    ## game_openness.tste_18_15             
-    ## game_openness.tste_18_16             
-    ## game_openness.tste_18_17          *  
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       38.4854306 18.2400967   2.110  0.03499 *  
+    ## age                               -0.0123329  0.0046418  -2.657  0.00795 ** 
+    ## education                         -0.0040186  0.0268591  -0.150  0.88108    
+    ## income                             0.0159463  0.0173070   0.921  0.35696    
+    ## race2                              0.0012380  0.1350462   0.009  0.99269    
+    ## race4                             -0.2035287  0.1436485  -1.417  0.15668    
+    ## race6                             -0.9728310  0.3539347  -2.749  0.00604 ** 
+    ## race7                             -0.1379994  0.1378615  -1.001  0.31695    
+    ## sex2                              -0.0712727  0.0733161  -0.972  0.33110    
+    ## release                           -0.0167530  0.0089352  -1.875  0.06095 .  
+    ## star_user                         -0.0173676  0.0682253  -0.255  0.79909    
+    ## real_extraversion                  0.0383447  0.0235238   1.630  0.10325    
+    ## real_agreeableness                -0.0469817  0.0335001  -1.402  0.16094    
+    ## real_conscientiousness             0.0906197  0.0375548   2.413  0.01591 *  
+    ## real_emotionstability              0.0017693  0.0337981   0.052  0.95825    
+    ## real_openness                      0.1457063  0.0335753   4.340  1.5e-05 ***
+    ## game_extraversion                  0.0104157  0.0265971   0.392  0.69539    
+    ## game_agreeableness                 0.0546582  0.0344942   1.585  0.11322    
+    ## game_conscientiousness            -0.0079761  0.0410686  -0.194  0.84603    
+    ## game_emotionstability             -0.0331577  0.0327430  -1.013  0.31134    
+    ## game_openness                     -0.0391753  0.0449858  -0.871  0.38395    
+    ## tste_18_0                         -0.1174128  0.4137518  -0.284  0.77661    
+    ## tste_18_1                          0.4709197  0.3729270   1.263  0.20682    
+    ## tste_18_2                         -0.3305469  0.3510469  -0.942  0.34651    
+    ## tste_18_3                          0.2640809  0.3633530   0.727  0.46744    
+    ## tste_18_4                          0.1345444  0.4392247   0.306  0.75939    
+    ## tste_18_5                         -0.5938813  0.4110857  -1.445  0.14871    
+    ## tste_18_6                          0.5876979  0.4173196   1.408  0.15921    
+    ## tste_18_7                         -0.4005721  0.3645096  -1.099  0.27193    
+    ## tste_18_8                         -0.1553217  0.4035496  -0.385  0.70036    
+    ## tste_18_9                         -0.6040667  0.4029728  -1.499  0.13402    
+    ## tste_18_10                         0.2583684  0.4055485   0.637  0.52414    
+    ## tste_18_11                        -0.3058935  0.3754002  -0.815  0.41526    
+    ## tste_18_12                         0.2209458  0.3973540   0.556  0.57824    
+    ## tste_18_13                         0.1080568  0.4156457   0.260  0.79491    
+    ## tste_18_14                         0.1489435  0.4341394   0.343  0.73158    
+    ## tste_18_15                        -0.0366947  0.4598072  -0.080  0.93640    
+    ## tste_18_16                        -0.2170259  0.4229425  -0.513  0.60791    
+    ## tste_18_17                        -0.2993261  0.3940347  -0.760  0.44756    
+    ## game_extraversion.tste_18_0        0.0158622  0.0310448   0.511  0.60944    
+    ## game_extraversion.tste_18_1       -0.0203366  0.0285336  -0.713  0.47610    
+    ## game_extraversion.tste_18_2        0.0392842  0.0272456   1.442  0.14950    
+    ## game_extraversion.tste_18_3        0.0252166  0.0303866   0.830  0.40672    
+    ## game_extraversion.tste_18_4       -0.0399746  0.0337339  -1.185  0.23616    
+    ## game_extraversion.tste_18_5       -0.0226186  0.0313166  -0.722  0.47022    
+    ## game_extraversion.tste_18_6        0.0100567  0.0306521   0.328  0.74288    
+    ## game_extraversion.tste_18_7       -0.0085823  0.0288425  -0.298  0.76607    
+    ## game_extraversion.tste_18_8        0.0691735  0.0315278   2.194  0.02835 *  
+    ## game_extraversion.tste_18_9        0.0183794  0.0309707   0.593  0.55295    
+    ## game_extraversion.tste_18_10      -0.0105254  0.0319862  -0.329  0.74214    
+    ## game_extraversion.tste_18_11      -0.0072126  0.0293473  -0.246  0.80589    
+    ## game_extraversion.tste_18_12      -0.0051280  0.0309738  -0.166  0.86852    
+    ## game_extraversion.tste_18_13      -0.0410530  0.0322125  -1.274  0.20265    
+    ## game_extraversion.tste_18_14       0.0430122  0.0330234   1.302  0.19290    
+    ## game_extraversion.tste_18_15      -0.0397092  0.0351389  -1.130  0.25858    
+    ## game_extraversion.tste_18_16       0.0250588  0.0320733   0.781  0.43472    
+    ## game_extraversion.tste_18_17       0.0055885  0.0305191   0.183  0.85473    
+    ## game_agreeableness.tste_18_0       0.0046283  0.0386249   0.120  0.90463    
+    ## game_agreeableness.tste_18_1      -0.0365412  0.0386497  -0.945  0.34454    
+    ## game_agreeableness.tste_18_2       0.0823239  0.0362381   2.272  0.02321 *  
+    ## game_agreeableness.tste_18_3      -0.0797384  0.0380764  -2.094  0.03637 *  
+    ## game_agreeableness.tste_18_4      -0.0781196  0.0417958  -1.869  0.06176 .  
+    ## game_agreeableness.tste_18_5       0.0229010  0.0433989   0.528  0.59778    
+    ## game_agreeableness.tste_18_6       0.0457257  0.0414139   1.104  0.26968    
+    ## game_agreeableness.tste_18_7       0.0256664  0.0377049   0.681  0.49613    
+    ## game_agreeableness.tste_18_8      -0.0016088  0.0395514  -0.041  0.96756    
+    ## game_agreeableness.tste_18_9       0.0120304  0.0411066   0.293  0.76981    
+    ## game_agreeableness.tste_18_10     -0.0529967  0.0414275  -1.279  0.20095    
+    ## game_agreeableness.tste_18_11      0.0551034  0.0384235   1.434  0.15170    
+    ## game_agreeableness.tste_18_12     -0.0012260  0.0397675  -0.031  0.97541    
+    ## game_agreeableness.tste_18_13      0.0934652  0.0423149   2.209  0.02730 *  
+    ## game_agreeableness.tste_18_14     -0.0651764  0.0426061  -1.530  0.12624    
+    ## game_agreeableness.tste_18_15     -0.0517148  0.0445050  -1.162  0.24537    
+    ## game_agreeableness.tste_18_16      0.0444250  0.0413541   1.074  0.28284    
+    ## game_agreeableness.tste_18_17     -0.0248107  0.0395191  -0.628  0.53020    
+    ## game_conscientiousness.tste_18_0  -0.0175633  0.0464501  -0.378  0.70539    
+    ## game_conscientiousness.tste_18_1  -0.0389747  0.0416432  -0.936  0.34943    
+    ## game_conscientiousness.tste_18_2   0.0153125  0.0389641   0.393  0.69437    
+    ## game_conscientiousness.tste_18_3  -0.0101795  0.0420475  -0.242  0.80873    
+    ## game_conscientiousness.tste_18_4   0.0398318  0.0481395   0.827  0.40810    
+    ## game_conscientiousness.tste_18_5   0.0177123  0.0458451   0.386  0.69928    
+    ## game_conscientiousness.tste_18_6  -0.0482162  0.0460573  -1.047  0.29528    
+    ## game_conscientiousness.tste_18_7   0.0517454  0.0428179   1.208  0.22700    
+    ## game_conscientiousness.tste_18_8   0.0475082  0.0458065   1.037  0.29979    
+    ## game_conscientiousness.tste_18_9  -0.0165865  0.0451022  -0.368  0.71310    
+    ## game_conscientiousness.tste_18_10 -0.0592394  0.0458728  -1.291  0.19672    
+    ## game_conscientiousness.tste_18_11  0.0052709  0.0420578   0.125  0.90028    
+    ## game_conscientiousness.tste_18_12 -0.0726448  0.0448856  -1.618  0.10572    
+    ## game_conscientiousness.tste_18_13  0.0437230  0.0452032   0.967  0.33353    
+    ## game_conscientiousness.tste_18_14 -0.0167014  0.0498352  -0.335  0.73756    
+    ## game_conscientiousness.tste_18_15 -0.0004213  0.0535552  -0.008  0.99372    
+    ## game_conscientiousness.tste_18_16  0.0081703  0.0494556   0.165  0.86880    
+    ## game_conscientiousness.tste_18_17 -0.0253261  0.0449681  -0.563  0.57336    
+    ## game_emotionstability.tste_18_0    0.0448035  0.0404271   1.108  0.26788    
+    ## game_emotionstability.tste_18_1    0.0048409  0.0367430   0.132  0.89519    
+    ## game_emotionstability.tste_18_2   -0.0621579  0.0346897  -1.792  0.07331 .  
+    ## game_emotionstability.tste_18_3   -0.0226786  0.0365020  -0.621  0.53447    
+    ## game_emotionstability.tste_18_4    0.0457813  0.0439623   1.041  0.29783    
+    ## game_emotionstability.tste_18_5    0.0019957  0.0418077   0.048  0.96193    
+    ## game_emotionstability.tste_18_6   -0.0635799  0.0407461  -1.560  0.11882    
+    ## game_emotionstability.tste_18_7    0.0163799  0.0377588   0.434  0.66448    
+    ## game_emotionstability.tste_18_8    0.0295735  0.0411411   0.719  0.47233    
+    ## game_emotionstability.tste_18_9    0.0348695  0.0410739   0.849  0.39601    
+    ## game_emotionstability.tste_18_10   0.0208403  0.0411875   0.506  0.61292    
+    ## game_emotionstability.tste_18_11  -0.0073676  0.0388151  -0.190  0.84948    
+    ## game_emotionstability.tste_18_12  -0.0557912  0.0397386  -1.404  0.16049    
+    ## game_emotionstability.tste_18_13  -0.1016150  0.0405581  -2.505  0.01231 *  
+    ## game_emotionstability.tste_18_14   0.0724394  0.0434334   1.668  0.09551 .  
+    ## game_emotionstability.tste_18_15   0.0504074  0.0458104   1.100  0.27131    
+    ## game_emotionstability.tste_18_16  -0.0441372  0.0421679  -1.047  0.29536    
+    ## game_emotionstability.tste_18_17  -0.0138499  0.0384138  -0.361  0.71848    
+    ## game_openness.tste_18_0           -0.0190816  0.0476023  -0.401  0.68857    
+    ## game_openness.tste_18_1            0.0161197  0.0432870   0.372  0.70964    
+    ## game_openness.tste_18_2           -0.0003666  0.0417302  -0.009  0.99299    
+    ## game_openness.tste_18_3           -0.0003452  0.0441530  -0.008  0.99376    
+    ## game_openness.tste_18_4            0.0064347  0.0518633   0.124  0.90127    
+    ## game_openness.tste_18_5            0.0856101  0.0484539   1.767  0.07741 .  
+    ## game_openness.tste_18_6           -0.0650689  0.0482559  -1.348  0.17768    
+    ## game_openness.tste_18_7           -0.0012192  0.0424287  -0.029  0.97708    
+    ## game_openness.tste_18_8           -0.0752909  0.0486339  -1.548  0.12175    
+    ## game_openness.tste_18_9            0.0628604  0.0479070   1.312  0.18962    
+    ## game_openness.tste_18_10           0.0539022  0.0489910   1.100  0.27136    
+    ## game_openness.tste_18_11           0.0383645  0.0434001   0.884  0.37682    
+    ## game_openness.tste_18_12           0.0489248  0.0480528   1.018  0.30873    
+    ## game_openness.tste_18_13          -0.0323664  0.0484651  -0.668  0.50432    
+    ## game_openness.tste_18_14          -0.0363198  0.0502135  -0.723  0.46958    
+    ## game_openness.tste_18_15           0.0760144  0.0531648   1.430  0.15293    
+    ## game_openness.tste_18_16          -0.0419093  0.0485164  -0.864  0.38779    
+    ## game_openness.tste_18_17           0.1048450  0.0458903   2.285  0.02243 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -6065,278 +4011,142 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -5.0581 -0.6996  0.2558  1.0137  3.0097 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       30.6829024 18.8370744   1.629  0.10350
-    ## age                               -0.0120931  0.0046824  -2.583  0.00987
-    ## education                          0.0011030  0.0270679   0.041  0.96750
-    ## income                             0.0174328  0.0174150   1.001  0.31694
-    ## race2                              0.0305100  0.1355618   0.225  0.82195
-    ## race4                             -0.2053529  0.1443470  -1.423  0.15500
-    ## race6                             -1.0154161  0.3565562  -2.848  0.00445
-    ## race7                             -0.1314950  0.1387703  -0.948  0.34346
-    ## sex2                              -0.0663412  0.0738166  -0.899  0.36890
-    ## release                           -0.0131990  0.0092362  -1.429  0.15315
-    ## star_user                          0.0466859  0.0672840   0.694  0.48785
-    ## real_extraversion                  0.0420291  0.0237069   1.773  0.07640
-    ## real_agreeableness                -0.0465423  0.0337409  -1.379  0.16792
-    ## real_conscientiousness             0.0920301  0.0377367   2.439  0.01482
-    ## real_emotionstability              0.0036068  0.0340086   0.106  0.91555
-    ## real_openness                      0.1487419  0.0337773   4.404 1.12e-05
-    ## game_extraversion                  0.0067293  0.0267483   0.252  0.80139
-    ## game_agreeableness                 0.0595423  0.0347095   1.715  0.08642
-    ## game_conscientiousness            -0.0080790  0.0414479  -0.195  0.84548
-    ## game_emotionstability             -0.0318477  0.0330166  -0.965  0.33486
-    ## game_openness                     -0.0298646  0.0453243  -0.659  0.51003
-    ## tste_19_0                         -0.2214053  0.3646765  -0.607  0.54383
-    ## tste_19_1                          0.0887496  0.4544244   0.195  0.84518
-    ## tste_19_2                         -0.3573652  0.4218604  -0.847  0.39703
-    ## tste_19_3                         -0.2684424  0.3977702  -0.675  0.49984
-    ## tste_19_4                          0.0282582  0.4261145   0.066  0.94713
-    ## tste_19_5                         -0.1701760  0.4394119  -0.387  0.69859
-    ## tste_19_6                          1.1610512  0.4292879   2.705  0.00690
-    ## tste_19_7                          0.0089535  0.3873032   0.023  0.98156
-    ## tste_19_8                          0.2738920  0.4037942   0.678  0.49766
-    ## tste_19_9                         -0.2501769  0.4264377  -0.587  0.55749
-    ## tste_19_10                        -0.0770793  0.4149513  -0.186  0.85266
-    ## tste_19_11                         0.3163666  0.3744540   0.845  0.39828
-    ## tste_19_12                         0.6114853  0.3749316   1.631  0.10306
-    ## tste_19_13                         0.2667269  0.3732638   0.715  0.47495
-    ## tste_19_14                        -0.0856307  0.3751484  -0.228  0.81947
-    ## tste_19_15                        -0.3849854  0.3885211  -0.991  0.32185
-    ## tste_19_16                         0.3740316  0.3905944   0.958  0.33838
-    ## tste_19_17                         0.4469264  0.4180100   1.069  0.28512
-    ## tste_19_18                         0.1596845  0.3609988   0.442  0.65829
-    ## game_extraversion.tste_19_0        0.0223740  0.0296126   0.756  0.45000
-    ## game_extraversion.tste_19_1       -0.0219192  0.0336996  -0.650  0.51549
-    ## game_extraversion.tste_19_2       -0.0320650  0.0323562  -0.991  0.32180
-    ## game_extraversion.tste_19_3        0.0070072  0.0308929   0.227  0.82058
-    ## game_extraversion.tste_19_4       -0.0295818  0.0329807  -0.897  0.36986
-    ## game_extraversion.tste_19_5       -0.0095541  0.0336784  -0.284  0.77668
-    ## game_extraversion.tste_19_6       -0.0392900  0.0321228  -1.223  0.22143
-    ## game_extraversion.tste_19_7       -0.0368465  0.0299481  -1.230  0.21871
-    ## game_extraversion.tste_19_8       -0.0178011  0.0301247  -0.591  0.55465
-    ## game_extraversion.tste_19_9        0.0097815  0.0325935   0.300  0.76413
-    ## game_extraversion.tste_19_10      -0.0069898  0.0312069  -0.224  0.82279
-    ## game_extraversion.tste_19_11       0.0299630  0.0283165   1.058  0.29012
-    ## game_extraversion.tste_19_12       0.0218895  0.0279617   0.783  0.43381
-    ## game_extraversion.tste_19_13       0.0477290  0.0290482   1.643  0.10052
-    ## game_extraversion.tste_19_14      -0.0300917  0.0304374  -0.989  0.32296
-    ## game_extraversion.tste_19_15       0.0237605  0.0300801   0.790  0.42968
-    ## game_extraversion.tste_19_16      -0.0483206  0.0313384  -1.542  0.12326
-    ## game_extraversion.tste_19_17      -0.0624757  0.0323601  -1.931  0.05367
-    ## game_extraversion.tste_19_18       0.0228793  0.0271799   0.842  0.40001
-    ## game_agreeableness.tste_19_0       0.0185409  0.0370763   0.500  0.61708
-    ## game_agreeableness.tste_19_1      -0.0181800  0.0442604  -0.411  0.68130
-    ## game_agreeableness.tste_19_2       0.0355252  0.0433843   0.819  0.41297
-    ## game_agreeableness.tste_19_3       0.0910304  0.0395698   2.300  0.02152
-    ## game_agreeableness.tste_19_4       0.0045620  0.0433858   0.105  0.91627
-    ## game_agreeableness.tste_19_5       0.0255632  0.0439921   0.581  0.56125
-    ## game_agreeableness.tste_19_6      -0.0043916  0.0442309  -0.099  0.92092
-    ## game_agreeableness.tste_19_7       0.0554702  0.0383171   1.448  0.14787
-    ## game_agreeableness.tste_19_8       0.0025805  0.0388842   0.066  0.94710
-    ## game_agreeableness.tste_19_9      -0.0166229  0.0426292  -0.390  0.69662
-    ## game_agreeableness.tste_19_10     -0.0388591  0.0432240  -0.899  0.36875
-    ## game_agreeableness.tste_19_11     -0.0270320  0.0370013  -0.731  0.46513
-    ## game_agreeableness.tste_19_12     -0.0584192  0.0372182  -1.570  0.11666
-    ## game_agreeableness.tste_19_13     -0.0055807  0.0381183  -0.146  0.88362
-    ## game_agreeableness.tste_19_14      0.0206860  0.0390217   0.530  0.59609
-    ## game_agreeableness.tste_19_15     -0.0342014  0.0402086  -0.851  0.39509
-    ## game_agreeableness.tste_19_16     -0.0390632  0.0387444  -1.008  0.31347
-    ## game_agreeableness.tste_19_17     -0.1076995  0.0420067  -2.564  0.01042
-    ## game_agreeableness.tste_19_18      0.0067927  0.0350247   0.194  0.84624
-    ## game_conscientiousness.tste_19_0  -0.0169180  0.0439170  -0.385  0.70011
-    ## game_conscientiousness.tste_19_1   0.0278587  0.0504822   0.552  0.58111
-    ## game_conscientiousness.tste_19_2   0.0251953  0.0461124   0.546  0.58486
-    ## game_conscientiousness.tste_19_3  -0.0003215  0.0456748  -0.007  0.99438
-    ## game_conscientiousness.tste_19_4   0.0458088  0.0484460   0.946  0.34448
-    ## game_conscientiousness.tste_19_5   0.0150846  0.0508495   0.297  0.76676
-    ## game_conscientiousness.tste_19_6  -0.0634889  0.0492997  -1.288  0.19796
-    ## game_conscientiousness.tste_19_7   0.0530669  0.0432825   1.226  0.22032
-    ## game_conscientiousness.tste_19_8  -0.0041116  0.0431151  -0.095  0.92404
-    ## game_conscientiousness.tste_19_9   0.0396308  0.0471239   0.841  0.40045
-    ## game_conscientiousness.tste_19_10 -0.0142319  0.0458482  -0.310  0.75628
-    ## game_conscientiousness.tste_19_11 -0.0577547  0.0412936  -1.399  0.16208
-    ## game_conscientiousness.tste_19_12 -0.0022480  0.0420635  -0.053  0.95738
-    ## game_conscientiousness.tste_19_13  0.0200107  0.0405377   0.494  0.62162
-    ## game_conscientiousness.tste_19_14  0.0657912  0.0436296   1.508  0.13173
-    ## game_conscientiousness.tste_19_15  0.0487467  0.0429525   1.135  0.25655
-    ## game_conscientiousness.tste_19_16 -0.0183342  0.0457413  -0.401  0.68859
-    ## game_conscientiousness.tste_19_17 -0.0533493  0.0469536  -1.136  0.25600
-    ## game_conscientiousness.tste_19_18 -0.0279656  0.0411025  -0.680  0.49634
-    ## game_emotionstability.tste_19_0    0.0127242  0.0390051   0.326  0.74429
-    ## game_emotionstability.tste_19_1    0.0389280  0.0450936   0.863  0.38809
-    ## game_emotionstability.tste_19_2    0.0450770  0.0421463   1.070  0.28496
-    ## game_emotionstability.tste_19_3   -0.0301535  0.0400736  -0.752  0.45187
-    ## game_emotionstability.tste_19_4   -0.0218881  0.0443934  -0.493  0.62203
-    ## game_emotionstability.tste_19_5   -0.0245133  0.0439848  -0.557  0.57738
-    ## game_emotionstability.tste_19_6   -0.0509643  0.0437533  -1.165  0.24423
-    ## game_emotionstability.tste_19_7   -0.0477821  0.0384822  -1.242  0.21450
-    ## game_emotionstability.tste_19_8   -0.0155619  0.0394477  -0.394  0.69326
-    ## game_emotionstability.tste_19_9    0.0362701  0.0440045   0.824  0.40990
-    ## game_emotionstability.tste_19_10   0.0807931  0.0412593   1.958  0.05035
-    ## game_emotionstability.tste_19_11  -0.0138231  0.0369571  -0.374  0.70842
-    ## game_emotionstability.tste_19_12   0.0102403  0.0365690   0.280  0.77949
-    ## game_emotionstability.tste_19_13   0.0237614  0.0376063   0.632  0.52756
-    ## game_emotionstability.tste_19_14   0.0168994  0.0373943   0.452  0.65137
-    ## game_emotionstability.tste_19_15   0.1119491  0.0381750   2.933  0.00340
-    ## game_emotionstability.tste_19_16  -0.0102448  0.0402916  -0.254  0.79932
-    ## game_emotionstability.tste_19_17   0.0520471  0.0415485   1.253  0.21047
-    ## game_emotionstability.tste_19_18  -0.0230405  0.0350648  -0.657  0.51120
-    ## game_openness.tste_19_0            0.0170576  0.0454536   0.375  0.70750
-    ## game_openness.tste_19_1           -0.0231121  0.0522846  -0.442  0.65851
-    ## game_openness.tste_19_2            0.0231991  0.0488909   0.475  0.63519
-    ## game_openness.tste_19_3           -0.0130136  0.0456794  -0.285  0.77576
-    ## game_openness.tste_19_4           -0.0321854  0.0486664  -0.661  0.50847
-    ## game_openness.tste_19_5            0.0220514  0.0515508   0.428  0.66887
-    ## game_openness.tste_19_6           -0.0706263  0.0490794  -1.439  0.15030
-    ## game_openness.tste_19_7           -0.0111354  0.0460441  -0.242  0.80893
-    ## game_openness.tste_19_8           -0.0201468  0.0469874  -0.429  0.66814
-    ## game_openness.tste_19_9           -0.0210159  0.0504352  -0.417  0.67695
-    ## game_openness.tste_19_10           0.0393012  0.0491231   0.800  0.42377
-    ## game_openness.tste_19_11           0.0144229  0.0448149   0.322  0.74761
-    ## game_openness.tste_19_12          -0.0570398  0.0446424  -1.278  0.20150
-    ## game_openness.tste_19_13          -0.1160799  0.0444130  -2.614  0.00903
-    ## game_openness.tste_19_14          -0.0140622  0.0429110  -0.328  0.74317
-    ## game_openness.tste_19_15          -0.0366355  0.0449092  -0.816  0.41473
-    ## game_openness.tste_19_16           0.0276281  0.0469189   0.589  0.55603
-    ## game_openness.tste_19_17           0.0641719  0.0497050   1.291  0.19683
-    ## game_openness.tste_19_18          -0.0112652  0.0419772  -0.268  0.78845
-    ##                                      
-    ## (Intercept)                          
-    ## age                               ** 
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 .  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                .  
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_19_0                            
-    ## tste_19_1                            
-    ## tste_19_2                            
-    ## tste_19_3                            
-    ## tste_19_4                            
-    ## tste_19_5                            
-    ## tste_19_6                         ** 
-    ## tste_19_7                            
-    ## tste_19_8                            
-    ## tste_19_9                            
-    ## tste_19_10                           
-    ## tste_19_11                           
-    ## tste_19_12                           
-    ## tste_19_13                           
-    ## tste_19_14                           
-    ## tste_19_15                           
-    ## tste_19_16                           
-    ## tste_19_17                           
-    ## tste_19_18                           
-    ## game_extraversion.tste_19_0          
-    ## game_extraversion.tste_19_1          
-    ## game_extraversion.tste_19_2          
-    ## game_extraversion.tste_19_3          
-    ## game_extraversion.tste_19_4          
-    ## game_extraversion.tste_19_5          
-    ## game_extraversion.tste_19_6          
-    ## game_extraversion.tste_19_7          
-    ## game_extraversion.tste_19_8          
-    ## game_extraversion.tste_19_9          
-    ## game_extraversion.tste_19_10         
-    ## game_extraversion.tste_19_11         
-    ## game_extraversion.tste_19_12         
-    ## game_extraversion.tste_19_13         
-    ## game_extraversion.tste_19_14         
-    ## game_extraversion.tste_19_15         
-    ## game_extraversion.tste_19_16         
-    ## game_extraversion.tste_19_17      .  
-    ## game_extraversion.tste_19_18         
-    ## game_agreeableness.tste_19_0         
-    ## game_agreeableness.tste_19_1         
-    ## game_agreeableness.tste_19_2         
-    ## game_agreeableness.tste_19_3      *  
-    ## game_agreeableness.tste_19_4         
-    ## game_agreeableness.tste_19_5         
-    ## game_agreeableness.tste_19_6         
-    ## game_agreeableness.tste_19_7         
-    ## game_agreeableness.tste_19_8         
-    ## game_agreeableness.tste_19_9         
-    ## game_agreeableness.tste_19_10        
-    ## game_agreeableness.tste_19_11        
-    ## game_agreeableness.tste_19_12        
-    ## game_agreeableness.tste_19_13        
-    ## game_agreeableness.tste_19_14        
-    ## game_agreeableness.tste_19_15        
-    ## game_agreeableness.tste_19_16        
-    ## game_agreeableness.tste_19_17     *  
-    ## game_agreeableness.tste_19_18        
-    ## game_conscientiousness.tste_19_0     
-    ## game_conscientiousness.tste_19_1     
-    ## game_conscientiousness.tste_19_2     
-    ## game_conscientiousness.tste_19_3     
-    ## game_conscientiousness.tste_19_4     
-    ## game_conscientiousness.tste_19_5     
-    ## game_conscientiousness.tste_19_6     
-    ## game_conscientiousness.tste_19_7     
-    ## game_conscientiousness.tste_19_8     
-    ## game_conscientiousness.tste_19_9     
-    ## game_conscientiousness.tste_19_10    
-    ## game_conscientiousness.tste_19_11    
-    ## game_conscientiousness.tste_19_12    
-    ## game_conscientiousness.tste_19_13    
-    ## game_conscientiousness.tste_19_14    
-    ## game_conscientiousness.tste_19_15    
-    ## game_conscientiousness.tste_19_16    
-    ## game_conscientiousness.tste_19_17    
-    ## game_conscientiousness.tste_19_18    
-    ## game_emotionstability.tste_19_0      
-    ## game_emotionstability.tste_19_1      
-    ## game_emotionstability.tste_19_2      
-    ## game_emotionstability.tste_19_3      
-    ## game_emotionstability.tste_19_4      
-    ## game_emotionstability.tste_19_5      
-    ## game_emotionstability.tste_19_6      
-    ## game_emotionstability.tste_19_7      
-    ## game_emotionstability.tste_19_8      
-    ## game_emotionstability.tste_19_9      
-    ## game_emotionstability.tste_19_10  .  
-    ## game_emotionstability.tste_19_11     
-    ## game_emotionstability.tste_19_12     
-    ## game_emotionstability.tste_19_13     
-    ## game_emotionstability.tste_19_14     
-    ## game_emotionstability.tste_19_15  ** 
-    ## game_emotionstability.tste_19_16     
-    ## game_emotionstability.tste_19_17     
-    ## game_emotionstability.tste_19_18     
-    ## game_openness.tste_19_0              
-    ## game_openness.tste_19_1              
-    ## game_openness.tste_19_2              
-    ## game_openness.tste_19_3              
-    ## game_openness.tste_19_4              
-    ## game_openness.tste_19_5              
-    ## game_openness.tste_19_6              
-    ## game_openness.tste_19_7              
-    ## game_openness.tste_19_8              
-    ## game_openness.tste_19_9              
-    ## game_openness.tste_19_10             
-    ## game_openness.tste_19_11             
-    ## game_openness.tste_19_12             
-    ## game_openness.tste_19_13          ** 
-    ## game_openness.tste_19_14             
-    ## game_openness.tste_19_15             
-    ## game_openness.tste_19_16             
-    ## game_openness.tste_19_17             
-    ## game_openness.tste_19_18             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       30.6829024 18.8370744   1.629  0.10350    
+    ## age                               -0.0120931  0.0046824  -2.583  0.00987 ** 
+    ## education                          0.0011030  0.0270679   0.041  0.96750    
+    ## income                             0.0174328  0.0174150   1.001  0.31694    
+    ## race2                              0.0305100  0.1355618   0.225  0.82195    
+    ## race4                             -0.2053529  0.1443470  -1.423  0.15500    
+    ## race6                             -1.0154161  0.3565562  -2.848  0.00445 ** 
+    ## race7                             -0.1314950  0.1387703  -0.948  0.34346    
+    ## sex2                              -0.0663412  0.0738166  -0.899  0.36890    
+    ## release                           -0.0131990  0.0092362  -1.429  0.15315    
+    ## star_user                          0.0466859  0.0672840   0.694  0.48785    
+    ## real_extraversion                  0.0420291  0.0237069   1.773  0.07640 .  
+    ## real_agreeableness                -0.0465423  0.0337409  -1.379  0.16792    
+    ## real_conscientiousness             0.0920301  0.0377367   2.439  0.01482 *  
+    ## real_emotionstability              0.0036068  0.0340086   0.106  0.91555    
+    ## real_openness                      0.1487419  0.0337773   4.404 1.12e-05 ***
+    ## game_extraversion                  0.0067293  0.0267483   0.252  0.80139    
+    ## game_agreeableness                 0.0595423  0.0347095   1.715  0.08642 .  
+    ## game_conscientiousness            -0.0080790  0.0414479  -0.195  0.84548    
+    ## game_emotionstability             -0.0318477  0.0330166  -0.965  0.33486    
+    ## game_openness                     -0.0298646  0.0453243  -0.659  0.51003    
+    ## tste_19_0                         -0.2214053  0.3646765  -0.607  0.54383    
+    ## tste_19_1                          0.0887496  0.4544244   0.195  0.84518    
+    ## tste_19_2                         -0.3573652  0.4218604  -0.847  0.39703    
+    ## tste_19_3                         -0.2684424  0.3977702  -0.675  0.49984    
+    ## tste_19_4                          0.0282582  0.4261145   0.066  0.94713    
+    ## tste_19_5                         -0.1701760  0.4394119  -0.387  0.69859    
+    ## tste_19_6                          1.1610512  0.4292879   2.705  0.00690 ** 
+    ## tste_19_7                          0.0089535  0.3873032   0.023  0.98156    
+    ## tste_19_8                          0.2738920  0.4037942   0.678  0.49766    
+    ## tste_19_9                         -0.2501769  0.4264377  -0.587  0.55749    
+    ## tste_19_10                        -0.0770793  0.4149513  -0.186  0.85266    
+    ## tste_19_11                         0.3163666  0.3744540   0.845  0.39828    
+    ## tste_19_12                         0.6114853  0.3749316   1.631  0.10306    
+    ## tste_19_13                         0.2667269  0.3732638   0.715  0.47495    
+    ## tste_19_14                        -0.0856307  0.3751484  -0.228  0.81947    
+    ## tste_19_15                        -0.3849854  0.3885211  -0.991  0.32185    
+    ## tste_19_16                         0.3740316  0.3905944   0.958  0.33838    
+    ## tste_19_17                         0.4469264  0.4180100   1.069  0.28512    
+    ## tste_19_18                         0.1596845  0.3609988   0.442  0.65829    
+    ## game_extraversion.tste_19_0        0.0223740  0.0296126   0.756  0.45000    
+    ## game_extraversion.tste_19_1       -0.0219192  0.0336996  -0.650  0.51549    
+    ## game_extraversion.tste_19_2       -0.0320650  0.0323562  -0.991  0.32180    
+    ## game_extraversion.tste_19_3        0.0070072  0.0308929   0.227  0.82058    
+    ## game_extraversion.tste_19_4       -0.0295818  0.0329807  -0.897  0.36986    
+    ## game_extraversion.tste_19_5       -0.0095541  0.0336784  -0.284  0.77668    
+    ## game_extraversion.tste_19_6       -0.0392900  0.0321228  -1.223  0.22143    
+    ## game_extraversion.tste_19_7       -0.0368465  0.0299481  -1.230  0.21871    
+    ## game_extraversion.tste_19_8       -0.0178011  0.0301247  -0.591  0.55465    
+    ## game_extraversion.tste_19_9        0.0097815  0.0325935   0.300  0.76413    
+    ## game_extraversion.tste_19_10      -0.0069898  0.0312069  -0.224  0.82279    
+    ## game_extraversion.tste_19_11       0.0299630  0.0283165   1.058  0.29012    
+    ## game_extraversion.tste_19_12       0.0218895  0.0279617   0.783  0.43381    
+    ## game_extraversion.tste_19_13       0.0477290  0.0290482   1.643  0.10052    
+    ## game_extraversion.tste_19_14      -0.0300917  0.0304374  -0.989  0.32296    
+    ## game_extraversion.tste_19_15       0.0237605  0.0300801   0.790  0.42968    
+    ## game_extraversion.tste_19_16      -0.0483206  0.0313384  -1.542  0.12326    
+    ## game_extraversion.tste_19_17      -0.0624757  0.0323601  -1.931  0.05367 .  
+    ## game_extraversion.tste_19_18       0.0228793  0.0271799   0.842  0.40001    
+    ## game_agreeableness.tste_19_0       0.0185409  0.0370763   0.500  0.61708    
+    ## game_agreeableness.tste_19_1      -0.0181800  0.0442604  -0.411  0.68130    
+    ## game_agreeableness.tste_19_2       0.0355252  0.0433843   0.819  0.41297    
+    ## game_agreeableness.tste_19_3       0.0910304  0.0395698   2.300  0.02152 *  
+    ## game_agreeableness.tste_19_4       0.0045620  0.0433858   0.105  0.91627    
+    ## game_agreeableness.tste_19_5       0.0255632  0.0439921   0.581  0.56125    
+    ## game_agreeableness.tste_19_6      -0.0043916  0.0442309  -0.099  0.92092    
+    ## game_agreeableness.tste_19_7       0.0554702  0.0383171   1.448  0.14787    
+    ## game_agreeableness.tste_19_8       0.0025805  0.0388842   0.066  0.94710    
+    ## game_agreeableness.tste_19_9      -0.0166229  0.0426292  -0.390  0.69662    
+    ## game_agreeableness.tste_19_10     -0.0388591  0.0432240  -0.899  0.36875    
+    ## game_agreeableness.tste_19_11     -0.0270320  0.0370013  -0.731  0.46513    
+    ## game_agreeableness.tste_19_12     -0.0584192  0.0372182  -1.570  0.11666    
+    ## game_agreeableness.tste_19_13     -0.0055807  0.0381183  -0.146  0.88362    
+    ## game_agreeableness.tste_19_14      0.0206860  0.0390217   0.530  0.59609    
+    ## game_agreeableness.tste_19_15     -0.0342014  0.0402086  -0.851  0.39509    
+    ## game_agreeableness.tste_19_16     -0.0390632  0.0387444  -1.008  0.31347    
+    ## game_agreeableness.tste_19_17     -0.1076995  0.0420067  -2.564  0.01042 *  
+    ## game_agreeableness.tste_19_18      0.0067927  0.0350247   0.194  0.84624    
+    ## game_conscientiousness.tste_19_0  -0.0169180  0.0439170  -0.385  0.70011    
+    ## game_conscientiousness.tste_19_1   0.0278587  0.0504822   0.552  0.58111    
+    ## game_conscientiousness.tste_19_2   0.0251953  0.0461124   0.546  0.58486    
+    ## game_conscientiousness.tste_19_3  -0.0003215  0.0456748  -0.007  0.99438    
+    ## game_conscientiousness.tste_19_4   0.0458088  0.0484460   0.946  0.34448    
+    ## game_conscientiousness.tste_19_5   0.0150846  0.0508495   0.297  0.76676    
+    ## game_conscientiousness.tste_19_6  -0.0634889  0.0492997  -1.288  0.19796    
+    ## game_conscientiousness.tste_19_7   0.0530669  0.0432825   1.226  0.22032    
+    ## game_conscientiousness.tste_19_8  -0.0041116  0.0431151  -0.095  0.92404    
+    ## game_conscientiousness.tste_19_9   0.0396308  0.0471239   0.841  0.40045    
+    ## game_conscientiousness.tste_19_10 -0.0142319  0.0458482  -0.310  0.75628    
+    ## game_conscientiousness.tste_19_11 -0.0577547  0.0412936  -1.399  0.16208    
+    ## game_conscientiousness.tste_19_12 -0.0022480  0.0420635  -0.053  0.95738    
+    ## game_conscientiousness.tste_19_13  0.0200107  0.0405377   0.494  0.62162    
+    ## game_conscientiousness.tste_19_14  0.0657912  0.0436296   1.508  0.13173    
+    ## game_conscientiousness.tste_19_15  0.0487467  0.0429525   1.135  0.25655    
+    ## game_conscientiousness.tste_19_16 -0.0183342  0.0457413  -0.401  0.68859    
+    ## game_conscientiousness.tste_19_17 -0.0533493  0.0469536  -1.136  0.25600    
+    ## game_conscientiousness.tste_19_18 -0.0279656  0.0411025  -0.680  0.49634    
+    ## game_emotionstability.tste_19_0    0.0127242  0.0390051   0.326  0.74429    
+    ## game_emotionstability.tste_19_1    0.0389280  0.0450936   0.863  0.38809    
+    ## game_emotionstability.tste_19_2    0.0450770  0.0421463   1.070  0.28496    
+    ## game_emotionstability.tste_19_3   -0.0301535  0.0400736  -0.752  0.45187    
+    ## game_emotionstability.tste_19_4   -0.0218881  0.0443934  -0.493  0.62203    
+    ## game_emotionstability.tste_19_5   -0.0245133  0.0439848  -0.557  0.57738    
+    ## game_emotionstability.tste_19_6   -0.0509643  0.0437533  -1.165  0.24423    
+    ## game_emotionstability.tste_19_7   -0.0477821  0.0384822  -1.242  0.21450    
+    ## game_emotionstability.tste_19_8   -0.0155619  0.0394477  -0.394  0.69326    
+    ## game_emotionstability.tste_19_9    0.0362701  0.0440045   0.824  0.40990    
+    ## game_emotionstability.tste_19_10   0.0807931  0.0412593   1.958  0.05035 .  
+    ## game_emotionstability.tste_19_11  -0.0138231  0.0369571  -0.374  0.70842    
+    ## game_emotionstability.tste_19_12   0.0102403  0.0365690   0.280  0.77949    
+    ## game_emotionstability.tste_19_13   0.0237614  0.0376063   0.632  0.52756    
+    ## game_emotionstability.tste_19_14   0.0168994  0.0373943   0.452  0.65137    
+    ## game_emotionstability.tste_19_15   0.1119491  0.0381750   2.933  0.00340 ** 
+    ## game_emotionstability.tste_19_16  -0.0102448  0.0402916  -0.254  0.79932    
+    ## game_emotionstability.tste_19_17   0.0520471  0.0415485   1.253  0.21047    
+    ## game_emotionstability.tste_19_18  -0.0230405  0.0350648  -0.657  0.51120    
+    ## game_openness.tste_19_0            0.0170576  0.0454536   0.375  0.70750    
+    ## game_openness.tste_19_1           -0.0231121  0.0522846  -0.442  0.65851    
+    ## game_openness.tste_19_2            0.0231991  0.0488909   0.475  0.63519    
+    ## game_openness.tste_19_3           -0.0130136  0.0456794  -0.285  0.77576    
+    ## game_openness.tste_19_4           -0.0321854  0.0486664  -0.661  0.50847    
+    ## game_openness.tste_19_5            0.0220514  0.0515508   0.428  0.66887    
+    ## game_openness.tste_19_6           -0.0706263  0.0490794  -1.439  0.15030    
+    ## game_openness.tste_19_7           -0.0111354  0.0460441  -0.242  0.80893    
+    ## game_openness.tste_19_8           -0.0201468  0.0469874  -0.429  0.66814    
+    ## game_openness.tste_19_9           -0.0210159  0.0504352  -0.417  0.67695    
+    ## game_openness.tste_19_10           0.0393012  0.0491231   0.800  0.42377    
+    ## game_openness.tste_19_11           0.0144229  0.0448149   0.322  0.74761    
+    ## game_openness.tste_19_12          -0.0570398  0.0446424  -1.278  0.20150    
+    ## game_openness.tste_19_13          -0.1160799  0.0444130  -2.614  0.00903 ** 
+    ## game_openness.tste_19_14          -0.0140622  0.0429110  -0.328  0.74317    
+    ## game_openness.tste_19_15          -0.0366355  0.0449092  -0.816  0.41473    
+    ## game_openness.tste_19_16           0.0276281  0.0469189   0.589  0.55603    
+    ## game_openness.tste_19_17           0.0641719  0.0497050   1.291  0.19683    
+    ## game_openness.tste_19_18          -0.0112652  0.0419772  -0.268  0.78845    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -6353,290 +4163,148 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## -5.0431 -0.6939  0.2391  1.0084  2.9776 
     ## 
     ## Coefficients:
-    ##                                     Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                       29.7246417 19.6055631   1.516  0.12964
-    ## age                               -0.0119328  0.0046609  -2.560  0.01054
-    ## education                         -0.0016540  0.0269902  -0.061  0.95114
-    ## income                             0.0163575  0.0173422   0.943  0.34568
-    ## race2                              0.0435725  0.1352048   0.322  0.74728
-    ## race4                             -0.1820193  0.1440321  -1.264  0.20647
-    ## race6                             -0.9450755  0.3562706  -2.653  0.00805
-    ## race7                             -0.1298295  0.1382209  -0.939  0.34770
-    ## sex2                              -0.0637583  0.0735746  -0.867  0.38628
-    ## release                           -0.0126891  0.0096052  -1.321  0.18663
-    ## star_user                          0.0427860  0.0694791   0.616  0.53809
-    ## real_extraversion                  0.0412878  0.0236234   1.748  0.08066
-    ## real_agreeableness                -0.0439280  0.0336857  -1.304  0.19236
-    ## real_conscientiousness             0.0955770  0.0376103   2.541  0.01112
-    ## real_emotionstability              0.0046002  0.0339270   0.136  0.89216
-    ## real_openness                      0.1487912  0.0336842   4.417 1.05e-05
-    ## game_extraversion                  0.0076294  0.0266625   0.286  0.77479
-    ## game_agreeableness                 0.0548100  0.0346385   1.582  0.11373
-    ## game_conscientiousness            -0.0147082  0.0412850  -0.356  0.72168
-    ## game_emotionstability             -0.0296129  0.0329903  -0.898  0.36950
-    ## game_openness                     -0.0328998  0.0452452  -0.727  0.46722
-    ## tste_20_0                         -0.6907061  0.4312513  -1.602  0.10940
-    ## tste_20_1                          0.0716250  0.3948918   0.181  0.85609
-    ## tste_20_2                         -0.0547881  0.3591637  -0.153  0.87877
-    ## tste_20_3                          0.2830053  0.4281488   0.661  0.50869
-    ## tste_20_4                         -0.3629338  0.3821076  -0.950  0.34232
-    ## tste_20_5                          0.2686238  0.3819117   0.703  0.48191
-    ## tste_20_6                          0.0031328  0.4467316   0.007  0.99441
-    ## tste_20_7                         -0.4448089  0.4465079  -0.996  0.31928
-    ## tste_20_8                          0.1811251  0.4372885   0.414  0.67877
-    ## tste_20_9                          0.5684589  0.3939614   1.443  0.14920
-    ## tste_20_10                         0.7030786  0.4199319   1.674  0.09423
-    ## tste_20_11                        -0.0088344  0.3830780  -0.023  0.98160
-    ## tste_20_12                         0.7154410  0.4227406   1.692  0.09073
-    ## tste_20_13                        -0.1865278  0.4339032  -0.430  0.66733
-    ## tste_20_14                        -0.5618851  0.3754949  -1.496  0.13471
-    ## tste_20_15                         0.5409365  0.4397237   1.230  0.21878
-    ## tste_20_16                        -0.4576119  0.4032387  -1.135  0.25658
-    ## tste_20_17                        -0.2355473  0.3480761  -0.677  0.49867
-    ## tste_20_18                         0.1075378  0.3533388   0.304  0.76089
-    ## tste_20_19                        -0.0859860  0.3761211  -0.229  0.81919
-    ## game_extraversion.tste_20_0        0.0625225  0.0340608   1.836  0.06656
-    ## game_extraversion.tste_20_1        0.0331211  0.0302561   1.095  0.27378
-    ## game_extraversion.tste_20_2       -0.0371686  0.0298030  -1.247  0.21249
-    ## game_extraversion.tste_20_3       -0.0100020  0.0323388  -0.309  0.75713
-    ## game_extraversion.tste_20_4       -0.0050672  0.0295286  -0.172  0.86377
-    ## game_extraversion.tste_20_5       -0.0073385  0.0304817  -0.241  0.80977
-    ## game_extraversion.tste_20_6       -0.0798538  0.0336201  -2.375  0.01763
-    ## game_extraversion.tste_20_7       -0.0675365  0.0345833  -1.953  0.05098
-    ## game_extraversion.tste_20_8        0.0270781  0.0326741   0.829  0.40735
-    ## game_extraversion.tste_20_9       -0.0096725  0.0295475  -0.327  0.74343
-    ## game_extraversion.tste_20_10       0.0038580  0.0312631   0.123  0.90180
-    ## game_extraversion.tste_20_11       0.0088534  0.0289114   0.306  0.75947
-    ## game_extraversion.tste_20_12      -0.0473058  0.0306922  -1.541  0.12340
-    ## game_extraversion.tste_20_13      -0.0215053  0.0341113  -0.630  0.52848
-    ## game_extraversion.tste_20_14       0.0078379  0.0271155   0.289  0.77257
-    ## game_extraversion.tste_20_15       0.0267966  0.0322213   0.832  0.40571
-    ## game_extraversion.tste_20_16       0.0104266  0.0304240   0.343  0.73185
-    ## game_extraversion.tste_20_17      -0.0287332  0.0289052  -0.994  0.32032
-    ## game_extraversion.tste_20_18      -0.0146272  0.0278977  -0.524  0.60012
-    ## game_extraversion.tste_20_19      -0.0280989  0.0308994  -0.909  0.36327
-    ## game_agreeableness.tste_20_0      -0.0058892  0.0430371  -0.137  0.89117
-    ## game_agreeableness.tste_20_1       0.0181045  0.0389475   0.465  0.64209
-    ## game_agreeableness.tste_20_2       0.0216181  0.0360566   0.600  0.54887
-    ## game_agreeableness.tste_20_3      -0.0400350  0.0416419  -0.961  0.33646
-    ## game_agreeableness.tste_20_4       0.0383915  0.0389613   0.985  0.32456
-    ## game_agreeableness.tste_20_5      -0.0480716  0.0391012  -1.229  0.21906
-    ## game_agreeableness.tste_20_6      -0.0363948  0.0426858  -0.853  0.39397
-    ## game_agreeableness.tste_20_7       0.0162052  0.0450883   0.359  0.71933
-    ## game_agreeableness.tste_20_8       0.0081860  0.0421564   0.194  0.84605
-    ## game_agreeableness.tste_20_9      -0.0514214  0.0407142  -1.263  0.20674
-    ## game_agreeableness.tste_20_10     -0.1211321  0.0419957  -2.884  0.00396
-    ## game_agreeableness.tste_20_11      0.0550012  0.0410927   1.338  0.18090
-    ## game_agreeableness.tste_20_12      0.0005435  0.0410340   0.013  0.98943
-    ## game_agreeableness.tste_20_13     -0.0461530  0.0437630  -1.055  0.29173
-    ## game_agreeableness.tste_20_14      0.0321883  0.0359062   0.896  0.37012
-    ## game_agreeableness.tste_20_15     -0.0839961  0.0444526  -1.890  0.05896
-    ## game_agreeableness.tste_20_16      0.0469421  0.0387502   1.211  0.22588
-    ## game_agreeableness.tste_20_17     -0.0376758  0.0360941  -1.044  0.29669
-    ## game_agreeableness.tste_20_18      0.0545131  0.0357285   1.526  0.12723
-    ## game_agreeableness.tste_20_19      0.0220658  0.0407996   0.541  0.58868
-    ## game_conscientiousness.tste_20_0   0.0323963  0.0497771   0.651  0.51523
-    ## game_conscientiousness.tste_20_1  -0.0324252  0.0444822  -0.729  0.46612
-    ## game_conscientiousness.tste_20_2   0.0808397  0.0422261   1.914  0.05571
-    ## game_conscientiousness.tste_20_3  -0.0086643  0.0470716  -0.184  0.85398
-    ## game_conscientiousness.tste_20_4   0.0407243  0.0434571   0.937  0.34881
-    ## game_conscientiousness.tste_20_5  -0.0443994  0.0452403  -0.981  0.32651
-    ## game_conscientiousness.tste_20_6   0.0251203  0.0541881   0.464  0.64300
-    ## game_conscientiousness.tste_20_7   0.0536499  0.0505279   1.062  0.28846
-    ## game_conscientiousness.tste_20_8  -0.0251532  0.0476251  -0.528  0.59745
-    ## game_conscientiousness.tste_20_9  -0.0302457  0.0437201  -0.692  0.48914
-    ## game_conscientiousness.tste_20_10 -0.0440289  0.0470072  -0.937  0.34906
-    ## game_conscientiousness.tste_20_11  0.0334364  0.0447503   0.747  0.45505
-    ## game_conscientiousness.tste_20_12 -0.0105956  0.0451815  -0.235  0.81461
-    ## game_conscientiousness.tste_20_13  0.0250141  0.0511436   0.489  0.62483
-    ## game_conscientiousness.tste_20_14  0.0765678  0.0409003   1.872  0.06134
-    ## game_conscientiousness.tste_20_15  0.0074752  0.0488912   0.153  0.87850
-    ## game_conscientiousness.tste_20_16  0.0143298  0.0454371   0.315  0.75251
-    ## game_conscientiousness.tste_20_17 -0.0203793  0.0400760  -0.509  0.61115
-    ## game_conscientiousness.tste_20_18  0.0128156  0.0388168   0.330  0.74132
-    ## game_conscientiousness.tste_20_19 -0.0284733  0.0432921  -0.658  0.51081
-    ## game_emotionstability.tste_20_0    0.0594080  0.0454093   1.308  0.19093
-    ## game_emotionstability.tste_20_1   -0.0183883  0.0389251  -0.472  0.63669
-    ## game_emotionstability.tste_20_2    0.0380896  0.0357608   1.065  0.28695
-    ## game_emotionstability.tste_20_3    0.0061095  0.0420004   0.145  0.88436
-    ## game_emotionstability.tste_20_4    0.0064145  0.0389588   0.165  0.86924
-    ## game_emotionstability.tste_20_5    0.0443659  0.0393353   1.128  0.25950
-    ## game_emotionstability.tste_20_6   -0.0022489  0.0444862  -0.051  0.95969
-    ## game_emotionstability.tste_20_7    0.0316904  0.0441788   0.717  0.47326
-    ## game_emotionstability.tste_20_8   -0.0576516  0.0437359  -1.318  0.18760
-    ## game_emotionstability.tste_20_9    0.0052665  0.0382622   0.138  0.89054
-    ## game_emotionstability.tste_20_10   0.0463330  0.0424437   1.092  0.27513
-    ## game_emotionstability.tste_20_11  -0.0349097  0.0388093  -0.900  0.36848
-    ## game_emotionstability.tste_20_12  -0.0200987  0.0412774  -0.487  0.62637
-    ## game_emotionstability.tste_20_13   0.1073045  0.0459075   2.337  0.01952
-    ## game_emotionstability.tste_20_14  -0.0013653  0.0362325  -0.038  0.96995
-    ## game_emotionstability.tste_20_15   0.0338026  0.0428805   0.788  0.43062
-    ## game_emotionstability.tste_20_16   0.0340116  0.0398467   0.854  0.39345
-    ## game_emotionstability.tste_20_17   0.0646908  0.0356237   1.816  0.06953
-    ## game_emotionstability.tste_20_18   0.0010228  0.0363903   0.028  0.97758
-    ## game_emotionstability.tste_20_19  -0.0053760  0.0405869  -0.132  0.89464
-    ## game_openness.tste_20_0            0.0284236  0.0499517   0.569  0.56941
-    ## game_openness.tste_20_1            0.0044096  0.0471014   0.094  0.92542
-    ## game_openness.tste_20_2           -0.0552471  0.0426272  -1.296  0.19511
-    ## game_openness.tste_20_3            0.0151740  0.0527154   0.288  0.77349
-    ## game_openness.tste_20_4            0.0124798  0.0452073   0.276  0.78253
-    ## game_openness.tste_20_5           -0.0071033  0.0458303  -0.155  0.87684
-    ## game_openness.tste_20_6            0.0691603  0.0539394   1.282  0.19993
-    ## game_openness.tste_20_7            0.0911830  0.0546025   1.670  0.09509
-    ## game_openness.tste_20_8           -0.0078388  0.0505653  -0.155  0.87682
-    ## game_openness.tste_20_9           -0.0199750  0.0463154  -0.431  0.66631
-    ## game_openness.tste_20_10          -0.0267343  0.0479084  -0.558  0.57689
-    ## game_openness.tste_20_11          -0.0734540  0.0430727  -1.705  0.08828
-    ## game_openness.tste_20_12          -0.0478829  0.0486708  -0.984  0.32533
-    ## game_openness.tste_20_13           0.0186521  0.0499626   0.373  0.70895
-    ## game_openness.tste_20_14          -0.0140987  0.0431411  -0.327  0.74385
-    ## game_openness.tste_20_15          -0.0731989  0.0512232  -1.429  0.15316
-    ## game_openness.tste_20_16           0.0028215  0.0469233   0.060  0.95206
-    ## game_openness.tste_20_17           0.0750568  0.0427926   1.754  0.07959
-    ## game_openness.tste_20_18          -0.0294786  0.0416002  -0.709  0.47865
-    ## game_openness.tste_20_19           0.0506167  0.0457677   1.106  0.26888
-    ##                                      
-    ## (Intercept)                          
-    ## age                               *  
-    ## education                            
-    ## income                               
-    ## race2                                
-    ## race4                                
-    ## race6                             ** 
-    ## race7                                
-    ## sex2                                 
-    ## release                              
-    ## star_user                            
-    ## real_extraversion                 .  
-    ## real_agreeableness                   
-    ## real_conscientiousness            *  
-    ## real_emotionstability                
-    ## real_openness                     ***
-    ## game_extraversion                    
-    ## game_agreeableness                   
-    ## game_conscientiousness               
-    ## game_emotionstability                
-    ## game_openness                        
-    ## tste_20_0                            
-    ## tste_20_1                            
-    ## tste_20_2                            
-    ## tste_20_3                            
-    ## tste_20_4                            
-    ## tste_20_5                            
-    ## tste_20_6                            
-    ## tste_20_7                            
-    ## tste_20_8                            
-    ## tste_20_9                            
-    ## tste_20_10                        .  
-    ## tste_20_11                           
-    ## tste_20_12                        .  
-    ## tste_20_13                           
-    ## tste_20_14                           
-    ## tste_20_15                           
-    ## tste_20_16                           
-    ## tste_20_17                           
-    ## tste_20_18                           
-    ## tste_20_19                           
-    ## game_extraversion.tste_20_0       .  
-    ## game_extraversion.tste_20_1          
-    ## game_extraversion.tste_20_2          
-    ## game_extraversion.tste_20_3          
-    ## game_extraversion.tste_20_4          
-    ## game_extraversion.tste_20_5          
-    ## game_extraversion.tste_20_6       *  
-    ## game_extraversion.tste_20_7       .  
-    ## game_extraversion.tste_20_8          
-    ## game_extraversion.tste_20_9          
-    ## game_extraversion.tste_20_10         
-    ## game_extraversion.tste_20_11         
-    ## game_extraversion.tste_20_12         
-    ## game_extraversion.tste_20_13         
-    ## game_extraversion.tste_20_14         
-    ## game_extraversion.tste_20_15         
-    ## game_extraversion.tste_20_16         
-    ## game_extraversion.tste_20_17         
-    ## game_extraversion.tste_20_18         
-    ## game_extraversion.tste_20_19         
-    ## game_agreeableness.tste_20_0         
-    ## game_agreeableness.tste_20_1         
-    ## game_agreeableness.tste_20_2         
-    ## game_agreeableness.tste_20_3         
-    ## game_agreeableness.tste_20_4         
-    ## game_agreeableness.tste_20_5         
-    ## game_agreeableness.tste_20_6         
-    ## game_agreeableness.tste_20_7         
-    ## game_agreeableness.tste_20_8         
-    ## game_agreeableness.tste_20_9         
-    ## game_agreeableness.tste_20_10     ** 
-    ## game_agreeableness.tste_20_11        
-    ## game_agreeableness.tste_20_12        
-    ## game_agreeableness.tste_20_13        
-    ## game_agreeableness.tste_20_14        
-    ## game_agreeableness.tste_20_15     .  
-    ## game_agreeableness.tste_20_16        
-    ## game_agreeableness.tste_20_17        
-    ## game_agreeableness.tste_20_18        
-    ## game_agreeableness.tste_20_19        
-    ## game_conscientiousness.tste_20_0     
-    ## game_conscientiousness.tste_20_1     
-    ## game_conscientiousness.tste_20_2  .  
-    ## game_conscientiousness.tste_20_3     
-    ## game_conscientiousness.tste_20_4     
-    ## game_conscientiousness.tste_20_5     
-    ## game_conscientiousness.tste_20_6     
-    ## game_conscientiousness.tste_20_7     
-    ## game_conscientiousness.tste_20_8     
-    ## game_conscientiousness.tste_20_9     
-    ## game_conscientiousness.tste_20_10    
-    ## game_conscientiousness.tste_20_11    
-    ## game_conscientiousness.tste_20_12    
-    ## game_conscientiousness.tste_20_13    
-    ## game_conscientiousness.tste_20_14 .  
-    ## game_conscientiousness.tste_20_15    
-    ## game_conscientiousness.tste_20_16    
-    ## game_conscientiousness.tste_20_17    
-    ## game_conscientiousness.tste_20_18    
-    ## game_conscientiousness.tste_20_19    
-    ## game_emotionstability.tste_20_0      
-    ## game_emotionstability.tste_20_1      
-    ## game_emotionstability.tste_20_2      
-    ## game_emotionstability.tste_20_3      
-    ## game_emotionstability.tste_20_4      
-    ## game_emotionstability.tste_20_5      
-    ## game_emotionstability.tste_20_6      
-    ## game_emotionstability.tste_20_7      
-    ## game_emotionstability.tste_20_8      
-    ## game_emotionstability.tste_20_9      
-    ## game_emotionstability.tste_20_10     
-    ## game_emotionstability.tste_20_11     
-    ## game_emotionstability.tste_20_12     
-    ## game_emotionstability.tste_20_13  *  
-    ## game_emotionstability.tste_20_14     
-    ## game_emotionstability.tste_20_15     
-    ## game_emotionstability.tste_20_16     
-    ## game_emotionstability.tste_20_17  .  
-    ## game_emotionstability.tste_20_18     
-    ## game_emotionstability.tste_20_19     
-    ## game_openness.tste_20_0              
-    ## game_openness.tste_20_1              
-    ## game_openness.tste_20_2              
-    ## game_openness.tste_20_3              
-    ## game_openness.tste_20_4              
-    ## game_openness.tste_20_5              
-    ## game_openness.tste_20_6              
-    ## game_openness.tste_20_7           .  
-    ## game_openness.tste_20_8              
-    ## game_openness.tste_20_9              
-    ## game_openness.tste_20_10             
-    ## game_openness.tste_20_11          .  
-    ## game_openness.tste_20_12             
-    ## game_openness.tste_20_13             
-    ## game_openness.tste_20_14             
-    ## game_openness.tste_20_15             
-    ## game_openness.tste_20_16             
-    ## game_openness.tste_20_17          .  
-    ## game_openness.tste_20_18             
-    ## game_openness.tste_20_19             
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       29.7246417 19.6055631   1.516  0.12964    
+    ## age                               -0.0119328  0.0046609  -2.560  0.01054 *  
+    ## education                         -0.0016540  0.0269902  -0.061  0.95114    
+    ## income                             0.0163575  0.0173422   0.943  0.34568    
+    ## race2                              0.0435725  0.1352048   0.322  0.74728    
+    ## race4                             -0.1820193  0.1440321  -1.264  0.20647    
+    ## race6                             -0.9450755  0.3562706  -2.653  0.00805 ** 
+    ## race7                             -0.1298295  0.1382209  -0.939  0.34770    
+    ## sex2                              -0.0637583  0.0735746  -0.867  0.38628    
+    ## release                           -0.0126891  0.0096052  -1.321  0.18663    
+    ## star_user                          0.0427860  0.0694791   0.616  0.53809    
+    ## real_extraversion                  0.0412878  0.0236234   1.748  0.08066 .  
+    ## real_agreeableness                -0.0439280  0.0336857  -1.304  0.19236    
+    ## real_conscientiousness             0.0955770  0.0376103   2.541  0.01112 *  
+    ## real_emotionstability              0.0046002  0.0339270   0.136  0.89216    
+    ## real_openness                      0.1487912  0.0336842   4.417 1.05e-05 ***
+    ## game_extraversion                  0.0076294  0.0266625   0.286  0.77479    
+    ## game_agreeableness                 0.0548100  0.0346385   1.582  0.11373    
+    ## game_conscientiousness            -0.0147082  0.0412850  -0.356  0.72168    
+    ## game_emotionstability             -0.0296129  0.0329903  -0.898  0.36950    
+    ## game_openness                     -0.0328998  0.0452452  -0.727  0.46722    
+    ## tste_20_0                         -0.6907061  0.4312513  -1.602  0.10940    
+    ## tste_20_1                          0.0716250  0.3948918   0.181  0.85609    
+    ## tste_20_2                         -0.0547881  0.3591637  -0.153  0.87877    
+    ## tste_20_3                          0.2830053  0.4281488   0.661  0.50869    
+    ## tste_20_4                         -0.3629338  0.3821076  -0.950  0.34232    
+    ## tste_20_5                          0.2686238  0.3819117   0.703  0.48191    
+    ## tste_20_6                          0.0031328  0.4467316   0.007  0.99441    
+    ## tste_20_7                         -0.4448089  0.4465079  -0.996  0.31928    
+    ## tste_20_8                          0.1811251  0.4372885   0.414  0.67877    
+    ## tste_20_9                          0.5684589  0.3939614   1.443  0.14920    
+    ## tste_20_10                         0.7030786  0.4199319   1.674  0.09423 .  
+    ## tste_20_11                        -0.0088344  0.3830780  -0.023  0.98160    
+    ## tste_20_12                         0.7154410  0.4227406   1.692  0.09073 .  
+    ## tste_20_13                        -0.1865278  0.4339032  -0.430  0.66733    
+    ## tste_20_14                        -0.5618851  0.3754949  -1.496  0.13471    
+    ## tste_20_15                         0.5409365  0.4397237   1.230  0.21878    
+    ## tste_20_16                        -0.4576119  0.4032387  -1.135  0.25658    
+    ## tste_20_17                        -0.2355473  0.3480761  -0.677  0.49867    
+    ## tste_20_18                         0.1075378  0.3533388   0.304  0.76089    
+    ## tste_20_19                        -0.0859860  0.3761211  -0.229  0.81919    
+    ## game_extraversion.tste_20_0        0.0625225  0.0340608   1.836  0.06656 .  
+    ## game_extraversion.tste_20_1        0.0331211  0.0302561   1.095  0.27378    
+    ## game_extraversion.tste_20_2       -0.0371686  0.0298030  -1.247  0.21249    
+    ## game_extraversion.tste_20_3       -0.0100020  0.0323388  -0.309  0.75713    
+    ## game_extraversion.tste_20_4       -0.0050672  0.0295286  -0.172  0.86377    
+    ## game_extraversion.tste_20_5       -0.0073385  0.0304817  -0.241  0.80977    
+    ## game_extraversion.tste_20_6       -0.0798538  0.0336201  -2.375  0.01763 *  
+    ## game_extraversion.tste_20_7       -0.0675365  0.0345833  -1.953  0.05098 .  
+    ## game_extraversion.tste_20_8        0.0270781  0.0326741   0.829  0.40735    
+    ## game_extraversion.tste_20_9       -0.0096725  0.0295475  -0.327  0.74343    
+    ## game_extraversion.tste_20_10       0.0038580  0.0312631   0.123  0.90180    
+    ## game_extraversion.tste_20_11       0.0088534  0.0289114   0.306  0.75947    
+    ## game_extraversion.tste_20_12      -0.0473058  0.0306922  -1.541  0.12340    
+    ## game_extraversion.tste_20_13      -0.0215053  0.0341113  -0.630  0.52848    
+    ## game_extraversion.tste_20_14       0.0078379  0.0271155   0.289  0.77257    
+    ## game_extraversion.tste_20_15       0.0267966  0.0322213   0.832  0.40571    
+    ## game_extraversion.tste_20_16       0.0104266  0.0304240   0.343  0.73185    
+    ## game_extraversion.tste_20_17      -0.0287332  0.0289052  -0.994  0.32032    
+    ## game_extraversion.tste_20_18      -0.0146272  0.0278977  -0.524  0.60012    
+    ## game_extraversion.tste_20_19      -0.0280989  0.0308994  -0.909  0.36327    
+    ## game_agreeableness.tste_20_0      -0.0058892  0.0430371  -0.137  0.89117    
+    ## game_agreeableness.tste_20_1       0.0181045  0.0389475   0.465  0.64209    
+    ## game_agreeableness.tste_20_2       0.0216181  0.0360566   0.600  0.54887    
+    ## game_agreeableness.tste_20_3      -0.0400350  0.0416419  -0.961  0.33646    
+    ## game_agreeableness.tste_20_4       0.0383915  0.0389613   0.985  0.32456    
+    ## game_agreeableness.tste_20_5      -0.0480716  0.0391012  -1.229  0.21906    
+    ## game_agreeableness.tste_20_6      -0.0363948  0.0426858  -0.853  0.39397    
+    ## game_agreeableness.tste_20_7       0.0162052  0.0450883   0.359  0.71933    
+    ## game_agreeableness.tste_20_8       0.0081860  0.0421564   0.194  0.84605    
+    ## game_agreeableness.tste_20_9      -0.0514214  0.0407142  -1.263  0.20674    
+    ## game_agreeableness.tste_20_10     -0.1211321  0.0419957  -2.884  0.00396 ** 
+    ## game_agreeableness.tste_20_11      0.0550012  0.0410927   1.338  0.18090    
+    ## game_agreeableness.tste_20_12      0.0005435  0.0410340   0.013  0.98943    
+    ## game_agreeableness.tste_20_13     -0.0461530  0.0437630  -1.055  0.29173    
+    ## game_agreeableness.tste_20_14      0.0321883  0.0359062   0.896  0.37012    
+    ## game_agreeableness.tste_20_15     -0.0839961  0.0444526  -1.890  0.05896 .  
+    ## game_agreeableness.tste_20_16      0.0469421  0.0387502   1.211  0.22588    
+    ## game_agreeableness.tste_20_17     -0.0376758  0.0360941  -1.044  0.29669    
+    ## game_agreeableness.tste_20_18      0.0545131  0.0357285   1.526  0.12723    
+    ## game_agreeableness.tste_20_19      0.0220658  0.0407996   0.541  0.58868    
+    ## game_conscientiousness.tste_20_0   0.0323963  0.0497771   0.651  0.51523    
+    ## game_conscientiousness.tste_20_1  -0.0324252  0.0444822  -0.729  0.46612    
+    ## game_conscientiousness.tste_20_2   0.0808397  0.0422261   1.914  0.05571 .  
+    ## game_conscientiousness.tste_20_3  -0.0086643  0.0470716  -0.184  0.85398    
+    ## game_conscientiousness.tste_20_4   0.0407243  0.0434571   0.937  0.34881    
+    ## game_conscientiousness.tste_20_5  -0.0443994  0.0452403  -0.981  0.32651    
+    ## game_conscientiousness.tste_20_6   0.0251203  0.0541881   0.464  0.64300    
+    ## game_conscientiousness.tste_20_7   0.0536499  0.0505279   1.062  0.28846    
+    ## game_conscientiousness.tste_20_8  -0.0251532  0.0476251  -0.528  0.59745    
+    ## game_conscientiousness.tste_20_9  -0.0302457  0.0437201  -0.692  0.48914    
+    ## game_conscientiousness.tste_20_10 -0.0440289  0.0470072  -0.937  0.34906    
+    ## game_conscientiousness.tste_20_11  0.0334364  0.0447503   0.747  0.45505    
+    ## game_conscientiousness.tste_20_12 -0.0105956  0.0451815  -0.235  0.81461    
+    ## game_conscientiousness.tste_20_13  0.0250141  0.0511436   0.489  0.62483    
+    ## game_conscientiousness.tste_20_14  0.0765678  0.0409003   1.872  0.06134 .  
+    ## game_conscientiousness.tste_20_15  0.0074752  0.0488912   0.153  0.87850    
+    ## game_conscientiousness.tste_20_16  0.0143298  0.0454371   0.315  0.75251    
+    ## game_conscientiousness.tste_20_17 -0.0203793  0.0400760  -0.509  0.61115    
+    ## game_conscientiousness.tste_20_18  0.0128156  0.0388168   0.330  0.74132    
+    ## game_conscientiousness.tste_20_19 -0.0284733  0.0432921  -0.658  0.51081    
+    ## game_emotionstability.tste_20_0    0.0594080  0.0454093   1.308  0.19093    
+    ## game_emotionstability.tste_20_1   -0.0183883  0.0389251  -0.472  0.63669    
+    ## game_emotionstability.tste_20_2    0.0380896  0.0357608   1.065  0.28695    
+    ## game_emotionstability.tste_20_3    0.0061095  0.0420004   0.145  0.88436    
+    ## game_emotionstability.tste_20_4    0.0064145  0.0389588   0.165  0.86924    
+    ## game_emotionstability.tste_20_5    0.0443659  0.0393353   1.128  0.25950    
+    ## game_emotionstability.tste_20_6   -0.0022489  0.0444862  -0.051  0.95969    
+    ## game_emotionstability.tste_20_7    0.0316904  0.0441788   0.717  0.47326    
+    ## game_emotionstability.tste_20_8   -0.0576516  0.0437359  -1.318  0.18760    
+    ## game_emotionstability.tste_20_9    0.0052665  0.0382622   0.138  0.89054    
+    ## game_emotionstability.tste_20_10   0.0463330  0.0424437   1.092  0.27513    
+    ## game_emotionstability.tste_20_11  -0.0349097  0.0388093  -0.900  0.36848    
+    ## game_emotionstability.tste_20_12  -0.0200987  0.0412774  -0.487  0.62637    
+    ## game_emotionstability.tste_20_13   0.1073045  0.0459075   2.337  0.01952 *  
+    ## game_emotionstability.tste_20_14  -0.0013653  0.0362325  -0.038  0.96995    
+    ## game_emotionstability.tste_20_15   0.0338026  0.0428805   0.788  0.43062    
+    ## game_emotionstability.tste_20_16   0.0340116  0.0398467   0.854  0.39345    
+    ## game_emotionstability.tste_20_17   0.0646908  0.0356237   1.816  0.06953 .  
+    ## game_emotionstability.tste_20_18   0.0010228  0.0363903   0.028  0.97758    
+    ## game_emotionstability.tste_20_19  -0.0053760  0.0405869  -0.132  0.89464    
+    ## game_openness.tste_20_0            0.0284236  0.0499517   0.569  0.56941    
+    ## game_openness.tste_20_1            0.0044096  0.0471014   0.094  0.92542    
+    ## game_openness.tste_20_2           -0.0552471  0.0426272  -1.296  0.19511    
+    ## game_openness.tste_20_3            0.0151740  0.0527154   0.288  0.77349    
+    ## game_openness.tste_20_4            0.0124798  0.0452073   0.276  0.78253    
+    ## game_openness.tste_20_5           -0.0071033  0.0458303  -0.155  0.87684    
+    ## game_openness.tste_20_6            0.0691603  0.0539394   1.282  0.19993    
+    ## game_openness.tste_20_7            0.0911830  0.0546025   1.670  0.09509 .  
+    ## game_openness.tste_20_8           -0.0078388  0.0505653  -0.155  0.87682    
+    ## game_openness.tste_20_9           -0.0199750  0.0463154  -0.431  0.66631    
+    ## game_openness.tste_20_10          -0.0267343  0.0479084  -0.558  0.57689    
+    ## game_openness.tste_20_11          -0.0734540  0.0430727  -1.705  0.08828 .  
+    ## game_openness.tste_20_12          -0.0478829  0.0486708  -0.984  0.32533    
+    ## game_openness.tste_20_13           0.0186521  0.0499626   0.373  0.70895    
+    ## game_openness.tste_20_14          -0.0140987  0.0431411  -0.327  0.74385    
+    ## game_openness.tste_20_15          -0.0731989  0.0512232  -1.429  0.15316    
+    ## game_openness.tste_20_16           0.0028215  0.0469233   0.060  0.95206    
+    ## game_openness.tste_20_17           0.0750568  0.0427926   1.754  0.07959 .  
+    ## game_openness.tste_20_18          -0.0294786  0.0416002  -0.709  0.47865    
+    ## game_openness.tste_20_19           0.0506167  0.0457677   1.106  0.26888    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -6644,7 +4312,7 @@ for(model in slice(dfs, 39:57)$model_lm) print(summary(model))
     ## Multiple R-squared:  0.1409, Adjusted R-squared:  0.08072 
     ## F-statistic:  2.34 on 140 and 1997 DF,  p-value: 2.44e-15
 
-### preference ~ tste + real + gap + gap\*tste
+### preference: tste & real & gap & gap\*tste
 
 ``` r
 #Summary
@@ -7778,230 +5446,118 @@ for(model in slice(dfs, 1:19)$model_lm) print(summary(model))
     ## -5.3241 -0.6839  0.2630  1.0037  3.3387 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                      47.0487473 17.7356552   2.653 0.008046
-    ## age                              -0.0140619  0.0046394  -3.031 0.002468
-    ## education                         0.0115800  0.0267462   0.433 0.665091
-    ## income                            0.0085525  0.0173598   0.493 0.622305
-    ## race2                             0.0776825  0.1325571   0.586 0.557920
-    ## race4                            -0.1955132  0.1421776  -1.375 0.169242
-    ## race6                            -0.8941959  0.3656172  -2.446 0.014541
-    ## race7                            -0.1436547  0.1383205  -1.039 0.299131
-    ## sex2                             -0.0770383  0.0731356  -1.053 0.292300
-    ## release                          -0.0211518  0.0086909  -2.434 0.015027
-    ## star_user                         0.0275685  0.0657169   0.420 0.674893
-    ## real_extraversion                 0.0639975  0.0252799   2.532 0.011431
-    ## real_agreeableness                0.0191118  0.0316008   0.605 0.545387
-    ## real_conscientiousness            0.0807739  0.0352047   2.294 0.021869
-    ## real_emotionstability            -0.0335307  0.0348495  -0.962 0.336086
-    ## real_openness                     0.0770696  0.0335582   2.297 0.021744
-    ## gap_extraversion                  0.0150758  0.0266525   0.566 0.571699
-    ## gap_agreeableness                 0.0548664  0.0345477   1.588 0.112412
-    ## gap_conscientiousness             0.0008673  0.0416196   0.021 0.983376
-    ## gap_emotionstability             -0.0463073  0.0323979  -1.429 0.153063
-    ## gap_openness                     -0.0716979  0.0446262  -1.607 0.108290
-    ## tste_15_0                        -0.0174631  0.0608841  -0.287 0.774276
-    ## tste_15_1                        -0.1158436  0.0655248  -1.768 0.077222
-    ## tste_15_2                         0.1136544  0.0604630   1.880 0.060287
-    ## tste_15_3                         0.0562477  0.0632204   0.890 0.373728
-    ## tste_15_4                         0.0362714  0.0577494   0.628 0.530021
-    ## tste_15_5                        -0.0894874  0.0664743  -1.346 0.178390
-    ## tste_15_6                        -0.0305241  0.0587310  -0.520 0.603311
-    ## tste_15_7                        -0.1025943  0.0627820  -1.634 0.102386
-    ## tste_15_8                        -0.0745930  0.0662811  -1.125 0.260551
-    ## tste_15_9                        -0.0264536  0.0626889  -0.422 0.673083
-    ## tste_15_10                        0.0355808  0.0673057   0.529 0.597109
-    ## tste_15_11                        0.1742818  0.0689170   2.529 0.011519
-    ## tste_15_12                       -0.0432868  0.0481758  -0.899 0.369017
-    ## tste_15_13                        0.0384543  0.0568417   0.677 0.498791
-    ## tste_15_14                        0.0070909  0.0563544   0.126 0.899882
-    ## gap_extraversion.tste_15_0       -0.0192735  0.0312732  -0.616 0.537770
-    ## gap_extraversion.tste_15_1        0.0469350  0.0319258   1.470 0.141682
-    ## gap_extraversion.tste_15_2        0.0227364  0.0317612   0.716 0.474162
-    ## gap_extraversion.tste_15_3       -0.0097539  0.0307657  -0.317 0.751247
-    ## gap_extraversion.tste_15_4        0.0148649  0.0297103   0.500 0.616900
-    ## gap_extraversion.tste_15_5        0.0517600  0.0331417   1.562 0.118495
-    ## gap_extraversion.tste_15_6       -0.0715838  0.0301378  -2.375 0.017631
-    ## gap_extraversion.tste_15_7        0.0008968  0.0327792   0.027 0.978175
-    ## gap_extraversion.tste_15_8       -0.0129873  0.0339445  -0.383 0.702054
-    ## gap_extraversion.tste_15_9        0.0057424  0.0302235   0.190 0.849330
-    ## gap_extraversion.tste_15_10       0.0541659  0.0327425   1.654 0.098222
-    ## gap_extraversion.tste_15_11      -0.0186574  0.0350193  -0.533 0.594247
-    ## gap_extraversion.tste_15_12      -0.0145445  0.0241847  -0.601 0.547647
-    ## gap_extraversion.tste_15_13       0.0099347  0.0291119   0.341 0.732944
-    ## gap_extraversion.tste_15_14       0.0207979  0.0274860   0.757 0.449335
-    ## gap_agreeableness.tste_15_0       0.0125158  0.0456320   0.274 0.783900
-    ## gap_agreeableness.tste_15_1      -0.0099909  0.0430846  -0.232 0.816646
-    ## gap_agreeableness.tste_15_2       0.0438299  0.0437533   1.002 0.316584
-    ## gap_agreeableness.tste_15_3      -0.0207267  0.0464280  -0.446 0.655337
-    ## gap_agreeableness.tste_15_4       0.0167040  0.0412801   0.405 0.685777
-    ## gap_agreeableness.tste_15_5      -0.0972774  0.0472546  -2.059 0.039662
-    ## gap_agreeableness.tste_15_6       0.0037439  0.0429187   0.087 0.930495
-    ## gap_agreeableness.tste_15_7       0.0510886  0.0438869   1.164 0.244521
-    ## gap_agreeableness.tste_15_8       0.0445664  0.0482289   0.924 0.355565
-    ## gap_agreeableness.tste_15_9       0.0600489  0.0448216   1.340 0.180482
-    ## gap_agreeableness.tste_15_10     -0.0843135  0.0473340  -1.781 0.075022
-    ## gap_agreeableness.tste_15_11     -0.0086153  0.0485865  -0.177 0.859276
-    ## gap_agreeableness.tste_15_12      0.0273197  0.0368414   0.742 0.458446
-    ## gap_agreeableness.tste_15_13     -0.0403267  0.0396705  -1.017 0.309493
-    ## gap_agreeableness.tste_15_14     -0.0075146  0.0383758  -0.196 0.844774
-    ## gap_conscientiousness.tste_15_0  -0.0633794  0.0503991  -1.258 0.208699
-    ## gap_conscientiousness.tste_15_1  -0.0279859  0.0512751  -0.546 0.585263
-    ## gap_conscientiousness.tste_15_2  -0.0710192  0.0503096  -1.412 0.158208
-    ## gap_conscientiousness.tste_15_3   0.1372691  0.0490025   2.801 0.005139
-    ## gap_conscientiousness.tste_15_4   0.0699646  0.0462366   1.513 0.130388
-    ## gap_conscientiousness.tste_15_5  -0.0318973  0.0534378  -0.597 0.550637
-    ## gap_conscientiousness.tste_15_6   0.0346089  0.0456571   0.758 0.448529
-    ## gap_conscientiousness.tste_15_7   0.0425833  0.0507264   0.839 0.401305
-    ## gap_conscientiousness.tste_15_8   0.0116494  0.0548166   0.213 0.831726
-    ## gap_conscientiousness.tste_15_9   0.0429519  0.0506736   0.848 0.396750
-    ## gap_conscientiousness.tste_15_10  0.0017837  0.0542279   0.033 0.973764
-    ## gap_conscientiousness.tste_15_11  0.1751204  0.0599915   2.919 0.003549
-    ## gap_conscientiousness.tste_15_12 -0.0478773  0.0402228  -1.190 0.234066
-    ## gap_conscientiousness.tste_15_13  0.0500069  0.0451703   1.107 0.268393
-    ## gap_conscientiousness.tste_15_14  0.0192439  0.0458647   0.420 0.674836
-    ## gap_emotionstability.tste_15_0    0.0083349  0.0397519   0.210 0.833944
-    ## gap_emotionstability.tste_15_1    0.0179453  0.0389825   0.460 0.645320
-    ## gap_emotionstability.tste_15_2   -0.0697980  0.0396809  -1.759 0.078732
-    ## gap_emotionstability.tste_15_3   -0.0017045  0.0404909  -0.042 0.966426
-    ## gap_emotionstability.tste_15_4    0.0704536  0.0363571   1.938 0.052784
-    ## gap_emotionstability.tste_15_5    0.0171991  0.0422127   0.407 0.683729
-    ## gap_emotionstability.tste_15_6   -0.1254250  0.0378983  -3.310 0.000951
-    ## gap_emotionstability.tste_15_7    0.0349242  0.0397513   0.879 0.379739
-    ## gap_emotionstability.tste_15_8   -0.0201995  0.0440712  -0.458 0.646759
-    ## gap_emotionstability.tste_15_9   -0.0480739  0.0394912  -1.217 0.223620
-    ## gap_emotionstability.tste_15_10  -0.0092360  0.0394232  -0.234 0.814792
-    ## gap_emotionstability.tste_15_11   0.0453965  0.0437618   1.037 0.299694
-    ## gap_emotionstability.tste_15_12   0.0138567  0.0315583   0.439 0.660648
-    ## gap_emotionstability.tste_15_13   0.0554944  0.0362177   1.532 0.125618
-    ## gap_emotionstability.tste_15_14   0.0074949  0.0358838   0.209 0.834573
-    ## gap_openness.tste_15_0           -0.0254541  0.0495934  -0.513 0.607828
-    ## gap_openness.tste_15_1           -0.0498642  0.0494357  -1.009 0.313254
-    ## gap_openness.tste_15_2           -0.0590179  0.0506378  -1.165 0.243958
-    ## gap_openness.tste_15_3            0.0067470  0.0521912   0.129 0.897154
-    ## gap_openness.tste_15_4           -0.0082395  0.0460303  -0.179 0.857954
-    ## gap_openness.tste_15_5           -0.0444306  0.0518501  -0.857 0.391599
-    ## gap_openness.tste_15_6           -0.0766465  0.0470895  -1.628 0.103749
-    ## gap_openness.tste_15_7            0.0036977  0.0483507   0.076 0.939048
-    ## gap_openness.tste_15_8           -0.0977642  0.0549303  -1.780 0.075261
-    ## gap_openness.tste_15_9           -0.0310108  0.0506241  -0.613 0.540229
-    ## gap_openness.tste_15_10          -0.0161337  0.0531402  -0.304 0.761460
-    ## gap_openness.tste_15_11           0.0304370  0.0560127   0.543 0.586918
-    ## gap_openness.tste_15_12           0.0455746  0.0383897   1.187 0.235305
-    ## gap_openness.tste_15_13           0.0008541  0.0440077   0.019 0.984517
-    ## gap_openness.tste_15_14          -0.0381709  0.0445679  -0.856 0.391842
-    ##                                     
-    ## (Intercept)                      ** 
-    ## age                              ** 
-    ## education                           
-    ## income                              
-    ## race2                               
-    ## race4                               
-    ## race6                            *  
-    ## race7                               
-    ## sex2                                
-    ## release                          *  
-    ## star_user                           
-    ## real_extraversion                *  
-    ## real_agreeableness                  
-    ## real_conscientiousness           *  
-    ## real_emotionstability               
-    ## real_openness                    *  
-    ## gap_extraversion                    
-    ## gap_agreeableness                   
-    ## gap_conscientiousness               
-    ## gap_emotionstability                
-    ## gap_openness                        
-    ## tste_15_0                           
-    ## tste_15_1                        .  
-    ## tste_15_2                        .  
-    ## tste_15_3                           
-    ## tste_15_4                           
-    ## tste_15_5                           
-    ## tste_15_6                           
-    ## tste_15_7                           
-    ## tste_15_8                           
-    ## tste_15_9                           
-    ## tste_15_10                          
-    ## tste_15_11                       *  
-    ## tste_15_12                          
-    ## tste_15_13                          
-    ## tste_15_14                          
-    ## gap_extraversion.tste_15_0          
-    ## gap_extraversion.tste_15_1          
-    ## gap_extraversion.tste_15_2          
-    ## gap_extraversion.tste_15_3          
-    ## gap_extraversion.tste_15_4          
-    ## gap_extraversion.tste_15_5          
-    ## gap_extraversion.tste_15_6       *  
-    ## gap_extraversion.tste_15_7          
-    ## gap_extraversion.tste_15_8          
-    ## gap_extraversion.tste_15_9          
-    ## gap_extraversion.tste_15_10      .  
-    ## gap_extraversion.tste_15_11         
-    ## gap_extraversion.tste_15_12         
-    ## gap_extraversion.tste_15_13         
-    ## gap_extraversion.tste_15_14         
-    ## gap_agreeableness.tste_15_0         
-    ## gap_agreeableness.tste_15_1         
-    ## gap_agreeableness.tste_15_2         
-    ## gap_agreeableness.tste_15_3         
-    ## gap_agreeableness.tste_15_4         
-    ## gap_agreeableness.tste_15_5      *  
-    ## gap_agreeableness.tste_15_6         
-    ## gap_agreeableness.tste_15_7         
-    ## gap_agreeableness.tste_15_8         
-    ## gap_agreeableness.tste_15_9         
-    ## gap_agreeableness.tste_15_10     .  
-    ## gap_agreeableness.tste_15_11        
-    ## gap_agreeableness.tste_15_12        
-    ## gap_agreeableness.tste_15_13        
-    ## gap_agreeableness.tste_15_14        
-    ## gap_conscientiousness.tste_15_0     
-    ## gap_conscientiousness.tste_15_1     
-    ## gap_conscientiousness.tste_15_2     
-    ## gap_conscientiousness.tste_15_3  ** 
-    ## gap_conscientiousness.tste_15_4     
-    ## gap_conscientiousness.tste_15_5     
-    ## gap_conscientiousness.tste_15_6     
-    ## gap_conscientiousness.tste_15_7     
-    ## gap_conscientiousness.tste_15_8     
-    ## gap_conscientiousness.tste_15_9     
-    ## gap_conscientiousness.tste_15_10    
-    ## gap_conscientiousness.tste_15_11 ** 
-    ## gap_conscientiousness.tste_15_12    
-    ## gap_conscientiousness.tste_15_13    
-    ## gap_conscientiousness.tste_15_14    
-    ## gap_emotionstability.tste_15_0      
-    ## gap_emotionstability.tste_15_1      
-    ## gap_emotionstability.tste_15_2   .  
-    ## gap_emotionstability.tste_15_3      
-    ## gap_emotionstability.tste_15_4   .  
-    ## gap_emotionstability.tste_15_5      
-    ## gap_emotionstability.tste_15_6   ***
-    ## gap_emotionstability.tste_15_7      
-    ## gap_emotionstability.tste_15_8      
-    ## gap_emotionstability.tste_15_9      
-    ## gap_emotionstability.tste_15_10     
-    ## gap_emotionstability.tste_15_11     
-    ## gap_emotionstability.tste_15_12     
-    ## gap_emotionstability.tste_15_13     
-    ## gap_emotionstability.tste_15_14     
-    ## gap_openness.tste_15_0              
-    ## gap_openness.tste_15_1              
-    ## gap_openness.tste_15_2              
-    ## gap_openness.tste_15_3              
-    ## gap_openness.tste_15_4              
-    ## gap_openness.tste_15_5              
-    ## gap_openness.tste_15_6              
-    ## gap_openness.tste_15_7              
-    ## gap_openness.tste_15_8           .  
-    ## gap_openness.tste_15_9              
-    ## gap_openness.tste_15_10             
-    ## gap_openness.tste_15_11             
-    ## gap_openness.tste_15_12             
-    ## gap_openness.tste_15_13             
-    ## gap_openness.tste_15_14             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                      47.0487473 17.7356552   2.653 0.008046 ** 
+    ## age                              -0.0140619  0.0046394  -3.031 0.002468 ** 
+    ## education                         0.0115800  0.0267462   0.433 0.665091    
+    ## income                            0.0085525  0.0173598   0.493 0.622305    
+    ## race2                             0.0776825  0.1325571   0.586 0.557920    
+    ## race4                            -0.1955132  0.1421776  -1.375 0.169242    
+    ## race6                            -0.8941959  0.3656172  -2.446 0.014541 *  
+    ## race7                            -0.1436547  0.1383205  -1.039 0.299131    
+    ## sex2                             -0.0770383  0.0731356  -1.053 0.292300    
+    ## release                          -0.0211518  0.0086909  -2.434 0.015027 *  
+    ## star_user                         0.0275685  0.0657169   0.420 0.674893    
+    ## real_extraversion                 0.0639975  0.0252799   2.532 0.011431 *  
+    ## real_agreeableness                0.0191118  0.0316008   0.605 0.545387    
+    ## real_conscientiousness            0.0807739  0.0352047   2.294 0.021869 *  
+    ## real_emotionstability            -0.0335307  0.0348495  -0.962 0.336086    
+    ## real_openness                     0.0770696  0.0335582   2.297 0.021744 *  
+    ## gap_extraversion                  0.0150758  0.0266525   0.566 0.571699    
+    ## gap_agreeableness                 0.0548664  0.0345477   1.588 0.112412    
+    ## gap_conscientiousness             0.0008673  0.0416196   0.021 0.983376    
+    ## gap_emotionstability             -0.0463073  0.0323979  -1.429 0.153063    
+    ## gap_openness                     -0.0716979  0.0446262  -1.607 0.108290    
+    ## tste_15_0                        -0.0174631  0.0608841  -0.287 0.774276    
+    ## tste_15_1                        -0.1158436  0.0655248  -1.768 0.077222 .  
+    ## tste_15_2                         0.1136544  0.0604630   1.880 0.060287 .  
+    ## tste_15_3                         0.0562477  0.0632204   0.890 0.373728    
+    ## tste_15_4                         0.0362714  0.0577494   0.628 0.530021    
+    ## tste_15_5                        -0.0894874  0.0664743  -1.346 0.178390    
+    ## tste_15_6                        -0.0305241  0.0587310  -0.520 0.603311    
+    ## tste_15_7                        -0.1025943  0.0627820  -1.634 0.102386    
+    ## tste_15_8                        -0.0745930  0.0662811  -1.125 0.260551    
+    ## tste_15_9                        -0.0264536  0.0626889  -0.422 0.673083    
+    ## tste_15_10                        0.0355808  0.0673057   0.529 0.597109    
+    ## tste_15_11                        0.1742818  0.0689170   2.529 0.011519 *  
+    ## tste_15_12                       -0.0432868  0.0481758  -0.899 0.369017    
+    ## tste_15_13                        0.0384543  0.0568417   0.677 0.498791    
+    ## tste_15_14                        0.0070909  0.0563544   0.126 0.899882    
+    ## gap_extraversion.tste_15_0       -0.0192735  0.0312732  -0.616 0.537770    
+    ## gap_extraversion.tste_15_1        0.0469350  0.0319258   1.470 0.141682    
+    ## gap_extraversion.tste_15_2        0.0227364  0.0317612   0.716 0.474162    
+    ## gap_extraversion.tste_15_3       -0.0097539  0.0307657  -0.317 0.751247    
+    ## gap_extraversion.tste_15_4        0.0148649  0.0297103   0.500 0.616900    
+    ## gap_extraversion.tste_15_5        0.0517600  0.0331417   1.562 0.118495    
+    ## gap_extraversion.tste_15_6       -0.0715838  0.0301378  -2.375 0.017631 *  
+    ## gap_extraversion.tste_15_7        0.0008968  0.0327792   0.027 0.978175    
+    ## gap_extraversion.tste_15_8       -0.0129873  0.0339445  -0.383 0.702054    
+    ## gap_extraversion.tste_15_9        0.0057424  0.0302235   0.190 0.849330    
+    ## gap_extraversion.tste_15_10       0.0541659  0.0327425   1.654 0.098222 .  
+    ## gap_extraversion.tste_15_11      -0.0186574  0.0350193  -0.533 0.594247    
+    ## gap_extraversion.tste_15_12      -0.0145445  0.0241847  -0.601 0.547647    
+    ## gap_extraversion.tste_15_13       0.0099347  0.0291119   0.341 0.732944    
+    ## gap_extraversion.tste_15_14       0.0207979  0.0274860   0.757 0.449335    
+    ## gap_agreeableness.tste_15_0       0.0125158  0.0456320   0.274 0.783900    
+    ## gap_agreeableness.tste_15_1      -0.0099909  0.0430846  -0.232 0.816646    
+    ## gap_agreeableness.tste_15_2       0.0438299  0.0437533   1.002 0.316584    
+    ## gap_agreeableness.tste_15_3      -0.0207267  0.0464280  -0.446 0.655337    
+    ## gap_agreeableness.tste_15_4       0.0167040  0.0412801   0.405 0.685777    
+    ## gap_agreeableness.tste_15_5      -0.0972774  0.0472546  -2.059 0.039662 *  
+    ## gap_agreeableness.tste_15_6       0.0037439  0.0429187   0.087 0.930495    
+    ## gap_agreeableness.tste_15_7       0.0510886  0.0438869   1.164 0.244521    
+    ## gap_agreeableness.tste_15_8       0.0445664  0.0482289   0.924 0.355565    
+    ## gap_agreeableness.tste_15_9       0.0600489  0.0448216   1.340 0.180482    
+    ## gap_agreeableness.tste_15_10     -0.0843135  0.0473340  -1.781 0.075022 .  
+    ## gap_agreeableness.tste_15_11     -0.0086153  0.0485865  -0.177 0.859276    
+    ## gap_agreeableness.tste_15_12      0.0273197  0.0368414   0.742 0.458446    
+    ## gap_agreeableness.tste_15_13     -0.0403267  0.0396705  -1.017 0.309493    
+    ## gap_agreeableness.tste_15_14     -0.0075146  0.0383758  -0.196 0.844774    
+    ## gap_conscientiousness.tste_15_0  -0.0633794  0.0503991  -1.258 0.208699    
+    ## gap_conscientiousness.tste_15_1  -0.0279859  0.0512751  -0.546 0.585263    
+    ## gap_conscientiousness.tste_15_2  -0.0710192  0.0503096  -1.412 0.158208    
+    ## gap_conscientiousness.tste_15_3   0.1372691  0.0490025   2.801 0.005139 ** 
+    ## gap_conscientiousness.tste_15_4   0.0699646  0.0462366   1.513 0.130388    
+    ## gap_conscientiousness.tste_15_5  -0.0318973  0.0534378  -0.597 0.550637    
+    ## gap_conscientiousness.tste_15_6   0.0346089  0.0456571   0.758 0.448529    
+    ## gap_conscientiousness.tste_15_7   0.0425833  0.0507264   0.839 0.401305    
+    ## gap_conscientiousness.tste_15_8   0.0116494  0.0548166   0.213 0.831726    
+    ## gap_conscientiousness.tste_15_9   0.0429519  0.0506736   0.848 0.396750    
+    ## gap_conscientiousness.tste_15_10  0.0017837  0.0542279   0.033 0.973764    
+    ## gap_conscientiousness.tste_15_11  0.1751204  0.0599915   2.919 0.003549 ** 
+    ## gap_conscientiousness.tste_15_12 -0.0478773  0.0402228  -1.190 0.234066    
+    ## gap_conscientiousness.tste_15_13  0.0500069  0.0451703   1.107 0.268393    
+    ## gap_conscientiousness.tste_15_14  0.0192439  0.0458647   0.420 0.674836    
+    ## gap_emotionstability.tste_15_0    0.0083349  0.0397519   0.210 0.833944    
+    ## gap_emotionstability.tste_15_1    0.0179453  0.0389825   0.460 0.645320    
+    ## gap_emotionstability.tste_15_2   -0.0697980  0.0396809  -1.759 0.078732 .  
+    ## gap_emotionstability.tste_15_3   -0.0017045  0.0404909  -0.042 0.966426    
+    ## gap_emotionstability.tste_15_4    0.0704536  0.0363571   1.938 0.052784 .  
+    ## gap_emotionstability.tste_15_5    0.0171991  0.0422127   0.407 0.683729    
+    ## gap_emotionstability.tste_15_6   -0.1254250  0.0378983  -3.310 0.000951 ***
+    ## gap_emotionstability.tste_15_7    0.0349242  0.0397513   0.879 0.379739    
+    ## gap_emotionstability.tste_15_8   -0.0201995  0.0440712  -0.458 0.646759    
+    ## gap_emotionstability.tste_15_9   -0.0480739  0.0394912  -1.217 0.223620    
+    ## gap_emotionstability.tste_15_10  -0.0092360  0.0394232  -0.234 0.814792    
+    ## gap_emotionstability.tste_15_11   0.0453965  0.0437618   1.037 0.299694    
+    ## gap_emotionstability.tste_15_12   0.0138567  0.0315583   0.439 0.660648    
+    ## gap_emotionstability.tste_15_13   0.0554944  0.0362177   1.532 0.125618    
+    ## gap_emotionstability.tste_15_14   0.0074949  0.0358838   0.209 0.834573    
+    ## gap_openness.tste_15_0           -0.0254541  0.0495934  -0.513 0.607828    
+    ## gap_openness.tste_15_1           -0.0498642  0.0494357  -1.009 0.313254    
+    ## gap_openness.tste_15_2           -0.0590179  0.0506378  -1.165 0.243958    
+    ## gap_openness.tste_15_3            0.0067470  0.0521912   0.129 0.897154    
+    ## gap_openness.tste_15_4           -0.0082395  0.0460303  -0.179 0.857954    
+    ## gap_openness.tste_15_5           -0.0444306  0.0518501  -0.857 0.391599    
+    ## gap_openness.tste_15_6           -0.0766465  0.0470895  -1.628 0.103749    
+    ## gap_openness.tste_15_7            0.0036977  0.0483507   0.076 0.939048    
+    ## gap_openness.tste_15_8           -0.0977642  0.0549303  -1.780 0.075261 .  
+    ## gap_openness.tste_15_9           -0.0310108  0.0506241  -0.613 0.540229    
+    ## gap_openness.tste_15_10          -0.0161337  0.0531402  -0.304 0.761460    
+    ## gap_openness.tste_15_11           0.0304370  0.0560127   0.543 0.586918    
+    ## gap_openness.tste_15_12           0.0455746  0.0383897   1.187 0.235305    
+    ## gap_openness.tste_15_13           0.0008541  0.0440077   0.019 0.984517    
+    ## gap_openness.tste_15_14          -0.0381709  0.0445679  -0.856 0.391842    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -8152,254 +5708,130 @@ for(model in slice(dfs, 1:19)$model_lm) print(summary(model))
     ## -5.4120 -0.6849  0.2439  1.0361  3.4315 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                      30.1041219 18.4836209   1.629  0.10353
-    ## age                              -0.0129212  0.0046419  -2.784  0.00543
-    ## education                         0.0141134  0.0267527   0.528  0.59787
-    ## income                            0.0104330  0.0173457   0.601  0.54759
-    ## race2                             0.0874094  0.1325579   0.659  0.50971
-    ## race4                            -0.2096089  0.1419289  -1.477  0.13987
-    ## race6                            -0.8850533  0.3702547  -2.390  0.01692
-    ## race7                            -0.1400724  0.1390377  -1.007  0.31384
-    ## sex2                             -0.0927080  0.0730554  -1.269  0.20458
-    ## release                          -0.0128139  0.0090432  -1.417  0.15665
-    ## star_user                         0.0399266  0.0671490   0.595  0.55218
-    ## real_extraversion                 0.0592894  0.0252738   2.346  0.01908
-    ## real_agreeableness                0.0247867  0.0316206   0.784  0.43320
-    ## real_conscientiousness            0.0850070  0.0351326   2.420  0.01563
-    ## real_emotionstability            -0.0308044  0.0348673  -0.883  0.37709
-    ## real_openness                     0.0828175  0.0334885   2.473  0.01348
-    ## gap_extraversion                  0.0068096  0.0266296   0.256  0.79820
-    ## gap_agreeableness                 0.0617390  0.0345525   1.787  0.07412
-    ## gap_conscientiousness             0.0133605  0.0413792   0.323  0.74682
-    ## gap_emotionstability             -0.0463239  0.0323532  -1.432  0.15235
-    ## gap_openness                     -0.0627685  0.0445923  -1.408  0.15940
-    ## tste_17_0                         0.2911489  0.0614683   4.737 2.33e-06
-    ## tste_17_1                         0.0953467  0.0535937   1.779  0.07538
-    ## tste_17_2                        -0.0114660  0.0644095  -0.178  0.85873
-    ## tste_17_3                         0.0035023  0.0587274   0.060  0.95245
-    ## tste_17_4                         0.0924536  0.0631046   1.465  0.14305
-    ## tste_17_5                        -0.0095255  0.0578484  -0.165  0.86923
-    ## tste_17_6                        -0.0718952  0.0617092  -1.165  0.24413
-    ## tste_17_7                         0.0889834  0.0551520   1.613  0.10681
-    ## tste_17_8                        -0.0528933  0.0591275  -0.895  0.37113
-    ## tste_17_9                        -0.0746984  0.0587527  -1.271  0.20373
-    ## tste_17_10                        0.0207356  0.0534260   0.388  0.69797
-    ## tste_17_11                        0.0419084  0.0586785   0.714  0.47518
-    ## tste_17_12                       -0.1206181  0.0520968  -2.315  0.02070
-    ## tste_17_13                        0.0686882  0.0608365   1.129  0.25901
-    ## tste_17_14                        0.0216843  0.0559877   0.387  0.69857
-    ## tste_17_15                       -0.0932196  0.0685448  -1.360  0.17399
-    ## tste_17_16                        0.0057867  0.0510594   0.113  0.90978
-    ## gap_extraversion.tste_17_0       -0.0107941  0.0302874  -0.356  0.72159
-    ## gap_extraversion.tste_17_1       -0.0091619  0.0261457  -0.350  0.72606
-    ## gap_extraversion.tste_17_2       -0.0487521  0.0333000  -1.464  0.14334
-    ## gap_extraversion.tste_17_3       -0.0109270  0.0303333  -0.360  0.71871
-    ## gap_extraversion.tste_17_4        0.0048224  0.0320096   0.151  0.88026
-    ## gap_extraversion.tste_17_5        0.0426879  0.0275370   1.550  0.12125
-    ## gap_extraversion.tste_17_6        0.0010021  0.0308564   0.032  0.97409
-    ## gap_extraversion.tste_17_7       -0.0017053  0.0284166  -0.060  0.95215
-    ## gap_extraversion.tste_17_8        0.0414561  0.0307844   1.347  0.17824
-    ## gap_extraversion.tste_17_9        0.0225766  0.0304249   0.742  0.45815
-    ## gap_extraversion.tste_17_10       0.0195682  0.0276216   0.708  0.47875
-    ## gap_extraversion.tste_17_11      -0.0082531  0.0292587  -0.282  0.77792
-    ## gap_extraversion.tste_17_12      -0.0303035  0.0264035  -1.148  0.25122
-    ## gap_extraversion.tste_17_13       0.0008676  0.0292331   0.030  0.97633
-    ## gap_extraversion.tste_17_14       0.0444916  0.0279429   1.592  0.11149
-    ## gap_extraversion.tste_17_15       0.0225637  0.0319294   0.707  0.47985
-    ## gap_extraversion.tste_17_16      -0.0132764  0.0267158  -0.497  0.61928
-    ## gap_agreeableness.tste_17_0      -0.0343744  0.0431969  -0.796  0.42626
-    ## gap_agreeableness.tste_17_1      -0.0239121  0.0385302  -0.621  0.53493
-    ## gap_agreeableness.tste_17_2       0.0201829  0.0474974   0.425  0.67094
-    ## gap_agreeableness.tste_17_3      -0.0357518  0.0428922  -0.834  0.40465
-    ## gap_agreeableness.tste_17_4      -0.0700811  0.0475795  -1.473  0.14093
-    ## gap_agreeableness.tste_17_5       0.0064345  0.0380957   0.169  0.86589
-    ## gap_agreeableness.tste_17_6       0.0377021  0.0472592   0.798  0.42510
-    ## gap_agreeableness.tste_17_7      -0.0521900  0.0385749  -1.353  0.17622
-    ## gap_agreeableness.tste_17_8      -0.0769367  0.0447773  -1.718  0.08591
-    ## gap_agreeableness.tste_17_9      -0.0320234  0.0419954  -0.763  0.44582
-    ## gap_agreeableness.tste_17_10      0.0680080  0.0397859   1.709  0.08754
-    ## gap_agreeableness.tste_17_11      0.0285448  0.0418055   0.683  0.49481
-    ## gap_agreeableness.tste_17_12      0.0042062  0.0371000   0.113  0.90974
-    ## gap_agreeableness.tste_17_13      0.0110549  0.0399222   0.277  0.78188
-    ## gap_agreeableness.tste_17_14     -0.0723920  0.0369306  -1.960  0.05011
-    ## gap_agreeableness.tste_17_15     -0.0176157  0.0485691  -0.363  0.71687
-    ## gap_agreeableness.tste_17_16      0.0231692  0.0369817   0.627  0.53105
-    ## gap_conscientiousness.tste_17_0   0.0467409  0.0501970   0.931  0.35189
-    ## gap_conscientiousness.tste_17_1  -0.0344563  0.0449554  -0.766  0.44350
-    ## gap_conscientiousness.tste_17_2  -0.1121719  0.0541734  -2.071  0.03852
-    ## gap_conscientiousness.tste_17_3   0.0356039  0.0459266   0.775  0.43829
-    ## gap_conscientiousness.tste_17_4  -0.0604987  0.0524895  -1.153  0.24922
-    ## gap_conscientiousness.tste_17_5  -0.0425464  0.0443266  -0.960  0.33725
-    ## gap_conscientiousness.tste_17_6  -0.0916125  0.0507468  -1.805  0.07118
-    ## gap_conscientiousness.tste_17_7   0.0058130  0.0434256   0.134  0.89353
-    ## gap_conscientiousness.tste_17_8   0.0005390  0.0506000   0.011  0.99150
-    ## gap_conscientiousness.tste_17_9  -0.0680883  0.0469522  -1.450  0.14717
-    ## gap_conscientiousness.tste_17_10  0.0124570  0.0441376   0.282  0.77780
-    ## gap_conscientiousness.tste_17_11  0.1154080  0.0489976   2.355  0.01860
-    ## gap_conscientiousness.tste_17_12  0.0469643  0.0424469   1.106  0.26868
-    ## gap_conscientiousness.tste_17_13 -0.0089102  0.0474421  -0.188  0.85104
-    ## gap_conscientiousness.tste_17_14 -0.0062786  0.0465415  -0.135  0.89270
-    ## gap_conscientiousness.tste_17_15  0.1061157  0.0514943   2.061  0.03946
-    ## gap_conscientiousness.tste_17_16 -0.0629374  0.0417009  -1.509  0.13139
-    ## gap_emotionstability.tste_17_0   -0.0513748  0.0389103  -1.320  0.18687
-    ## gap_emotionstability.tste_17_1    0.0477294  0.0355090   1.344  0.17905
-    ## gap_emotionstability.tste_17_2   -0.0544791  0.0411866  -1.323  0.18607
-    ## gap_emotionstability.tste_17_3    0.0059999  0.0387938   0.155  0.87710
-    ## gap_emotionstability.tste_17_4    0.0041838  0.0415233   0.101  0.91975
-    ## gap_emotionstability.tste_17_5   -0.0407988  0.0348696  -1.170  0.24212
-    ## gap_emotionstability.tste_17_6    0.0160477  0.0398680   0.403  0.68734
-    ## gap_emotionstability.tste_17_7    0.0277465  0.0360900   0.769  0.44209
-    ## gap_emotionstability.tste_17_8   -0.0229375  0.0395699  -0.580  0.56220
-    ## gap_emotionstability.tste_17_9    0.0357229  0.0375166   0.952  0.34112
-    ## gap_emotionstability.tste_17_10   0.0223525  0.0348417   0.642  0.52124
-    ## gap_emotionstability.tste_17_11   0.0322833  0.0373430   0.865  0.38741
-    ## gap_emotionstability.tste_17_12   0.0025497  0.0324026   0.079  0.93729
-    ## gap_emotionstability.tste_17_13   0.0036921  0.0351756   0.105  0.91642
-    ## gap_emotionstability.tste_17_14   0.0988318  0.0363091   2.722  0.00655
-    ## gap_emotionstability.tste_17_15  -0.0531686  0.0407794  -1.304  0.19245
-    ## gap_emotionstability.tste_17_16  -0.0258043  0.0335595  -0.769  0.44204
-    ## gap_openness.tste_17_0            0.0073246  0.0502184   0.146  0.88405
-    ## gap_openness.tste_17_1            0.0620820  0.0442578   1.403  0.16085
-    ## gap_openness.tste_17_2           -0.0100017  0.0515654  -0.194  0.84622
-    ## gap_openness.tste_17_3            0.0599641  0.0461811   1.298  0.19428
-    ## gap_openness.tste_17_4            0.0142057  0.0535774   0.265  0.79093
-    ## gap_openness.tste_17_5           -0.1028779  0.0446564  -2.304  0.02134
-    ## gap_openness.tste_17_6            0.0220422  0.0523772   0.421  0.67392
-    ## gap_openness.tste_17_7            0.0561855  0.0444767   1.263  0.20664
-    ## gap_openness.tste_17_8           -0.0141952  0.0485470  -0.292  0.77001
-    ## gap_openness.tste_17_9           -0.0371844  0.0471957  -0.788  0.43086
-    ## gap_openness.tste_17_10           0.0404687  0.0444978   0.909  0.36322
-    ## gap_openness.tste_17_11          -0.0149010  0.0457264  -0.326  0.74455
-    ## gap_openness.tste_17_12          -0.0345609  0.0411437  -0.840  0.40100
-    ## gap_openness.tste_17_13          -0.0423821  0.0460572  -0.920  0.35758
-    ## gap_openness.tste_17_14           0.0301061  0.0444882   0.677  0.49866
-    ## gap_openness.tste_17_15          -0.0471559  0.0529022  -0.891  0.37283
-    ## gap_openness.tste_17_16          -0.0059852  0.0413207  -0.145  0.88485
-    ##                                     
-    ## (Intercept)                         
-    ## age                              ** 
-    ## education                           
-    ## income                              
-    ## race2                               
-    ## race4                               
-    ## race6                            *  
-    ## race7                               
-    ## sex2                                
-    ## release                             
-    ## star_user                           
-    ## real_extraversion                *  
-    ## real_agreeableness                  
-    ## real_conscientiousness           *  
-    ## real_emotionstability               
-    ## real_openness                    *  
-    ## gap_extraversion                    
-    ## gap_agreeableness                .  
-    ## gap_conscientiousness               
-    ## gap_emotionstability                
-    ## gap_openness                        
-    ## tste_17_0                        ***
-    ## tste_17_1                        .  
-    ## tste_17_2                           
-    ## tste_17_3                           
-    ## tste_17_4                           
-    ## tste_17_5                           
-    ## tste_17_6                           
-    ## tste_17_7                           
-    ## tste_17_8                           
-    ## tste_17_9                           
-    ## tste_17_10                          
-    ## tste_17_11                          
-    ## tste_17_12                       *  
-    ## tste_17_13                          
-    ## tste_17_14                          
-    ## tste_17_15                          
-    ## tste_17_16                          
-    ## gap_extraversion.tste_17_0          
-    ## gap_extraversion.tste_17_1          
-    ## gap_extraversion.tste_17_2          
-    ## gap_extraversion.tste_17_3          
-    ## gap_extraversion.tste_17_4          
-    ## gap_extraversion.tste_17_5          
-    ## gap_extraversion.tste_17_6          
-    ## gap_extraversion.tste_17_7          
-    ## gap_extraversion.tste_17_8          
-    ## gap_extraversion.tste_17_9          
-    ## gap_extraversion.tste_17_10         
-    ## gap_extraversion.tste_17_11         
-    ## gap_extraversion.tste_17_12         
-    ## gap_extraversion.tste_17_13         
-    ## gap_extraversion.tste_17_14         
-    ## gap_extraversion.tste_17_15         
-    ## gap_extraversion.tste_17_16         
-    ## gap_agreeableness.tste_17_0         
-    ## gap_agreeableness.tste_17_1         
-    ## gap_agreeableness.tste_17_2         
-    ## gap_agreeableness.tste_17_3         
-    ## gap_agreeableness.tste_17_4         
-    ## gap_agreeableness.tste_17_5         
-    ## gap_agreeableness.tste_17_6         
-    ## gap_agreeableness.tste_17_7         
-    ## gap_agreeableness.tste_17_8      .  
-    ## gap_agreeableness.tste_17_9         
-    ## gap_agreeableness.tste_17_10     .  
-    ## gap_agreeableness.tste_17_11        
-    ## gap_agreeableness.tste_17_12        
-    ## gap_agreeableness.tste_17_13        
-    ## gap_agreeableness.tste_17_14     .  
-    ## gap_agreeableness.tste_17_15        
-    ## gap_agreeableness.tste_17_16        
-    ## gap_conscientiousness.tste_17_0     
-    ## gap_conscientiousness.tste_17_1     
-    ## gap_conscientiousness.tste_17_2  *  
-    ## gap_conscientiousness.tste_17_3     
-    ## gap_conscientiousness.tste_17_4     
-    ## gap_conscientiousness.tste_17_5     
-    ## gap_conscientiousness.tste_17_6  .  
-    ## gap_conscientiousness.tste_17_7     
-    ## gap_conscientiousness.tste_17_8     
-    ## gap_conscientiousness.tste_17_9     
-    ## gap_conscientiousness.tste_17_10    
-    ## gap_conscientiousness.tste_17_11 *  
-    ## gap_conscientiousness.tste_17_12    
-    ## gap_conscientiousness.tste_17_13    
-    ## gap_conscientiousness.tste_17_14    
-    ## gap_conscientiousness.tste_17_15 *  
-    ## gap_conscientiousness.tste_17_16    
-    ## gap_emotionstability.tste_17_0      
-    ## gap_emotionstability.tste_17_1      
-    ## gap_emotionstability.tste_17_2      
-    ## gap_emotionstability.tste_17_3      
-    ## gap_emotionstability.tste_17_4      
-    ## gap_emotionstability.tste_17_5      
-    ## gap_emotionstability.tste_17_6      
-    ## gap_emotionstability.tste_17_7      
-    ## gap_emotionstability.tste_17_8      
-    ## gap_emotionstability.tste_17_9      
-    ## gap_emotionstability.tste_17_10     
-    ## gap_emotionstability.tste_17_11     
-    ## gap_emotionstability.tste_17_12     
-    ## gap_emotionstability.tste_17_13     
-    ## gap_emotionstability.tste_17_14  ** 
-    ## gap_emotionstability.tste_17_15     
-    ## gap_emotionstability.tste_17_16     
-    ## gap_openness.tste_17_0              
-    ## gap_openness.tste_17_1              
-    ## gap_openness.tste_17_2              
-    ## gap_openness.tste_17_3              
-    ## gap_openness.tste_17_4              
-    ## gap_openness.tste_17_5           *  
-    ## gap_openness.tste_17_6              
-    ## gap_openness.tste_17_7              
-    ## gap_openness.tste_17_8              
-    ## gap_openness.tste_17_9              
-    ## gap_openness.tste_17_10             
-    ## gap_openness.tste_17_11             
-    ## gap_openness.tste_17_12             
-    ## gap_openness.tste_17_13             
-    ## gap_openness.tste_17_14             
-    ## gap_openness.tste_17_15             
-    ## gap_openness.tste_17_16             
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                      30.1041219 18.4836209   1.629  0.10353    
+    ## age                              -0.0129212  0.0046419  -2.784  0.00543 ** 
+    ## education                         0.0141134  0.0267527   0.528  0.59787    
+    ## income                            0.0104330  0.0173457   0.601  0.54759    
+    ## race2                             0.0874094  0.1325579   0.659  0.50971    
+    ## race4                            -0.2096089  0.1419289  -1.477  0.13987    
+    ## race6                            -0.8850533  0.3702547  -2.390  0.01692 *  
+    ## race7                            -0.1400724  0.1390377  -1.007  0.31384    
+    ## sex2                             -0.0927080  0.0730554  -1.269  0.20458    
+    ## release                          -0.0128139  0.0090432  -1.417  0.15665    
+    ## star_user                         0.0399266  0.0671490   0.595  0.55218    
+    ## real_extraversion                 0.0592894  0.0252738   2.346  0.01908 *  
+    ## real_agreeableness                0.0247867  0.0316206   0.784  0.43320    
+    ## real_conscientiousness            0.0850070  0.0351326   2.420  0.01563 *  
+    ## real_emotionstability            -0.0308044  0.0348673  -0.883  0.37709    
+    ## real_openness                     0.0828175  0.0334885   2.473  0.01348 *  
+    ## gap_extraversion                  0.0068096  0.0266296   0.256  0.79820    
+    ## gap_agreeableness                 0.0617390  0.0345525   1.787  0.07412 .  
+    ## gap_conscientiousness             0.0133605  0.0413792   0.323  0.74682    
+    ## gap_emotionstability             -0.0463239  0.0323532  -1.432  0.15235    
+    ## gap_openness                     -0.0627685  0.0445923  -1.408  0.15940    
+    ## tste_17_0                         0.2911489  0.0614683   4.737 2.33e-06 ***
+    ## tste_17_1                         0.0953467  0.0535937   1.779  0.07538 .  
+    ## tste_17_2                        -0.0114660  0.0644095  -0.178  0.85873    
+    ## tste_17_3                         0.0035023  0.0587274   0.060  0.95245    
+    ## tste_17_4                         0.0924536  0.0631046   1.465  0.14305    
+    ## tste_17_5                        -0.0095255  0.0578484  -0.165  0.86923    
+    ## tste_17_6                        -0.0718952  0.0617092  -1.165  0.24413    
+    ## tste_17_7                         0.0889834  0.0551520   1.613  0.10681    
+    ## tste_17_8                        -0.0528933  0.0591275  -0.895  0.37113    
+    ## tste_17_9                        -0.0746984  0.0587527  -1.271  0.20373    
+    ## tste_17_10                        0.0207356  0.0534260   0.388  0.69797    
+    ## tste_17_11                        0.0419084  0.0586785   0.714  0.47518    
+    ## tste_17_12                       -0.1206181  0.0520968  -2.315  0.02070 *  
+    ## tste_17_13                        0.0686882  0.0608365   1.129  0.25901    
+    ## tste_17_14                        0.0216843  0.0559877   0.387  0.69857    
+    ## tste_17_15                       -0.0932196  0.0685448  -1.360  0.17399    
+    ## tste_17_16                        0.0057867  0.0510594   0.113  0.90978    
+    ## gap_extraversion.tste_17_0       -0.0107941  0.0302874  -0.356  0.72159    
+    ## gap_extraversion.tste_17_1       -0.0091619  0.0261457  -0.350  0.72606    
+    ## gap_extraversion.tste_17_2       -0.0487521  0.0333000  -1.464  0.14334    
+    ## gap_extraversion.tste_17_3       -0.0109270  0.0303333  -0.360  0.71871    
+    ## gap_extraversion.tste_17_4        0.0048224  0.0320096   0.151  0.88026    
+    ## gap_extraversion.tste_17_5        0.0426879  0.0275370   1.550  0.12125    
+    ## gap_extraversion.tste_17_6        0.0010021  0.0308564   0.032  0.97409    
+    ## gap_extraversion.tste_17_7       -0.0017053  0.0284166  -0.060  0.95215    
+    ## gap_extraversion.tste_17_8        0.0414561  0.0307844   1.347  0.17824    
+    ## gap_extraversion.tste_17_9        0.0225766  0.0304249   0.742  0.45815    
+    ## gap_extraversion.tste_17_10       0.0195682  0.0276216   0.708  0.47875    
+    ## gap_extraversion.tste_17_11      -0.0082531  0.0292587  -0.282  0.77792    
+    ## gap_extraversion.tste_17_12      -0.0303035  0.0264035  -1.148  0.25122    
+    ## gap_extraversion.tste_17_13       0.0008676  0.0292331   0.030  0.97633    
+    ## gap_extraversion.tste_17_14       0.0444916  0.0279429   1.592  0.11149    
+    ## gap_extraversion.tste_17_15       0.0225637  0.0319294   0.707  0.47985    
+    ## gap_extraversion.tste_17_16      -0.0132764  0.0267158  -0.497  0.61928    
+    ## gap_agreeableness.tste_17_0      -0.0343744  0.0431969  -0.796  0.42626    
+    ## gap_agreeableness.tste_17_1      -0.0239121  0.0385302  -0.621  0.53493    
+    ## gap_agreeableness.tste_17_2       0.0201829  0.0474974   0.425  0.67094    
+    ## gap_agreeableness.tste_17_3      -0.0357518  0.0428922  -0.834  0.40465    
+    ## gap_agreeableness.tste_17_4      -0.0700811  0.0475795  -1.473  0.14093    
+    ## gap_agreeableness.tste_17_5       0.0064345  0.0380957   0.169  0.86589    
+    ## gap_agreeableness.tste_17_6       0.0377021  0.0472592   0.798  0.42510    
+    ## gap_agreeableness.tste_17_7      -0.0521900  0.0385749  -1.353  0.17622    
+    ## gap_agreeableness.tste_17_8      -0.0769367  0.0447773  -1.718  0.08591 .  
+    ## gap_agreeableness.tste_17_9      -0.0320234  0.0419954  -0.763  0.44582    
+    ## gap_agreeableness.tste_17_10      0.0680080  0.0397859   1.709  0.08754 .  
+    ## gap_agreeableness.tste_17_11      0.0285448  0.0418055   0.683  0.49481    
+    ## gap_agreeableness.tste_17_12      0.0042062  0.0371000   0.113  0.90974    
+    ## gap_agreeableness.tste_17_13      0.0110549  0.0399222   0.277  0.78188    
+    ## gap_agreeableness.tste_17_14     -0.0723920  0.0369306  -1.960  0.05011 .  
+    ## gap_agreeableness.tste_17_15     -0.0176157  0.0485691  -0.363  0.71687    
+    ## gap_agreeableness.tste_17_16      0.0231692  0.0369817   0.627  0.53105    
+    ## gap_conscientiousness.tste_17_0   0.0467409  0.0501970   0.931  0.35189    
+    ## gap_conscientiousness.tste_17_1  -0.0344563  0.0449554  -0.766  0.44350    
+    ## gap_conscientiousness.tste_17_2  -0.1121719  0.0541734  -2.071  0.03852 *  
+    ## gap_conscientiousness.tste_17_3   0.0356039  0.0459266   0.775  0.43829    
+    ## gap_conscientiousness.tste_17_4  -0.0604987  0.0524895  -1.153  0.24922    
+    ## gap_conscientiousness.tste_17_5  -0.0425464  0.0443266  -0.960  0.33725    
+    ## gap_conscientiousness.tste_17_6  -0.0916125  0.0507468  -1.805  0.07118 .  
+    ## gap_conscientiousness.tste_17_7   0.0058130  0.0434256   0.134  0.89353    
+    ## gap_conscientiousness.tste_17_8   0.0005390  0.0506000   0.011  0.99150    
+    ## gap_conscientiousness.tste_17_9  -0.0680883  0.0469522  -1.450  0.14717    
+    ## gap_conscientiousness.tste_17_10  0.0124570  0.0441376   0.282  0.77780    
+    ## gap_conscientiousness.tste_17_11  0.1154080  0.0489976   2.355  0.01860 *  
+    ## gap_conscientiousness.tste_17_12  0.0469643  0.0424469   1.106  0.26868    
+    ## gap_conscientiousness.tste_17_13 -0.0089102  0.0474421  -0.188  0.85104    
+    ## gap_conscientiousness.tste_17_14 -0.0062786  0.0465415  -0.135  0.89270    
+    ## gap_conscientiousness.tste_17_15  0.1061157  0.0514943   2.061  0.03946 *  
+    ## gap_conscientiousness.tste_17_16 -0.0629374  0.0417009  -1.509  0.13139    
+    ## gap_emotionstability.tste_17_0   -0.0513748  0.0389103  -1.320  0.18687    
+    ## gap_emotionstability.tste_17_1    0.0477294  0.0355090   1.344  0.17905    
+    ## gap_emotionstability.tste_17_2   -0.0544791  0.0411866  -1.323  0.18607    
+    ## gap_emotionstability.tste_17_3    0.0059999  0.0387938   0.155  0.87710    
+    ## gap_emotionstability.tste_17_4    0.0041838  0.0415233   0.101  0.91975    
+    ## gap_emotionstability.tste_17_5   -0.0407988  0.0348696  -1.170  0.24212    
+    ## gap_emotionstability.tste_17_6    0.0160477  0.0398680   0.403  0.68734    
+    ## gap_emotionstability.tste_17_7    0.0277465  0.0360900   0.769  0.44209    
+    ## gap_emotionstability.tste_17_8   -0.0229375  0.0395699  -0.580  0.56220    
+    ## gap_emotionstability.tste_17_9    0.0357229  0.0375166   0.952  0.34112    
+    ## gap_emotionstability.tste_17_10   0.0223525  0.0348417   0.642  0.52124    
+    ## gap_emotionstability.tste_17_11   0.0322833  0.0373430   0.865  0.38741    
+    ## gap_emotionstability.tste_17_12   0.0025497  0.0324026   0.079  0.93729    
+    ## gap_emotionstability.tste_17_13   0.0036921  0.0351756   0.105  0.91642    
+    ## gap_emotionstability.tste_17_14   0.0988318  0.0363091   2.722  0.00655 ** 
+    ## gap_emotionstability.tste_17_15  -0.0531686  0.0407794  -1.304  0.19245    
+    ## gap_emotionstability.tste_17_16  -0.0258043  0.0335595  -0.769  0.44204    
+    ## gap_openness.tste_17_0            0.0073246  0.0502184   0.146  0.88405    
+    ## gap_openness.tste_17_1            0.0620820  0.0442578   1.403  0.16085    
+    ## gap_openness.tste_17_2           -0.0100017  0.0515654  -0.194  0.84622    
+    ## gap_openness.tste_17_3            0.0599641  0.0461811   1.298  0.19428    
+    ## gap_openness.tste_17_4            0.0142057  0.0535774   0.265  0.79093    
+    ## gap_openness.tste_17_5           -0.1028779  0.0446564  -2.304  0.02134 *  
+    ## gap_openness.tste_17_6            0.0220422  0.0523772   0.421  0.67392    
+    ## gap_openness.tste_17_7            0.0561855  0.0444767   1.263  0.20664    
+    ## gap_openness.tste_17_8           -0.0141952  0.0485470  -0.292  0.77001    
+    ## gap_openness.tste_17_9           -0.0371844  0.0471957  -0.788  0.43086    
+    ## gap_openness.tste_17_10           0.0404687  0.0444978   0.909  0.36322    
+    ## gap_openness.tste_17_11          -0.0149010  0.0457264  -0.326  0.74455    
+    ## gap_openness.tste_17_12          -0.0345609  0.0411437  -0.840  0.40100    
+    ## gap_openness.tste_17_13          -0.0423821  0.0460572  -0.920  0.35758    
+    ## gap_openness.tste_17_14           0.0301061  0.0444882   0.677  0.49866    
+    ## gap_openness.tste_17_15          -0.0471559  0.0529022  -0.891  0.37283    
+    ## gap_openness.tste_17_16          -0.0059852  0.0413207  -0.145  0.88485    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -8714,290 +6146,148 @@ for(model in slice(dfs, 1:19)$model_lm) print(summary(model))
     ## -5.2447 -0.6880  0.2329  1.0073  3.6259 
     ## 
     ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                      31.4034319 19.4330960   1.616  0.10626
-    ## age                              -0.0120360  0.0046530  -2.587  0.00976
-    ## education                         0.0139962  0.0267661   0.523  0.60110
-    ## income                            0.0152319  0.0174145   0.875  0.38186
-    ## race2                             0.0981451  0.1327174   0.740  0.45969
-    ## race4                            -0.2028436  0.1422403  -1.426  0.15401
-    ## race6                            -0.8839094  0.3720930  -2.376  0.01762
-    ## race7                            -0.1419090  0.1399964  -1.014  0.31087
-    ## sex2                             -0.0745770  0.0732827  -1.018  0.30896
-    ## release                          -0.0134302  0.0095218  -1.410  0.15856
-    ## star_user                         0.0258753  0.0688734   0.376  0.70718
-    ## real_extraversion                 0.0585703  0.0253186   2.313  0.02081
-    ## real_agreeableness                0.0279912  0.0315980   0.886  0.37580
-    ## real_conscientiousness            0.0816649  0.0352401   2.317  0.02058
-    ## real_emotionstability            -0.0253595  0.0349509  -0.726  0.46819
-    ## real_openness                     0.0827158  0.0334997   2.469  0.01363
-    ## gap_extraversion                  0.0062111  0.0266267   0.233  0.81558
-    ## gap_agreeableness                 0.0618471  0.0345437   1.790  0.07354
-    ## gap_conscientiousness             0.0023230  0.0417378   0.056  0.95562
-    ## gap_emotionstability             -0.0441433  0.0324262  -1.361  0.17356
-    ## gap_openness                     -0.0572197  0.0448080  -1.277  0.20175
-    ## tste_20_0                         0.0312905  0.0663557   0.472  0.63729
-    ## tste_20_1                         0.0706100  0.0580521   1.216  0.22401
-    ## tste_20_2                         0.0908634  0.0545437   1.666  0.09589
-    ## tste_20_3                         0.1164759  0.0616958   1.888  0.05918
-    ## tste_20_4                         0.0375456  0.0547143   0.686  0.49266
-    ## tste_20_5                        -0.0547858  0.0568416  -0.964  0.33525
-    ## tste_20_6                         0.1045184  0.0649788   1.608  0.10788
-    ## tste_20_7                         0.2817351  0.0679775   4.145 3.55e-05
-    ## tste_20_8                         0.0035076  0.0651553   0.054  0.95707
-    ## tste_20_9                         0.1058328  0.0569157   1.859  0.06311
-    ## tste_20_10                        0.1007725  0.0621964   1.620  0.10534
-    ## tste_20_11                       -0.1660915  0.0567059  -2.929  0.00344
-    ## tste_20_12                        0.1106068  0.0585198   1.890  0.05889
-    ## tste_20_13                        0.1701657  0.0633898   2.684  0.00733
-    ## tste_20_14                       -0.1100296  0.0513254  -2.144  0.03217
-    ## tste_20_15                        0.1457198  0.0669373   2.177  0.02960
-    ## tste_20_16                       -0.0162315  0.0579384  -0.280  0.77939
-    ## tste_20_17                        0.0634913  0.0537260   1.182  0.23744
-    ## tste_20_18                        0.1029729  0.0535678   1.922  0.05471
-    ## tste_20_19                       -0.0125315  0.0602700  -0.208  0.83531
-    ## gap_extraversion.tste_20_0        0.0205733  0.0324038   0.635  0.52556
-    ## gap_extraversion.tste_20_1        0.0249711  0.0292442   0.854  0.39327
-    ## gap_extraversion.tste_20_2       -0.0077306  0.0290221  -0.266  0.78998
-    ## gap_extraversion.tste_20_3        0.0354641  0.0322912   1.098  0.27222
-    ## gap_extraversion.tste_20_4       -0.0281364  0.0271181  -1.038  0.29961
-    ## gap_extraversion.tste_20_5        0.0009508  0.0289410   0.033  0.97379
-    ## gap_extraversion.tste_20_6       -0.0765600  0.0331719  -2.308  0.02110
-    ## gap_extraversion.tste_20_7       -0.0681130  0.0340555  -2.000  0.04563
-    ## gap_extraversion.tste_20_8       -0.0031486  0.0318961  -0.099  0.92138
-    ## gap_extraversion.tste_20_9        0.0381933  0.0294315   1.298  0.19454
-    ## gap_extraversion.tste_20_10      -0.0177787  0.0306290  -0.580  0.56167
-    ## gap_extraversion.tste_20_11       0.0419338  0.0290753   1.442  0.14939
-    ## gap_extraversion.tste_20_12      -0.0006728  0.0308510  -0.022  0.98260
-    ## gap_extraversion.tste_20_13      -0.0625532  0.0322440  -1.940  0.05252
-    ## gap_extraversion.tste_20_14       0.0209202  0.0263755   0.793  0.42777
-    ## gap_extraversion.tste_20_15       0.0256656  0.0313436   0.819  0.41297
-    ## gap_extraversion.tste_20_16      -0.0349015  0.0291929  -1.196  0.23201
-    ## gap_extraversion.tste_20_17      -0.0078581  0.0272098  -0.289  0.77277
-    ## gap_extraversion.tste_20_18       0.0106277  0.0269569   0.394  0.69344
-    ## gap_extraversion.tste_20_19      -0.0138354  0.0301540  -0.459  0.64641
-    ## gap_agreeableness.tste_20_0       0.0385060  0.0452347   0.851  0.39473
-    ## gap_agreeableness.tste_20_1       0.0056925  0.0414511   0.137  0.89078
-    ## gap_agreeableness.tste_20_2       0.0006631  0.0404013   0.016  0.98691
-    ## gap_agreeableness.tste_20_3      -0.0322973  0.0433650  -0.745  0.45649
-    ## gap_agreeableness.tste_20_4       0.0795974  0.0405715   1.962  0.04991
-    ## gap_agreeableness.tste_20_5       0.0081481  0.0413214   0.197  0.84370
-    ## gap_agreeableness.tste_20_6       0.0007719  0.0453144   0.017  0.98641
-    ## gap_agreeableness.tste_20_7       0.0005742  0.0481445   0.012  0.99049
-    ## gap_agreeableness.tste_20_8      -0.0820711  0.0436270  -1.881  0.06009
-    ## gap_agreeableness.tste_20_9      -0.0800380  0.0409829  -1.953  0.05096
-    ## gap_agreeableness.tste_20_10     -0.0398269  0.0422002  -0.944  0.34541
-    ## gap_agreeableness.tste_20_11      0.0335158  0.0421663   0.795  0.42680
-    ## gap_agreeableness.tste_20_12      0.0008901  0.0441041   0.020  0.98390
-    ## gap_agreeableness.tste_20_13      0.0092313  0.0488966   0.189  0.85028
-    ## gap_agreeableness.tste_20_14      0.0482432  0.0370838   1.301  0.19343
-    ## gap_agreeableness.tste_20_15     -0.0427903  0.0446498  -0.958  0.33800
-    ## gap_agreeableness.tste_20_16      0.0171323  0.0416323   0.412  0.68074
-    ## gap_agreeableness.tste_20_17     -0.0327826  0.0380360  -0.862  0.38886
-    ## gap_agreeableness.tste_20_18      0.0378576  0.0386611   0.979  0.32759
-    ## gap_agreeableness.tste_20_19      0.0629363  0.0435905   1.444  0.14895
-    ## gap_conscientiousness.tste_20_0   0.1246416  0.0539190   2.312  0.02090
-    ## gap_conscientiousness.tste_20_1  -0.0607203  0.0458982  -1.323  0.18601
-    ## gap_conscientiousness.tste_20_2   0.0419231  0.0448859   0.934  0.35042
-    ## gap_conscientiousness.tste_20_3   0.0108721  0.0497467   0.219  0.82702
-    ## gap_conscientiousness.tste_20_4  -0.0327516  0.0477173  -0.686  0.49256
-    ## gap_conscientiousness.tste_20_5  -0.1167919  0.0472785  -2.470  0.01358
-    ## gap_conscientiousness.tste_20_6  -0.0220794  0.0531029  -0.416  0.67761
-    ## gap_conscientiousness.tste_20_7  -0.0110192  0.0528214  -0.209  0.83477
-    ## gap_conscientiousness.tste_20_8   0.0317566  0.0505380   0.628  0.52983
-    ## gap_conscientiousness.tste_20_9   0.0093847  0.0465379   0.202  0.84021
-    ## gap_conscientiousness.tste_20_10 -0.0277591  0.0493686  -0.562  0.57399
-    ## gap_conscientiousness.tste_20_11 -0.0331907  0.0484733  -0.685  0.49360
-    ## gap_conscientiousness.tste_20_12 -0.0451133  0.0510273  -0.884  0.37675
-    ## gap_conscientiousness.tste_20_13  0.1002393  0.0537220   1.866  0.06220
-    ## gap_conscientiousness.tste_20_14 -0.0688076  0.0431765  -1.594  0.11118
-    ## gap_conscientiousness.tste_20_15 -0.0812499  0.0528506  -1.537  0.12437
-    ## gap_conscientiousness.tste_20_16 -0.0269672  0.0468433  -0.576  0.56489
-    ## gap_conscientiousness.tste_20_17  0.0068258  0.0446626   0.153  0.87855
-    ## gap_conscientiousness.tste_20_18  0.0025594  0.0434499   0.059  0.95303
-    ## gap_conscientiousness.tste_20_19  0.0035244  0.0463304   0.076  0.93937
-    ## gap_emotionstability.tste_20_0    0.0332239  0.0416120   0.798  0.42472
-    ## gap_emotionstability.tste_20_1    0.0330113  0.0369875   0.892  0.37223
-    ## gap_emotionstability.tste_20_2   -0.0239714  0.0363704  -0.659  0.50991
-    ## gap_emotionstability.tste_20_3   -0.0573279  0.0402723  -1.424  0.15475
-    ## gap_emotionstability.tste_20_4   -0.0135855  0.0364739  -0.372  0.70958
-    ## gap_emotionstability.tste_20_5   -0.0012000  0.0368833  -0.033  0.97405
-    ## gap_emotionstability.tste_20_6   -0.0016079  0.0414382  -0.039  0.96905
-    ## gap_emotionstability.tste_20_7   -0.0074358  0.0437696  -0.170  0.86512
-    ## gap_emotionstability.tste_20_8    0.0361232  0.0408380   0.885  0.37651
-    ## gap_emotionstability.tste_20_9    0.0825337  0.0371180   2.224  0.02629
-    ## gap_emotionstability.tste_20_10  -0.0185523  0.0399373  -0.465  0.64231
-    ## gap_emotionstability.tste_20_11  -0.0396300  0.0358488  -1.105  0.26909
-    ## gap_emotionstability.tste_20_12  -0.0703510  0.0383245  -1.836  0.06656
-    ## gap_emotionstability.tste_20_13   0.0388017  0.0408317   0.950  0.34208
-    ## gap_emotionstability.tste_20_14  -0.0337866  0.0353810  -0.955  0.33973
-    ## gap_emotionstability.tste_20_15   0.0546663  0.0395341   1.383  0.16689
-    ## gap_emotionstability.tste_20_16   0.0560600  0.0367391   1.526  0.12719
-    ## gap_emotionstability.tste_20_17  -0.0049253  0.0346485  -0.142  0.88697
-    ## gap_emotionstability.tste_20_18   0.0455160  0.0341006   1.335  0.18211
-    ## gap_emotionstability.tste_20_19  -0.0682762  0.0383717  -1.779  0.07534
-    ## gap_openness.tste_20_0            0.0146083  0.0520869   0.280  0.77915
-    ## gap_openness.tste_20_1            0.0399562  0.0466758   0.856  0.39208
-    ## gap_openness.tste_20_2           -0.0111619  0.0427137  -0.261  0.79387
-    ## gap_openness.tste_20_3            0.0081777  0.0504157   0.162  0.87116
-    ## gap_openness.tste_20_4            0.0142915  0.0461899   0.309  0.75704
-    ## gap_openness.tste_20_5            0.0048508  0.0445989   0.109  0.91340
-    ## gap_openness.tste_20_6            0.0407349  0.0511627   0.796  0.42602
-    ## gap_openness.tste_20_7           -0.0584824  0.0528282  -1.107  0.26841
-    ## gap_openness.tste_20_8            0.0757253  0.0494708   1.531  0.12600
-    ## gap_openness.tste_20_9           -0.0072199  0.0471518  -0.153  0.87832
-    ## gap_openness.tste_20_10           0.0058977  0.0497073   0.119  0.90557
-    ## gap_openness.tste_20_11          -0.0889342  0.0472781  -1.881  0.06011
-    ## gap_openness.tste_20_12          -0.0196162  0.0489318  -0.401  0.68854
-    ## gap_openness.tste_20_13           0.0208736  0.0530775   0.393  0.69416
-    ## gap_openness.tste_20_14          -0.0391215  0.0428552  -0.913  0.36142
-    ## gap_openness.tste_20_15          -0.0126265  0.0507949  -0.249  0.80371
-    ## gap_openness.tste_20_16          -0.0103990  0.0480136  -0.217  0.82855
-    ## gap_openness.tste_20_17          -0.0563737  0.0421128  -1.339  0.18084
-    ## gap_openness.tste_20_18           0.0342412  0.0430201   0.796  0.42616
-    ## gap_openness.tste_20_19          -0.0801174  0.0484397  -1.654  0.09829
-    ##                                     
-    ## (Intercept)                         
-    ## age                              ** 
-    ## education                           
-    ## income                              
-    ## race2                               
-    ## race4                               
-    ## race6                            *  
-    ## race7                               
-    ## sex2                                
-    ## release                             
-    ## star_user                           
-    ## real_extraversion                *  
-    ## real_agreeableness                  
-    ## real_conscientiousness           *  
-    ## real_emotionstability               
-    ## real_openness                    *  
-    ## gap_extraversion                    
-    ## gap_agreeableness                .  
-    ## gap_conscientiousness               
-    ## gap_emotionstability                
-    ## gap_openness                        
-    ## tste_20_0                           
-    ## tste_20_1                           
-    ## tste_20_2                        .  
-    ## tste_20_3                        .  
-    ## tste_20_4                           
-    ## tste_20_5                           
-    ## tste_20_6                           
-    ## tste_20_7                        ***
-    ## tste_20_8                           
-    ## tste_20_9                        .  
-    ## tste_20_10                          
-    ## tste_20_11                       ** 
-    ## tste_20_12                       .  
-    ## tste_20_13                       ** 
-    ## tste_20_14                       *  
-    ## tste_20_15                       *  
-    ## tste_20_16                          
-    ## tste_20_17                          
-    ## tste_20_18                       .  
-    ## tste_20_19                          
-    ## gap_extraversion.tste_20_0          
-    ## gap_extraversion.tste_20_1          
-    ## gap_extraversion.tste_20_2          
-    ## gap_extraversion.tste_20_3          
-    ## gap_extraversion.tste_20_4          
-    ## gap_extraversion.tste_20_5          
-    ## gap_extraversion.tste_20_6       *  
-    ## gap_extraversion.tste_20_7       *  
-    ## gap_extraversion.tste_20_8          
-    ## gap_extraversion.tste_20_9          
-    ## gap_extraversion.tste_20_10         
-    ## gap_extraversion.tste_20_11         
-    ## gap_extraversion.tste_20_12         
-    ## gap_extraversion.tste_20_13      .  
-    ## gap_extraversion.tste_20_14         
-    ## gap_extraversion.tste_20_15         
-    ## gap_extraversion.tste_20_16         
-    ## gap_extraversion.tste_20_17         
-    ## gap_extraversion.tste_20_18         
-    ## gap_extraversion.tste_20_19         
-    ## gap_agreeableness.tste_20_0         
-    ## gap_agreeableness.tste_20_1         
-    ## gap_agreeableness.tste_20_2         
-    ## gap_agreeableness.tste_20_3         
-    ## gap_agreeableness.tste_20_4      *  
-    ## gap_agreeableness.tste_20_5         
-    ## gap_agreeableness.tste_20_6         
-    ## gap_agreeableness.tste_20_7         
-    ## gap_agreeableness.tste_20_8      .  
-    ## gap_agreeableness.tste_20_9      .  
-    ## gap_agreeableness.tste_20_10        
-    ## gap_agreeableness.tste_20_11        
-    ## gap_agreeableness.tste_20_12        
-    ## gap_agreeableness.tste_20_13        
-    ## gap_agreeableness.tste_20_14        
-    ## gap_agreeableness.tste_20_15        
-    ## gap_agreeableness.tste_20_16        
-    ## gap_agreeableness.tste_20_17        
-    ## gap_agreeableness.tste_20_18        
-    ## gap_agreeableness.tste_20_19        
-    ## gap_conscientiousness.tste_20_0  *  
-    ## gap_conscientiousness.tste_20_1     
-    ## gap_conscientiousness.tste_20_2     
-    ## gap_conscientiousness.tste_20_3     
-    ## gap_conscientiousness.tste_20_4     
-    ## gap_conscientiousness.tste_20_5  *  
-    ## gap_conscientiousness.tste_20_6     
-    ## gap_conscientiousness.tste_20_7     
-    ## gap_conscientiousness.tste_20_8     
-    ## gap_conscientiousness.tste_20_9     
-    ## gap_conscientiousness.tste_20_10    
-    ## gap_conscientiousness.tste_20_11    
-    ## gap_conscientiousness.tste_20_12    
-    ## gap_conscientiousness.tste_20_13 .  
-    ## gap_conscientiousness.tste_20_14    
-    ## gap_conscientiousness.tste_20_15    
-    ## gap_conscientiousness.tste_20_16    
-    ## gap_conscientiousness.tste_20_17    
-    ## gap_conscientiousness.tste_20_18    
-    ## gap_conscientiousness.tste_20_19    
-    ## gap_emotionstability.tste_20_0      
-    ## gap_emotionstability.tste_20_1      
-    ## gap_emotionstability.tste_20_2      
-    ## gap_emotionstability.tste_20_3      
-    ## gap_emotionstability.tste_20_4      
-    ## gap_emotionstability.tste_20_5      
-    ## gap_emotionstability.tste_20_6      
-    ## gap_emotionstability.tste_20_7      
-    ## gap_emotionstability.tste_20_8      
-    ## gap_emotionstability.tste_20_9   *  
-    ## gap_emotionstability.tste_20_10     
-    ## gap_emotionstability.tste_20_11     
-    ## gap_emotionstability.tste_20_12  .  
-    ## gap_emotionstability.tste_20_13     
-    ## gap_emotionstability.tste_20_14     
-    ## gap_emotionstability.tste_20_15     
-    ## gap_emotionstability.tste_20_16     
-    ## gap_emotionstability.tste_20_17     
-    ## gap_emotionstability.tste_20_18     
-    ## gap_emotionstability.tste_20_19  .  
-    ## gap_openness.tste_20_0              
-    ## gap_openness.tste_20_1              
-    ## gap_openness.tste_20_2              
-    ## gap_openness.tste_20_3              
-    ## gap_openness.tste_20_4              
-    ## gap_openness.tste_20_5              
-    ## gap_openness.tste_20_6              
-    ## gap_openness.tste_20_7              
-    ## gap_openness.tste_20_8              
-    ## gap_openness.tste_20_9              
-    ## gap_openness.tste_20_10             
-    ## gap_openness.tste_20_11          .  
-    ## gap_openness.tste_20_12             
-    ## gap_openness.tste_20_13             
-    ## gap_openness.tste_20_14             
-    ## gap_openness.tste_20_15             
-    ## gap_openness.tste_20_16             
-    ## gap_openness.tste_20_17             
-    ## gap_openness.tste_20_18             
-    ## gap_openness.tste_20_19          .  
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                      31.4034319 19.4330960   1.616  0.10626    
+    ## age                              -0.0120360  0.0046530  -2.587  0.00976 ** 
+    ## education                         0.0139962  0.0267661   0.523  0.60110    
+    ## income                            0.0152319  0.0174145   0.875  0.38186    
+    ## race2                             0.0981451  0.1327174   0.740  0.45969    
+    ## race4                            -0.2028436  0.1422403  -1.426  0.15401    
+    ## race6                            -0.8839094  0.3720930  -2.376  0.01762 *  
+    ## race7                            -0.1419090  0.1399964  -1.014  0.31087    
+    ## sex2                             -0.0745770  0.0732827  -1.018  0.30896    
+    ## release                          -0.0134302  0.0095218  -1.410  0.15856    
+    ## star_user                         0.0258753  0.0688734   0.376  0.70718    
+    ## real_extraversion                 0.0585703  0.0253186   2.313  0.02081 *  
+    ## real_agreeableness                0.0279912  0.0315980   0.886  0.37580    
+    ## real_conscientiousness            0.0816649  0.0352401   2.317  0.02058 *  
+    ## real_emotionstability            -0.0253595  0.0349509  -0.726  0.46819    
+    ## real_openness                     0.0827158  0.0334997   2.469  0.01363 *  
+    ## gap_extraversion                  0.0062111  0.0266267   0.233  0.81558    
+    ## gap_agreeableness                 0.0618471  0.0345437   1.790  0.07354 .  
+    ## gap_conscientiousness             0.0023230  0.0417378   0.056  0.95562    
+    ## gap_emotionstability             -0.0441433  0.0324262  -1.361  0.17356    
+    ## gap_openness                     -0.0572197  0.0448080  -1.277  0.20175    
+    ## tste_20_0                         0.0312905  0.0663557   0.472  0.63729    
+    ## tste_20_1                         0.0706100  0.0580521   1.216  0.22401    
+    ## tste_20_2                         0.0908634  0.0545437   1.666  0.09589 .  
+    ## tste_20_3                         0.1164759  0.0616958   1.888  0.05918 .  
+    ## tste_20_4                         0.0375456  0.0547143   0.686  0.49266    
+    ## tste_20_5                        -0.0547858  0.0568416  -0.964  0.33525    
+    ## tste_20_6                         0.1045184  0.0649788   1.608  0.10788    
+    ## tste_20_7                         0.2817351  0.0679775   4.145 3.55e-05 ***
+    ## tste_20_8                         0.0035076  0.0651553   0.054  0.95707    
+    ## tste_20_9                         0.1058328  0.0569157   1.859  0.06311 .  
+    ## tste_20_10                        0.1007725  0.0621964   1.620  0.10534    
+    ## tste_20_11                       -0.1660915  0.0567059  -2.929  0.00344 ** 
+    ## tste_20_12                        0.1106068  0.0585198   1.890  0.05889 .  
+    ## tste_20_13                        0.1701657  0.0633898   2.684  0.00733 ** 
+    ## tste_20_14                       -0.1100296  0.0513254  -2.144  0.03217 *  
+    ## tste_20_15                        0.1457198  0.0669373   2.177  0.02960 *  
+    ## tste_20_16                       -0.0162315  0.0579384  -0.280  0.77939    
+    ## tste_20_17                        0.0634913  0.0537260   1.182  0.23744    
+    ## tste_20_18                        0.1029729  0.0535678   1.922  0.05471 .  
+    ## tste_20_19                       -0.0125315  0.0602700  -0.208  0.83531    
+    ## gap_extraversion.tste_20_0        0.0205733  0.0324038   0.635  0.52556    
+    ## gap_extraversion.tste_20_1        0.0249711  0.0292442   0.854  0.39327    
+    ## gap_extraversion.tste_20_2       -0.0077306  0.0290221  -0.266  0.78998    
+    ## gap_extraversion.tste_20_3        0.0354641  0.0322912   1.098  0.27222    
+    ## gap_extraversion.tste_20_4       -0.0281364  0.0271181  -1.038  0.29961    
+    ## gap_extraversion.tste_20_5        0.0009508  0.0289410   0.033  0.97379    
+    ## gap_extraversion.tste_20_6       -0.0765600  0.0331719  -2.308  0.02110 *  
+    ## gap_extraversion.tste_20_7       -0.0681130  0.0340555  -2.000  0.04563 *  
+    ## gap_extraversion.tste_20_8       -0.0031486  0.0318961  -0.099  0.92138    
+    ## gap_extraversion.tste_20_9        0.0381933  0.0294315   1.298  0.19454    
+    ## gap_extraversion.tste_20_10      -0.0177787  0.0306290  -0.580  0.56167    
+    ## gap_extraversion.tste_20_11       0.0419338  0.0290753   1.442  0.14939    
+    ## gap_extraversion.tste_20_12      -0.0006728  0.0308510  -0.022  0.98260    
+    ## gap_extraversion.tste_20_13      -0.0625532  0.0322440  -1.940  0.05252 .  
+    ## gap_extraversion.tste_20_14       0.0209202  0.0263755   0.793  0.42777    
+    ## gap_extraversion.tste_20_15       0.0256656  0.0313436   0.819  0.41297    
+    ## gap_extraversion.tste_20_16      -0.0349015  0.0291929  -1.196  0.23201    
+    ## gap_extraversion.tste_20_17      -0.0078581  0.0272098  -0.289  0.77277    
+    ## gap_extraversion.tste_20_18       0.0106277  0.0269569   0.394  0.69344    
+    ## gap_extraversion.tste_20_19      -0.0138354  0.0301540  -0.459  0.64641    
+    ## gap_agreeableness.tste_20_0       0.0385060  0.0452347   0.851  0.39473    
+    ## gap_agreeableness.tste_20_1       0.0056925  0.0414511   0.137  0.89078    
+    ## gap_agreeableness.tste_20_2       0.0006631  0.0404013   0.016  0.98691    
+    ## gap_agreeableness.tste_20_3      -0.0322973  0.0433650  -0.745  0.45649    
+    ## gap_agreeableness.tste_20_4       0.0795974  0.0405715   1.962  0.04991 *  
+    ## gap_agreeableness.tste_20_5       0.0081481  0.0413214   0.197  0.84370    
+    ## gap_agreeableness.tste_20_6       0.0007719  0.0453144   0.017  0.98641    
+    ## gap_agreeableness.tste_20_7       0.0005742  0.0481445   0.012  0.99049    
+    ## gap_agreeableness.tste_20_8      -0.0820711  0.0436270  -1.881  0.06009 .  
+    ## gap_agreeableness.tste_20_9      -0.0800380  0.0409829  -1.953  0.05096 .  
+    ## gap_agreeableness.tste_20_10     -0.0398269  0.0422002  -0.944  0.34541    
+    ## gap_agreeableness.tste_20_11      0.0335158  0.0421663   0.795  0.42680    
+    ## gap_agreeableness.tste_20_12      0.0008901  0.0441041   0.020  0.98390    
+    ## gap_agreeableness.tste_20_13      0.0092313  0.0488966   0.189  0.85028    
+    ## gap_agreeableness.tste_20_14      0.0482432  0.0370838   1.301  0.19343    
+    ## gap_agreeableness.tste_20_15     -0.0427903  0.0446498  -0.958  0.33800    
+    ## gap_agreeableness.tste_20_16      0.0171323  0.0416323   0.412  0.68074    
+    ## gap_agreeableness.tste_20_17     -0.0327826  0.0380360  -0.862  0.38886    
+    ## gap_agreeableness.tste_20_18      0.0378576  0.0386611   0.979  0.32759    
+    ## gap_agreeableness.tste_20_19      0.0629363  0.0435905   1.444  0.14895    
+    ## gap_conscientiousness.tste_20_0   0.1246416  0.0539190   2.312  0.02090 *  
+    ## gap_conscientiousness.tste_20_1  -0.0607203  0.0458982  -1.323  0.18601    
+    ## gap_conscientiousness.tste_20_2   0.0419231  0.0448859   0.934  0.35042    
+    ## gap_conscientiousness.tste_20_3   0.0108721  0.0497467   0.219  0.82702    
+    ## gap_conscientiousness.tste_20_4  -0.0327516  0.0477173  -0.686  0.49256    
+    ## gap_conscientiousness.tste_20_5  -0.1167919  0.0472785  -2.470  0.01358 *  
+    ## gap_conscientiousness.tste_20_6  -0.0220794  0.0531029  -0.416  0.67761    
+    ## gap_conscientiousness.tste_20_7  -0.0110192  0.0528214  -0.209  0.83477    
+    ## gap_conscientiousness.tste_20_8   0.0317566  0.0505380   0.628  0.52983    
+    ## gap_conscientiousness.tste_20_9   0.0093847  0.0465379   0.202  0.84021    
+    ## gap_conscientiousness.tste_20_10 -0.0277591  0.0493686  -0.562  0.57399    
+    ## gap_conscientiousness.tste_20_11 -0.0331907  0.0484733  -0.685  0.49360    
+    ## gap_conscientiousness.tste_20_12 -0.0451133  0.0510273  -0.884  0.37675    
+    ## gap_conscientiousness.tste_20_13  0.1002393  0.0537220   1.866  0.06220 .  
+    ## gap_conscientiousness.tste_20_14 -0.0688076  0.0431765  -1.594  0.11118    
+    ## gap_conscientiousness.tste_20_15 -0.0812499  0.0528506  -1.537  0.12437    
+    ## gap_conscientiousness.tste_20_16 -0.0269672  0.0468433  -0.576  0.56489    
+    ## gap_conscientiousness.tste_20_17  0.0068258  0.0446626   0.153  0.87855    
+    ## gap_conscientiousness.tste_20_18  0.0025594  0.0434499   0.059  0.95303    
+    ## gap_conscientiousness.tste_20_19  0.0035244  0.0463304   0.076  0.93937    
+    ## gap_emotionstability.tste_20_0    0.0332239  0.0416120   0.798  0.42472    
+    ## gap_emotionstability.tste_20_1    0.0330113  0.0369875   0.892  0.37223    
+    ## gap_emotionstability.tste_20_2   -0.0239714  0.0363704  -0.659  0.50991    
+    ## gap_emotionstability.tste_20_3   -0.0573279  0.0402723  -1.424  0.15475    
+    ## gap_emotionstability.tste_20_4   -0.0135855  0.0364739  -0.372  0.70958    
+    ## gap_emotionstability.tste_20_5   -0.0012000  0.0368833  -0.033  0.97405    
+    ## gap_emotionstability.tste_20_6   -0.0016079  0.0414382  -0.039  0.96905    
+    ## gap_emotionstability.tste_20_7   -0.0074358  0.0437696  -0.170  0.86512    
+    ## gap_emotionstability.tste_20_8    0.0361232  0.0408380   0.885  0.37651    
+    ## gap_emotionstability.tste_20_9    0.0825337  0.0371180   2.224  0.02629 *  
+    ## gap_emotionstability.tste_20_10  -0.0185523  0.0399373  -0.465  0.64231    
+    ## gap_emotionstability.tste_20_11  -0.0396300  0.0358488  -1.105  0.26909    
+    ## gap_emotionstability.tste_20_12  -0.0703510  0.0383245  -1.836  0.06656 .  
+    ## gap_emotionstability.tste_20_13   0.0388017  0.0408317   0.950  0.34208    
+    ## gap_emotionstability.tste_20_14  -0.0337866  0.0353810  -0.955  0.33973    
+    ## gap_emotionstability.tste_20_15   0.0546663  0.0395341   1.383  0.16689    
+    ## gap_emotionstability.tste_20_16   0.0560600  0.0367391   1.526  0.12719    
+    ## gap_emotionstability.tste_20_17  -0.0049253  0.0346485  -0.142  0.88697    
+    ## gap_emotionstability.tste_20_18   0.0455160  0.0341006   1.335  0.18211    
+    ## gap_emotionstability.tste_20_19  -0.0682762  0.0383717  -1.779  0.07534 .  
+    ## gap_openness.tste_20_0            0.0146083  0.0520869   0.280  0.77915    
+    ## gap_openness.tste_20_1            0.0399562  0.0466758   0.856  0.39208    
+    ## gap_openness.tste_20_2           -0.0111619  0.0427137  -0.261  0.79387    
+    ## gap_openness.tste_20_3            0.0081777  0.0504157   0.162  0.87116    
+    ## gap_openness.tste_20_4            0.0142915  0.0461899   0.309  0.75704    
+    ## gap_openness.tste_20_5            0.0048508  0.0445989   0.109  0.91340    
+    ## gap_openness.tste_20_6            0.0407349  0.0511627   0.796  0.42602    
+    ## gap_openness.tste_20_7           -0.0584824  0.0528282  -1.107  0.26841    
+    ## gap_openness.tste_20_8            0.0757253  0.0494708   1.531  0.12600    
+    ## gap_openness.tste_20_9           -0.0072199  0.0471518  -0.153  0.87832    
+    ## gap_openness.tste_20_10           0.0058977  0.0497073   0.119  0.90557    
+    ## gap_openness.tste_20_11          -0.0889342  0.0472781  -1.881  0.06011 .  
+    ## gap_openness.tste_20_12          -0.0196162  0.0489318  -0.401  0.68854    
+    ## gap_openness.tste_20_13           0.0208736  0.0530775   0.393  0.69416    
+    ## gap_openness.tste_20_14          -0.0391215  0.0428552  -0.913  0.36142    
+    ## gap_openness.tste_20_15          -0.0126265  0.0507949  -0.249  0.80371    
+    ## gap_openness.tste_20_16          -0.0103990  0.0480136  -0.217  0.82855    
+    ## gap_openness.tste_20_17          -0.0563737  0.0421128  -1.339  0.18084    
+    ## gap_openness.tste_20_18           0.0342412  0.0430201   0.796  0.42616    
+    ## gap_openness.tste_20_19          -0.0801174  0.0484397  -1.654  0.09829 .  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 

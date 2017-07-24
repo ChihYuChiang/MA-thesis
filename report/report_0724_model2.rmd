@@ -8,9 +8,12 @@ output:
 ---
 ```{r setting}
 knitr::opts_chunk$set(
-	message = FALSE,
-	warning = FALSE
+	message=FALSE,
+	warning=FALSE
 )
+
+#Prevent result wrapping
+options(width=120)
 
 ```
 
@@ -71,9 +74,6 @@ core_cluster <- mutate_each(core_cluster,
 #Main df, key=player-game
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
-
-#Player df, key=player
-df_player <- distinct(df, respondent, .keep_all = TRUE)
 
 ```
 
@@ -217,7 +217,6 @@ models_ygame_lm <- map(dfs_ygame,
 
 
 ## Difference between real and game personality
-- T test dif = game - real
 ```{r real_game_dif}
 #T test for each pair
 #T test result dif: game - real
@@ -262,7 +261,7 @@ dist_personality("openness")
 
 
 
-## game personality = real personality + dissatisfaction + real personality*dissatisfaction
+## game personality: real personality & dissatisfaction & real personality*dissatisfaction
 
 ### agreeableness
 ```{r agreeableness}
