@@ -11,7 +11,7 @@ Data of game and player are read in and matched up.
 ### Packages
 "
 library(tidyverse)
-library(corrgram)
+library(corrplot)
 library(modelr)
 library(glmnet)
 library(randomForest)
@@ -682,16 +682,12 @@ dist_personality("openness")
 cor(select(df, which(sapply(df, is.numeric))))
 
 #Preference ~ game characteristics
-corrgram(select(df, preference, starts_with("distance_survey_mean")),
-         order=NULL,
-         lower.panel=panel.ellipse,
-         upper.panel=panel.shade)
+corrplot(cor(select(df, preference, starts_with("distance_survey_mean"))),
+         method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black")
 
 #Preference ~ player personality
-corrgram(select(df, preference, starts_with("gap"), ends_with("combined")),
-         order=NULL,
-         lower.panel=panel.ellipse,
-         upper.panel=panel.shade)
+corrplot(cor(select(df, preference, starts_with("gap"), starts_with("combined"))),
+         method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black")
 
 
 
