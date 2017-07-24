@@ -10,8 +10,8 @@ July 24, 2017
     -   [preference ~ tste](#preference-tste)
     -   [preference ~ tste + personality + interaction](#preference-tste-personality-interaction)
 -   [Model summaries](#model-summaries)
-    -   [preference ~ tste scores + real + real\*tste](#preference-tste-scores-real-realtste)
-    -   [preference ~ tste scores + real + game + game\*tste](#preference-tste-scores-real-game-gametste)
+    -   [preference ~ tste + real + real\*tste](#preference-tste-real-realtste)
+    -   [preference ~ tste + real + game + game\*tste](#preference-tste-real-game-gametste)
     -   [preference ~ tste + real + gap + gap\*tste](#preference-tste-real-gap-gaptste)
 
 ``` r
@@ -441,7 +441,7 @@ ggplot() +
 Model summaries
 ---------------
 
-### preference ~ tste scores + real + real\*tste
+### preference ~ tste + real + real\*tste
 
 ``` r
 #Summary
@@ -3429,7 +3429,7 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
     ## Multiple R-squared:  0.1508, Adjusted R-squared:  0.09359 
     ## F-statistic: 2.634 on 135 and 2002 DF,  p-value: < 2.2e-16
 
-### preference ~ tste scores + real + game + game\*tste
+### preference ~ tste + real + game + game\*tste
 
 ``` r
 #Summary

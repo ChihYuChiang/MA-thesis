@@ -320,7 +320,7 @@ ggplot() +
 
 
 ## Model summaries
-### preference ~ tste scores + real + real*tste
+### preference ~ tste + real + real*tste
 ```{r model_sum_real}
 #Summary
 for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
@@ -328,7 +328,7 @@ for(model in slice(dfs, 20:38)$model_lm) print(summary(model))
 ```
 
 
-### preference ~ tste scores + real + game + game*tste
+### preference ~ tste + real + game + game*tste
 ```{r model_sum_game}
 #Summary
 for(model in slice(dfs, 39:57)$model_lm) print(summary(model))

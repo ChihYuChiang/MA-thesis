@@ -262,7 +262,7 @@ dist_personality("openness")
 
 
 
-## game personality ~ real personality + dissatisfaction + real personality*dissatisfaction
+## game personality = real personality + dissatisfaction + real personality*dissatisfaction
 
 ### agreeableness
 ```{r agreeableness}
