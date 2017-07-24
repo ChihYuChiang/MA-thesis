@@ -1,6 +1,12 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 07/24/2017
+1. Add **analysis report 0717** corresponding to the changes in [report](/report) folder.
+1. Update **analysis code** of Model 1 with real/game condition and BIC/AIC difference.
+1. Update **analysis code** of Model 2 with personality distribution and Tobit models.
+
+
 ### 07/17/2017
 1. Add **analysis report 0717** corresponding to the changes in [report](/report) folder.
 1. Update **analysis code** of Model 1 with interaction terms, with different preference measures, and corresponding AIC and BIC.

@@ -142,13 +142,13 @@ updateVars <- function(){
   
   #--Select variables to be included in regression (model formation)
   #Sets of predictor variables from file
-  predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
+  predictors <- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
   
   #Get column name as model id
-  modelId <<- colnames(predictors)
+  modelId <- colnames(predictors)
   
   #predictor variable as strings for each model
-  predictorString <<- apply(predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
+  predictorString <- apply(predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
   
   #Make the dfs into a data frame
   dfs <<- data.frame(predictorString, modelId, stringsAsFactors=FALSE) %>%
@@ -266,19 +266,29 @@ summary(Anova(model_ygap))
 "
 ### Tobit model
 "
+#--Acquire corresponding df for each game personality
+#Alphabetical order for personality response vars
 dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
                   select(df_player_c, game_p = game_conscientiousness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
                   select(df_player_c, game_p = game_emotionstability, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
                   select(df_player_c, game_p = game_extraversion, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
                   select(df_player_c, game_p = game_openness, starts_with("real"), starts_with("c_"), starts_with("dissatis")))
 
+
+#--Train models
+#Tobit, with upper=7, lower=1, imethod=(1, 2, 3) for dif initial values
 models_ygame_tobit <- map(dfs_ygame,
                           ~ vglm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
                                  data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
+
+#Lm for comparison
 models_ygame_lm <- map(dfs_ygame,
                        ~ lm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
                             data=.x))
 
+
+#--Summary
+for(model in models_ygame_lm) print(summary(model))
 summary(models_ygame_lm[[1]])
 
 
@@ -516,7 +526,7 @@ bm_infoCriteria <- function(){}
 "
 ### BIC and BIC difference
 "
-#--gap ~ tstes
+#--preference ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
 BICs_dif <- BICs[-1] - lag(BICs)[-1]
 
@@ -581,8 +591,8 @@ ggplot() +
 
 
 #--Tobit lm comparison
-BICs_ygame_tobit <- map(models_ygame_tobit, BIC)
-BICs_ygame_lm <- map(models_ygame_lm, BIC)
+BICs_ygame_tobit <- unlist(map(models_ygame_tobit, BIC))
+BICs_ygame_lm <- unlist(map(models_ygame_lm, BIC))
 
 
 
@@ -590,7 +600,7 @@ BICs_ygame_lm <- map(models_ygame_lm, BIC)
 "
 ### AIC and AIC difference
 "
-#--gap ~ tstes
+#--preference ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
 AICs_dif <- AICs[-1] - lag(AICs)[-1]
 
@@ -615,6 +625,10 @@ dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 dfs_gap <- slice(dfs, 1:19)
 dfs_real <- slice(dfs, 20:38)
 dfs_game <- slice(dfs, 39:57)
+
+dfs_gap_dif <- slice(dfs, 2:19)
+dfs_real_dif <- slice(dfs, 21:38)
+dfs_game_dif <- slice(dfs, 40:57)
 
 #All models
 ggplot() +
@@ -651,8 +665,8 @@ ggplot() +
 
 
 #--Tobit lm comparison
-AICs_ygame_tobit <- map(models_ygame_tobit, AIC)
-AICs_ygame_lm <- map(models_ygame_lm, AIC)
+AICs_ygame_tobit <- unlist(map(models_ygame_tobit, AIC))
+AICs_ygame_lm <- unlist(map(models_ygame_lm, AIC))
 
 
 
@@ -687,7 +701,7 @@ dist_personality <- function(personality){
   ggplot(data=as.data.frame(real, game)) +
     geom_histogram(mapping=aes(x=real), binwidth=1) +
     geom_histogram(mapping=aes(x=game), binwidth=1, fill="red", alpha=0.5) +
-    labs(x="distribution", title=personality)
+    labs(x="score", title=personality)
 }
 
 #Call function for each personality
