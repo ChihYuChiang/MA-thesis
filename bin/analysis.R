@@ -701,6 +701,7 @@ dist_personality <- function(personality){
   ggplot(data=as.data.frame(real, game)) +
     geom_histogram(mapping=aes(x=real), binwidth=1) +
     geom_histogram(mapping=aes(x=game), binwidth=1, fill="red", alpha=0.5) +
+    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7)) +
     labs(x="score", title=personality)
 }
 
