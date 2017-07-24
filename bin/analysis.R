@@ -14,6 +14,7 @@ library(tidyverse)
 library(corrplot)
 library(modelr)
 library(glmnet)
+library(VGAM)
 library(randomForest)
 library(e1071)
 library(car)
@@ -265,6 +266,20 @@ summary(Anova(model_ygap))
 "
 ### Tobit model
 "
+dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
+                  select(df_player_c, game_p = game_conscientiousness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
+                  select(df_player_c, game_p = game_emotionstability, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
+                  select(df_player_c, game_p = game_extraversion, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
+                  select(df_player_c, game_p = game_openness, starts_with("real"), starts_with("c_"), starts_with("dissatis")))
+
+models_ygame_tobit <- map(dfs_ygame,
+                          ~ vglm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                                 data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
+models_ygame_lm <- map(dfs_ygame,
+                       ~ lm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                            data=.x))
+
+summary(models_ygame_lm[[1]])
 
 
 
@@ -565,6 +580,11 @@ ggplot() +
   geom_hline(yintercept=0, linetype=3)
 
 
+#--Tobit lm comparison
+BICs_ygame_tobit <- map(models_ygame_tobit, BIC)
+BICs_ygame_lm <- map(models_ygame_lm, BIC)
+
+
 
 
 "
@@ -628,6 +648,11 @@ ggplot() +
   scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
                      labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste")) +
   geom_hline(yintercept=0, linetype=3)
+
+
+#--Tobit lm comparison
+AICs_ygame_tobit <- map(models_ygame_tobit, AIC)
+AICs_ygame_lm <- map(models_ygame_lm, AIC)
 
 
 
