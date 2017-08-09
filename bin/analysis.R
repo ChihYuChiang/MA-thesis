@@ -77,6 +77,7 @@ Acquire `player_df`; Compute and select variables to be used in models.
 
 - Call the function to update the vars employed.
 - Final response variable utilizes only `preference_3`.
+- All independent vars are mean-centered.
 
 - Player preference:
 Name | Definition | Unit
