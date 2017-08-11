@@ -77,7 +77,7 @@ Acquire `player_df`; Compute and select variables to be used in models.
 
 - Call the function to update the vars employed.
 - Final response variable utilizes only `preference_3`.
-- All independent vars are mean-centered.
+- Mean-centered vars is marked with a suffix _ct.
 
 - Player preference:
 Name | Definition | Unit
@@ -127,6 +127,15 @@ updateVars <- function(){
     mutate(preference = mean(c(preference_3))) %>%
     ungroup() #Ungroup to cancel rowwise
   
+  
+  #--Mean-center predictor variables
+  df <<- mutate_at(df, vars(starts_with("tste"),
+                            starts_with("game"),
+                            starts_with("real"),
+                            starts_with("satis"),
+                            starts_with("dissatis"),
+                            starts_with("combined")), funs(ct = . - mean(.)))
+
   
   #--Compute personalty gap
   df <<- mutate(df,
@@ -280,22 +289,22 @@ df_player_c <- mutate(df_player,
 
 #--Acquire corresponding df for each game personality
 #Alphabetical order for personality response vars
-dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
-                  select(df_player_c, game_p = game_conscientiousness, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
-                  select(df_player_c, game_p = game_emotionstability, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
-                  select(df_player_c, game_p = game_extraversion, starts_with("real"), starts_with("c_"), starts_with("dissatis")),
-                  select(df_player_c, game_p = game_openness, starts_with("real"), starts_with("c_"), starts_with("dissatis")))
+dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, real_p_ct = real_agreeableness_ct, starts_with("c_"), matches("^dissatis.*ct$")),
+                  select(df_player_c, game_p = game_conscientiousness, real_p_ct = real_conscientiousness_ct, starts_with("c_"), matches("^dissatis.*ct$")),
+                  select(df_player_c, game_p = game_emotionstability, real_p_ct = real_emotionstability_ct, starts_with("c_"), matches("^dissatis.*ct$")),
+                  select(df_player_c, game_p = game_extraversion, real_p_ct = real_extraversion_ct, starts_with("c_"), matches("^dissatis.*ct$")),
+                  select(df_player_c, game_p = game_openness, real_p_ct = real_openness_ct, starts_with("c_"), matches("^dissatis.*ct$")))
 
 
 #--Train models
 #Tobit, with upper=7, lower=1, imethod=(1, 2, 3) for dif initial values
 models_ygame_tobit <- map(dfs_ygame,
-                          ~ vglm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                          ~ vglm(game_p ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * real_p_ct,
                                  data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
 
 #Lm for comparison
 models_ygame_lm <- map(dfs_ygame,
-                       ~ lm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
+                       ~ lm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness, starts_with("c_") + dissatis_competence_ct) * real_p_ct,
                             data=.x))
 
 
@@ -560,13 +569,19 @@ dfs$BIC <- unlist(map(dfs$model_lm, BIC))
 dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 
 #Seperate batch models from dfs
-dfs_gap <- slice(dfs, 1:19)
-dfs_real <- slice(dfs, 20:38)
+dfs_real <- slice(dfs, 1:19)
+dfs_realI <- slice(dfs, 20:38)
 dfs_game <- slice(dfs, 39:57)
+dfs_gameI <- slice(dfs, 58:76)
+dfs_gap <- slice(dfs, 77:95)
+dfs_gapI <- slice(dfs, 96:114)
 
-dfs_gap_dif <- slice(dfs, 2:19)
-dfs_real_dif <- slice(dfs, 21:38)
+dfs_real_dif <- slice(dfs, 2:19)
+dfs_realI_dif <- slice(dfs, 21:38)
 dfs_game_dif <- slice(dfs, 40:57)
+dfs_gameI_dif <- slice(dfs, 59:76)
+dfs_gap_dif <- slice(dfs, 78:95)
+dfs_gapI_dif <- slice(dfs, 97:114)
 
 #All models
 ggplot() +
@@ -582,23 +597,34 @@ ggplot() +
 
 #Batch models
 ggplot() +
-  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), BIC, color="3")) +
-  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), BIC, color="1")) +
-  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), BIC, color="2")) +
+  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), BIC, color="r")) +
+  geom_line(data=dfs_realI, mapping=aes(seq(1, dim(dfs_realI)[1]), BIC, color="r"), alpha=0.5) +
+  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), BIC, color="g")) +
+  geom_line(data=dfs_gameI, mapping=aes(seq(1, dim(dfs_gameI)[1]), BIC, color="g"), alpha=0.5) +
+  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), BIC, color="p")) +
+  geom_line(data=dfs_gapI, mapping=aes(seq(1, dim(dfs_gapI)[1]), BIC, color="p"), alpha=0.5) +
   labs(x="Model (number of tste features)", y="BIC", title="Model BIC") +
-  theme(legend.position="right", legend.direction="vertical")+
+  theme(legend.position="top", legend.direction="vertical") +
   scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
-  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
-                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste"))
+  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
+                     labels=c("r"="tste + real + (tste*real)",
+                              "g"="tste + real + game + (tste*game)",
+                              "p"="tste + real + gap + (tste*gap)"))
 
 ggplot() +
-  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), BIC_dif, color="3")) +
-  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), BIC_dif, color="1")) +
-  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), BIC_dif, color="2")) +
+  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), BIC_dif, color="r")) +
+  geom_line(data=dfs_realI_dif, mapping=aes(seq(1, dim(dfs_realI_dif)[1]), BIC_dif, color="r"), alpha=0.5) +
+  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), BIC_dif, color="g")) +
+  geom_line(data=dfs_gameI_dif, mapping=aes(seq(1, dim(dfs_gameI_dif)[1]), BIC_dif, color="g"), alpha=0.5) +
+  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), BIC_dif, color="p")) +
+  geom_line(data=dfs_gapI_dif, mapping=aes(seq(1, dim(dfs_gapI_dif)[1]), BIC_dif, color="p"), alpha=0.5) +
   labs(x="Model (number of tste features)", y="BIC difference", title="BIC difference when increasing the number of tste features") +
+  theme(legend.position="top", legend.direction="vertical") +
   scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
-  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
-                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste")) +
+  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
+                     labels=c("r"="tste + real + (tste*real)",
+                              "g"="tste + real + game + (tste*game)",
+                              "p"="tste + real + gap + (tste*gap)")) +
   geom_hline(yintercept=0, linetype=3)
 
 
@@ -634,13 +660,19 @@ dfs$AIC <- unlist(map(dfs$model_lm, AIC))
 dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 
 #Seperate batch models from dfs
-dfs_gap <- slice(dfs, 1:19)
-dfs_real <- slice(dfs, 20:38)
+dfs_real <- slice(dfs, 1:19)
+dfs_realI <- slice(dfs, 20:38)
 dfs_game <- slice(dfs, 39:57)
+dfs_gameI <- slice(dfs, 58:76)
+dfs_gap <- slice(dfs, 77:95)
+dfs_gapI <- slice(dfs, 96:114)
 
-dfs_gap_dif <- slice(dfs, 2:19)
-dfs_real_dif <- slice(dfs, 21:38)
+dfs_real_dif <- slice(dfs, 2:19)
+dfs_realI_dif <- slice(dfs, 21:38)
 dfs_game_dif <- slice(dfs, 40:57)
+dfs_gameI_dif <- slice(dfs, 59:76)
+dfs_gap_dif <- slice(dfs, 78:95)
+dfs_gapI_dif <- slice(dfs, 97:114)
 
 #All models
 ggplot() +
@@ -656,23 +688,34 @@ ggplot() +
 
 #Batch models
 ggplot() +
-  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), AIC, color="3")) +
-  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), AIC, color="1")) +
-  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), AIC, color="2")) +
+  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), AIC, color="r")) +
+  geom_line(data=dfs_realI, mapping=aes(seq(1, dim(dfs_realI)[1]), AIC, color="r"), alpha=0.5) +
+  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), AIC, color="g")) +
+  geom_line(data=dfs_gameI, mapping=aes(seq(1, dim(dfs_gameI)[1]), AIC, color="g"), alpha=0.5) +
+  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), AIC, color="p")) +
+  geom_line(data=dfs_gapI, mapping=aes(seq(1, dim(dfs_gapI)[1]), AIC, color="p"), alpha=0.5) +
   labs(x="Model (number of tste features)", y="AIC", title="Model AIC") +
-  theme(legend.position="right", legend.direction="vertical")+
+  theme(legend.position="top", legend.direction="vertical") +
   scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
-  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
-                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste"))
+  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
+                     labels=c("r"="tste + real + (tste*real)",
+                              "g"="tste + real + game + (tste*game)",
+                              "p"="tste + real + gap + (tste*gap)"))
 
 ggplot() +
-  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), AIC_dif, color="3")) +
-  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), AIC_dif, color="1")) +
-  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), AIC_dif, color="2")) +
+  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), AIC_dif, color="r")) +
+  geom_line(data=dfs_realI_dif, mapping=aes(seq(1, dim(dfs_realI_dif)[1]), AIC_dif, color="r"), alpha=0.5) +
+  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), AIC_dif, color="g")) +
+  geom_line(data=dfs_gameI_dif, mapping=aes(seq(1, dim(dfs_gameI_dif)[1]), AIC_dif, color="g"), alpha=0.5) +
+  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), AIC_dif, color="p")) +
+  geom_line(data=dfs_gapI_dif, mapping=aes(seq(1, dim(dfs_gapI_dif)[1]), AIC_dif, color="p"), alpha=0.5) +
   labs(x="Model (number of tste features)", y="AIC difference", title="AIC difference when increasing the number of tste features") +
+  theme(legend.position="top", legend.direction="vertical") +
   scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
-  scale_color_manual(name="Type of model", values=c("1"="red", "2"="blue", "3"="black"),
-                     labels=c("real + real*tste", "real + game + game*tste", "real + gap + gap*tste")) +
+  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
+                     labels=c("r"="tste + real + (tste*real)",
+                              "g"="tste + real + game + (tste*game)",
+                              "p"="tste + real + gap + (tste*gap)")) +
   geom_hline(yintercept=0, linetype=3)
 
 
