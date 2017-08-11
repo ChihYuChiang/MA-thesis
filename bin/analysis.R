@@ -304,7 +304,7 @@ models_ygame_tobit <- map(dfs_ygame,
 
 #Lm for comparison
 models_ygame_lm <- map(dfs_ygame,
-                       ~ lm(game_p ~ . + (dissatis_autonomy + dissatis_relatedness, starts_with("c_") + dissatis_competence_ct) * real_p_ct,
+                       ~ lm(game_p ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * real_p_ct,
                             data=.x))
 
 

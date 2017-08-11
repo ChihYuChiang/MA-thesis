@@ -1,16 +1,23 @@
 # Repository Update Notes
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
+### 08/10/2017
+1. Add **analysis report 0810** corresponding to the changes in [report](/report) folder.
+1. Mean-center independent variables.
+1. Update **analysis code** of Model 1: BIC/AIC w/wo interaction construct.
+1. Update **analysis code** of Model 2: control only corresponding personality.
+
+
 ### 07/24/2017
-1. Add **analysis report 0717** corresponding to the changes in [report](/report) folder.
-1. Update **analysis code** of Model 1 with real/game condition and BIC/AIC difference.
-1. Update **analysis code** of Model 2 with personality distribution and Tobit models.
+1. Add **analysis report 0724** corresponding to the changes in [report](/report) folder.
+1. Update **analysis code** of Model 1: real/game condition and BIC/AIC difference.
+1. Update **analysis code** of Model 2: personality distribution and Tobit models.
 
 
 ### 07/17/2017
 1. Add **analysis report 0717** corresponding to the changes in [report](/report) folder.
-1. Update **analysis code** of Model 1 with interaction terms, with different preference measures, and corresponding AIC and BIC.
-1. Update **analysis code** of Model 2 with interaction terms and MANOVA test.
+1. Update **analysis code** of Model 1: interaction terms, with different preference measures, and corresponding AIC and BIC.
+1. Update **analysis code** of Model 2: interaction terms and MANOVA test.
 
 
 ### 07/12/2017
