@@ -11,6 +11,7 @@ Data of game and player are read in and matched up.
 ### Packages
 "
 library(tidyverse)
+library(data.table)
 library(corrplot)
 library(modelr)
 library(glmnet)
@@ -58,6 +59,7 @@ core_cluster <- mutate_each(core_cluster,
                             star_user, star_GS)
 
 
+
 #--Match up
 #Main df, key=player-game pair
 df <- bind_cols(core_cluster, core_tsteScore) %>%
@@ -76,6 +78,7 @@ df <- bind_cols(core_cluster, core_tsteScore) %>%
 Acquire `player_df`; Compute and select variables to be used in models.
 
 - Call the function to update the vars employed.
+- `update_predictors`=TRUE to update `df_predictors` from csv.
 - Final response variable utilizes only `preference_3`.
 - Mean-centered vars is marked with a suffix _ct.
 
@@ -120,7 +123,7 @@ Name | Definition | Unit
 `star_user` | general game quality rated by GameSpot user | interval 0-10
 ----------------------------------------------------------------------
 "
-updateVars <- function(){
+updateVars <- function(update_predictors=TRUE){
   #--Create response variable
   df <<- df %>%
     rowwise() %>% #Rowwise to make the ordinary functions work
@@ -152,13 +155,15 @@ updateVars <- function(){
   
   #--Select variables to be included in regression (model formation)
   #Sets of predictor variables from file
-  predictors <- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
+  if(update_predictors==TRUE) {
+    df_predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
+  }
   
   #Get column name as model id
-  modelId <- colnames(predictors)
+  modelId <- colnames(df_predictors)
   
   #predictor variable as strings for each model
-  predictorString <- apply(predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
+  predictorString <- apply(df_predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
   
   #Make the dfs into a data frame
   dfs <<- data.frame(predictorString, modelId, stringsAsFactors=FALSE) %>%
@@ -361,7 +366,7 @@ for(i in seq(1, length(model_lm_group))){
 "
 #--Regression_lasso
 #Update vars
-updateVars()
+updateVars(update_predictors=FALSE)
 
 #Acquire various lambda levels (can be plugged in the `glmet` if needed; not used for now)
 lambdas <- 10^seq(3, -3, length=7)
@@ -378,6 +383,16 @@ dfs$model_las_best <- map2(dfs$df_x, dfs$lambda_las_best, ~ glmnet(x=.x, y=df$pr
 
 #Acquire the best result
 dfs$model_las_coef <- map(dfs$model_las_best, coef)
+
+#Update `df_predictors` according to non-zero coefs in Lasso
+df_predictors.new <- map(c(1:dim(df_predictors)[2]), .f= ~ df_predictors[.][which(dfs$model_las_coef[[.]] != 0), ])
+df_predictors.new <- map(df_predictors.new,
+                         .f= function(.) {
+                              . <- unlist(.)
+                              length(.) <- dim(df_predictors)[1]
+                              return(.)
+                         }) %>% as.data.table()
+df_predictors <- df_predictors.new
 
 
 #--Regression_ridge
@@ -497,7 +512,7 @@ mseSd_lm_cv <- sd(mses_lm_cv)
 "
 #--Create cross validation datasets
 #Update vars
-updateVars()
+updateVars(update_predictors=FALSE)
 
 #Leave-one-out: k=nrow(df_yx)
 df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
@@ -567,6 +582,8 @@ ggplot(data=as.data.frame(BICs_dif)) +
 #--lm models
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
 dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
+
+for(model in dfs$model_lm[1:38]) print(summary(model))
 
 #Seperate batch models from dfs
 dfs_real <- slice(dfs, 1:19)
