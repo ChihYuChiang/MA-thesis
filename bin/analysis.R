@@ -583,8 +583,6 @@ ggplot(data=as.data.frame(BICs_dif)) +
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
 dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 
-for(model in dfs$model_lm[1:38]) print(summary(model))
-
 #Seperate batch models from dfs
 dfs_real <- slice(dfs, 1:19)
 dfs_realI <- slice(dfs, 20:38)
