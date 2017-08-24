@@ -60,13 +60,6 @@ core_cluster <- mutate_each(core_cluster,
 
 
 
-#--Match up
-#Main df, key=player-game pair
-df <- bind_cols(core_cluster, core_tsteScore) %>%
-  left_join(survey, by=c("core_id"), copy=FALSE)
-
-
-
 
 
 
@@ -124,6 +117,12 @@ Name | Definition | Unit
 ----------------------------------------------------------------------
 "
 updateVars <- function(update_predictors=TRUE){
+  #--Match up
+  #Main df, key=player-game pair
+  df <<- bind_cols(core_cluster, core_tsteScore) %>%
+    left_join(survey, by=c("core_id"), copy=FALSE)
+  
+  
   #--Create response variable
   df <<- df %>%
     rowwise() %>% #Rowwise to make the ordinary functions work
@@ -146,8 +145,13 @@ updateVars <- function(update_predictors=TRUE){
                 gap_agreeableness = game_agreeableness - real_agreeableness,
                 gap_conscientiousness = game_conscientiousness - real_conscientiousness,
                 gap_emotionstability = game_emotionstability - real_emotionstability,
-                gap_openness = game_openness - real_openness)
-  
+                gap_openness = game_openness - real_openness,
+                gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + (-gap_emotionstability) + gap_openness,
+                real_sum = real_extraversion + real_agreeableness + real_conscientiousness + (-real_emotionstability) + real_openness,
+                dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
+                satis = satis_autonomy + satis_relatedness + satis_competence,
+                combined = combined_autonomy + combined_relatedness + combined_competence
+                )
   
   #--Acquire player df, key=player
   df_player <<- distinct(df, respondent, .keep_all=TRUE)
@@ -250,23 +254,33 @@ df_player_c <- mutate(df_player,
 
 
 #--Train models
+#`ygap_sum` models are simple linear models with the sum of 5 gaps as dependent var
 #gap ~ real + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_")))
+                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_")))
+model_ygap_sum <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_")))
 
-#gap ~ dissatis + c
+#gap ~ satis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), starts_with("dissatis")))
+                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), matches("^combined.+ct$")))
+model_ygap_sum <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, starts_with("c_"), matches("^combined.+ct$")))
 
 #gap ~ real + satis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("combined")))
+                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
+model_ygap_sum <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
 
-#gap ~ real + dissatis + real * dissatis + c
+#gap ~ real + satis + real * satis + c
 model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ . +
-                   (dissatis_autonomy + dissatis_relatedness + dissatis_competence) * (real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness),
-                 data=select(df_player_c, starts_with("gap"), starts_with("real"), starts_with("c_"), starts_with("dissatis")))
-
+                   (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
+model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                 data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
+model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * real_sum,
+                     data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
 
 #Results of seperate models
 summary(model_ygap)
@@ -363,8 +377,9 @@ for(i in seq(1, length(model_lm_group))){
 
 "
 ### Lasso and ridge
+
+- `glmnet` alpha=1 -> lasso; alpha=0 -> ridge
 "
-#--Regression_lasso
 #Update vars
 updateVars(update_predictors=FALSE)
 
@@ -384,31 +399,21 @@ dfs$model_las_best <- map2(dfs$df_x, dfs$lambda_las_best, ~ glmnet(x=.x, y=df$pr
 #Acquire the best result
 dfs$model_las_coef <- map(dfs$model_las_best, coef)
 
-#Update `df_predictors` according to non-zero coefs in Lasso
+
+#--Update `df_predictors` according to non-zero coefs in Lasso
+#Use non-zero coefs to filter the predictor df
 df_predictors.new <- map(c(1:dim(df_predictors)[2]), .f= ~ df_predictors[.][which(dfs$model_las_coef[[.]] != 0), ])
+
+#Unify the length of each model column
 df_predictors.new <- map(df_predictors.new,
-                         .f= function(.) {
-                              . <- unlist(.)
-                              length(.) <- dim(df_predictors)[1]
-                              return(.)
-                         }) %>% as.data.table()
-df_predictors <- df_predictors.new
+                         function(.) {
+                          . <- unlist(.)
+                          length(.) <- dim(df_predictors)[1]
+                          return(.)
+                         })
 
-
-#--Regression_ridge
-#Update vars
-updateVars()
-
-#Identify the best lambda level
-dfs$lambda_rid_best <- map(dfs$df_x, ~ cv.glmnet(x=.x, y=df$preference, alpha=0, nfolds=10)$lambda.min)
-
-#Train model with best lambda level
-dfs$model_rid_best <- map2(dfs$df_x, dfs$lambda_rid_best, ~ glmnet(x=.x, y=df$preference, alpha=0,
-                                                                   lambda=.y,
-                                                                   standardize=TRUE))
-
-#Acquire the best result
-dfs$model_rid_coef <- map(dfs$model_rid_best, coef)
+#Bind together to be the new predictor df
+df_predictors <- as.data.table(df_predictors.new)
   
 
 
