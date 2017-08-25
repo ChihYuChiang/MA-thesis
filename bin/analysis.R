@@ -59,6 +59,12 @@ core_cluster <- mutate_each(core_cluster,
                             star_user, star_GS)
 
 
+#--Match up
+#Main df, key=player-game pair
+df <- bind_cols(core_cluster, core_tsteScore) %>%
+  left_join(survey, by=c("core_id"), copy=FALSE)
+
+
 
 
 
@@ -117,7 +123,7 @@ Name | Definition | Unit
 ----------------------------------------------------------------------
 "
 updateVars <- function(update_predictors=TRUE){
-  #--Match up
+  #--Match up (repeat the set up section to work around the "data binding" bug)
   #Main df, key=player-game pair
   df <<- bind_cols(core_cluster, core_tsteScore) %>%
     left_join(survey, by=c("core_id"), copy=FALSE)
@@ -149,16 +155,17 @@ updateVars <- function(update_predictors=TRUE){
                 gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + (-gap_emotionstability) + gap_openness,
                 real_sum = real_extraversion + real_agreeableness + real_conscientiousness + (-real_emotionstability) + real_openness,
                 dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
-                satis = satis_autonomy + satis_relatedness + satis_competence,
-                combined = combined_autonomy + combined_relatedness + combined_competence
+                satis_sum = satis_autonomy + satis_relatedness + satis_competence,
+                combined_sum = combined_autonomy + combined_relatedness + combined_competence
                 )
-  
+
   #--Acquire player df, key=player
   df_player <<- distinct(df, respondent, .keep_all=TRUE)
   
   
   #--Select variables to be included in regression (model formation)
   #Sets of predictor variables from file
+  #Can be updated from outside the function (eg. for lasso selection), if so, `update_predictors`=FALSE
   if(update_predictors==TRUE) {
     df_predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
   }
@@ -170,12 +177,16 @@ updateVars <- function(update_predictors=TRUE){
   predictorString <- apply(df_predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
   
   #Make the dfs into a data frame
-  dfs <<- data.frame(predictorString, modelId, stringsAsFactors=FALSE) %>%
+  dfs <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
     mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-    mutate(df_yx = map(df_x, ~ bind_cols(select(df, preference), data.frame(.x)))) #df also with outcome variables
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "preference"), data.frame(.x)))) #df also with outcome variables
+  dfs_player <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("gap_extraversion ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "gap_extraversion"), data.frame(.x)))) #df also with outcome variables
   
   #Set row names for reference
   row.names(dfs) <<- modelId
+  row.names(dfs_player) <<- modelId
 }
 
 
@@ -280,7 +291,7 @@ model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousnes
 model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
                  data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
 model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * real_sum,
-                     data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
 
 #Results of seperate models
 summary(model_ygap)

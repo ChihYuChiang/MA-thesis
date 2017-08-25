@@ -1,0 +1,516 @@
+---
+title: "MAPSS Thesis II - model 2"
+author: "Chih-Yu Chiang"
+date: "August 24, 2017"
+output: 
+  github_document:
+    toc: true
+---
+```{r setting}
+knitr::opts_chunk$set(
+	message=FALSE,
+	warning=FALSE
+)
+
+#Prevent result wrapping
+options(width=120)
+
+```
+
+
+
+
+## Setup
+Data of game and player are read in and matched up.
+
+- Game release data, `release` (year), is read in as an interval variable.
+- Missing values are imputed with variable mean conveniently (`star_user` and `star_GS`).
+```{r setup}
+#--Package
+library(tidyverse)
+library(data.table)
+library(corrplot)
+library(modelr)
+library(glmnet)
+library(VGAM)
+library(randomForest)
+library(e1071)
+library(car)
+library(rlist)
+library(pander)
+set.seed(1)
+
+
+#--Read in
+#Core game info and group distance/probability data
+core_cluster <- read_csv("../data/core_cluster.csv", col_names=TRUE) %>%
+  mutate(group_survey = factor(group_survey),
+         group_review = factor(group_review),
+         core_id = factor(core_id)) %>%
+  select(-X1)
+
+#Core game tste scores (of dif numbers of features)
+core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
+  select(-X1)
+
+#Player-related survey data
+survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
+  mutate(race = factor(race),
+         sex = factor(sex),
+         core_id = factor(core_id)) %>%
+  select(-id)
+
+
+#--Impute missing with mean
+imputation_mean <- function(c){
+  c[is.na(c)] <- mean(c, na.rm=TRUE)
+  return(c)
+}
+core_cluster <- mutate_each(core_cluster,
+                            funs(imputation_mean(.)),
+                            star_user, star_GS)
+
+
+#--Match up
+#Main df, key=player-game
+df <- bind_cols(core_cluster, core_tsteScore) %>%
+  left_join(survey, by=c("core_id"), copy=FALSE)
+
+```
+
+
+
+
+## Variable
+Compute and select variables to be used in models.
+
+- Mean-centered vars is marked with a suffix _ct.
+
+- Player preference:
+
+Name | Definition | Unit
+-----|------------|------
+`preference_1` | how much do you like | Likert 1-7=like
+`preference_2` | how often play it | ordinary 1=never-7=everyday
+`preference_3` | does it fit personal taste | Likert 1-7=fit
+
+- Game characteristics:
+
+Name | Definition | Unit
+-----|------------|------
+`distance_survey_mean_x` | group score from survey (distance from group mean in tste) | cosine distance
+`distance_survey_median_x` | group score from survey (distance from group median in tste) | cosine distance
+`probability_review_mean_x` | group score from review (mean probability to be categorized in the group by NN) | percentage
+`probability_review_median_x` | group score from review (median probability to be categorized in the group by NN) | percentage
+`group_survey` | group identity from survey | categorical 1-group number
+`group_review` | group identity from review | categorical 1-group number
+`tste_n_x` | group score from survey (tste), n=number of features | interval arbitrary
+
+- Player personality:
+
+Name | Definition | Unit
+-----|------------|------
+`game_xxxxx` | Big-five personality in game | Likert 1-7
+`real_xxxxx` | Big-five personality in real life | Likert 1-7
+`gap_xxxxx` | personality gap (game - real) | Likert 1-7
+`satis_xxxxx` | SDT satisfaction in real life | Likert 1-7
+`dissatis_xxxxx` | SDT dissatisfaction in real life | Likert 1-7
+`combined_xxxxx` | SDT combined (previous two) dissatisfaction in real life | Likert 1-7
+
+- Control:
+
+Name | Definition | Unit
+-----|------------|------
+`age` | player age | interval
+`education` | player education | ordinary 1-7=PhD
+`income` | player annual household income | ordinary 1-7=over 150,000 
+`sex` | player sex | categorical 1=male
+`race` | player race | categorical 1-5
+`release` | game release year | interval year
+`star_GS` | general game quality rated by GameSpot expert | interval 0-10
+`star_user` | general game quality rated by GameSpot user | interval 0-10
+```{r variable}
+updateVars <- function(update_predictors=TRUE){
+  #--Match up (repeat the set up section to work around the "data binding" bug)
+  #Main df, key=player-game pair
+  df <<- bind_cols(core_cluster, core_tsteScore) %>%
+    left_join(survey, by=c("core_id"), copy=FALSE)
+  
+  
+  #--Create response variable
+  df <<- df %>%
+    rowwise() %>% #Rowwise to make the ordinary functions work
+    mutate(preference = mean(c(preference_3))) %>%
+    ungroup() #Ungroup to cancel rowwise
+  
+  
+  #--Mean-center predictor variables
+  df <<- mutate_at(df, vars(starts_with("tste"),
+                            starts_with("game"),
+                            starts_with("real"),
+                            starts_with("satis"),
+                            starts_with("dissatis"),
+                            starts_with("combined")), funs(ct = . - mean(.)))
+
+  
+  #--Compute personalty gap
+  df <<- mutate(df,
+                gap_extraversion = game_extraversion - real_extraversion,
+                gap_agreeableness = game_agreeableness - real_agreeableness,
+                gap_conscientiousness = game_conscientiousness - real_conscientiousness,
+                gap_emotionstability = game_emotionstability - real_emotionstability,
+                gap_openness = game_openness - real_openness,
+                gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + (-gap_emotionstability) + gap_openness,
+                real_sum = real_extraversion + real_agreeableness + real_conscientiousness + (-real_emotionstability) + real_openness,
+                dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
+                satis_sum = satis_autonomy + satis_relatedness + satis_competence,
+                combined_sum = combined_autonomy + combined_relatedness + combined_competence
+                )
+
+  #--Acquire player df, key=player
+  df_player <<- distinct(df, respondent, .keep_all=TRUE)
+  
+  
+  #--Select variables to be included in regression (model formation)
+  #Sets of predictor variables from file
+  #Can be updated from outside the function (eg. for lasso selection), if so, `update_predictors`=FALSE
+  if(update_predictors==TRUE) {
+    df_predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
+  }
+  
+  #Get column name as model id
+  modelId <- colnames(df_predictors)
+  
+  #predictor variable as strings for each model
+  predictorString <- apply(df_predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
+  
+  #Make the dfs into a data frame
+  dfs <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "preference"), data.frame(.x)))) #df also with outcome variables
+  dfs_player <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("gap_extraversion ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "gap_extraversion"), data.frame(.x)))) #df also with outcome variables
+  
+  #Set row names for reference
+  row.names(dfs) <<- modelId
+  row.names(dfs_player) <<- modelId
+}
+
+```
+
+
+
+
+## Model
+![Analysis Framework](img/framework_2.png)
+
+```{r models_combined}
+#--Update vars
+updateVars()
+
+
+#--Player df with control marked
+df_player_c <- mutate(df_player,
+                      c_age = age,
+                      c_education = education,
+                      c_income = income,
+                      c_race = race,
+                      c_sex = sex)
+
+
+#--Combined models
+#Summed difference as dependent var
+#gap ~ real + c
+model_ygap_sum.1.satis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_")))
+model_ygap_sum.1.dissatis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_")))
+model_ygap_sum.1.combined <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_")))
+
+#gap ~ satis + c
+model_ygap_sum.2.satis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, starts_with("c_"), matches("^satis.+ct$")))
+model_ygap_sum.2.dissatis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, starts_with("c_"), matches("^dissatis.+ct$")))
+model_ygap_sum.2.combined <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, starts_with("c_"), matches("^combined.+ct$")))
+
+#gap ~ real + satis + c
+model_ygap_sum.3.satis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^satis.+ct$")))
+model_ygap_sum.3.dissatis <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^dissatis.+ct$")))
+model_ygap_sum.3.combined <- lm(gap_sum ~ .,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
+
+#gap ~ real + satis + real * satis + c
+model_ygap_sum.4.satis <- lm(gap_sum ~ . + (satis_autonomy_ct + satis_relatedness_ct + satis_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                 data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")))
+model_ygap_sum.4.dissatis <- lm(gap_sum ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                 data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")))
+model_ygap_sum.4.combined <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                 data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
+model_ygap_sum.5.satis <- lm(gap_sum ~ . + (satis_autonomy_ct + satis_relatedness_ct + satis_competence_ct) * real_sum,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^satis.+ct$")))
+model_ygap_sum.5.dissatis <- lm(gap_sum ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * real_sum,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^dissatis.+ct$")))
+model_ygap_sum.5.combined <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * real_sum,
+                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
+
+```
+
+```{r models_simple}
+#--Acquire corresponding df for each game personality
+#Alphabetical order for personality response vars
+#With all personality
+dfs_ygame.satis <- list(select(df_player_c, gap = gap_agreeableness, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")),
+                  select(df_player_c, gap = gap_conscientiousness, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")),
+                  select(df_player_c, gap = gap_emotionstability, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")),
+                  select(df_player_c, gap = gap_extraversion, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")),
+                  select(df_player_c, gap = gap_openness, matches("^real.+ct$"), starts_with("c_"), matches("^satis.+ct$")))
+dfs_ygame.dissatis <- list(select(df_player_c, gap = gap_agreeableness, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")),
+                  select(df_player_c, gap = gap_conscientiousness, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")),
+                  select(df_player_c, gap = gap_emotionstability, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")),
+                  select(df_player_c, gap = gap_extraversion, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")),
+                  select(df_player_c, gap = gap_openness, matches("^real.+ct$"), starts_with("c_"), matches("^dissatis.+ct$")))
+dfs_ygame.combined <- list(select(df_player_c, gap = gap_agreeableness, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")),
+                  select(df_player_c, gap = gap_conscientiousness, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")),
+                  select(df_player_c, gap = gap_emotionstability, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")),
+                  select(df_player_c, gap = gap_extraversion, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")),
+                  select(df_player_c, gap = gap_openness, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
+
+
+#--Train models
+#With all personality
+models_ygame.satis_lm <- map(dfs_ygame.satis,
+                       ~ lm(gap ~ . + (satis_autonomy_ct + satis_relatedness_ct + satis_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                            data=.x))
+models_ygame.dissatis_lm <- map(dfs_ygame.dissatis,
+                       ~ lm(gap ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                            data=.x))
+models_ygame.combined_lm <- map(dfs_ygame.combined,
+                       ~ lm(gap ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
+                            data=.x))
+
+```
+
+## Information criteria - combined
+
+### BIC
+
+Model 1: gap ~ real + c (combined real)
+Model 2: gap ~ satis + c
+Model 3: gap ~ real + satis + c (combined real)
+Model 4: gap ~ real + satis + real * satis + c (separate real)
+Model 5: gap ~ real + satis + real * satis + c (combined real)
+```{r BIC_combined}
+BICs_ygap_sum.1.satis <- model_ygap_sum.1.satis %>% BIC()
+BICs_ygap_sum.1.dissatis <- model_ygap_sum.1.dissatis %>% BIC()
+BICs_ygap_sum.1.combined <-model_ygap_sum.1.combined %>% BIC()
+BICs_ygap_sum.2.satis <-model_ygap_sum.2.satis %>% BIC()
+BICs_ygap_sum.2.dissatis <-model_ygap_sum.2.dissatis %>% BIC()
+BICs_ygap_sum.2.combined <-model_ygap_sum.2.combined %>% BIC()
+BICs_ygap_sum.3.satis <-model_ygap_sum.3.satis %>% BIC()
+BICs_ygap_sum.3.dissatis <-model_ygap_sum.3.dissatis %>% BIC()
+BICs_ygap_sum.3.combined <-model_ygap_sum.3.combined %>% BIC()
+BICs_ygap_sum.4.satis <-model_ygap_sum.4.satis %>% BIC()
+BICs_ygap_sum.4.dissatis <-model_ygap_sum.4.dissatis %>% BIC()
+BICs_ygap_sum.4.combined <-model_ygap_sum.4.combined %>% BIC()
+BICs_ygap_sum.5.satis <-model_ygap_sum.5.satis %>% BIC()
+BICs_ygap_sum.5.dissatis <-model_ygap_sum.5.dissatis %>% BIC()
+BICs_ygap_sum.5.combined <-model_ygap_sum.5.combined %>% BIC()
+
+BICs_ygap_sum.all.satis <- c(BICs_ygap_sum.1.satis, BICs_ygap_sum.2.satis, BICs_ygap_sum.3.satis, BICs_ygap_sum.4.satis, BICs_ygap_sum.5.satis)
+BICs_ygap_sum.all.dissatis <- c(BICs_ygap_sum.1.dissatis, BICs_ygap_sum.2.dissatis, BICs_ygap_sum.3.dissatis, BICs_ygap_sum.4.dissatis, BICs_ygap_sum.5.dissatis)
+BICs_ygap_sum.all.combined <- c(BICs_ygap_sum.1.combined, BICs_ygap_sum.2.combined, BICs_ygap_sum.3.combined, BICs_ygap_sum.4.combined, BICs_ygap_sum.5.combined)
+
+df_BICc <- rbind(BICs_ygap_sum.all.satis, BICs_ygap_sum.all.dissatis, BICs_ygap_sum.all.combined) %>% as.data.frame()
+
+ggplot(df_BICc) +
+  geom_point(aes(x="model 1", y=df_BICc$V1, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 2", y=df_BICc$V2, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 3", y=df_BICc$V3, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 4", y=df_BICc$V4, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 5", y=df_BICc$V5, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  scale_color_manual(name="Type of dependent variable", values=c("satisfaction"="red", "dissatisfaction"="blue", "combined"="black")) +
+  theme(axis.text.x=element_text(angle=10, hjust=0.5)) +
+  labs(x=NULL, y="BIC")
+
+```
+
+
+### AIC
+```{r AIC_combined}
+AICs_ygap_sum.1.satis <-model_ygap_sum.1.satis %>% AIC()
+AICs_ygap_sum.1.dissatis <-model_ygap_sum.1.dissatis %>% AIC()
+AICs_ygap_sum.1.combined <-model_ygap_sum.1.combined %>% AIC()
+AICs_ygap_sum.2.satis <-model_ygap_sum.2.satis %>% AIC()
+AICs_ygap_sum.2.dissatis <-model_ygap_sum.2.dissatis %>% AIC()
+AICs_ygap_sum.2.combined <-model_ygap_sum.2.combined %>% AIC()
+AICs_ygap_sum.3.satis <-model_ygap_sum.3.satis %>% AIC()
+AICs_ygap_sum.3.dissatis <-model_ygap_sum.3.dissatis %>% AIC()
+AICs_ygap_sum.3.combined <-model_ygap_sum.3.combined %>% AIC()
+AICs_ygap_sum.4.satis <-model_ygap_sum.4.satis %>% AIC()
+AICs_ygap_sum.4.dissatis <-model_ygap_sum.4.dissatis %>% AIC()
+AICs_ygap_sum.4.combined <-model_ygap_sum.4.combined %>% AIC()
+AICs_ygap_sum.5.satis <-model_ygap_sum.5.satis %>% AIC()
+AICs_ygap_sum.5.dissatis <-model_ygap_sum.5.dissatis %>% AIC()
+AICs_ygap_sum.5.combined <-model_ygap_sum.5.combined %>% AIC()
+
+AICs_ygap_sum.all.satis <- c(AICs_ygap_sum.1.satis, AICs_ygap_sum.2.satis, AICs_ygap_sum.3.satis, AICs_ygap_sum.4.satis, AICs_ygap_sum.5.satis)
+AICs_ygap_sum.all.dissatis <- c(AICs_ygap_sum.1.dissatis, AICs_ygap_sum.2.dissatis, AICs_ygap_sum.3.dissatis, AICs_ygap_sum.4.dissatis, AICs_ygap_sum.5.dissatis)
+AICs_ygap_sum.all.combined <- c(AICs_ygap_sum.1.combined, AICs_ygap_sum.2.combined, AICs_ygap_sum.3.combined, AICs_ygap_sum.4.combined, AICs_ygap_sum.5.combined)
+
+df_AICc <- rbind(AICs_ygap_sum.all.satis, AICs_ygap_sum.all.dissatis, AICs_ygap_sum.all.combined) %>% as.data.frame()
+
+ggplot(df_AICc) +
+  geom_point(aes(x="model 1", y=df_AICc$V1, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 2", y=df_AICc$V2, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 3", y=df_AICc$V3, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 4", y=df_AICc$V4, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="model 5", y=df_AICc$V5, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  scale_color_manual(name="Type of dependent variable", values=c("satisfaction"="red", "dissatisfaction"="blue", "combined"="black")) +
+  theme(axis.text.x=element_text(angle=10, hjust=0.5)) +
+  labs(x=NULL, y="AIC")
+
+```
+
+## Combined models
+
+### gap ~ real + c
+
+### (link for the above position)
+```{r 1}
+summary(model_ygap_sum.1.satis)
+summary(model_ygap_sum.1.dissatis)
+summary(model_ygap_sum.1.combined)
+
+```
+
+### gap ~ satis + c
+
+### (link for the above position)
+```{r 2}
+summary(model_ygap_sum.2.satis)
+summary(model_ygap_sum.2.dissatis)
+summary(model_ygap_sum.2.combined)
+
+```
+
+### gap ~ real + satis + c
+
+### (link for the above position)
+```{r 3}
+summary(model_ygap_sum.3.satis)
+summary(model_ygap_sum.3.dissatis)
+summary(model_ygap_sum.3.combined)
+
+```
+
+### gap ~ real + satis + real * satis + c
+
+### (link for the above position)
+```{r 4}
+summary(model_ygap_sum.4.satis)
+summary(model_ygap_sum.4.dissatis)
+summary(model_ygap_sum.4.combined)
+
+```
+
+```{r 5}
+summary(model_ygap_sum.5.satis)
+summary(model_ygap_sum.5.dissatis)
+summary(model_ygap_sum.5.combined)
+
+```
+
+## Information criteria - separate
+
+### BIC
+```{r BIC}
+BICs_ygame.satis_lm <- unlist(map(models_ygame.satis_lm, BIC))
+BICs_ygame.dissatis_lm <- unlist(map(models_ygame.dissatis_lm, BIC))
+BICs_ygame.combined_lm <- unlist(map(models_ygame.combined_lm, BIC))
+
+df_BIC <- rbind(BICs_ygame.satis_lm, BICs_ygame.dissatis_lm, BICs_ygame.combined_lm) %>% as.data.frame()
+
+ggplot(df_BIC) +
+  geom_point(aes(x="agreeableness", y=df_BIC$V1, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="conscientiousness", y=df_BIC$V2, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="emotionstability", y=df_BIC$V3, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="extraversion", y=df_BIC$V4, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="openness", y=df_BIC$V5, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  scale_color_manual(name="Type of dependent variable", values=c("satisfaction"="red", "dissatisfaction"="blue", "combined"="black")) +
+  theme(axis.text.x=element_text(angle=10, hjust=0.5)) +
+  labs(x="Dependent variable", y="BIC")
+
+```
+
+
+### AIC
+```{r AIC}
+AICs_ygame.satis_lm <- unlist(map(models_ygame.satis_lm, AIC))
+AICs_ygame.dissatis_lm <- unlist(map(models_ygame.dissatis_lm, AIC))
+AICs_ygame.combined_lm <- unlist(map(models_ygame.combined_lm, AIC))
+
+df_AIC <- rbind(AICs_ygame.satis_lm, AICs_ygame.dissatis_lm, AICs_ygame.combined_lm) %>% as.data.frame()
+
+ggplot(df_AIC) +
+  geom_point(aes(x="agreeableness", y=df_AIC$V1, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="conscientiousness", y=df_AIC$V2, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="emotionstability", y=df_AIC$V3, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="extraversion", y=df_AIC$V4, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  geom_point(aes(x="openness", y=df_AIC$V5, color=c("satisfaction", "dissatisfaction", "combined"))) +
+  scale_color_manual(name="Type of dependent variable", values=c("satisfaction"="red", "dissatisfaction"="blue", "combined"="black")) +
+  theme(axis.text.x=element_text(angle=10, hjust=0.5)) +
+  labs(x="Dependent variable", y="AIC")
+
+```
+
+## gap ~  real + satis + real * satis + c
+
+### agreeableness
+```{r agreeableness}
+summary(models_ygame.satis_lm[[1]])
+summary(models_ygame.dissatis_lm[[1]])
+summary(models_ygame.combined_lm[[1]])
+
+```
+
+
+### conscientiousness
+```{r conscientiousness}
+summary(models_ygame.satis_lm[[2]])
+summary(models_ygame.dissatis_lm[[2]])
+summary(models_ygame.combined_lm[[2]])
+
+```
+
+
+### emotionstability
+```{r emotionstability}
+summary(models_ygame.satis_lm[[3]])
+summary(models_ygame.dissatis_lm[[3]])
+summary(models_ygame.combined_lm[[3]])
+
+```
+
+
+### extraversion
+```{r extraversion}
+summary(models_ygame.satis_lm[[4]])
+summary(models_ygame.dissatis_lm[[4]])
+summary(models_ygame.combined_lm[[4]])
+
+```
+
+
+### openness
+```{r openness}
+summary(models_ygame.satis_lm[[5]])
+summary(models_ygame.dissatis_lm[[5]])
+summary(models_ygame.combined_lm[[5]])
+
+```
