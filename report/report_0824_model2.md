@@ -397,7 +397,11 @@ Information criteria - combined
 
 ### BIC
 
-Model 1: gap ~ real + c (combined real) Model 2: gap ~ satis + c Model 3: gap ~ real + satis + c (combined real) Model 4: gap ~ real + satis + real \* satis + c (separate real) Model 5: gap ~ real + satis + real \* satis + c (combined real)
+-   Model 1: gap ~ real + c (combined real)
+-   Model 2: gap ~ satis + c
+-   Model 3: gap ~ real + satis + c (combined real)
+-   Model 4: gap ~ real + satis + real \* satis + c (separate real)
+-   Model 5: gap ~ real + satis + real \* satis + c (combined real)
 
 ``` r
 BICs_ygap_sum.1.satis <- model_ygap_sum.1.satis %>% BIC()
