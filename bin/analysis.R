@@ -176,17 +176,23 @@ updateVars <- function(update_predictors=TRUE){
   #predictor variable as strings for each model
   predictorString <- apply(df_predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
   
-  #Make the dfs into a data frame
-  dfs <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
-    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "preference"), data.frame(.x)))) #df also with outcome variables
-  dfs_player <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
-    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("gap_extraversion ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "gap_extraversion"), data.frame(.x)))) #df also with outcome variables
+  #Use the function to select proper variables for each df
+  createDfs <- function(df, predictorString, outcomeString, rowNames) {
+    dfs <- data.frame(predictorString, row.names=rowNames, stringsAsFactors=FALSE) %>%
+      mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste(outcomeString, " ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+      mutate(df_yx = map(df_x, ~ bind_cols(select(df, outcomeString), data.frame(.x)))) #df also with outcome variables
+    
+    #Set row names for reference
+    row.names(dfs) <<- modelId
+    
+    return(dfs)
+  }
   
-  #Set row names for reference
-  row.names(dfs) <<- modelId
-  row.names(dfs_player) <<- modelId
+  #Make the dfs into one data frame (multiple dependents supported)
+  dfs <<- createDfs(df, predictorString, "preference", rowNames=modelId)
+  
+  dependVars <- c("gap_agreeableness", "gap_conscientiousness", "gap_emotionstability", "gap_extraversion", "gap_openness")
+  dfs_player <<- map(dependVars, ~ createDfs(df_player, predictorString, .x, rowNames=modelId))
 }
 
 
