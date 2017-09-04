@@ -41,6 +41,12 @@ core_cluster <- read_csv("../data/core_cluster.csv", col_names=TRUE) %>%
 core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
   select(-X1)
 
+#Core game traditional genre data
+core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
+  select(-X1, -group, -idTag)
+colnames(core_tGenre)[2:length(colnames(core_tGenre))] <- #Give genre columns identification
+  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], FUN=function(X) {paste("tg_", X, sep="")}))
+
 #Player-related survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
   mutate(race = factor(race),
@@ -62,6 +68,7 @@ core_cluster <- mutate_each(core_cluster,
 #--Match up
 #Main df, key=player-game pair
 df <- bind_cols(core_cluster, core_tsteScore) %>%
+  left_join(core_tGenre, by=c("title" = "game_title")) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
 
 
@@ -126,8 +133,8 @@ updateVars <- function(update_predictors=TRUE){
   #--Match up (repeat the set up section to work around the "data binding" bug)
   #Main df, key=player-game pair
   df <<- bind_cols(core_cluster, core_tsteScore) %>%
+    left_join(core_tGenre, by=c("title" = "game_title")) %>%
     left_join(survey, by=c("core_id"), copy=FALSE)
-  
   
   #--Create response variable
   df <<- df %>%
@@ -176,23 +183,17 @@ updateVars <- function(update_predictors=TRUE){
   #predictor variable as strings for each model
   predictorString <- apply(df_predictors, MARGIN=2, function(x) paste(na.omit(x), collapse="+"))
   
-  #Use the function to select proper variables for each df
-  createDfs <- function(df, predictorString, outcomeString, rowNames) {
-    dfs <- data.frame(predictorString, row.names=rowNames, stringsAsFactors=FALSE) %>%
-      mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste(outcomeString, " ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-      mutate(df_yx = map(df_x, ~ bind_cols(select(df, outcomeString), data.frame(.x)))) #df also with outcome variables
-    
-    #Set row names for reference
-    row.names(dfs) <<- modelId
-    
-    return(dfs)
-  }
+  #Make the dfs into a data frame
+  dfs <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "preference"), data.frame(.x)))) #df also with outcome variables
+  dfs_player <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("gap_extraversion ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "gap_extraversion"), data.frame(.x)))) #df also with outcome variables
   
-  #Make the dfs into one data frame (multiple dependents supported)
-  dfs <<- createDfs(df, predictorString, "preference", rowNames=modelId)
-  
-  dependVars <- c("gap_agreeableness", "gap_conscientiousness", "gap_emotionstability", "gap_extraversion", "gap_openness")
-  dfs_player <<- map(dependVars, ~ createDfs(df_player, predictorString, .x, rowNames=modelId))
+  #Set row names for reference
+  row.names(dfs) <<- modelId
+  row.names(dfs_player) <<- modelId
 }
 
 
@@ -239,6 +240,7 @@ model_gChar_review_median <- lm(preference ~ ., data=select(df_c, preference, st
 
 featureNo <- seq(2, 20)
 model_gChar_tstes <- map(featureNo, ~ lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep="")))))
+model_gChar_tGenre <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tg_")))
 
 model_personality_game <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("game")))
 model_personality_real <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("real")))
@@ -250,7 +252,8 @@ model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, s
 
 #Plug in for result
 #tste_2 = model_gChar_tstes[[1]]
-summary(model_gChar_tstes[[2]])
+summary(model_gChar_tstes[[10]])
+summary(model_gChar_tGenre)
 
 
 
@@ -489,6 +492,57 @@ mse_2 <- function(model, lambda, data_y, data_x){
   pred <- predict(model, s=lambda, newx=data_x)
   mean((pred - data_y)^2, na.rm=TRUE)
 }
+
+
+
+
+"
+### partial linear model
+"
+#--Create cross validation datasets
+df_c <- mutate(df,
+               c_age = age,
+               c_education = education,
+               c_income = income,
+               c_race = race,
+               c_sex = sex,
+               c_release = release,
+               c_star = star_user)
+
+df_c_tg <- select(df_c, preference, starts_with("c_"), starts_with("tg_"))
+dfs_c <- map(featureNo, ~ select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep=""))))
+
+#Leave-one-out: k=nrow(df_yx)
+df_yx_cv <- crossv_kfold(df_c_tg, k=100)
+dfs_yx_cv <- map(dfs_c, ~ crossv_kfold(.x, k=100))
+
+
+#--Train models on each training df
+i <- 17
+model_lm_cv <- map(df_yx_cv$train, ~ lm(preference ~ ., data=.x))
+models_lm_cv <- map(dfs_yx_cv[[i]]$train, ~ lm(preference ~ ., data=.x))
+
+
+#--MSE stats
+#Acquire MSE of each model on training dfs
+mses_lm_cv <- map2_dbl(model_lm_cv, df_yx_cv$test, mse_1)
+msess_lm_cv <- map2_dbl(models_lm_cv, dfs_yx_cv[[i]]$test, mse_1)
+
+#MSE mean
+mses_lm_cv.mean <- mean(mses_lm_cv)
+msess_lm_cv.mean <- mean(msess_lm_cv)
+
+#MSE std
+mses_lm_cv.std <- sd(mses_lm_cv)
+msess_lm_cv.std <- sd(msess_lm_cv)
+
+#Box plot of all MSEs
+ggplot() +
+  geom_boxplot(mapping=aes(x="MSE_tGenre", y=data_frame(mses_lm_cv)[[1]])) +
+  geom_boxplot(mapping=aes(x="MSE_tste", y=data_frame(msess_lm_cv)[[1]])) +
+  labs(title="Boxplot of MSEs",
+       x=element_blank(),
+       y="MSE value")
 
 
 
