@@ -45,7 +45,7 @@ core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
 core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
   select(-X1, -group, -idTag)
 colnames(core_tGenre)[2:length(colnames(core_tGenre))] <- #Give genre columns identification
-  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], FUN=function(X) {paste("tg_", X, sep="")}))
+  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
 
 #Player-related survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
@@ -105,6 +105,7 @@ Name | Definition | Unit
 `group_survey` | group identity from survey | categorical 1-group number
 `group_review` | group identity from review | categorical 1-group number
 `tste_n_x` | group score from survey (tste), n=number of features | interval arbitrary
+`tg_x` | if belongs to traditional genre categories | binary
 
 - Player personality:
 Name | Definition | Unit
@@ -172,11 +173,8 @@ updateVars <- function(update_predictors=TRUE){
   
   #--Select variables to be included in regression (model formation)
   #Sets of predictor variables from file
-  #Can be updated from outside the function (eg. for lasso selection), if so, `update_predictors`=FALSE
-  if(update_predictors==TRUE) {
-    df_predictors <<- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
-  }
-  
+  df_predictors <- read.csv("../data/vars/predictors.csv", header=TRUE, na.strings="")
+
   #Get column name as model id
   modelId <- colnames(df_predictors)
   
@@ -213,10 +211,16 @@ Models applying the variables selected. Two ways to select variables:
 - Column name of `predictors.csv` = model id
 ----------------------------------------------------------------------
 "
-bm_models <- function(){}
+....Models <- function() {}
+
+
+
+
 "
 ### Simple linear model (partial models)
 "
+........SimplePartial <- function() {}
+
 #Update vars
 updateVars()
 
@@ -261,6 +265,8 @@ summary(model_gChar_tGenre)
 "
 ### Multivariate linear model
 "
+........MultivariateLinear <- function() {}
+
 #Update vars
 updateVars()
 
@@ -315,6 +321,8 @@ summary(Anova(model_ygap))
 "
 ### Tobit model
 "
+........Tobit <- function() {}
+
 #Update vars
 updateVars()
 
@@ -357,6 +365,8 @@ summary(models_ygame_lm[[1]])
 "
 ### Simple linear models (full model)
 "
+........SimpleFull <- function() {}
+
 #Update vars
 updateVars()
 
@@ -373,6 +383,8 @@ summary(dfs["t4_r_g", "model_lm"][[1]])
 "
 ### Grouped simple linear models (grouped by game characteristic)
 "
+........SimpleGrouped <- function() {}
+
 #Update vars
 updateVars()
 
@@ -387,7 +399,7 @@ df_yx_group <- dfs$df_yx[[1]] %>%
 model_lm_group <- map2("preference ~ .", df_yx_group$data, lm)
 
 #Print the results
-for(i in seq(1, length(model_lm_group))){
+for(i in seq(1, length(model_lm_group))) {
   print(paste("group", i, sep=" "))
   print(summary(model_lm_group[[i]]))
 }
@@ -400,8 +412,10 @@ for(i in seq(1, length(model_lm_group))){
 
 - `glmnet` alpha=1 -> lasso; alpha=0 -> ridge
 "
+........LassoRidge <- function() {}
+
 #Update vars
-updateVars(update_predictors=FALSE)
+updateVars()
 
 #Acquire various lambda levels (can be plugged in the `glmet` if needed; not used for now)
 lambdas <- 10^seq(3, -3, length=7)
@@ -420,27 +434,108 @@ dfs$model_las_best <- map2(dfs$df_x, dfs$lambda_las_best, ~ glmnet(x=.x, y=df$pr
 dfs$model_las_coef <- map(dfs$model_las_best, coef)
 
 
-#--Update `df_predictors` according to non-zero coefs in Lasso
-#Use non-zero coefs to filter the predictor df
-df_predictors.new <- map(c(1:dim(df_predictors)[2]), .f= ~ df_predictors[.][which(dfs$model_las_coef[[.]] != 0), ])
 
-#Unify the length of each model column
-df_predictors.new <- map(df_predictors.new,
-                         function(.) {
-                          . <- unlist(.)
-                          length(.) <- dim(df_predictors)[1]
-                          return(.)
-                         })
 
-#Bind together to be the new predictor df
-df_predictors <- as.data.table(df_predictors.new)
+"
+### Double Lasso variable selection
+
+- Based on paper `Using Double-Lasso Selection for Principled Variable Selection`
+- by Oleg Urminsky, Christian Hansen, and Victor Chernozhukov` `
+"
+........DoubleLasso <- function() {}
+
+#Update vars
+updateVars()
+
+
+#--Function for updating lambda used in selection
+#n = number of observation; p = number of independent variables; se = standard error of residual or dependent variable
+updateLambda <- function(n, p, se) {se * (1.1 / sqrt(n)) * qnorm(1 - (.1 / log(n)) / (2 * p))}
+
+
+#--Function for acquiring the indices of the selected variables in df_x
+#df_x = matrix with only variables to be tested; y = dependent variable or treatment variables; lambda = the initial lambda computed in advance 
+acquireBetaIndices <- function(df_x, y, lambda, n, p) {
+  #Update lambda k times, k is selected based on literature
+  k <- 1
+  while(k < 15) {
+    model_las <- glmnet(x=df_x, y=y, alpha=1, lambda=lambda, standardize=TRUE)
+    beta <- coef(model_las)
+    residual.se <- sd(y - predict(model_las, df_x))
+    lambda <- updateLambda(n=n, p=p, se=residual.se)
+    k <- k + 1
+  }
   
+  #Return the variable indices with absolute value of beta > 0
+  return(which(abs(beta) > 0))
+}
+
+
+#--Function to perform double lasso selection
+#df_yx = df with all variables; outcomeVar = literally
+#output = a new df_yx with variables selected from df_yx
+lassoSelect <- function(df_yx, outcomeVar) {
+  #--Setting up
+  #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
+  df_ytreatment <- select(df_yx, preference, matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
+  
+  #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
+  df_test <- as.matrix(select(df_yx, -preference, -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
+  
+  #The number of observations
+  n <- nrow(df_test)
+  
+  #The number of variables to be tested
+  p <- ncol(df_test)
+  
+  
+  #--Select vars that predict outcome
+  #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
+  residual.se <- sd(residuals(lm(preference ~ ., data=df_ytreatment)))
+  lambda <- updateLambda(n=n, p=p, se=residual.se)
+  
+  #by Lasso model: dependent variable ~ test variables
+  betaIndices <- acquireBetaIndices(df_x=df_test, y=outcomeVar, lambda=lambda, n=n, p=p)
+  
+  
+  #--Select vars that predict treatments
+  #Each column of the treatment variables as the y in the Lasso selection
+  #Starting from 2 because 1 is the dependent variable
+  for(i in seq(2, ncol(df_ytreatment))) {
+    #Acquire target treatment variable
+    treatment <- df_ytreatment[[i]]
+    
+    #Lambda is initialized as the se of the target treatment variable
+    treatment.se <- sd(treatment)
+    lambda <- updateLambda(n=n, p=p, se=treatment.se)
+    
+    #Acquire the indices and union the result indices of each treatment variable
+    betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=treatment, lambda=lambda, n=n, p=p))
+  }
+  
+  
+  #Process the result indices to remove the first term (the interaction term)
+  betaIndices <- setdiff((betaIndices - 1), 0)
+  
+  #Bind the selected variables with dependent and treatment variables
+  df_yx_selected <- cbind(df_ytreatment, df_test[, betaIndices])
+  
+  #Return a new df_yx with variables selected
+  return(df_yx_selected)
+}
+
+#Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
+dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., .$preference))
+
 
 
 
 "
 ### Predicting models
 "
+........PredictingModels <- function() {}
+
+
 #--Random forest (bagging)
 #Update vars
 updateVars()
@@ -477,7 +572,11 @@ for(model in dfs$model_svm) print(summary(model))
 ## Cross validation
 ----------------------------------------------------------------------
 "
-bm_crossValidation <- function(){}
+...CrossValidation <- function() {}
+
+
+
+
 "
 ### MSE computation
 "
@@ -499,6 +598,9 @@ mse_2 <- function(model, lambda, data_y, data_x){
 "
 ### partial linear model
 "
+........SimplePartial <- function() {}
+
+
 #--Create cross validation datasets
 df_c <- mutate(df,
                c_age = age,
@@ -550,6 +652,9 @@ ggplot() +
 "
 ### Simple linear model and predicting models
 "
+........SimpleFullnPredicting <- function() {}
+
+
 #--Create cross validation datasets
 #Update vars
 updateVars()
@@ -586,6 +691,9 @@ mseSd_lm_cv <- sd(mses_lm_cv)
 "
 ### Lasso and ridge
 "
+........LassoRidge <- function() {}
+
+
 #--Create cross validation datasets
 #Update vars
 updateVars(update_predictors=FALSE)
@@ -634,10 +742,17 @@ mseSd_las_cv <- sd(mses_las_cv)
 ## Information criteria
 ----------------------------------------------------------------------
 "
-bm_infoCriteria <- function(){}
+...InformationCriteria <- function() {}
+
+
+
+
 "
 ### BIC and BIC difference
 "
+........BIC <- function() {}
+
+
 #--preference ~ tstes
 BICs <- unlist(map(model_gChar_tstes, BIC))
 BICs_dif <- BICs[-1] - lag(BICs)[-1]
@@ -729,6 +844,9 @@ BICs_ygame_lm <- unlist(map(models_ygame_lm, BIC))
 "
 ### AIC and AIC difference
 "
+........AIC <- function() {}
+
+
 #--preference ~ tstes
 AICs <- unlist(map(model_gChar_tstes, AIC))
 AICs_dif <- AICs[-1] - lag(AICs)[-1]
@@ -826,10 +944,16 @@ AICs_ygame_lm <- unlist(map(models_ygame_lm, AIC))
 ## Description
 ----------------------------------------------------------------------
 "
-bm_description <- function(){}
+...Description <- function() {}
+
+
+
+
 "
 ### Descriptive stats
 "
+........DescriptiveStats <- function() {}
+
 #Update vars
 updateVars()
 
@@ -864,6 +988,8 @@ dist_personality("openness")
 "
 ### Correlation
 "
+........Correlation <- function() {}
+
 #Full matrix
 cor(select(df, which(sapply(df, is.numeric))))
 
@@ -881,6 +1007,8 @@ corrplot(cor(select(df, preference, starts_with("gap"), starts_with("combined"))
 "
 ### Difference between real and game personality
 "
+........Ttest <- function() {}
+
 #Observation
 mean(df_player$real_agreeableness)
 mean(df_player$game_agreeableness)
@@ -907,14 +1035,19 @@ t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
 - Applied on specific single model
 ----------------------------------------------------------------------
 "
-bm_regAssumption <- function(){}
+...RegressionAssumption <- function(){}
 
 #Update vars
 updateVars()
 
+
+
+
 "
 ### Multicollinearity
 "
+........Multicollinearity <- function() {}
+
 #VIF score (criterion: <10)
 vif(dfs$model_lm[[1]])
 
@@ -924,6 +1057,8 @@ vif(dfs$model_lm[[1]])
 "
 ### P-value adjustment
 "
+........Bonferroni <- function() {}
+
 #Extract p-values for bonferroni
 #Use `str(summary(model))` to see object structure
 pValues_lm <- summary(dfs$model_lm[[1]])$coefficients[, 4]
@@ -937,6 +1072,9 @@ p.adjust(pValues_lm, method=c("bonferroni"))
 "
 ### Influential observations
 "
+........InfluentialObservations <- function() {}
+
+
 #--Observe
 #Add key statistics; add row name for graph reference
 df_influenceDetect <- dfs$df_yx[[1]]
@@ -980,6 +1118,8 @@ bind_rows(hat, student, cooksd)
 "
 ### Normally distributed
 "
+........NormalDistribution <- function() {}
+
 # car::qqPlot(lm_1)
 # 
 # augment(lm_1, df) %>%
@@ -996,3 +1136,4 @@ bind_rows(hat, student, cooksd)
 "
 ### Heteroscedasticity
 "
+........Heteroscedasticity <- function() {}
