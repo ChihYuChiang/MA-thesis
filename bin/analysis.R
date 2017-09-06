@@ -371,11 +371,11 @@ summary(models_ygame_lm[[1]])
 updateVars()
 
 #Train models
-dfs$model_lm <- map(dfs$df_yx, ~ lm(preference ~ ., data=.x))
+dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
 
 #Summary
 for(model in dfs$model_lm) print(summary(model))
-summary(dfs["t4_r_g", "model_lm"][[1]])
+summary(dfs["gap_8_i", "model_lm"][[1]])
 
 
 
@@ -474,13 +474,15 @@ acquireBetaIndices <- function(df_x, y, lambda, n, p) {
 #--Function to perform double lasso selection
 #df_yx = df with all variables; outcomeVar = literally
 #output = a new df_yx with variables selected from df_yx
-lassoSelect <- function(df_yx, outcomeVar) {
+lassoSelect <- function(df_yx) {
   #--Setting up
   #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
-  df_ytreatment <- select(df_yx, preference, matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
-  
+  # df_ytreatment <- select(df_yx, preference, matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
+  df_ytreatment <- NULL
+
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
-  df_test <- as.matrix(select(df_yx, -preference, -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
+  # df_test <- as.matrix(select(df_yx, -preference, -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
+  df_test <- as.matrix(select(df_yx, -preference))
   
   #The number of observations
   n <- nrow(df_test)
@@ -491,26 +493,29 @@ lassoSelect <- function(df_yx, outcomeVar) {
   
   #--Select vars that predict outcome
   #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
-  residual.se <- sd(residuals(lm(preference ~ ., data=df_ytreatment)))
+  #If the treatment var is NULL, use the se pf dependent var to initiate
+  residual.se <- if(is.null(df_ytreatment)) {sd(df_yx$preference)} else {sd(residuals(lm(preference ~ ., data=df_ytreatment)))}
   lambda <- updateLambda(n=n, p=p, se=residual.se)
   
   #by Lasso model: dependent variable ~ test variables
-  betaIndices <- acquireBetaIndices(df_x=df_test, y=outcomeVar, lambda=lambda, n=n, p=p)
+  betaIndices <- acquireBetaIndices(df_x=df_test, y=df_yx$preference, lambda=lambda, n=n, p=p)
   
   
   #--Select vars that predict treatments
   #Each column of the treatment variables as the y in the Lasso selection
   #Starting from 2 because 1 is the dependent variable
-  for(i in seq(2, ncol(df_ytreatment))) {
-    #Acquire target treatment variable
-    treatment <- df_ytreatment[[i]]
-    
-    #Lambda is initialized as the se of the target treatment variable
-    treatment.se <- sd(treatment)
-    lambda <- updateLambda(n=n, p=p, se=treatment.se)
-    
-    #Acquire the indices and union the result indices of each treatment variable
-    betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=treatment, lambda=lambda, n=n, p=p))
+  if(!is.null(df_ytreatment)) { #Run only when treatment vars not NULL
+    for(i in seq(2, ncol(df_ytreatment))) {
+      #Acquire target treatment variable
+      treatment <- df_ytreatment[[i]]
+      
+      #Lambda is initialized as the se of the target treatment variable
+      treatment.se <- sd(treatment)
+      lambda <- updateLambda(n=n, p=p, se=treatment.se)
+      
+      #Acquire the indices and union the result indices of each treatment variable
+      betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=treatment, lambda=lambda, n=n, p=p))
+    }
   }
   
   
@@ -525,7 +530,7 @@ lassoSelect <- function(df_yx, outcomeVar) {
 }
 
 #Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
-dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., .$preference))
+dfs$df_yx_selected <- map(dfs$df_yx, lassoSelect)
 
 
 
