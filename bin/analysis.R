@@ -84,7 +84,6 @@ df <- bind_cols(core_cluster, core_tsteScore) %>%
 Acquire `player_df`; Compute and select variables to be used in models.
 
 - Call the function to update the vars employed.
-- `update_predictors`=TRUE to update `df_predictors` from csv.
 - Final response variable utilizes only `preference_3`.
 - Mean-centered vars is marked with a suffix _ct.
 
@@ -460,7 +459,7 @@ dfs$model_las_coef <- map(dfs$model_las_best, coef)
 ### Double Lasso variable selection
 
 - Based on paper `Using Double-Lasso Selection for Principled Variable Selection`
-- by Oleg Urminsky, Christian Hansen, and Victor Chernozhukov` `
+- by Oleg Urminsky, Christian Hansen, and Victor Chernozhukov
 "
 ........DoubleLasso <- function() {}
 
@@ -489,20 +488,22 @@ acquireBetaIndices <- function(df_x, y, lambda, n, p) {
 
 
 #--Function to perform double lasso selection
-#df_yx = df with all variables; outcomeVar = string of the outcome var in the df
+#df_yx = df with all variables; outcomeVar = string of the outcome var in the df; form = a switch to decide the test and treatment vars
 #output = a new df_yx with variables selected from df_yx
-lassoSelect <- function(df_yx, outcomeVar) {
+lassoSelect <- function(df_yx, outcomeVar, form) {
   #--Setting up
   #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
-  # df_ytreatment <- select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
-  # df_ytreatment <- select(df_yx, matches(outcomeVar))
-  df_ytreatment <- select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar)))
-                          
+  df_ytreatment <- switch(form,
+                          "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$")),
+                          "2"=select(df_yx, matches(outcomeVar)),
+                          "3"=select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar))))
+
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
-  # df_test <- as.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
-  # df_test <- as.matrix(select(df_yx, -matches(outcomeVar)))
-  df_test <- as.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar))))
-  
+  df_test <- switch(form,
+                    "1"=as.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$"))),
+                    "2"=as.matrix(select(df_yx, -matches(outcomeVar))),
+                    "3"=as.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar)))))
+
   #The number of observations
   n <- nrow(df_test)
   
@@ -554,8 +555,8 @@ updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
 
 
 #--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
-dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., outcomeVar="preference"))
-dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness"))
+dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., outcomeVar="preference", form="1"))
+dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness", form="1"))
 
 
 
