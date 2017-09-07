@@ -130,7 +130,7 @@ Name | Definition | Unit
 `star_user` | general game quality rated by GameSpot user | interval 0-10
 ----------------------------------------------------------------------
 "
-updateVars <- function(update_predictors=TRUE){
+updateVars <- function(df.outcome="preference", df_player.outcome="game_extraversion"){
   #--Match up (repeat the set up section to work around the "data binding" bug)
   #Main df, key=player-game pair
   df <<- bind_cols(core_cluster, core_tsteScore) %>%
@@ -183,11 +183,11 @@ updateVars <- function(update_predictors=TRUE){
   
   #Make the dfs into a data frame
   dfs <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
-    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("preference ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "preference"), data.frame(.x)))) #df also with outcome variables
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste(df.outcome, " ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df, df.outcome), data.frame(.x)))) #df also with outcome variables
   dfs_player <<- data.frame(predictorString, row.names=modelId, stringsAsFactors=FALSE) %>%
-    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste("gap_extraversion ~ ", .x, sep="")), data=df)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
-    mutate(df_yx = map(df_x, ~ bind_cols(select(df, "gap_extraversion"), data.frame(.x)))) #df also with outcome variables
+    mutate(df_x = map(predictorString, ~ model.matrix(as.formula(paste(df_player.outcome, " ~ ", .x, sep="")), data=df_player)[, -1])) %>% #df with only predictor variables; [, -1] used to remove redundant intercept column
+    mutate(df_yx = map(df_x, ~ bind_cols(select(df_player, df_player.outcome), data.frame(.x)))) #df also with outcome variables
   
   #Set row names for reference
   row.names(dfs) <<- modelId
@@ -363,6 +363,25 @@ summary(models_ygame_lm[[1]])
 
 
 "
+### Tobit Model (full model)
+"
+........TobitFull <- function() {}
+
+#Update vars
+updateVars()
+
+#Train models
+dfs_player$model_tobit <- map(dfs_player$df_yx_selected,
+                              ~ vglm(game_agreeableness ~ ., data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
+
+#Summary
+for(model in dfs_player$model_tobit) print(summary(model))
+summary(dfs["gap_8_i", "model_tobit"][[1]])
+
+
+
+
+"
 ### Simple linear models (full model)
 "
 ........SimpleFull <- function() {}
@@ -372,9 +391,10 @@ updateVars()
 
 #Train models
 dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
+dfs_player$model_lm <- map(dfs_player$df_yx_selected, ~ lm(gap_extraversion ~ ., data=.x))
 
 #Summary
-for(model in dfs$model_lm) print(summary(model))
+for(model in dfs_player$model_lm) print(summary(model))
 summary(dfs["gap_8_i", "model_lm"][[1]])
 
 
@@ -444,9 +464,6 @@ dfs$model_las_coef <- map(dfs$model_las_best, coef)
 "
 ........DoubleLasso <- function() {}
 
-#Update vars
-updateVars()
-
 
 #--Function for updating lambda used in selection
 #n = number of observation; p = number of independent variables; se = standard error of residual or dependent variable
@@ -472,17 +489,19 @@ acquireBetaIndices <- function(df_x, y, lambda, n, p) {
 
 
 #--Function to perform double lasso selection
-#df_yx = df with all variables; outcomeVar = literally
+#df_yx = df with all variables; outcomeVar = string of the outcome var in the df
 #output = a new df_yx with variables selected from df_yx
-lassoSelect <- function(df_yx) {
+lassoSelect <- function(df_yx, outcomeVar) {
   #--Setting up
   #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
-  # df_ytreatment <- select(df_yx, preference, matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
-  df_ytreatment <- NULL
-
+  # df_ytreatment <- select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$"))
+  # df_ytreatment <- select(df_yx, matches(outcomeVar))
+  df_ytreatment <- select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar)))
+                          
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
-  # df_test <- as.matrix(select(df_yx, -preference, -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
-  df_test <- as.matrix(select(df_yx, -preference))
+  # df_test <- as.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$")))
+  # df_test <- as.matrix(select(df_yx, -matches(outcomeVar)))
+  df_test <- as.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar))))
   
   #The number of observations
   n <- nrow(df_test)
@@ -494,17 +513,17 @@ lassoSelect <- function(df_yx) {
   #--Select vars that predict outcome
   #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
   #If the treatment var is NULL, use the se pf dependent var to initiate
-  residual.se <- if(is.null(df_ytreatment)) {sd(df_yx$preference)} else {sd(residuals(lm(preference ~ ., data=df_ytreatment)))}
+  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(paste(outcomeVar, " ~ .", sep="")), data=df_ytreatment)))}
   lambda <- updateLambda(n=n, p=p, se=residual.se)
   
   #by Lasso model: dependent variable ~ test variables
-  betaIndices <- acquireBetaIndices(df_x=df_test, y=df_yx$preference, lambda=lambda, n=n, p=p)
+  betaIndices <- acquireBetaIndices(df_x=df_test, y=df_yx[[outcomeVar]], lambda=lambda, n=n, p=p)
   
   
   #--Select vars that predict treatments
   #Each column of the treatment variables as the y in the Lasso selection
   #Starting from 2 because 1 is the dependent variable
-  if(!is.null(df_ytreatment)) { #Run only when treatment vars not NULL
+  if(ncol(df_ytreatment) != 1) { #Run only when treatment vars not NULL
     for(i in seq(2, ncol(df_ytreatment))) {
       #Acquire target treatment variable
       treatment <- df_ytreatment[[i]]
@@ -529,8 +548,14 @@ lassoSelect <- function(df_yx) {
   return(df_yx_selected)
 }
 
-#Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
-dfs$df_yx_selected <- map(dfs$df_yx, lassoSelect)
+
+#--Update vars
+updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
+
+
+#--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
+dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., outcomeVar="preference"))
+dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness"))
 
 
 
