@@ -363,13 +363,13 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
   #--Setting up
   #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
   df_ytreatment <- switch(form,
-                          "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$")),
+                          "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+[a-z]{4}$"), matches("^tste.+\\d_ct$")),
                           "2"=select(df_yx, matches(outcomeVar)),
                           "3"=select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar))))
 
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
   df_test <- switch(form,
-                    "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$"))),
+                    "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+[a-z]{4}$"), -matches("^tste.+\\d_ct$"))),
                     "2"=data.matrix(select(df_yx, -matches(outcomeVar))),
                     "3"=data.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar)))))
   
@@ -4105,38 +4105,39 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9676 -0.6663  0.3197  1.0787  2.4729 
+    ## -4.9981 -0.6571  0.3077  1.0737  2.5979 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               66.022394  14.205477   4.648 3.56e-06 ***
-    ## real_extraversion_ct       0.043571   0.025104   1.736 0.082772 .  
-    ## real_agreeableness_ct      0.016532   0.031423   0.526 0.598865    
-    ## real_conscientiousness_ct  0.084261   0.034907   2.414 0.015869 *  
-    ## real_emotionstability_ct  -0.032134   0.034602  -0.929 0.353155    
-    ## real_openness_ct           0.111504   0.033476   3.331 0.000881 ***
-    ## tste_2_0_ct                0.096247   0.041350   2.328 0.020026 *  
-    ## tste_2_1_ct               -0.070688   0.040306  -1.754 0.079610 .  
-    ## release                   -0.030065   0.006987  -4.303 1.76e-05 ***
-    ## gap_openness              -0.021645   0.043236  -0.501 0.616690    
-    ## income                     0.005663   0.017266   0.328 0.742979    
-    ## gap_extraversion          -0.006779   0.025694  -0.264 0.791918    
-    ## gap_agreeableness          0.080118   0.033610   2.384 0.017225 *  
-    ## gap_emotionstability      -0.034297   0.031562  -1.087 0.277309    
-    ## age                       -0.014033   0.004622  -3.036 0.002428 ** 
-    ## sex2                      -0.094816   0.072814  -1.302 0.193003    
-    ## gap_conscientiousness      0.004346   0.039764   0.109 0.912983    
-    ## race4                     -0.238258   0.142118  -1.676 0.093792 .  
-    ## education                  0.006206   0.026723   0.232 0.816388    
-    ## race2                      0.104013   0.132136   0.787 0.431271    
-    ## star_user                  0.007665   0.058043   0.132 0.894948    
-    ## star_GS                    0.013628   0.048089   0.283 0.776900    
+    ## (Intercept)               64.041678  14.157773   4.523 6.42e-06 ***
+    ## real_extraversion_ct       0.048772   0.024990   1.952 0.051116 .  
+    ## real_agreeableness_ct      0.015224   0.031372   0.485 0.627535    
+    ## real_conscientiousness_ct  0.088301   0.034851   2.534 0.011358 *  
+    ## real_emotionstability_ct  -0.035485   0.034581  -1.026 0.304945    
+    ## real_openness_ct           0.102523   0.033244   3.084 0.002069 ** 
+    ## gap_extraversion           0.006878   0.026074   0.264 0.791986    
+    ## gap_agreeableness          0.069669   0.033901   2.055 0.039992 *  
+    ## gap_conscientiousness      0.003610   0.039951   0.090 0.928009    
+    ## gap_emotionstability      -0.037253   0.031765  -1.173 0.241031    
+    ## gap_openness              -0.040631   0.043247  -0.939 0.347585    
+    ## tste_2_0_ct                0.095156   0.041277   2.305 0.021247 *  
+    ## tste_2_1_ct               -0.075146   0.040238  -1.868 0.061967 .  
+    ## release                   -0.029058   0.006963  -4.173 3.13e-05 ***
+    ## education                  0.009538   0.026675   0.358 0.720704    
+    ## income                     0.008232   0.017257   0.477 0.633374    
+    ## race7                     -0.150588   0.136998  -1.099 0.271806    
+    ## sex2                      -0.081256   0.072863  -1.115 0.264896    
+    ## age                       -0.015373   0.004598  -3.344 0.000841 ***
+    ## race4                     -0.259861   0.141781  -1.833 0.066969 .  
+    ## race6                     -0.976663   0.349502  -2.794 0.005246 ** 
+    ## star_user                  0.011486   0.057835   0.199 0.842597    
+    ## star_GS                    0.008844   0.048005   0.184 0.853855    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.464 on 2116 degrees of freedom
-    ## Multiple R-squared:  0.05929,    Adjusted R-squared:  0.04995 
-    ## F-statistic: 6.351 on 21 and 2116 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.461 on 2115 degrees of freedom
+    ## Multiple R-squared:  0.06292,    Adjusted R-squared:  0.05317 
+    ## F-statistic: 6.455 on 22 and 2115 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4144,39 +4145,40 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.8480 -0.6883  0.3104  1.0782  2.5237 
+    ## -4.8776 -0.6947  0.3034  1.0633  2.4956 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               60.327697  14.157877   4.261 2.12e-05 ***
-    ## real_extraversion_ct       0.041835   0.024944   1.677 0.093655 .  
-    ## real_agreeableness_ct      0.018248   0.031226   0.584 0.559022    
-    ## real_conscientiousness_ct  0.085788   0.034686   2.473 0.013466 *  
-    ## real_emotionstability_ct  -0.030027   0.034382  -0.873 0.382581    
-    ## real_openness_ct           0.111533   0.033263   3.353 0.000813 ***
-    ## tste_3_0_ct               -0.046926   0.043474  -1.079 0.280529    
-    ## tste_3_1_ct                0.151829   0.035343   4.296 1.82e-05 ***
-    ## tste_3_2_ct                0.244334   0.049414   4.945 8.23e-07 ***
-    ## release                   -0.027370   0.006963  -3.931 8.74e-05 ***
-    ## gap_openness              -0.025567   0.042968  -0.595 0.551897    
-    ## income                     0.007114   0.017158   0.415 0.678453    
-    ## gap_extraversion          -0.007257   0.025527  -0.284 0.776203    
-    ## gap_agreeableness          0.084978   0.033409   2.544 0.011043 *  
-    ## gap_emotionstability      -0.034147   0.031363  -1.089 0.276381    
-    ## age                       -0.013868   0.004593  -3.020 0.002562 ** 
-    ## sex2                      -0.083385   0.072375  -1.152 0.249401    
-    ## gap_conscientiousness      0.006951   0.039513   0.176 0.860379    
-    ## race4                     -0.212103   0.141302  -1.501 0.133488    
-    ## education                  0.003708   0.026557   0.140 0.888956    
-    ## race2                      0.100747   0.131295   0.767 0.442972    
-    ## star_user                  0.006920   0.057791   0.120 0.904694    
-    ## star_GS                    0.047301   0.048524   0.975 0.329771    
+    ## (Intercept)               58.281494  14.110649   4.130 3.76e-05 ***
+    ## real_extraversion_ct       0.046974   0.024831   1.892 0.058666 .  
+    ## real_agreeableness_ct      0.016919   0.031175   0.543 0.587381    
+    ## real_conscientiousness_ct  0.089616   0.034629   2.588 0.009724 ** 
+    ## real_emotionstability_ct  -0.033538   0.034361  -0.976 0.329155    
+    ## real_openness_ct           0.102678   0.033033   3.108 0.001906 ** 
+    ## gap_extraversion           0.006484   0.025904   0.250 0.802389    
+    ## gap_agreeableness          0.075022   0.033699   2.226 0.026102 *  
+    ## gap_conscientiousness      0.005639   0.039698   0.142 0.887058    
+    ## gap_emotionstability      -0.037634   0.031565  -1.192 0.233287    
+    ## gap_openness              -0.044326   0.042979  -1.031 0.302494    
+    ## tste_3_0_ct               -0.042500   0.043385  -0.980 0.327390    
+    ## tste_3_1_ct                0.154504   0.035300   4.377 1.26e-05 ***
+    ## tste_3_2_ct                0.244222   0.049346   4.949 8.04e-07 ***
+    ## release                   -0.026331   0.006939  -3.795 0.000152 ***
+    ## education                  0.007019   0.026509   0.265 0.791208    
+    ## income                     0.009574   0.017149   0.558 0.576706    
+    ## race7                     -0.165794   0.136153  -1.218 0.223472    
+    ## sex2                      -0.069725   0.072424  -0.963 0.335790    
+    ## age                       -0.015195   0.004568  -3.326 0.000896 ***
+    ## race4                     -0.233998   0.140966  -1.660 0.097069 .  
+    ## race6                     -0.953433   0.347323  -2.745 0.006101 ** 
+    ## star_user                  0.011171   0.057583   0.194 0.846201    
+    ## star_GS                    0.042281   0.048437   0.873 0.382814    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.455 on 2115 degrees of freedom
-    ## Multiple R-squared:  0.07168,    Adjusted R-squared:  0.06202 
-    ## F-statistic: 7.423 on 22 and 2115 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.452 on 2114 degrees of freedom
+    ## Multiple R-squared:  0.07527,    Adjusted R-squared:  0.0652 
+    ## F-statistic: 7.481 on 23 and 2114 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4184,40 +4186,41 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9022 -0.6807  0.3069  1.0635  2.6029 
+    ## -4.9327 -0.6772  0.2991  1.0521  2.5754 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               64.589799  14.504874   4.453 8.91e-06 ***
-    ## real_extraversion_ct       0.041604   0.024923   1.669  0.09521 .  
-    ## real_agreeableness_ct      0.018983   0.031221   0.608  0.54323    
-    ## real_conscientiousness_ct  0.085572   0.034660   2.469  0.01363 *  
-    ## real_emotionstability_ct  -0.029572   0.034364  -0.861  0.38958    
-    ## real_openness_ct           0.112145   0.033259   3.372  0.00076 ***
-    ## tste_4_0_ct                0.258482   0.050020   5.168 2.59e-07 ***
-    ## tste_4_1_ct                0.049064   0.056597   0.867  0.38609    
-    ## tste_4_2_ct                0.057063   0.041574   1.373  0.17004    
-    ## tste_4_3_ct               -0.164001   0.039379  -4.165 3.24e-05 ***
-    ## release                   -0.029427   0.007130  -4.127 3.82e-05 ***
-    ## gap_openness              -0.025390   0.042937  -0.591  0.55435    
-    ## income                     0.006625   0.017144   0.386  0.69920    
-    ## gap_extraversion          -0.007477   0.025512  -0.293  0.76951    
-    ## gap_agreeableness          0.084210   0.033379   2.523  0.01171 *  
-    ## gap_emotionstability      -0.034094   0.031338  -1.088  0.27675    
-    ## age                       -0.013665   0.004593  -2.975  0.00296 ** 
-    ## sex2                      -0.080755   0.072342  -1.116  0.26442    
-    ## gap_conscientiousness      0.005910   0.039480   0.150  0.88101    
-    ## race4                     -0.210537   0.141210  -1.491  0.13613    
-    ## education                  0.003418   0.026538   0.129  0.89753    
-    ## race2                      0.099423   0.131258   0.757  0.44886    
-    ## star_GS                    0.080251   0.052720   1.522  0.12810    
-    ## star_user                 -0.041872   0.064751  -0.647  0.51792    
+    ## (Intercept)               62.647448  14.465934   4.331 1.56e-05 ***
+    ## real_extraversion_ct       0.046708   0.024810   1.883  0.05989 .  
+    ## real_agreeableness_ct      0.017686   0.031168   0.567  0.57047    
+    ## real_conscientiousness_ct  0.089424   0.034602   2.584  0.00982 ** 
+    ## real_emotionstability_ct  -0.033105   0.034343  -0.964  0.33518    
+    ## real_openness_ct           0.103305   0.033023   3.128  0.00178 ** 
+    ## gap_extraversion           0.006234   0.025889   0.241  0.80974    
+    ## gap_agreeableness          0.074205   0.033667   2.204  0.02762 *  
+    ## gap_conscientiousness      0.004645   0.039665   0.117  0.90678    
+    ## gap_emotionstability      -0.037529   0.031539  -1.190  0.23422    
+    ## gap_openness              -0.044136   0.042944  -1.028  0.30419    
+    ## tste_4_0_ct                0.258509   0.049943   5.176 2.48e-07 ***
+    ## tste_4_1_ct                0.047555   0.056464   0.842  0.39976    
+    ## tste_4_2_ct                0.062191   0.041505   1.498  0.13418    
+    ## tste_4_3_ct               -0.164592   0.039324  -4.186 2.96e-05 ***
+    ## release                   -0.028439   0.007111  -3.999 6.57e-05 ***
+    ## education                  0.006741   0.026489   0.255  0.79913    
+    ## income                     0.009078   0.017135   0.530  0.59629    
+    ## race7                     -0.164900   0.136044  -1.212  0.22561    
+    ## sex2                      -0.067118   0.072388  -0.927  0.35393    
+    ## age                       -0.014982   0.004569  -3.279  0.00106 ** 
+    ## race4                     -0.232175   0.140879  -1.648  0.09949 .  
+    ## race6                     -0.956441   0.347049  -2.756  0.00590 ** 
+    ## star_GS                    0.075831   0.052643   1.440  0.14988    
+    ## star_user                 -0.038443   0.064594  -0.595  0.55180    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.453 on 2114 degrees of freedom
-    ## Multiple R-squared:  0.07359,    Adjusted R-squared:  0.06351 
-    ## F-statistic: 7.301 on 23 and 2114 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.451 on 2113 degrees of freedom
+    ## Multiple R-squared:  0.07719,    Adjusted R-squared:  0.06671 
+    ## F-statistic: 7.365 on 24 and 2113 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4225,41 +4228,42 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.8612 -0.6798  0.3097  1.0693  2.5830 
+    ## -4.8903 -0.6891  0.2996  1.0522  2.5563 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               53.032851  14.798622   3.584 0.000347 ***
-    ## real_extraversion_ct       0.043927   0.024959   1.760 0.078560 .  
-    ## real_agreeableness_ct      0.018987   0.031255   0.607 0.543590    
-    ## real_conscientiousness_ct  0.086764   0.034705   2.500 0.012492 *  
-    ## real_emotionstability_ct  -0.029687   0.034411  -0.863 0.388392    
-    ## real_openness_ct           0.109625   0.033339   3.288 0.001025 ** 
-    ## tste_5_0_ct                0.229889   0.047039   4.887  1.1e-06 ***
-    ## tste_5_1_ct               -0.160035   0.052062  -3.074 0.002140 ** 
-    ## tste_5_2_ct               -0.028640   0.040859  -0.701 0.483410    
-    ## tste_5_3_ct               -0.089317   0.050718  -1.761 0.078375 .  
-    ## tste_5_4_ct                0.059893   0.052831   1.134 0.257062    
-    ## release                   -0.023666   0.007275  -3.253 0.001159 ** 
-    ## gap_openness              -0.026850   0.043021  -0.624 0.532614    
-    ## income                     0.007785   0.017174   0.453 0.650393    
-    ## gap_extraversion          -0.007016   0.025547  -0.275 0.783634    
-    ## gap_agreeableness          0.084049   0.033416   2.515 0.011970 *  
-    ## gap_emotionstability      -0.033788   0.031381  -1.077 0.281743    
-    ## age                       -0.013851   0.004600  -3.011 0.002632 ** 
-    ## sex2                      -0.087840   0.072429  -1.213 0.225352    
-    ## gap_conscientiousness      0.007069   0.039534   0.179 0.858107    
-    ## race4                     -0.215691   0.141386  -1.526 0.127272    
-    ## education                  0.003770   0.026577   0.142 0.887223    
-    ## race2                      0.089580   0.131421   0.682 0.495552    
-    ## star_user                 -0.025943   0.067204  -0.386 0.699507    
-    ## star_GS                    0.063409   0.053626   1.182 0.237169    
+    ## (Intercept)               51.174050  14.757381   3.468 0.000535 ***
+    ## real_extraversion_ct       0.048883   0.024845   1.967 0.049258 *  
+    ## real_agreeableness_ct      0.017614   0.031202   0.565 0.572459    
+    ## real_conscientiousness_ct  0.090530   0.034647   2.613 0.009040 ** 
+    ## real_emotionstability_ct  -0.033259   0.034389  -0.967 0.333579    
+    ## real_openness_ct           0.101063   0.033099   3.053 0.002292 ** 
+    ## gap_extraversion           0.006650   0.025925   0.256 0.797591    
+    ## gap_agreeableness          0.073789   0.033706   2.189 0.028689 *  
+    ## gap_conscientiousness      0.006044   0.039718   0.152 0.879070    
+    ## gap_emotionstability      -0.036943   0.031582  -1.170 0.242228    
+    ## gap_openness              -0.045338   0.043023  -1.054 0.292093    
+    ## tste_5_0_ct                0.233603   0.046939   4.977 6.99e-07 ***
+    ## tste_5_1_ct               -0.159237   0.051983  -3.063 0.002217 ** 
+    ## tste_5_2_ct               -0.028789   0.040794  -0.706 0.480449    
+    ## tste_5_3_ct               -0.087058   0.050622  -1.720 0.085624 .  
+    ## tste_5_4_ct                0.057575   0.052744   1.092 0.275134    
+    ## release                   -0.022721   0.007254  -3.132 0.001759 ** 
+    ## education                  0.007232   0.026527   0.273 0.785166    
+    ## income                     0.010244   0.017164   0.597 0.550658    
+    ## race7                     -0.160455   0.136236  -1.178 0.239021    
+    ## sex2                      -0.074115   0.072475  -1.023 0.306601    
+    ## age                       -0.015136   0.004576  -3.308 0.000956 ***
+    ## race4                     -0.236585   0.141052  -1.677 0.093634 .  
+    ## race6                     -0.964156   0.347496  -2.775 0.005576 ** 
+    ## star_user                 -0.022433   0.067046  -0.335 0.737960    
+    ## star_GS                    0.058911   0.053552   1.100 0.271428    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.455 on 2113 degrees of freedom
-    ## Multiple R-squared:  0.0716, Adjusted R-squared:  0.06105 
-    ## F-statistic:  6.79 on 24 and 2113 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.453 on 2112 degrees of freedom
+    ## Multiple R-squared:  0.07527,    Adjusted R-squared:  0.06433 
+    ## F-statistic: 6.877 on 25 and 2112 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4267,86 +4271,43 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9245 -0.6876  0.3068  1.0668  2.5518 
+    ## -4.9433 -0.6908  0.3027  1.0523  2.5649 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               51.855246  14.950738   3.468 0.000534 ***
-    ## real_extraversion_ct       0.046128   0.024983   1.846 0.064977 .  
-    ## real_agreeableness_ct      0.016634   0.031288   0.532 0.595025    
-    ## real_conscientiousness_ct  0.086140   0.034712   2.482 0.013158 *  
-    ## real_emotionstability_ct  -0.028558   0.034422  -0.830 0.406827    
-    ## real_openness_ct           0.110372   0.033341   3.310 0.000947 ***
-    ## tste_6_0_ct                0.058255   0.052752   1.104 0.269578    
-    ## tste_6_1_ct               -0.113201   0.050575  -2.238 0.025305 *  
-    ## tste_6_2_ct                0.243196   0.043529   5.587 2.61e-08 ***
-    ## tste_6_3_ct                0.008622   0.053137   0.162 0.871120    
-    ## tste_6_4_ct                0.105179   0.047666   2.207 0.027452 *  
-    ## tste_6_5_ct                0.086392   0.055763   1.549 0.121468    
-    ## release                   -0.023027   0.007350  -3.133 0.001755 ** 
-    ## gap_openness              -0.027844   0.043055  -0.647 0.517885    
-    ## income                     0.008093   0.017179   0.471 0.637609    
-    ## gap_extraversion          -0.004961   0.025565  -0.194 0.846165    
-    ## gap_agreeableness          0.081958   0.033452   2.450 0.014364 *  
-    ## gap_emotionstability      -0.033587   0.031387  -1.070 0.284698    
-    ## age                       -0.013774   0.004601  -2.994 0.002787 ** 
-    ## sex2                      -0.085632   0.072446  -1.182 0.237335    
-    ## gap_conscientiousness      0.007562   0.039551   0.191 0.848392    
-    ## race4                     -0.210985   0.141431  -1.492 0.135906    
-    ## education                  0.003228   0.026583   0.121 0.903374    
-    ## race2                      0.077684   0.131589   0.590 0.555018    
-    ## star_user                 -0.044241   0.069642  -0.635 0.525333    
-    ## star_GS                    0.068817   0.054648   1.259 0.208068    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.456 on 2112 degrees of freedom
-    ## Multiple R-squared:  0.07164,    Adjusted R-squared:  0.06065 
-    ## F-statistic: 6.519 on 25 and 2112 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -4.8567 -0.6859  0.2904  1.0666  2.5886 
-    ## 
-    ## Coefficients:
-    ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               54.999577  15.227129   3.612 0.000311 ***
-    ## real_extraversion_ct       0.043187   0.024959   1.730 0.083713 .  
-    ## real_agreeableness_ct      0.021016   0.031260   0.672 0.501474    
-    ## real_conscientiousness_ct  0.086040   0.034662   2.482 0.013132 *  
-    ## real_emotionstability_ct  -0.029931   0.034370  -0.871 0.383933    
-    ## real_openness_ct           0.109613   0.033283   3.293 0.001006 ** 
-    ## tste_7_0_ct               -0.183566   0.048078  -3.818 0.000138 ***
-    ## tste_7_1_ct                0.025963   0.051750   0.502 0.615933    
-    ## tste_7_2_ct               -0.159619   0.051163  -3.120 0.001834 ** 
-    ## tste_7_3_ct               -0.203790   0.038931  -5.235 1.82e-07 ***
-    ## tste_7_4_ct                0.005227   0.052785   0.099 0.921125    
-    ## tste_7_5_ct                0.023004   0.056317   0.408 0.682970    
-    ## tste_7_6_ct                0.041309   0.059967   0.689 0.490987    
-    ## release                   -0.024669   0.007495  -3.292 0.001013 ** 
-    ## gap_openness              -0.026604   0.043035  -0.618 0.536507    
-    ## income                     0.007652   0.017156   0.446 0.655620    
-    ## gap_extraversion          -0.007273   0.025525  -0.285 0.775726    
-    ## gap_agreeableness          0.085176   0.033385   2.551 0.010801 *  
-    ## gap_emotionstability      -0.033228   0.031349  -1.060 0.289296    
-    ## age                       -0.013522   0.004594  -2.943 0.003284 ** 
-    ## sex2                      -0.088388   0.072335  -1.222 0.221870    
-    ## gap_conscientiousness      0.007422   0.039492   0.188 0.850941    
-    ## race4                     -0.205824   0.141260  -1.457 0.145250    
-    ## education                  0.004152   0.026549   0.156 0.875744    
-    ## race2                      0.093531   0.131291   0.712 0.476302    
-    ## star_user                 -0.027055   0.070449  -0.384 0.700988    
-    ## star_GS                    0.068585   0.052942   1.295 0.195300    
+    ## (Intercept)               50.031419  14.906027   3.356 0.000803 ***
+    ## real_extraversion_ct       0.050899   0.024864   2.047 0.040770 *  
+    ## real_agreeableness_ct      0.015212   0.031234   0.487 0.626278    
+    ## real_conscientiousness_ct  0.089825   0.034653   2.592 0.009604 ** 
+    ## real_emotionstability_ct  -0.032158   0.034398  -0.935 0.349957    
+    ## real_openness_ct           0.102191   0.033098   3.087 0.002045 ** 
+    ## gap_extraversion           0.008623   0.025939   0.332 0.739609    
+    ## gap_agreeableness          0.071429   0.033743   2.117 0.034392 *  
+    ## gap_conscientiousness      0.006825   0.039737   0.172 0.863654    
+    ## gap_emotionstability      -0.036395   0.031589  -1.152 0.249392    
+    ## gap_openness              -0.045940   0.043052  -1.067 0.286050    
+    ## tste_6_0_ct                0.055532   0.052667   1.054 0.291824    
+    ## tste_6_1_ct               -0.111116   0.050475  -2.201 0.027817 *  
+    ## tste_6_2_ct                0.246886   0.043431   5.685 1.49e-08 ***
+    ## tste_6_3_ct                0.010165   0.053043   0.192 0.848045    
+    ## tste_6_4_ct                0.106004   0.047520   2.231 0.025806 *  
+    ## tste_6_5_ct                0.085881   0.055688   1.542 0.123179    
+    ## release                   -0.022102   0.007328  -3.016 0.002591 ** 
+    ## education                  0.006863   0.026532   0.259 0.795926    
+    ## income                     0.010554   0.017168   0.615 0.538786    
+    ## race7                     -0.155278   0.136324  -1.139 0.254817    
+    ## sex2                      -0.071801   0.072489  -0.991 0.322041    
+    ## age                       -0.015013   0.004577  -3.280 0.001055 ** 
+    ## race4                     -0.230901   0.141101  -1.636 0.101899    
+    ## race6                     -0.972733   0.347593  -2.798 0.005181 ** 
+    ## star_user                 -0.040961   0.069494  -0.589 0.555646    
+    ## star_GS                    0.064795   0.054579   1.187 0.235294    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Residual standard error: 1.453 on 2111 degrees of freedom
-    ## Multiple R-squared:  0.07499,    Adjusted R-squared:  0.0636 
-    ## F-statistic: 6.583 on 26 and 2111 DF,  p-value: < 2.2e-16
+    ## Multiple R-squared:  0.07539,    Adjusted R-squared:  0.064 
+    ## F-statistic:  6.62 on 26 and 2111 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4354,44 +4315,44 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9941 -0.6804  0.3028  1.0439  2.7130 
+    ## -4.8864 -0.6926  0.2876  1.0553  2.5603 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               61.114263  15.935454   3.835 0.000129 ***
-    ## real_extraversion_ct       0.045198   0.024913   1.814 0.069780 .  
-    ## real_agreeableness_ct      0.020335   0.031168   0.652 0.514190    
-    ## real_conscientiousness_ct  0.086407   0.034597   2.498 0.012582 *  
-    ## real_emotionstability_ct  -0.030296   0.034303  -0.883 0.377232    
-    ## real_openness_ct           0.105972   0.033225   3.190 0.001446 ** 
-    ## tste_8_0_ct               -0.199105   0.050871  -3.914 9.37e-05 ***
-    ## tste_8_1_ct                0.207717   0.057537   3.610 0.000313 ***
-    ## tste_8_2_ct                0.099339   0.050892   1.952 0.051074 .  
-    ## tste_8_3_ct                0.083446   0.047600   1.753 0.079733 .  
-    ## tste_8_4_ct                0.138113   0.052357   2.638 0.008403 ** 
-    ## tste_8_5_ct                0.089219   0.049432   1.805 0.071237 .  
-    ## tste_8_6_ct               -0.119111   0.052937  -2.250 0.024548 *  
-    ## tste_8_7_ct               -0.046222   0.051954  -0.890 0.373749    
-    ## release                   -0.027579   0.007843  -3.516 0.000447 ***
-    ## gap_openness              -0.034059   0.042930  -0.793 0.427659    
-    ## income                     0.007330   0.017118   0.428 0.668565    
-    ## gap_extraversion          -0.005455   0.025473  -0.214 0.830462    
-    ## gap_agreeableness          0.081858   0.033319   2.457 0.014098 *  
-    ## gap_emotionstability      -0.035053   0.031276  -1.121 0.262511    
-    ## age                       -0.013435   0.004586  -2.930 0.003427 ** 
-    ## sex2                      -0.089946   0.072154  -1.247 0.212685    
-    ## gap_conscientiousness      0.007121   0.039406   0.181 0.856623    
-    ## race4                     -0.194645   0.140992  -1.381 0.167566    
-    ## education                  0.004098   0.026494   0.155 0.877083    
-    ## race2                      0.078760   0.131034   0.601 0.547860    
-    ## star_user                 -0.086282   0.070837  -1.218 0.223346    
-    ## star_GS                    0.095852   0.055103   1.739 0.082093 .  
+    ## (Intercept)               52.898650  15.179726   3.485 0.000503 ***
+    ## real_extraversion_ct       0.048211   0.024843   1.941 0.052440 .  
+    ## real_agreeableness_ct      0.019621   0.031210   0.629 0.529630    
+    ## real_conscientiousness_ct  0.089828   0.034606   2.596 0.009505 ** 
+    ## real_emotionstability_ct  -0.033374   0.034349  -0.972 0.331357    
+    ## real_openness_ct           0.101019   0.033046   3.057 0.002264 ** 
+    ## gap_extraversion           0.006202   0.025905   0.239 0.810807    
+    ## gap_agreeableness          0.074900   0.033674   2.224 0.026233 *  
+    ## gap_conscientiousness      0.006513   0.039680   0.164 0.869635    
+    ## gap_emotionstability      -0.036260   0.031551  -1.149 0.250594    
+    ## gap_openness              -0.045040   0.043035  -1.047 0.295416    
+    ## tste_7_0_ct               -0.179488   0.048008  -3.739 0.000190 ***
+    ## tste_7_1_ct                0.025385   0.051664   0.491 0.623224    
+    ## tste_7_2_ct               -0.161197   0.051058  -3.157 0.001616 ** 
+    ## tste_7_3_ct               -0.206701   0.038876  -5.317 1.17e-07 ***
+    ## tste_7_4_ct                0.003030   0.052688   0.058 0.954150    
+    ## tste_7_5_ct                0.022438   0.056224   0.399 0.689882    
+    ## tste_7_6_ct                0.041113   0.059864   0.687 0.492303    
+    ## release                   -0.023604   0.007471  -3.160 0.001602 ** 
+    ## education                  0.007514   0.026500   0.284 0.776797    
+    ## income                     0.010122   0.017146   0.590 0.555027    
+    ## race7                     -0.153336   0.136091  -1.127 0.259988    
+    ## sex2                      -0.074938   0.072386  -1.035 0.300669    
+    ## age                       -0.014813   0.004571  -3.241 0.001211 ** 
+    ## race4                     -0.226740   0.140936  -1.609 0.107806    
+    ## race6                     -0.955836   0.347097  -2.754 0.005941 ** 
+    ## star_user                 -0.023246   0.070294  -0.331 0.740910    
+    ## star_GS                    0.064073   0.052869   1.212 0.225680    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.45 on 2110 degrees of freedom
-    ## Multiple R-squared:  0.07934,    Adjusted R-squared:  0.06755 
-    ## F-statistic: 6.734 on 27 and 2110 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.451 on 2110 degrees of freedom
+    ## Multiple R-squared:  0.07855,    Adjusted R-squared:  0.06676 
+    ## F-statistic: 6.662 on 27 and 2110 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4399,45 +4360,45 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9259 -0.6942  0.2910  1.0629  2.8502 
+    ## -5.0108 -0.6927  0.2907  1.0266  2.7159 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               61.969319  16.060158   3.859 0.000117 ***
-    ## real_extraversion_ct       0.048116   0.024845   1.937 0.052924 .  
-    ## real_agreeableness_ct      0.014256   0.031110   0.458 0.646832    
-    ## real_conscientiousness_ct  0.087348   0.034522   2.530 0.011471 *  
-    ## real_emotionstability_ct  -0.026923   0.034223  -0.787 0.431538    
-    ## real_openness_ct           0.100961   0.033172   3.044 0.002367 ** 
-    ## tste_9_0_ct               -0.160968   0.053339  -3.018 0.002577 ** 
-    ## tste_9_1_ct                0.043629   0.050717   0.860 0.389759    
-    ## tste_9_2_ct               -0.351803   0.052364  -6.718 2.35e-11 ***
-    ## tste_9_3_ct               -0.052943   0.057651  -0.918 0.358548    
-    ## tste_9_4_ct               -0.011170   0.043798  -0.255 0.798730    
-    ## tste_9_5_ct                0.021110   0.057572   0.367 0.713898    
-    ## tste_9_6_ct               -0.009627   0.051377  -0.187 0.851385    
-    ## tste_9_7_ct               -0.065391   0.052939  -1.235 0.216883    
-    ## tste_9_8_ct                0.081689   0.047024   1.737 0.082500 .  
-    ## release                   -0.028154   0.007895  -3.566 0.000370 ***
-    ## gap_openness              -0.035091   0.042869  -0.819 0.413136    
-    ## income                     0.011431   0.017115   0.668 0.504268    
-    ## gap_extraversion          -0.004588   0.025414  -0.181 0.856762    
-    ## gap_agreeableness          0.077414   0.033278   2.326 0.020098 *  
-    ## gap_emotionstability      -0.031394   0.031233  -1.005 0.314943    
-    ## age                       -0.013764   0.004574  -3.009 0.002651 ** 
-    ## sex2                      -0.082525   0.072028  -1.146 0.252036    
-    ## gap_conscientiousness      0.010451   0.039335   0.266 0.790498    
-    ## race4                     -0.199021   0.140673  -1.415 0.157282    
-    ## education                  0.002515   0.026430   0.095 0.924197    
-    ## race2                      0.076339   0.130750   0.584 0.559382    
-    ## star_user                 -0.084136   0.071450  -1.178 0.239112    
-    ## star_GS                    0.128911   0.055952   2.304 0.021323 *  
+    ## (Intercept)               59.071808  15.890838   3.717 0.000207 ***
+    ## real_extraversion_ct       0.050009   0.024795   2.017 0.043834 *  
+    ## real_agreeableness_ct      0.018881   0.031115   0.607 0.544041    
+    ## real_conscientiousness_ct  0.090180   0.034538   2.611 0.009091 ** 
+    ## real_emotionstability_ct  -0.033776   0.034279  -0.985 0.324580    
+    ## real_openness_ct           0.097822   0.032983   2.966 0.003053 ** 
+    ## gap_extraversion           0.007970   0.025850   0.308 0.757874    
+    ## gap_agreeableness          0.070947   0.033612   2.111 0.034909 *  
+    ## gap_conscientiousness      0.006866   0.039591   0.173 0.862342    
+    ## gap_emotionstability      -0.037436   0.031475  -1.189 0.234424    
+    ## gap_openness              -0.052143   0.042927  -1.215 0.224620    
+    ## tste_8_0_ct               -0.197425   0.050784  -3.888 0.000104 ***
+    ## tste_8_1_ct                0.210925   0.057409   3.674 0.000245 ***
+    ## tste_8_2_ct                0.101500   0.050773   1.999 0.045724 *  
+    ## tste_8_3_ct                0.081949   0.047517   1.725 0.084741 .  
+    ## tste_8_4_ct                0.136475   0.052266   2.611 0.009087 ** 
+    ## tste_8_5_ct                0.092384   0.049356   1.872 0.061374 .  
+    ## tste_8_6_ct               -0.118642   0.052913  -2.242 0.025052 *  
+    ## tste_8_7_ct               -0.050894   0.051863  -0.981 0.326551    
+    ## release                   -0.026548   0.007821  -3.394 0.000700 ***
+    ## education                  0.007705   0.026442   0.291 0.770780    
+    ## income                     0.009836   0.017107   0.575 0.565373    
+    ## race7                     -0.141260   0.135845  -1.040 0.298523    
+    ## sex2                      -0.076353   0.072198  -1.058 0.290382    
+    ## age                       -0.014669   0.004562  -3.216 0.001322 ** 
+    ## race4                     -0.214186   0.140663  -1.523 0.127985    
+    ## race6                     -0.981902   0.346489  -2.834 0.004643 ** 
+    ## star_user                 -0.082681   0.070686  -1.170 0.242253    
+    ## star_GS                    0.092053   0.055029   1.673 0.094509 .  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.447 on 2109 degrees of freedom
-    ## Multiple R-squared:  0.08397,    Adjusted R-squared:  0.07181 
-    ## F-statistic: 6.905 on 28 and 2109 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.448 on 2109 degrees of freedom
+    ## Multiple R-squared:  0.08306,    Adjusted R-squared:  0.07088 
+    ## F-statistic: 6.822 on 28 and 2109 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4445,46 +4406,46 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9018 -0.6865  0.2823  1.0438  2.5748 
+    ## -4.9438 -0.6863  0.2840  1.0524  2.8457 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               62.195063  15.861590   3.921  9.1e-05 ***
-    ## real_extraversion_ct       0.046884   0.024851   1.887 0.059355 .  
-    ## real_agreeableness_ct      0.015756   0.031136   0.506 0.612894    
-    ## real_conscientiousness_ct  0.086652   0.034540   2.509 0.012190 *  
-    ## real_emotionstability_ct  -0.028394   0.034218  -0.830 0.406746    
-    ## real_openness_ct           0.102297   0.033164   3.085 0.002065 ** 
-    ## tste_10_0_ct              -0.047497   0.045797  -1.037 0.299799    
-    ## tste_10_1_ct               0.190259   0.050613   3.759 0.000175 ***
-    ## tste_10_2_ct              -0.198039   0.052333  -3.784 0.000158 ***
-    ## tste_10_3_ct              -0.175721   0.054247  -3.239 0.001217 ** 
-    ## tste_10_4_ct              -0.058918   0.053246  -1.107 0.268629    
-    ## tste_10_5_ct              -0.022532   0.053957  -0.418 0.676295    
-    ## tste_10_6_ct              -0.140277   0.052212  -2.687 0.007274 ** 
-    ## tste_10_7_ct               0.109197   0.045330   2.409 0.016084 *  
-    ## tste_10_8_ct               0.024163   0.059730   0.405 0.685855    
-    ## tste_10_9_ct               0.131830   0.050517   2.610 0.009128 ** 
-    ## release                   -0.028325   0.007811  -3.626 0.000294 ***
-    ## gap_openness              -0.033534   0.042851  -0.783 0.433975    
-    ## income                     0.009707   0.017092   0.568 0.570172    
-    ## gap_extraversion          -0.004549   0.025418  -0.179 0.857968    
-    ## gap_agreeableness          0.075959   0.033309   2.280 0.022680 *  
-    ## gap_emotionstability      -0.031884   0.031238  -1.021 0.307527    
-    ## age                       -0.013747   0.004576  -3.004 0.002694 ** 
-    ## sex2                      -0.080243   0.072075  -1.113 0.265691    
-    ## gap_conscientiousness      0.010455   0.039336   0.266 0.790435    
-    ## race4                     -0.197771   0.140681  -1.406 0.159928    
-    ## education                  0.002452   0.026432   0.093 0.926096    
-    ## race2                      0.088030   0.130780   0.673 0.500950    
-    ## star_user                 -0.060640   0.070678  -0.858 0.391006    
-    ## star_GS                    0.120113   0.055984   2.145 0.032029 *  
+    ## (Intercept)               60.145578  16.024242   3.753 0.000179 ***
+    ## real_extraversion_ct       0.052531   0.024734   2.124 0.033798 *  
+    ## real_agreeableness_ct      0.013125   0.031064   0.423 0.672689    
+    ## real_conscientiousness_ct  0.090821   0.034471   2.635 0.008483 ** 
+    ## real_emotionstability_ct  -0.030212   0.034211  -0.883 0.377283    
+    ## real_openness_ct           0.093485   0.032936   2.838 0.004578 ** 
+    ## gap_extraversion           0.007846   0.025796   0.304 0.761032    
+    ## gap_agreeableness          0.067395   0.033578   2.007 0.044863 *  
+    ## gap_conscientiousness      0.010139   0.039531   0.256 0.797602    
+    ## gap_emotionstability      -0.033673   0.031450  -1.071 0.284441    
+    ## gap_openness              -0.051955   0.042877  -1.212 0.225757    
+    ## tste_9_0_ct               -0.158899   0.053297  -2.981 0.002902 ** 
+    ## tste_9_1_ct                0.039480   0.050687   0.779 0.436126    
+    ## tste_9_2_ct               -0.349480   0.052280  -6.685 2.95e-11 ***
+    ## tste_9_3_ct               -0.049389   0.057567  -0.858 0.391026    
+    ## tste_9_4_ct               -0.017151   0.043754  -0.392 0.695101    
+    ## tste_9_5_ct                0.019012   0.057510   0.331 0.740991    
+    ## tste_9_6_ct               -0.015254   0.051329  -0.297 0.766355    
+    ## tste_9_7_ct               -0.068044   0.052871  -1.287 0.198243    
+    ## tste_9_8_ct                0.082968   0.046944   1.767 0.077308 .  
+    ## release                   -0.027227   0.007877  -3.457 0.000558 ***
+    ## education                  0.005876   0.026387   0.223 0.823812    
+    ## income                     0.013646   0.017106   0.798 0.425131    
+    ## race7                     -0.128340   0.135708  -0.946 0.344407    
+    ## sex2                      -0.070343   0.072084  -0.976 0.329253    
+    ## age                       -0.014908   0.004551  -3.276 0.001072 ** 
+    ## race4                     -0.217162   0.140384  -1.547 0.122034    
+    ## race6                     -0.914950   0.346169  -2.643 0.008277 ** 
+    ## star_user                 -0.081215   0.071318  -1.139 0.254931    
+    ## star_GS                    0.124629   0.055900   2.230 0.025885 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.447 on 2108 degrees of freedom
-    ## Multiple R-squared:  0.0844, Adjusted R-squared:  0.07181 
-    ## F-statistic: 6.701 on 29 and 2108 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2108 degrees of freedom
+    ## Multiple R-squared:  0.08716,    Adjusted R-squared:  0.0746 
+    ## F-statistic: 6.941 on 29 and 2108 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4492,96 +4453,47 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9075 -0.6944  0.2920  1.0398  2.6442 
+    ## -4.9236 -0.6903  0.2837  1.0326  2.5944 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               64.391082  16.084296   4.003 6.46e-05 ***
-    ## real_extraversion_ct       0.048654   0.024858   1.957 0.050444 .  
-    ## real_agreeableness_ct      0.016238   0.031137   0.522 0.602068    
-    ## real_conscientiousness_ct  0.084757   0.034562   2.452 0.014274 *  
-    ## real_emotionstability_ct  -0.029021   0.034200  -0.849 0.396212    
-    ## real_openness_ct           0.099211   0.033170   2.991 0.002813 ** 
-    ## tste_11_0_ct              -0.050786   0.056185  -0.904 0.366146    
-    ## tste_11_1_ct               0.060287   0.052399   1.151 0.250057    
-    ## tste_11_2_ct              -0.081619   0.046662  -1.749 0.080407 .  
-    ## tste_11_3_ct               0.005016   0.056987   0.088 0.929867    
-    ## tste_11_4_ct              -0.167227   0.057622  -2.902 0.003745 ** 
-    ## tste_11_5_ct              -0.103379   0.050273  -2.056 0.039870 *  
-    ## tste_11_6_ct               0.160777   0.049181   3.269 0.001096 ** 
-    ## tste_11_7_ct               0.098478   0.056584   1.740 0.081941 .  
-    ## tste_11_8_ct              -0.202802   0.042150  -4.811 1.60e-06 ***
-    ## tste_11_9_ct               0.172862   0.049983   3.458 0.000554 ***
-    ## tste_11_10_ct              0.068563   0.054722   1.253 0.210364    
-    ## release                   -0.029474   0.007920  -3.722 0.000203 ***
-    ## gap_openness              -0.037585   0.042883  -0.876 0.380880    
-    ## income                     0.010133   0.017097   0.593 0.553467    
-    ## gap_extraversion          -0.003117   0.025408  -0.123 0.902368    
-    ## gap_agreeableness          0.076299   0.033283   2.292 0.021978 *  
-    ## gap_emotionstability      -0.032747   0.031230  -1.049 0.294497    
-    ## age                       -0.013649   0.004573  -2.984 0.002873 ** 
-    ## sex2                      -0.078591   0.072113  -1.090 0.275911    
-    ## gap_conscientiousness      0.008220   0.039312   0.209 0.834388    
-    ## race4                     -0.194788   0.140629  -1.385 0.166164    
-    ## education                  0.003049   0.026420   0.115 0.908145    
-    ## race2                      0.089694   0.130739   0.686 0.492754    
-    ## star_user                 -0.085246   0.072145  -1.182 0.237502    
-    ## star_GS                    0.157070   0.057447   2.734 0.006306 ** 
+    ## (Intercept)               60.118440  15.825037   3.799 0.000149 ***
+    ## real_extraversion_ct       0.051597   0.024739   2.086 0.037132 *  
+    ## real_agreeableness_ct      0.014592   0.031089   0.469 0.638857    
+    ## real_conscientiousness_ct  0.090364   0.034488   2.620 0.008852 ** 
+    ## real_emotionstability_ct  -0.031613   0.034204  -0.924 0.355473    
+    ## real_openness_ct           0.094321   0.032929   2.864 0.004220 ** 
+    ## gap_extraversion           0.008141   0.025798   0.316 0.752348    
+    ## gap_agreeableness          0.065949   0.033605   1.962 0.049839 *  
+    ## gap_conscientiousness      0.010092   0.039532   0.255 0.798530    
+    ## gap_emotionstability      -0.034346   0.031453  -1.092 0.274973    
+    ## gap_openness              -0.051118   0.042859  -1.193 0.233121    
+    ## tste_10_0_ct              -0.046859   0.045729  -1.025 0.305612    
+    ## tste_10_1_ct               0.191056   0.050580   3.777 0.000163 ***
+    ## tste_10_2_ct              -0.193446   0.052298  -3.699 0.000222 ***
+    ## tste_10_3_ct              -0.172475   0.054184  -3.183 0.001478 ** 
+    ## tste_10_4_ct              -0.063706   0.053177  -1.198 0.231056    
+    ## tste_10_5_ct              -0.021811   0.053884  -0.405 0.685686    
+    ## tste_10_6_ct              -0.137781   0.052113  -2.644 0.008257 ** 
+    ## tste_10_7_ct               0.116227   0.045254   2.568 0.010287 *  
+    ## tste_10_8_ct               0.021626   0.059649   0.363 0.716975    
+    ## tste_10_9_ct               0.129042   0.050440   2.558 0.010588 *  
+    ## release                   -0.027270   0.007792  -3.500 0.000476 ***
+    ## education                  0.005750   0.026388   0.218 0.827530    
+    ## income                     0.012052   0.017085   0.705 0.480635    
+    ## race7                     -0.131215   0.135727  -0.967 0.333777    
+    ## sex2                      -0.068021   0.072126  -0.943 0.345751    
+    ## age                       -0.014947   0.004553  -3.283 0.001045 ** 
+    ## race4                     -0.216924   0.140391  -1.545 0.122464    
+    ## race6                     -0.929470   0.346048  -2.686 0.007289 ** 
+    ## star_user                 -0.058317   0.070546  -0.827 0.408522    
+    ## star_GS                    0.116188   0.055918   2.078 0.037846 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.446 on 2107 degrees of freedom
-    ## Multiple R-squared:  0.08586,    Adjusted R-squared:  0.07285 
-    ## F-statistic: 6.597 on 30 and 2107 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##    Min     1Q Median     3Q    Max 
-    ## -4.898 -0.701  0.305  1.036  2.591 
-    ## 
-    ## Coefficients:
-    ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               52.131904  16.437776   3.171 0.001539 ** 
-    ## real_extraversion_ct       0.047521   0.024889   1.909 0.056359 .  
-    ## real_agreeableness_ct      0.017521   0.031140   0.563 0.573733    
-    ## real_conscientiousness_ct  0.082843   0.034595   2.395 0.016724 *  
-    ## real_emotionstability_ct  -0.029067   0.034230  -0.849 0.395883    
-    ## real_openness_ct           0.101355   0.033202   3.053 0.002296 ** 
-    ## tste_12_0_ct               0.153791   0.060327   2.549 0.010864 *  
-    ## tste_12_1_ct               0.068575   0.050956   1.346 0.178515    
-    ## tste_12_2_ct               0.057739   0.048589   1.188 0.234841    
-    ## tste_12_3_ct              -0.005225   0.054997  -0.095 0.924318    
-    ## tste_12_4_ct              -0.072466   0.051077  -1.419 0.156118    
-    ## tste_12_5_ct               0.120826   0.054738   2.207 0.027397 *  
-    ## tste_12_6_ct              -0.052347   0.055871  -0.937 0.348901    
-    ## tste_12_7_ct               0.045020   0.053355   0.844 0.398884    
-    ## tste_12_8_ct               0.165963   0.049187   3.374 0.000754 ***
-    ## tste_12_9_ct              -0.054421   0.051373  -1.059 0.289569    
-    ## tste_12_10_ct              0.193628   0.045295   4.275 2.00e-05 ***
-    ## tste_12_11_ct             -0.202074   0.048438  -4.172 3.14e-05 ***
-    ## release                   -0.023652   0.008078  -2.928 0.003448 ** 
-    ## gap_openness              -0.038393   0.042897  -0.895 0.370893    
-    ## income                     0.009635   0.017104   0.563 0.573284    
-    ## gap_extraversion          -0.004976   0.025446  -0.196 0.844979    
-    ## gap_agreeableness          0.078660   0.033287   2.363 0.018216 *  
-    ## gap_emotionstability      -0.034460   0.031233  -1.103 0.270015    
-    ## age                       -0.013504   0.004581  -2.948 0.003239 ** 
-    ## sex2                      -0.076387   0.072151  -1.059 0.289856    
-    ## gap_conscientiousness      0.006045   0.039363   0.154 0.877971    
-    ## race4                     -0.200603   0.140751  -1.425 0.154237    
-    ## education                  0.003192   0.026435   0.121 0.903903    
-    ## race2                      0.089209   0.130827   0.682 0.495384    
-    ## star_user                 -0.048653   0.072197  -0.674 0.500454    
-    ## star_GS                    0.188465   0.060480   3.116 0.001857 ** 
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.447 on 2106 degrees of freedom
-    ## Multiple R-squared:  0.08516,    Adjusted R-squared:  0.0717 
-    ## F-statistic: 6.324 on 31 and 2106 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2107 degrees of freedom
+    ## Multiple R-squared:  0.08766,    Adjusted R-squared:  0.07467 
+    ## F-statistic: 6.748 on 30 and 2107 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4589,49 +4501,48 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1238 -0.6730  0.3028  1.0520  2.7678 
+    ## -4.9324 -0.6928  0.2905  1.0330  2.6457 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               50.730965  16.846671   3.011 0.002632 ** 
-    ## real_extraversion_ct       0.044342   0.024902   1.781 0.075113 .  
-    ## real_agreeableness_ct      0.022187   0.031216   0.711 0.477310    
-    ## real_conscientiousness_ct  0.089260   0.034590   2.581 0.009932 ** 
-    ## real_emotionstability_ct  -0.028507   0.034275  -0.832 0.405661    
-    ## real_openness_ct           0.102655   0.033231   3.089 0.002034 ** 
-    ## tste_13_0_ct               0.011891   0.050487   0.236 0.813826    
-    ## tste_13_1_ct              -0.091902   0.046728  -1.967 0.049345 *  
-    ## tste_13_2_ct               0.198458   0.052153   3.805 0.000146 ***
-    ## tste_13_3_ct               0.057938   0.050258   1.153 0.249120    
-    ## tste_13_4_ct              -0.104536   0.053001  -1.972 0.048701 *  
-    ## tste_13_5_ct               0.127909   0.052002   2.460 0.013985 *  
-    ## tste_13_6_ct              -0.001410   0.055874  -0.025 0.979863    
-    ## tste_13_7_ct              -0.069011   0.050800  -1.358 0.174457    
-    ## tste_13_8_ct               0.084749   0.046702   1.815 0.069717 .  
-    ## tste_13_9_ct               0.149089   0.056101   2.658 0.007931 ** 
-    ## tste_13_10_ct              0.172218   0.048642   3.541 0.000408 ***
-    ## tste_13_11_ct              0.098614   0.054269   1.817 0.069339 .  
-    ## tste_13_12_ct              0.060417   0.051902   1.164 0.244532    
-    ## release                   -0.022758   0.008274  -2.751 0.006000 ** 
-    ## gap_openness              -0.035058   0.043013  -0.815 0.415131    
-    ## income                     0.007732   0.017109   0.452 0.651389    
-    ## gap_extraversion          -0.008874   0.025487  -0.348 0.727749    
-    ## gap_agreeableness          0.083700   0.033391   2.507 0.012261 *  
-    ## gap_emotionstability      -0.033412   0.031298  -1.068 0.285849    
-    ## age                       -0.013487   0.004588  -2.939 0.003323 ** 
-    ## sex2                      -0.087343   0.072237  -1.209 0.226755    
-    ## gap_conscientiousness      0.007949   0.039402   0.202 0.840132    
-    ## race4                     -0.193157   0.140910  -1.371 0.170591    
-    ## education                  0.005295   0.026464   0.200 0.841445    
-    ## race2                      0.079627   0.130893   0.608 0.543033    
-    ## star_user                 -0.088693   0.071603  -1.239 0.215607    
-    ## star_GS                    0.182279   0.059512   3.063 0.002220 ** 
+    ## (Intercept)               62.409754  16.042900   3.890 0.000103 ***
+    ## real_extraversion_ct       0.053341   0.024745   2.156 0.031227 *  
+    ## real_agreeableness_ct      0.015063   0.031091   0.484 0.628085    
+    ## real_conscientiousness_ct  0.088491   0.034511   2.564 0.010411 *  
+    ## real_emotionstability_ct  -0.032316   0.034186  -0.945 0.344606    
+    ## real_openness_ct           0.091176   0.032935   2.768 0.005683 ** 
+    ## gap_extraversion           0.009641   0.025784   0.374 0.708510    
+    ## gap_agreeableness          0.066498   0.033578   1.980 0.047792 *  
+    ## gap_conscientiousness      0.007578   0.039507   0.192 0.847898    
+    ## gap_emotionstability      -0.035454   0.031445  -1.127 0.259670    
+    ## gap_openness              -0.055099   0.042889  -1.285 0.199038    
+    ## tste_11_0_ct              -0.049990   0.056109  -0.891 0.373066    
+    ## tste_11_1_ct               0.055436   0.052378   1.058 0.289995    
+    ## tste_11_2_ct              -0.077100   0.046605  -1.654 0.098210 .  
+    ## tste_11_3_ct               0.006567   0.056903   0.115 0.908129    
+    ## tste_11_4_ct              -0.174321   0.057484  -3.033 0.002455 ** 
+    ## tste_11_5_ct              -0.100118   0.050212  -1.994 0.046291 *  
+    ## tste_11_6_ct               0.158635   0.049109   3.230 0.001256 ** 
+    ## tste_11_7_ct               0.098258   0.056502   1.739 0.082181 .  
+    ## tste_11_8_ct              -0.199703   0.042113  -4.742 2.26e-06 ***
+    ## tste_11_9_ct               0.172341   0.049907   3.453 0.000565 ***
+    ## tste_11_10_ct              0.068475   0.054638   1.253 0.210250    
+    ## release                   -0.028464   0.007899  -3.604 0.000321 ***
+    ## education                  0.006356   0.026378   0.241 0.809598    
+    ## income                     0.012417   0.017089   0.727 0.467527    
+    ## race7                     -0.140403   0.135599  -1.035 0.300586    
+    ## sex2                      -0.066418   0.072162  -0.920 0.357465    
+    ## age                       -0.014867   0.004551  -3.267 0.001104 ** 
+    ## race4                     -0.214360   0.140337  -1.527 0.126795    
+    ## race6                     -0.919606   0.345919  -2.658 0.007910 ** 
+    ## star_user                 -0.083601   0.072014  -1.161 0.245810    
+    ## star_GS                    0.153353   0.057372   2.673 0.007577 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.449 on 2105 degrees of freedom
-    ## Multiple R-squared:  0.0837, Adjusted R-squared:  0.06977 
-    ## F-statistic: 6.009 on 32 and 2105 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.444 on 2106 degrees of freedom
+    ## Multiple R-squared:  0.0891, Adjusted R-squared:  0.07569 
+    ## F-statistic: 6.645 on 31 and 2106 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4639,50 +4550,49 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1139 -0.6870  0.3111  1.0511  2.7237 
+    ## -4.9190 -0.6924  0.2973  1.0380  2.7014 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               45.723605  16.766073   2.727 0.006441 ** 
-    ## real_extraversion_ct       0.050031   0.024923   2.007 0.044832 *  
-    ## real_agreeableness_ct      0.021154   0.031199   0.678 0.497832    
-    ## real_conscientiousness_ct  0.085524   0.034596   2.472 0.013513 *  
-    ## real_emotionstability_ct  -0.029773   0.034240  -0.870 0.384652    
-    ## real_openness_ct           0.102099   0.033203   3.075 0.002132 ** 
-    ## tste_14_0_ct              -0.103493   0.051399  -2.014 0.044186 *  
-    ## tste_14_1_ct               0.005460   0.051674   0.106 0.915864    
-    ## tste_14_2_ct               0.052315   0.047597   1.099 0.271843    
-    ## tste_14_3_ct               0.117835   0.046428   2.538 0.011220 *  
-    ## tste_14_4_ct               0.021697   0.043442   0.499 0.617512    
-    ## tste_14_5_ct              -0.034370   0.054029  -0.636 0.524755    
-    ## tste_14_6_ct               0.025942   0.050849   0.510 0.609979    
-    ## tste_14_7_ct              -0.259019   0.059413  -4.360 1.37e-05 ***
-    ## tste_14_8_ct               0.159871   0.045375   3.523 0.000435 ***
-    ## tste_14_9_ct              -0.020246   0.051485  -0.393 0.694177    
-    ## tste_14_10_ct              0.107625   0.049362   2.180 0.029345 *  
-    ## tste_14_11_ct             -0.058019   0.049063  -1.183 0.237124    
-    ## tste_14_12_ct              0.083845   0.051633   1.624 0.104554    
-    ## tste_14_13_ct              0.114662   0.052158   2.198 0.028032 *  
-    ## release                   -0.020427   0.008244  -2.478 0.013302 *  
-    ## gap_openness              -0.034412   0.042979  -0.801 0.423406    
-    ## income                     0.008464   0.017094   0.495 0.620560    
-    ## gap_extraversion          -0.003799   0.025446  -0.149 0.881321    
-    ## gap_agreeableness          0.081373   0.033320   2.442 0.014680 *  
-    ## gap_emotionstability      -0.034423   0.031255  -1.101 0.270865    
-    ## age                       -0.013048   0.004585  -2.846 0.004473 ** 
-    ## sex2                      -0.080600   0.072252  -1.116 0.264752    
-    ## gap_conscientiousness      0.007998   0.039368   0.203 0.839038    
-    ## race4                     -0.188693   0.140780  -1.340 0.180279    
-    ## education                  0.002126   0.026467   0.080 0.935983    
-    ## race2                      0.079376   0.130797   0.607 0.544007    
-    ## star_user                 -0.041347   0.071989  -0.574 0.565798    
-    ## star_GS                    0.172224   0.059628   2.888 0.003913 ** 
+    ## (Intercept)               50.376446  16.405287   3.071 0.002163 ** 
+    ## real_extraversion_ct       0.052339   0.024779   2.112 0.034785 *  
+    ## real_agreeableness_ct      0.016064   0.031093   0.517 0.605463    
+    ## real_conscientiousness_ct  0.086554   0.034539   2.506 0.012286 *  
+    ## real_emotionstability_ct  -0.032314   0.034212  -0.945 0.345011    
+    ## real_openness_ct           0.093216   0.032964   2.828 0.004732 ** 
+    ## gap_extraversion           0.007968   0.025825   0.309 0.757701    
+    ## gap_agreeableness          0.068205   0.033592   2.030 0.042440 *  
+    ## gap_conscientiousness      0.005517   0.039560   0.139 0.889101    
+    ## gap_emotionstability      -0.036886   0.031450  -1.173 0.240980    
+    ## gap_openness              -0.056150   0.042904  -1.309 0.190762    
+    ## tste_12_0_ct               0.161136   0.060269   2.674 0.007562 ** 
+    ## tste_12_1_ct               0.063952   0.050883   1.257 0.208950    
+    ## tste_12_2_ct               0.060566   0.048524   1.248 0.212111    
+    ## tste_12_3_ct              -0.003800   0.054909  -0.069 0.944826    
+    ## tste_12_4_ct              -0.072958   0.050981  -1.431 0.152557    
+    ## tste_12_5_ct               0.120929   0.054647   2.213 0.027009 *  
+    ## tste_12_6_ct              -0.047360   0.055856  -0.848 0.396591    
+    ## tste_12_7_ct               0.051119   0.053311   0.959 0.337726    
+    ## tste_12_8_ct               0.166114   0.049108   3.383 0.000731 ***
+    ## tste_12_9_ct              -0.052315   0.051320  -1.019 0.308130    
+    ## tste_12_10_ct              0.189756   0.045260   4.193 2.87e-05 ***
+    ## tste_12_11_ct             -0.200530   0.048356  -4.147 3.50e-05 ***
+    ## release                   -0.022756   0.008062  -2.823 0.004805 ** 
+    ## education                  0.006546   0.026390   0.248 0.804115    
+    ## income                     0.011947   0.017094   0.699 0.484684    
+    ## race7                     -0.134709   0.135877  -0.991 0.321603    
+    ## sex2                      -0.063683   0.072201  -0.882 0.377865    
+    ## age                       -0.014720   0.004557  -3.230 0.001257 ** 
+    ## race4                     -0.219596   0.140443  -1.564 0.118062    
+    ## race6                     -0.948124   0.346317  -2.738 0.006239 ** 
+    ## star_user                 -0.047755   0.072054  -0.663 0.507553    
+    ## star_GS                    0.185766   0.060385   3.076 0.002122 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.447 on 2104 degrees of freedom
-    ## Multiple R-squared:  0.08581,    Adjusted R-squared:  0.07147 
-    ## F-statistic: 5.985 on 33 and 2104 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2105 degrees of freedom
+    ## Multiple R-squared:  0.08855,    Adjusted R-squared:  0.07469 
+    ## F-statistic: 6.391 on 32 and 2105 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4690,51 +4600,50 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1042 -0.6869  0.3129  1.0407  2.7356 
+    ## -5.1419 -0.6836  0.2935  1.0410  2.7651 
     ## 
     ## Coefficients:
-    ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               52.932391  17.742192   2.983 0.002883 ** 
-    ## real_extraversion_ct       0.048931   0.024942   1.962 0.049914 *  
-    ## real_agreeableness_ct      0.019148   0.031220   0.613 0.539742    
-    ## real_conscientiousness_ct  0.086879   0.034618   2.510 0.012158 *  
-    ## real_emotionstability_ct  -0.026595   0.034312  -0.775 0.438372    
-    ## real_openness_ct           0.103834   0.033236   3.124 0.001807 ** 
-    ## tste_15_0_ct              -0.063315   0.048043  -1.318 0.187684    
-    ## tste_15_1_ct              -0.118855   0.053763  -2.211 0.027161 *  
-    ## tste_15_2_ct               0.158705   0.048565   3.268 0.001101 ** 
-    ## tste_15_3_ct               0.092236   0.052550   1.755 0.079370 .  
-    ## tste_15_4_ct               0.015208   0.047044   0.323 0.746531    
-    ## tste_15_5_ct              -0.069162   0.053723  -1.287 0.198108    
-    ## tste_15_6_ct              -0.112243   0.046618  -2.408 0.016138 *  
-    ## tste_15_7_ct              -0.065300   0.051672  -1.264 0.206456    
-    ## tste_15_8_ct              -0.125829   0.053977  -2.331 0.019839 *  
-    ## tste_15_9_ct               0.032511   0.051090   0.636 0.524619    
-    ## tste_15_10_ct              0.050255   0.053244   0.944 0.345349    
-    ## tste_15_11_ct              0.188414   0.054344   3.467 0.000537 ***
-    ## tste_15_12_ct             -0.047722   0.038160  -1.251 0.211225    
-    ## tste_15_13_ct              0.031851   0.044434   0.717 0.473561    
-    ## tste_15_14_ct              0.051871   0.046954   1.105 0.269410    
-    ## release                   -0.023764   0.008714  -2.727 0.006442 ** 
-    ## gap_openness              -0.033193   0.043023  -0.772 0.440486    
-    ## income                     0.008408   0.017123   0.491 0.623474    
-    ## gap_extraversion          -0.004065   0.025476  -0.160 0.873228    
-    ## gap_agreeableness          0.081944   0.033366   2.456 0.014135 *  
-    ## gap_emotionstability      -0.033221   0.031295  -1.062 0.288555    
-    ## age                       -0.013175   0.004586  -2.873 0.004113 ** 
-    ## sex2                      -0.083808   0.072317  -1.159 0.246631    
-    ## gap_conscientiousness      0.006971   0.039415   0.177 0.859635    
-    ## race4                     -0.188693   0.140905  -1.339 0.180668    
-    ## education                  0.002331   0.026488   0.088 0.929877    
-    ## race2                      0.071678   0.130912   0.548 0.584073    
-    ## star_user                 -0.072814   0.075671  -0.962 0.336036    
-    ## star_GS                    0.143514   0.060330   2.379 0.017458 *  
+    ##                             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)               48.7829168 16.8104722   2.902 0.003747 ** 
+    ## real_extraversion_ct       0.0491825  0.0247865   1.984 0.047359 *  
+    ## real_agreeableness_ct      0.0206898  0.0311654   0.664 0.506845    
+    ## real_conscientiousness_ct  0.0929062  0.0345321   2.690 0.007192 ** 
+    ## real_emotionstability_ct  -0.0318406  0.0342529  -0.930 0.352698    
+    ## real_openness_ct           0.0946528  0.0329865   2.869 0.004153 ** 
+    ## gap_extraversion           0.0042918  0.0258642   0.166 0.868224    
+    ## gap_agreeableness          0.0728576  0.0336810   2.163 0.030641 *  
+    ## gap_conscientiousness      0.0076136  0.0395937   0.192 0.847532    
+    ## gap_emotionstability      -0.0356153  0.0315087  -1.130 0.258465    
+    ## gap_openness              -0.0528032  0.0430086  -1.228 0.219684    
+    ## tste_13_0_ct               0.0061725  0.0504344   0.122 0.902605    
+    ## tste_13_1_ct              -0.0908285  0.0466516  -1.947 0.051673 .  
+    ## tste_13_2_ct               0.1995788  0.0520666   3.833 0.000130 ***
+    ## tste_13_3_ct               0.0529156  0.0502029   1.054 0.291988    
+    ## tste_13_4_ct              -0.1106634  0.0529623  -2.089 0.036785 *  
+    ## tste_13_5_ct               0.1281557  0.0519270   2.468 0.013666 *  
+    ## tste_13_6_ct               0.0005494  0.0558062   0.010 0.992147    
+    ## tste_13_7_ct              -0.0744744  0.0507544  -1.467 0.142431    
+    ## tste_13_8_ct               0.0819174  0.0466520   1.756 0.079247 .  
+    ## tste_13_9_ct               0.1467106  0.0560278   2.619 0.008894 ** 
+    ## tste_13_10_ct              0.1722345  0.0485584   3.547 0.000398 ***
+    ## tste_13_11_ct              0.1030847  0.0541875   1.902 0.057259 .  
+    ## tste_13_12_ct              0.0615172  0.0518008   1.188 0.235136    
+    ## release                   -0.0217739  0.0082560  -2.637 0.008417 ** 
+    ## education                  0.0088504  0.0264142   0.335 0.737611    
+    ## income                     0.0101308  0.0170974   0.593 0.553558    
+    ## race7                     -0.1339083  0.1360015  -0.985 0.324929    
+    ## sex2                      -0.0742680  0.0722790  -1.028 0.304295    
+    ## age                       -0.0146691  0.0045635  -3.214 0.001327 ** 
+    ## race4                     -0.2118248  0.1405848  -1.507 0.132027    
+    ## race6                     -0.9759558  0.3466225  -2.816 0.004914 ** 
+    ## star_user                 -0.0871329  0.0714479  -1.220 0.222780    
+    ## star_GS                    0.1803823  0.0594235   3.036 0.002430 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.449 on 2103 degrees of freedom
-    ## Multiple R-squared:  0.08463,    Adjusted R-squared:  0.06983 
-    ## F-statistic: 5.719 on 34 and 2103 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.446 on 2104 degrees of freedom
+    ## Multiple R-squared:  0.08731,    Adjusted R-squared:  0.073 
+    ## F-statistic:   6.1 on 33 and 2104 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4742,52 +4651,51 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9453 -0.6821  0.2853  1.0411  2.7272 
+    ## -5.1337 -0.6847  0.3096  1.0506  2.7180 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               35.147619  17.719894   1.984 0.047440 *  
-    ## real_extraversion_ct       0.047187   0.024837   1.900 0.057581 .  
-    ## real_agreeableness_ct      0.019225   0.031088   0.618 0.536381    
-    ## real_conscientiousness_ct  0.087985   0.034465   2.553 0.010755 *  
-    ## real_emotionstability_ct  -0.021627   0.034172  -0.633 0.526876    
-    ## real_openness_ct           0.104021   0.033100   3.143 0.001698 ** 
-    ## tste_16_0_ct               0.177775   0.048617   3.657 0.000262 ***
-    ## tste_16_1_ct              -0.101268   0.049867  -2.031 0.042406 *  
-    ## tste_16_2_ct              -0.054677   0.044933  -1.217 0.223794    
-    ## tste_16_3_ct              -0.160887   0.050518  -3.185 0.001470 ** 
-    ## tste_16_4_ct              -0.170749   0.041234  -4.141 3.59e-05 ***
-    ## tste_16_5_ct               0.105803   0.048245   2.193 0.028414 *  
-    ## tste_16_6_ct               0.100181   0.044109   2.271 0.023235 *  
-    ## tste_16_7_ct               0.074744   0.044628   1.675 0.094118 .  
-    ## tste_16_8_ct              -0.061957   0.052011  -1.191 0.233701    
-    ## tste_16_9_ct               0.159987   0.044796   3.571 0.000363 ***
-    ## tste_16_10_ct             -0.077274   0.044038  -1.755 0.079458 .  
-    ## tste_16_11_ct              0.156386   0.050308   3.109 0.001905 ** 
-    ## tste_16_12_ct              0.078169   0.046161   1.693 0.090525 .  
-    ## tste_16_13_ct              0.054389   0.049716   1.094 0.274080    
-    ## tste_16_14_ct              0.115315   0.046261   2.493 0.012754 *  
-    ## tste_16_15_ct             -0.015011   0.050199  -0.299 0.764947    
-    ## release                   -0.014974   0.008706  -1.720 0.085580 .  
-    ## gap_openness              -0.032608   0.042836  -0.761 0.446602    
-    ## income                     0.012653   0.017079   0.741 0.458876    
-    ## gap_extraversion          -0.010610   0.025395  -0.418 0.676136    
-    ## gap_agreeableness          0.088340   0.033252   2.657 0.007952 ** 
-    ## gap_emotionstability      -0.034087   0.031171  -1.094 0.274275    
-    ## age                       -0.011931   0.004578  -2.606 0.009229 ** 
-    ## sex2                      -0.085253   0.071943  -1.185 0.236150    
-    ## gap_conscientiousness      0.010361   0.039283   0.264 0.791995    
-    ## race4                     -0.183372   0.140374  -1.306 0.191592    
-    ## education                  0.001141   0.026370   0.043 0.965498    
-    ## race2                      0.094755   0.130530   0.726 0.467965    
-    ## star_user                 -0.070010   0.072416  -0.967 0.333769    
-    ## star_GS                    0.151135   0.058536   2.582 0.009892 ** 
+    ## (Intercept)               43.682005  16.734691   2.610 0.009111 ** 
+    ## real_extraversion_ct       0.054921   0.024808   2.214 0.026947 *  
+    ## real_agreeableness_ct      0.019633   0.031146   0.630 0.528535    
+    ## real_conscientiousness_ct  0.089225   0.034536   2.584 0.009846 ** 
+    ## real_emotionstability_ct  -0.033259   0.034215  -0.972 0.331130    
+    ## real_openness_ct           0.093970   0.032960   2.851 0.004400 ** 
+    ## gap_extraversion           0.009700   0.025820   0.376 0.707205    
+    ## gap_agreeableness          0.070771   0.033614   2.105 0.035376 *  
+    ## gap_conscientiousness      0.007194   0.039559   0.182 0.855710    
+    ## gap_emotionstability      -0.037070   0.031465  -1.178 0.238876    
+    ## gap_openness              -0.052324   0.042972  -1.218 0.223504    
+    ## tste_14_0_ct              -0.102900   0.051298  -2.006 0.044992 *  
+    ## tste_14_1_ct               0.006430   0.051605   0.125 0.900854    
+    ## tste_14_2_ct               0.046623   0.047552   0.980 0.326973    
+    ## tste_14_3_ct               0.119276   0.046339   2.574 0.010121 *  
+    ## tste_14_4_ct               0.019104   0.043373   0.440 0.659645    
+    ## tste_14_5_ct              -0.036149   0.053936  -0.670 0.502790    
+    ## tste_14_6_ct               0.034618   0.050848   0.681 0.496064    
+    ## tste_14_7_ct              -0.260791   0.059309  -4.397 1.15e-05 ***
+    ## tste_14_8_ct               0.162575   0.045319   3.587 0.000342 ***
+    ## tste_14_9_ct              -0.022837   0.051391  -0.444 0.656807    
+    ## tste_14_10_ct              0.106514   0.049295   2.161 0.030828 *  
+    ## tste_14_11_ct             -0.057171   0.048970  -1.167 0.243150    
+    ## tste_14_12_ct              0.088964   0.051549   1.726 0.084523 .  
+    ## tste_14_13_ct              0.112919   0.052127   2.166 0.030406 *  
+    ## release                   -0.019392   0.008229  -2.357 0.018532 *  
+    ## education                  0.005781   0.026418   0.219 0.826790    
+    ## income                     0.010824   0.017081   0.634 0.526349    
+    ## race7                     -0.150260   0.135913  -1.106 0.269044    
+    ## sex2                      -0.067310   0.072284  -0.931 0.351864    
+    ## age                       -0.014244   0.004560  -3.124 0.001810 ** 
+    ## race4                     -0.207941   0.140440  -1.481 0.138854    
+    ## race6                     -0.976023   0.346292  -2.818 0.004870 ** 
+    ## star_user                 -0.040591   0.071833  -0.565 0.572086    
+    ## star_GS                    0.170382   0.059526   2.862 0.004248 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.442 on 2102 degrees of freedom
-    ## Multiple R-squared:  0.09272,    Adjusted R-squared:  0.07761 
-    ## F-statistic: 6.137 on 35 and 2102 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2103 degrees of freedom
+    ## Multiple R-squared:  0.08953,    Adjusted R-squared:  0.07481 
+    ## F-statistic: 6.082 on 34 and 2103 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4795,53 +4703,52 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1612 -0.6967  0.2835  1.0378  2.7707 
+    ## -5.1269 -0.6957  0.2995  1.0317  2.7373 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               36.897732  18.274556   2.019  0.04361 *  
-    ## real_extraversion_ct       0.046074   0.024809   1.857  0.06344 .  
-    ## real_agreeableness_ct      0.022816   0.031076   0.734  0.46291    
-    ## real_conscientiousness_ct  0.087495   0.034438   2.541  0.01114 *  
-    ## real_emotionstability_ct  -0.022005   0.034129  -0.645  0.51916    
-    ## real_openness_ct           0.105977   0.033073   3.204  0.00137 ** 
-    ## tste_17_0_ct               0.314805   0.048966   6.429 1.58e-10 ***
-    ## tste_17_1_ct               0.065331   0.041972   1.557  0.11973    
-    ## tste_17_2_ct              -0.074623   0.049957  -1.494  0.13539    
-    ## tste_17_3_ct               0.051092   0.047752   1.070  0.28477    
-    ## tste_17_4_ct               0.090624   0.050173   1.806  0.07102 .  
-    ## tste_17_5_ct               0.022808   0.046783   0.488  0.62594    
-    ## tste_17_6_ct              -0.056196   0.049201  -1.142  0.25351    
-    ## tste_17_7_ct               0.092025   0.043169   2.132  0.03315 *  
-    ## tste_17_8_ct              -0.065721   0.047950  -1.371  0.17064    
-    ## tste_17_9_ct              -0.105404   0.046220  -2.281  0.02268 *  
-    ## tste_17_10_ct              0.092762   0.042490   2.183  0.02914 *  
-    ## tste_17_11_ct              0.038253   0.046844   0.817  0.41425    
-    ## tste_17_12_ct             -0.169330   0.042849  -3.952 8.01e-05 ***
-    ## tste_17_13_ct              0.086715   0.049157   1.764  0.07787 .  
-    ## tste_17_14_ct              0.029644   0.043392   0.683  0.49458    
-    ## tste_17_15_ct             -0.034863   0.056003  -0.623  0.53366    
-    ## tste_17_16_ct             -0.049485   0.042882  -1.154  0.24865    
-    ## release                   -0.015920   0.008953  -1.778  0.07553 .  
-    ## gap_openness              -0.028058   0.042787  -0.656  0.51205    
-    ## income                     0.012779   0.017056   0.749  0.45380    
-    ## gap_extraversion          -0.010525   0.025371  -0.415  0.67829    
-    ## gap_agreeableness          0.086683   0.033250   2.607  0.00920 ** 
-    ## gap_emotionstability      -0.030772   0.031161  -0.988  0.32350    
-    ## age                       -0.011990   0.004579  -2.618  0.00890 ** 
-    ## sex2                      -0.089685   0.071866  -1.248  0.21219    
-    ## gap_conscientiousness      0.008389   0.039253   0.214  0.83079    
-    ## race4                     -0.192676   0.140288  -1.373  0.16976    
-    ## education                  0.002655   0.026347   0.101  0.91976    
-    ## race2                      0.083343   0.130414   0.639  0.52285    
-    ## star_user                 -0.076855   0.076728  -1.002  0.31662    
-    ## star_GS                    0.175622   0.060311   2.912  0.00363 ** 
+    ## (Intercept)               50.480897  17.713025   2.850 0.004415 ** 
+    ## real_extraversion_ct       0.053665   0.024828   2.161 0.030771 *  
+    ## real_agreeableness_ct      0.017683   0.031168   0.567 0.570535    
+    ## real_conscientiousness_ct  0.090526   0.034559   2.619 0.008870 ** 
+    ## real_emotionstability_ct  -0.029988   0.034289  -0.875 0.381908    
+    ## real_openness_ct           0.096140   0.032993   2.914 0.003607 ** 
+    ## gap_extraversion           0.009123   0.025854   0.353 0.724217    
+    ## gap_agreeableness          0.071218   0.033658   2.116 0.034468 *  
+    ## gap_conscientiousness      0.006480   0.039605   0.164 0.870047    
+    ## gap_emotionstability      -0.035472   0.031505  -1.126 0.260328    
+    ## gap_openness              -0.050566   0.043019  -1.175 0.239949    
+    ## tste_15_0_ct              -0.061916   0.047964  -1.291 0.196883    
+    ## tste_15_1_ct              -0.113750   0.053736  -2.117 0.034392 *  
+    ## tste_15_2_ct               0.160887   0.048462   3.320 0.000916 ***
+    ## tste_15_3_ct               0.090352   0.052464   1.722 0.085187 .  
+    ## tste_15_4_ct               0.013155   0.046944   0.280 0.779332    
+    ## tste_15_5_ct              -0.073044   0.053651  -1.361 0.173510    
+    ## tste_15_6_ct              -0.112878   0.046531  -2.426 0.015356 *  
+    ## tste_15_7_ct              -0.062946   0.051604  -1.220 0.222682    
+    ## tste_15_8_ct              -0.126224   0.053895  -2.342 0.019272 *  
+    ## tste_15_9_ct               0.037765   0.051026   0.740 0.459318    
+    ## tste_15_10_ct              0.043607   0.053195   0.820 0.412453    
+    ## tste_15_11_ct              0.192160   0.054253   3.542 0.000406 ***
+    ## tste_15_12_ct             -0.053340   0.038132  -1.399 0.162012    
+    ## tste_15_13_ct              0.030597   0.044390   0.689 0.490727    
+    ## tste_15_14_ct              0.053137   0.046885   1.133 0.257197    
+    ## release                   -0.022532   0.008699  -2.590 0.009661 ** 
+    ## education                  0.006046   0.026440   0.229 0.819157    
+    ## income                     0.010688   0.017111   0.625 0.532259    
+    ## race7                     -0.139247   0.135980  -1.024 0.305941    
+    ## sex2                      -0.070751   0.072353  -0.978 0.328255    
+    ## age                       -0.014338   0.004563  -3.142 0.001699 ** 
+    ## race4                     -0.207168   0.140579  -1.474 0.140719    
+    ## race6                     -0.971143   0.346782  -2.800 0.005150 ** 
+    ## star_user                 -0.071168   0.075526  -0.942 0.346153    
+    ## star_GS                    0.142296   0.060237   2.362 0.018254 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.441 on 2101 degrees of freedom
-    ## Multiple R-squared:  0.09484,    Adjusted R-squared:  0.07933 
-    ## F-statistic: 6.115 on 36 and 2101 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.446 on 2102 degrees of freedom
+    ## Multiple R-squared:  0.08827,    Adjusted R-squared:  0.07309 
+    ## F-statistic: 5.815 on 35 and 2102 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4849,54 +4756,53 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0711 -0.6824  0.2913  1.0511  2.5914 
+    ## -4.9732 -0.6881  0.2781  1.0310  2.7312 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               46.808903  18.061328   2.592  0.00962 ** 
-    ## real_extraversion_ct       0.045300   0.024835   1.824  0.06829 .  
-    ## real_agreeableness_ct      0.023082   0.031057   0.743  0.45744    
-    ## real_conscientiousness_ct  0.084408   0.034444   2.451  0.01434 *  
-    ## real_emotionstability_ct  -0.025539   0.034151  -0.748  0.45465    
-    ## real_openness_ct           0.105404   0.033071   3.187  0.00146 ** 
-    ## tste_18_0_ct              -0.126348   0.046160  -2.737  0.00625 ** 
-    ## tste_18_1_ct               0.155745   0.048011   3.244  0.00120 ** 
-    ## tste_18_2_ct              -0.015902   0.043623  -0.365  0.71550    
-    ## tste_18_3_ct              -0.016928   0.046861  -0.361  0.71797    
-    ## tste_18_4_ct               0.075896   0.051139   1.484  0.13793    
-    ## tste_18_5_ct              -0.027654   0.048058  -0.575  0.56506    
-    ## tste_18_6_ct              -0.003760   0.050367  -0.075  0.94050    
-    ## tste_18_7_ct              -0.054930   0.043237  -1.270  0.20407    
-    ## tste_18_8_ct               0.080079   0.047055   1.702  0.08894 .  
-    ## tste_18_9_ct              -0.137937   0.047797  -2.886  0.00394 ** 
-    ## tste_18_10_ct              0.087031   0.045895   1.896  0.05806 .  
-    ## tste_18_11_ct              0.063118   0.045141   1.398  0.16219    
-    ## tste_18_12_ct             -0.079615   0.047522  -1.675  0.09402 .  
-    ## tste_18_13_ct             -0.033253   0.046785  -0.711  0.47731    
-    ## tste_18_14_ct              0.050808   0.050857   0.999  0.31790    
-    ## tste_18_15_ct              0.163233   0.058538   2.788  0.00534 ** 
-    ## tste_18_16_ct             -0.295025   0.051394  -5.740 1.08e-08 ***
-    ## tste_18_17_ct              0.046545   0.045699   1.019  0.30855    
-    ## release                   -0.020494   0.008865  -2.312  0.02088 *  
-    ## gap_openness              -0.028102   0.042819  -0.656  0.51171    
-    ## income                     0.012055   0.017062   0.707  0.47994    
-    ## gap_extraversion          -0.008145   0.025387  -0.321  0.74838    
-    ## gap_agreeableness          0.085959   0.033237   2.586  0.00977 ** 
-    ## gap_emotionstability      -0.031696   0.031174  -1.017  0.30940    
-    ## age                       -0.011935   0.004581  -2.605  0.00925 ** 
-    ## sex2                      -0.083326   0.071937  -1.158  0.24686    
-    ## gap_conscientiousness      0.004017   0.039265   0.102  0.91852    
-    ## race4                     -0.189153   0.140295  -1.348  0.17772    
-    ## education                  0.002461   0.026351   0.093  0.92558    
-    ## race2                      0.077822   0.130490   0.596  0.55098    
-    ## star_user                 -0.081644   0.077149  -1.058  0.29006    
-    ## star_GS                    0.093272   0.061090   1.527  0.12697    
+    ## (Intercept)               32.674266  17.697237   1.846 0.064990 .  
+    ## real_extraversion_ct       0.052272   0.024725   2.114 0.034621 *  
+    ## real_agreeableness_ct      0.017967   0.031038   0.579 0.562733    
+    ## real_conscientiousness_ct  0.091792   0.034410   2.668 0.007699 ** 
+    ## real_emotionstability_ct  -0.024825   0.034153  -0.727 0.467383    
+    ## real_openness_ct           0.095707   0.032861   2.912 0.003624 ** 
+    ## gap_extraversion           0.002553   0.025772   0.099 0.921085    
+    ## gap_agreeableness          0.077924   0.033541   2.323 0.020262 *  
+    ## gap_conscientiousness      0.009655   0.039469   0.245 0.806781    
+    ## gap_emotionstability      -0.036520   0.031383  -1.164 0.244686    
+    ## gap_openness              -0.050597   0.042836  -1.181 0.237661    
+    ## tste_16_0_ct               0.173250   0.048572   3.567 0.000369 ***
+    ## tste_16_1_ct              -0.108753   0.049868  -2.181 0.029306 *  
+    ## tste_16_2_ct              -0.053111   0.044856  -1.184 0.236536    
+    ## tste_16_3_ct              -0.164885   0.050432  -3.269 0.001095 ** 
+    ## tste_16_4_ct              -0.169341   0.041170  -4.113 4.05e-05 ***
+    ## tste_16_5_ct               0.102391   0.048149   2.127 0.033574 *  
+    ## tste_16_6_ct               0.103785   0.044023   2.358 0.018489 *  
+    ## tste_16_7_ct               0.077730   0.044565   1.744 0.081270 .  
+    ## tste_16_8_ct              -0.064340   0.051929  -1.239 0.215490    
+    ## tste_16_9_ct               0.156627   0.044763   3.499 0.000477 ***
+    ## tste_16_10_ct             -0.079291   0.043971  -1.803 0.071492 .  
+    ## tste_16_11_ct              0.154360   0.050220   3.074 0.002142 ** 
+    ## tste_16_12_ct              0.080546   0.046098   1.747 0.080733 .  
+    ## tste_16_13_ct              0.051469   0.049654   1.037 0.300065    
+    ## tste_16_14_ct              0.112699   0.046225   2.438 0.014848 *  
+    ## tste_16_15_ct             -0.017197   0.050101  -0.343 0.731442    
+    ## release                   -0.013735   0.008695  -1.580 0.114345    
+    ## education                  0.004501   0.026324   0.171 0.864250    
+    ## income                     0.014950   0.017068   0.876 0.381202    
+    ## race7                     -0.135271   0.135518  -0.998 0.318307    
+    ## sex2                      -0.072621   0.071983  -1.009 0.313160    
+    ## age                       -0.013170   0.004554  -2.892 0.003869 ** 
+    ## race4                     -0.203297   0.140053  -1.452 0.146772    
+    ## race6                     -0.960403   0.345510  -2.780 0.005490 ** 
+    ## star_user                 -0.066333   0.072247  -0.918 0.358651    
+    ## star_GS                    0.149186   0.058447   2.552 0.010766 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.441 on 2100 degrees of freedom
-    ## Multiple R-squared:  0.09499,    Adjusted R-squared:  0.07905 
-    ## F-statistic: 5.957 on 37 and 2100 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.44 on 2101 degrees of freedom
+    ## Multiple R-squared:  0.09616,    Adjusted R-squared:  0.08067 
+    ## F-statistic: 6.209 on 36 and 2101 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4904,55 +4810,54 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0906 -0.6768  0.2886  1.0625  2.6547 
+    ## -5.1906 -0.7100  0.2728  1.0253  2.7831 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               38.984611  18.502965   2.107 0.035241 *  
-    ## real_extraversion_ct       0.046608   0.024901   1.872 0.061386 .  
-    ## real_agreeableness_ct      0.023089   0.031168   0.741 0.458896    
-    ## real_conscientiousness_ct  0.087446   0.034563   2.530 0.011478 *  
-    ## real_emotionstability_ct  -0.020897   0.034292  -0.609 0.542330    
-    ## real_openness_ct           0.109553   0.033149   3.305 0.000966 ***
-    ## tste_19_0_ct               0.003474   0.048293   0.072 0.942661    
-    ## tste_19_1_ct               0.063144   0.050327   1.255 0.209737    
-    ## tste_19_2_ct               0.024392   0.048980   0.498 0.618537    
-    ## tste_19_3_ct              -0.116759   0.046485  -2.512 0.012087 *  
-    ## tste_19_4_ct              -0.109623   0.049011  -2.237 0.025411 *  
-    ## tste_19_5_ct              -0.035827   0.053573  -0.669 0.503722    
-    ## tste_19_6_ct               0.081616   0.047789   1.708 0.087814 .  
-    ## tste_19_7_ct               0.111999   0.046886   2.389 0.016995 *  
-    ## tste_19_8_ct               0.037670   0.046858   0.804 0.421525    
-    ## tste_19_9_ct              -0.075004   0.050226  -1.493 0.135504    
-    ## tste_19_10_ct              0.129607   0.047892   2.706 0.006861 ** 
-    ## tste_19_11_ct              0.089879   0.044893   2.002 0.045405 *  
-    ## tste_19_12_ct              0.228441   0.045632   5.006 6.02e-07 ***
-    ## tste_19_13_ct             -0.012129   0.043264  -0.280 0.779238    
-    ## tste_19_14_ct              0.175900   0.044998   3.909 9.56e-05 ***
-    ## tste_19_15_ct              0.002336   0.044161   0.053 0.957812    
-    ## tste_19_16_ct              0.024523   0.046871   0.523 0.600898    
-    ## tste_19_17_ct              0.055599   0.053025   1.049 0.294515    
-    ## tste_19_18_ct              0.002615   0.041034   0.064 0.949198    
-    ## release                   -0.016912   0.009083  -1.862 0.062752 .  
-    ## gap_openness              -0.024837   0.042906  -0.579 0.562732    
-    ## income                     0.013099   0.017099   0.766 0.443723    
-    ## gap_extraversion          -0.010006   0.025452  -0.393 0.694253    
-    ## gap_agreeableness          0.085812   0.033325   2.575 0.010092 *  
-    ## gap_emotionstability      -0.030194   0.031246  -0.966 0.333998    
-    ## age                       -0.011869   0.004593  -2.584 0.009828 ** 
-    ## sex2                      -0.086056   0.072128  -1.193 0.232963    
-    ## gap_conscientiousness      0.007526   0.039364   0.191 0.848397    
-    ## race4                     -0.195368   0.140586  -1.390 0.164777    
-    ## education                  0.002709   0.026412   0.103 0.918302    
-    ## race2                      0.081491   0.130822   0.623 0.533410    
-    ## star_user                 -0.032522   0.074702  -0.435 0.663349    
-    ## star_GS                    0.118739   0.060452   1.964 0.049640 *  
+    ## (Intercept)               35.065439  18.246885   1.922  0.05478 .  
+    ## real_extraversion_ct       0.051013   0.024694   2.066  0.03897 *  
+    ## real_agreeableness_ct      0.021504   0.031022   0.693  0.48828    
+    ## real_conscientiousness_ct  0.091421   0.034378   2.659  0.00789 ** 
+    ## real_emotionstability_ct  -0.025251   0.034106  -0.740  0.45915    
+    ## real_openness_ct           0.097958   0.032828   2.984  0.00288 ** 
+    ## gap_extraversion           0.002693   0.025746   0.105  0.91670    
+    ## gap_agreeableness          0.075454   0.033539   2.250  0.02457 *  
+    ## gap_conscientiousness      0.008220   0.039436   0.208  0.83491    
+    ## gap_emotionstability      -0.032553   0.031368  -1.038  0.29951    
+    ## gap_openness              -0.045897   0.042779  -1.073  0.28344    
+    ## tste_17_0_ct               0.317357   0.048907   6.489 1.07e-10 ***
+    ## tste_17_1_ct               0.062445   0.041875   1.491  0.13606    
+    ## tste_17_2_ct              -0.070057   0.049890  -1.404  0.16040    
+    ## tste_17_3_ct               0.044245   0.047729   0.927  0.35403    
+    ## tste_17_4_ct               0.090262   0.050085   1.802  0.07166 .  
+    ## tste_17_5_ct               0.021532   0.046755   0.461  0.64518    
+    ## tste_17_6_ct              -0.046139   0.049134  -0.939  0.34782    
+    ## tste_17_7_ct               0.091580   0.043091   2.125  0.03368 *  
+    ## tste_17_8_ct              -0.068142   0.047872  -1.423  0.15476    
+    ## tste_17_9_ct              -0.106397   0.046160  -2.305  0.02127 *  
+    ## tste_17_10_ct              0.096569   0.042429   2.276  0.02294 *  
+    ## tste_17_11_ct              0.039429   0.046772   0.843  0.39933    
+    ## tste_17_12_ct             -0.168822   0.042775  -3.947 8.18e-05 ***
+    ## tste_17_13_ct              0.093415   0.049100   1.903  0.05723 .  
+    ## tste_17_14_ct              0.032366   0.043316   0.747  0.45502    
+    ## tste_17_15_ct             -0.035533   0.055887  -0.636  0.52498    
+    ## tste_17_16_ct             -0.051565   0.042816  -1.204  0.22859    
+    ## release                   -0.014986   0.008940  -1.676  0.09381 .  
+    ## education                  0.006317   0.026297   0.240  0.81019    
+    ## income                     0.015183   0.017044   0.891  0.37312    
+    ## race7                     -0.125184   0.135402  -0.925  0.35531    
+    ## sex2                      -0.076787   0.071897  -1.068  0.28564    
+    ## age                       -0.013211   0.004554  -2.901  0.00376 ** 
+    ## race4                     -0.212462   0.139942  -1.518  0.12911    
+    ## race6                     -0.996032   0.345534  -2.883  0.00398 ** 
+    ## star_user                 -0.077414   0.076588  -1.011  0.31224    
+    ## star_GS                    0.174326   0.060217   2.895  0.00383 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.444 on 2099 degrees of freedom
-    ## Multiple R-squared:  0.09162,    Adjusted R-squared:  0.07517 
-    ## F-statistic: 5.571 on 38 and 2099 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.439 on 2100 degrees of freedom
+    ## Multiple R-squared:  0.09853,    Adjusted R-squared:  0.08264 
+    ## F-statistic: 6.203 on 37 and 2100 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -4960,56 +4865,170 @@ for(model in slice(dfs, 77:95)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0289 -0.6870  0.2805  1.0312  2.5325 
+    ## -5.1083 -0.6963  0.2866  1.0426  2.6358 
     ## 
     ## Coefficients:
     ##                            Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)               36.403857  19.316920   1.885 0.059628 .  
-    ## real_extraversion_ct       0.048002   0.024831   1.933 0.053357 .  
-    ## real_agreeableness_ct      0.021992   0.031115   0.707 0.479773    
-    ## real_conscientiousness_ct  0.086138   0.034469   2.499 0.012530 *  
-    ## real_emotionstability_ct  -0.018855   0.034208  -0.551 0.581556    
-    ## real_openness_ct           0.108859   0.033068   3.292 0.001011 ** 
-    ## tste_20_0_ct               0.082502   0.053633   1.538 0.124133    
-    ## tste_20_1_ct               0.083748   0.046562   1.799 0.072222 .  
-    ## tste_20_2_ct               0.090511   0.042428   2.133 0.033016 *  
-    ## tste_20_3_ct               0.154281   0.048736   3.166 0.001570 ** 
-    ## tste_20_4_ct               0.033862   0.044370   0.763 0.445450    
-    ## tste_20_5_ct              -0.071534   0.043839  -1.632 0.102881    
-    ## tste_20_6_ct               0.026499   0.049569   0.535 0.592993    
-    ## tste_20_7_ct               0.187831   0.054168   3.468 0.000536 ***
-    ## tste_20_8_ct              -0.016664   0.053753  -0.310 0.756583    
-    ## tste_20_9_ct               0.101024   0.044228   2.284 0.022461 *  
-    ## tste_20_10_ct              0.062719   0.048038   1.306 0.191829    
-    ## tste_20_11_ct             -0.126939   0.045605  -2.783 0.005427 ** 
-    ## tste_20_12_ct              0.122982   0.046061   2.670 0.007645 ** 
-    ## tste_20_13_ct              0.113382   0.050330   2.253 0.024376 *  
-    ## tste_20_14_ct             -0.098014   0.041097  -2.385 0.017169 *  
-    ## tste_20_15_ct              0.113203   0.053295   2.124 0.033779 *  
-    ## tste_20_16_ct             -0.097733   0.046206  -2.115 0.034535 *  
-    ## tste_20_17_ct              0.034847   0.044994   0.774 0.438728    
-    ## tste_20_18_ct              0.138972   0.042626   3.260 0.001131 ** 
-    ## tste_20_19_ct             -0.039555   0.048656  -0.813 0.416332    
-    ## release                   -0.015545   0.009483  -1.639 0.101320    
-    ## gap_openness              -0.022975   0.042811  -0.537 0.591554    
-    ## income                     0.012332   0.017063   0.723 0.469904    
-    ## gap_extraversion          -0.008427   0.025372  -0.332 0.739823    
-    ## gap_agreeableness          0.084230   0.033257   2.533 0.011392 *  
-    ## gap_emotionstability      -0.028874   0.031176  -0.926 0.354473    
-    ## age                       -0.011633   0.004584  -2.538 0.011221 *  
-    ## sex2                      -0.078724   0.072010  -1.093 0.274414    
-    ## gap_conscientiousness      0.004555   0.039279   0.116 0.907686    
-    ## race4                     -0.179034   0.140340  -1.276 0.202197    
-    ## education                  0.003439   0.026354   0.130 0.896197    
-    ## race2                      0.098222   0.130425   0.753 0.451478    
-    ## star_user                 -0.013873   0.078027  -0.178 0.858895    
-    ## star_GS                    0.078865   0.061361   1.285 0.198847    
+    ## (Intercept)               44.925781  18.032150   2.491  0.01280 *  
+    ## real_extraversion_ct       0.050333   0.024713   2.037  0.04180 *  
+    ## real_agreeableness_ct      0.021648   0.031001   0.698  0.48507    
+    ## real_conscientiousness_ct  0.088150   0.034380   2.564  0.01042 *  
+    ## real_emotionstability_ct  -0.029002   0.034123  -0.850  0.39548    
+    ## real_openness_ct           0.097282   0.032822   2.964  0.00307 ** 
+    ## gap_extraversion           0.005558   0.025760   0.216  0.82918    
+    ## gap_agreeableness          0.074558   0.033530   2.224  0.02628 *  
+    ## gap_conscientiousness      0.003474   0.039446   0.088  0.92982    
+    ## gap_emotionstability      -0.033756   0.031381  -1.076  0.28219    
+    ## gap_openness              -0.046178   0.042807  -1.079  0.28082    
+    ## tste_18_0_ct              -0.130953   0.046066  -2.843  0.00452 ** 
+    ## tste_18_1_ct               0.155864   0.047986   3.248  0.00118 ** 
+    ## tste_18_2_ct              -0.013638   0.043539  -0.313  0.75413    
+    ## tste_18_3_ct              -0.018199   0.046776  -0.389  0.69726    
+    ## tste_18_4_ct               0.072932   0.051043   1.429  0.15320    
+    ## tste_18_5_ct              -0.030159   0.047969  -0.629  0.52960    
+    ## tste_18_6_ct              -0.001759   0.050273  -0.035  0.97209    
+    ## tste_18_7_ct              -0.055690   0.043181  -1.290  0.19729    
+    ## tste_18_8_ct               0.079291   0.046967   1.688  0.09151 .  
+    ## tste_18_9_ct              -0.132143   0.047738  -2.768  0.00569 ** 
+    ## tste_18_10_ct              0.084584   0.045813   1.846  0.06499 .  
+    ## tste_18_11_ct              0.062978   0.045054   1.398  0.16232    
+    ## tste_18_12_ct             -0.087924   0.047494  -1.851  0.06427 .  
+    ## tste_18_13_ct             -0.031916   0.046702  -0.683  0.49442    
+    ## tste_18_14_ct              0.051904   0.050745   1.023  0.30651    
+    ## tste_18_15_ct              0.172815   0.058470   2.956  0.00316 ** 
+    ## tste_18_16_ct             -0.295737   0.051319  -5.763  9.5e-09 ***
+    ## tste_18_17_ct              0.046113   0.045586   1.012  0.31187    
+    ## release                   -0.019531   0.008850  -2.207  0.02743 *  
+    ## education                  0.006166   0.026295   0.234  0.81462    
+    ## income                     0.014467   0.017047   0.849  0.39618    
+    ## race7                     -0.137589   0.135359  -1.016  0.30952    
+    ## sex2                      -0.069602   0.071967  -0.967  0.33358    
+    ## age                       -0.013149   0.004555  -2.887  0.00393 ** 
+    ## race4                     -0.208991   0.139942  -1.493  0.13548    
+    ## race6                     -1.007883   0.345475  -2.917  0.00357 ** 
+    ## star_user                 -0.081820   0.076985  -1.063  0.28799    
+    ## star_GS                    0.090526   0.060970   1.485  0.13776    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.441 on 2098 degrees of freedom
-    ## Multiple R-squared:  0.09614,    Adjusted R-squared:  0.07934 
-    ## F-statistic: 5.722 on 39 and 2098 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.439 on 2099 degrees of freedom
+    ## Multiple R-squared:  0.09885,    Adjusted R-squared:  0.08254 
+    ## F-statistic: 6.059 on 38 and 2099 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.1172 -0.6772  0.2870  1.0496  2.6621 
+    ## 
+    ## Coefficients:
+    ##                            Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)               36.929068  18.472087   1.999 0.045717 *  
+    ## real_extraversion_ct       0.051669   0.024785   2.085 0.037214 *  
+    ## real_agreeableness_ct      0.021765   0.031114   0.700 0.484300    
+    ## real_conscientiousness_ct  0.091134   0.034502   2.641 0.008317 ** 
+    ## real_emotionstability_ct  -0.024197   0.034269  -0.706 0.480213    
+    ## real_openness_ct           0.101504   0.032903   3.085 0.002063 ** 
+    ## gap_extraversion           0.003445   0.025832   0.133 0.893922    
+    ## gap_agreeableness          0.074607   0.033618   2.219 0.026576 *  
+    ## gap_conscientiousness      0.006994   0.039545   0.177 0.859633    
+    ## gap_emotionstability      -0.032073   0.031454  -1.020 0.308001    
+    ## gap_openness              -0.042606   0.042895  -0.993 0.320694    
+    ## tste_19_0_ct               0.011557   0.048250   0.240 0.810717    
+    ## tste_19_1_ct               0.069021   0.050264   1.373 0.169846    
+    ## tste_19_2_ct               0.025642   0.048895   0.524 0.600036    
+    ## tste_19_3_ct              -0.116030   0.046402  -2.501 0.012475 *  
+    ## tste_19_4_ct              -0.106233   0.048998  -2.168 0.030261 *  
+    ## tste_19_5_ct              -0.029898   0.053489  -0.559 0.576254    
+    ## tste_19_6_ct               0.083512   0.047699   1.751 0.080123 .  
+    ## tste_19_7_ct               0.114656   0.046791   2.450 0.014351 *  
+    ## tste_19_8_ct               0.041204   0.046794   0.881 0.378669    
+    ## tste_19_9_ct              -0.070245   0.050160  -1.400 0.161535    
+    ## tste_19_10_ct              0.131233   0.047810   2.745 0.006105 ** 
+    ## tste_19_11_ct              0.092036   0.044819   2.054 0.040147 *  
+    ## tste_19_12_ct              0.231620   0.045549   5.085    4e-07 ***
+    ## tste_19_13_ct             -0.010700   0.043198  -0.248 0.804392    
+    ## tste_19_14_ct              0.174903   0.044905   3.895 0.000101 ***
+    ## tste_19_15_ct              0.006265   0.044096   0.142 0.887028    
+    ## tste_19_16_ct              0.028010   0.046802   0.598 0.549589    
+    ## tste_19_17_ct              0.053100   0.052945   1.003 0.316007    
+    ## tste_19_18_ct              0.005106   0.040933   0.125 0.900750    
+    ## release                   -0.015870   0.009068  -1.750 0.080235 .  
+    ## education                  0.006306   0.026360   0.239 0.810957    
+    ## income                     0.015495   0.017087   0.907 0.364619    
+    ## race7                     -0.130158   0.135703  -0.959 0.337601    
+    ## sex2                      -0.072777   0.072162  -1.009 0.313320    
+    ## age                       -0.013063   0.004567  -2.860 0.004275 ** 
+    ## race4                     -0.215169   0.140240  -1.534 0.125110    
+    ## race6                     -0.993128   0.346422  -2.867 0.004188 ** 
+    ## star_user                 -0.030427   0.074531  -0.408 0.683132    
+    ## star_GS                    0.115453   0.060346   1.913 0.055859 .  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.442 on 2098 degrees of freedom
+    ## Multiple R-squared:  0.09531,    Adjusted R-squared:  0.07849 
+    ## F-statistic: 5.667 on 39 and 2098 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.0768 -0.7001  0.2734  1.0173  2.7447 
+    ## 
+    ## Coefficients:
+    ##                            Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)               34.165073  19.283903   1.772 0.076591 .  
+    ## real_extraversion_ct       0.053237   0.024720   2.154 0.031381 *  
+    ## real_agreeableness_ct      0.020881   0.031061   0.672 0.501494    
+    ## real_conscientiousness_ct  0.090106   0.034410   2.619 0.008892 ** 
+    ## real_emotionstability_ct  -0.022161   0.034188  -0.648 0.516917    
+    ## real_openness_ct           0.100348   0.032824   3.057 0.002263 ** 
+    ## gap_extraversion           0.005028   0.025750   0.195 0.845216    
+    ## gap_agreeableness          0.073344   0.033543   2.187 0.028885 *  
+    ## gap_conscientiousness      0.003961   0.039464   0.100 0.920059    
+    ## gap_emotionstability      -0.031081   0.031382  -0.990 0.322097    
+    ## gap_openness              -0.041318   0.042798  -0.965 0.334450    
+    ## tste_20_0_ct               0.084875   0.053545   1.585 0.113088    
+    ## tste_20_1_ct               0.087768   0.046448   1.890 0.058949 .  
+    ## tste_20_2_ct               0.093816   0.042389   2.213 0.026992 *  
+    ## tste_20_3_ct               0.150849   0.048665   3.100 0.001962 ** 
+    ## tste_20_4_ct               0.033243   0.044290   0.751 0.452988    
+    ## tste_20_5_ct              -0.070495   0.043766  -1.611 0.107394    
+    ## tste_20_6_ct               0.025885   0.049480   0.523 0.600931    
+    ## tste_20_7_ct               0.187668   0.054062   3.471 0.000528 ***
+    ## tste_20_8_ct              -0.022092   0.053700  -0.411 0.680823    
+    ## tste_20_9_ct               0.102825   0.044154   2.329 0.019967 *  
+    ## tste_20_10_ct              0.060284   0.047975   1.257 0.209050    
+    ## tste_20_11_ct             -0.123821   0.045589  -2.716 0.006661 ** 
+    ## tste_20_12_ct              0.129328   0.046042   2.809 0.005017 ** 
+    ## tste_20_13_ct              0.110623   0.050246   2.202 0.027800 *  
+    ## tste_20_14_ct             -0.100934   0.041019  -2.461 0.013949 *  
+    ## tste_20_15_ct              0.119565   0.053232   2.246 0.024801 *  
+    ## tste_20_16_ct             -0.092005   0.046161  -1.993 0.046374 *  
+    ## tste_20_17_ct              0.031707   0.044925   0.706 0.480405    
+    ## tste_20_18_ct              0.138291   0.042559   3.249 0.001175 ** 
+    ## tste_20_19_ct             -0.034923   0.048594  -0.719 0.472428    
+    ## release                   -0.014414   0.009467  -1.523 0.128020    
+    ## education                  0.006836   0.026303   0.260 0.794960    
+    ## income                     0.014710   0.017050   0.863 0.388375    
+    ## race7                     -0.132854   0.135424  -0.981 0.326692    
+    ## sex2                      -0.065676   0.072044  -0.912 0.362074    
+    ## age                       -0.012887   0.004558  -2.827 0.004738 ** 
+    ## race4                     -0.200152   0.139999  -1.430 0.152962    
+    ## race6                     -0.993024   0.345824  -2.871 0.004127 ** 
+    ## star_user                 -0.012175   0.077860  -0.156 0.875760    
+    ## star_GS                    0.076992   0.061270   1.257 0.209039    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.439 on 2097 degrees of freedom
+    ## Multiple R-squared:  0.09977,    Adjusted R-squared:  0.0826 
+    ## F-statistic:  5.81 on 40 and 2097 DF,  p-value: < 2.2e-16
 
 ### preference ~ tste + real + gap + gap\*tste
 
@@ -5026,47 +5045,48 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0060 -0.6790  0.3158  1.0780  2.5091 
+    ## -5.0364 -0.6780  0.3019  1.0705  2.6515 
     ## 
     ## Coefficients:
     ##                                     Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       65.7944645 14.2208266   4.627 3.94e-06 ***
-    ## real_extraversion_ct               0.0486829  0.0252480   1.928  0.05397 .  
-    ## real_agreeableness_ct              0.0135999  0.0314877   0.432  0.66585    
-    ## real_conscientiousness_ct          0.0831015  0.0350327   2.372  0.01778 *  
-    ## real_emotionstability_ct          -0.0278057  0.0347015  -0.801  0.42306    
-    ## real_openness_ct                   0.1081237  0.0335451   3.223  0.00129 ** 
-    ## tste_2_0_ct                        0.1646503  0.0507141   3.247  0.00119 ** 
-    ## tste_2_1_ct                       -0.0400901  0.0503442  -0.796  0.42594    
-    ## release                           -0.0299646  0.0069945  -4.284 1.92e-05 ***
-    ## gap_openness                      -0.0294233  0.0434194  -0.678  0.49807    
-    ## income                             0.0051963  0.0173229   0.300  0.76423    
-    ## gap_extraversion                  -0.0054700  0.0258285  -0.212  0.83230    
-    ## gap_agreeableness                  0.0773700  0.0337474   2.293  0.02197 *  
-    ## gap_emotionstability              -0.0404436  0.0317601  -1.273  0.20301    
-    ## age                               -0.0136743  0.0046326  -2.952  0.00319 ** 
-    ## sex2                              -0.0922604  0.0729503  -1.265  0.20612    
-    ## gap_conscientiousness              0.0003295  0.0399544   0.008  0.99342    
-    ## race4                             -0.2305198  0.1423796  -1.619  0.10559    
-    ## education                          0.0055115  0.0267497   0.206  0.83678    
-    ## race2                              0.1029940  0.1323687   0.778  0.43661    
-    ## star_user                          0.0063412  0.0580874   0.109  0.91308    
-    ## star_GS                            0.0172847  0.0481531   0.359  0.71967    
-    ## gap_extraversion.tste_2_0_ct      -0.0244651  0.0246342  -0.993  0.32076    
-    ## gap_agreeableness.tste_2_0_ct     -0.0627639  0.0343938  -1.825  0.06816 .  
-    ## gap_conscientiousness.tste_2_0_ct  0.0070583  0.0392961   0.180  0.85747    
-    ## gap_emotionstability.tste_2_0_ct   0.0222340  0.0290945   0.764  0.44483    
-    ## gap_openness.tste_2_0_ct          -0.0242476  0.0389304  -0.623  0.53345    
-    ## gap_extraversion.tste_2_1_ct      -0.0262660  0.0252024  -1.042  0.29744    
-    ## gap_agreeableness.tste_2_1_ct     -0.0336668  0.0334535  -1.006  0.31435    
-    ## gap_conscientiousness.tste_2_1_ct  0.0190782  0.0386319   0.494  0.62147    
-    ## gap_openness.tste_2_1_ct           0.0183259  0.0385794   0.475  0.63482    
+    ## (Intercept)                       63.6797314 14.1725534   4.493 7.40e-06 ***
+    ## real_extraversion_ct               0.0540698  0.0251319   2.151  0.03156 *  
+    ## real_agreeableness_ct              0.0124175  0.0314322   0.395  0.69284    
+    ## real_conscientiousness_ct          0.0869636  0.0349673   2.487  0.01296 *  
+    ## real_emotionstability_ct          -0.0309548  0.0346776  -0.893  0.37215    
+    ## real_openness_ct                   0.0990132  0.0333048   2.973  0.00298 ** 
+    ## gap_extraversion                   0.0082621  0.0262020   0.315  0.75255    
+    ## gap_agreeableness                  0.0672643  0.0340017   1.978  0.04803 *  
+    ## gap_conscientiousness             -0.0002889  0.0401274  -0.007  0.99426    
+    ## gap_emotionstability              -0.0434903  0.0319458  -1.361  0.17354    
+    ## gap_openness                      -0.0483906  0.0434191  -1.115  0.26519    
+    ## tste_2_0_ct                        0.1633370  0.0506384   3.226  0.00128 ** 
+    ## tste_2_1_ct                       -0.0442165  0.0502081  -0.881  0.37860    
+    ## release                           -0.0288906  0.0069702  -4.145 3.53e-05 ***
+    ## education                          0.0089016  0.0266991   0.333  0.73886    
+    ## income                             0.0080108  0.0173153   0.463  0.64367    
+    ## race7                             -0.1428740  0.1371479  -1.042  0.29765    
+    ## sex2                              -0.0784674  0.0729933  -1.075  0.28250    
+    ## age                               -0.0150429  0.0046087  -3.264  0.00112 ** 
+    ## race4                             -0.2511917  0.1420355  -1.769  0.07712 .  
+    ## race6                             -1.0197274  0.3545132  -2.876  0.00406 ** 
+    ## gap_extraversion.tste_2_0_ct      -0.0251843  0.0245936  -1.024  0.30594    
+    ## star_user                          0.0102800  0.0578733   0.178  0.85903    
+    ## star_GS                            0.0121638  0.0480668   0.253  0.80025    
+    ## gap_agreeableness.tste_2_0_ct     -0.0613664  0.0343358  -1.787  0.07404 .  
+    ## gap_conscientiousness.tste_2_0_ct  0.0068464  0.0392301   0.175  0.86147    
+    ## gap_emotionstability.tste_2_0_ct   0.0227611  0.0290426   0.784  0.43330    
+    ## gap_openness.tste_2_0_ct          -0.0225509  0.0388781  -0.580  0.56195    
+    ## gap_extraversion.tste_2_1_ct      -0.0346033  0.0253315  -1.366  0.17208    
+    ## gap_agreeableness.tste_2_1_ct     -0.0231072  0.0336003  -0.688  0.49171    
+    ## gap_conscientiousness.tste_2_1_ct  0.0213286  0.0385463   0.553  0.58010    
+    ## gap_openness.tste_2_1_ct           0.0284616  0.0386440   0.737  0.46150    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.464 on 2107 degrees of freedom
-    ## Multiple R-squared:  0.06287,    Adjusted R-squared:  0.04953 
-    ## F-statistic: 4.712 on 30 and 2107 DF,  p-value: 9.622e-16
+    ## Residual standard error: 1.462 on 2106 degrees of freedom
+    ## Multiple R-squared:  0.06666,    Adjusted R-squared:  0.05292 
+    ## F-statistic: 4.852 on 31 and 2106 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5074,52 +5094,53 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.9071 -0.6832  0.3041  1.0627  2.5377 
+    ## -4.9377 -0.6911  0.3082  1.0534  2.6126 
     ## 
     ## Coefficients:
     ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       62.142038  14.133443   4.397 1.15e-05 ***
-    ## real_extraversion_ct               0.049154   0.025028   1.964 0.049669 *  
-    ## real_agreeableness_ct              0.013465   0.031195   0.432 0.666051    
-    ## real_conscientiousness_ct          0.085369   0.034714   2.459 0.014004 *  
-    ## real_emotionstability_ct          -0.024116   0.034368  -0.702 0.482936    
-    ## real_openness_ct                   0.104941   0.033245   3.157 0.001619 ** 
-    ## tste_3_0_ct                       -0.112284   0.053720  -2.090 0.036722 *  
-    ## tste_3_1_ct                        0.164960   0.044242   3.729 0.000198 ***
-    ## tste_3_2_ct                        0.183988   0.061014   3.016 0.002596 ** 
-    ## release                           -0.028285   0.006951  -4.069 4.89e-05 ***
-    ## gap_openness                      -0.031693   0.043056  -0.736 0.461748    
-    ## income                             0.006136   0.017175   0.357 0.720944    
-    ## gap_extraversion                  -0.011551   0.025646  -0.450 0.652473    
-    ## gap_agreeableness                  0.080186   0.033466   2.396 0.016658 *  
-    ## gap_emotionstability              -0.038712   0.031475  -1.230 0.218857    
-    ## age                               -0.013027   0.004592  -2.837 0.004597 ** 
-    ## sex2                              -0.082037   0.072263  -1.135 0.256396    
-    ## gap_conscientiousness              0.003806   0.039607   0.096 0.923450    
-    ## race4                             -0.204939   0.141128  -1.452 0.146609    
-    ## education                          0.004819   0.026513   0.182 0.855788    
-    ## race2                              0.122620   0.131247   0.934 0.350272    
-    ## star_user                          0.004817   0.057652   0.084 0.933415    
-    ## gap_extraversion.tste_3_0_ct       0.040551   0.026430   1.534 0.125117    
-    ## gap_agreeableness.tste_3_0_ct      0.039946   0.037274   1.072 0.283991    
-    ## gap_conscientiousness.tste_3_0_ct  0.020661   0.042599   0.485 0.627722    
-    ## gap_emotionstability.tste_3_0_ct   0.072550   0.033902   2.140 0.032467 *  
-    ## gap_openness.tste_3_0_ct           0.039181   0.042255   0.927 0.353900    
-    ## star_GS                            0.049012   0.048474   1.011 0.312081    
-    ## gap_extraversion.tste_3_1_ct       0.012529   0.021678   0.578 0.563360    
-    ## gap_agreeableness.tste_3_1_ct     -0.019579   0.029509  -0.663 0.507089    
-    ## gap_conscientiousness.tste_3_1_ct  0.018871   0.033581   0.562 0.574212    
-    ## gap_emotionstability.tste_3_1_ct   0.089912   0.026435   3.401 0.000683 ***
-    ## gap_openness.tste_3_1_ct           0.011902   0.034103   0.349 0.727135    
-    ## gap_extraversion.tste_3_2_ct       0.010269   0.031895   0.322 0.747510    
-    ## gap_agreeableness.tste_3_2_ct      0.051937   0.043030   1.207 0.227568    
-    ## gap_openness.tste_3_2_ct           0.064485   0.048361   1.333 0.182544    
+    ## (Intercept)                       59.798550  14.080965   4.247 2.26e-05 ***
+    ## real_extraversion_ct               0.055144   0.024911   2.214 0.026962 *  
+    ## real_agreeableness_ct              0.012287   0.031134   0.395 0.693133    
+    ## real_conscientiousness_ct          0.089490   0.034643   2.583 0.009856 ** 
+    ## real_emotionstability_ct          -0.027329   0.034338  -0.796 0.426193    
+    ## real_openness_ct                   0.094977   0.033008   2.877 0.004051 ** 
+    ## gap_extraversion                   0.002686   0.025992   0.103 0.917690    
+    ## gap_agreeableness                  0.070180   0.033708   2.082 0.037461 *  
+    ## gap_conscientiousness              0.002577   0.039763   0.065 0.948329    
+    ## gap_emotionstability              -0.042520   0.031642  -1.344 0.179163    
+    ## gap_openness                      -0.051671   0.043034  -1.201 0.230004    
+    ## tste_3_0_ct                       -0.106712   0.053589  -1.991 0.046578 *  
+    ## tste_3_1_ct                        0.167486   0.044165   3.792 0.000153 ***
+    ## tste_3_2_ct                        0.183123   0.060900   3.007 0.002670 ** 
+    ## release                           -0.027095   0.006924  -3.913 9.40e-05 ***
+    ## education                          0.008211   0.026458   0.310 0.756331    
+    ## income                             0.009121   0.017165   0.531 0.595232    
+    ## age                               -0.014503   0.004566  -3.176 0.001514 ** 
+    ## sex2                              -0.067710   0.072294  -0.937 0.349070    
+    ## race4                             -0.228252   0.140763  -1.622 0.105052    
+    ## gap_extraversion.tste_3_0_ct       0.046640   0.026482   1.761 0.078352 .  
+    ## race6                             -1.052790   0.352074  -2.990 0.002820 ** 
+    ## race7                             -0.162218   0.135927  -1.193 0.232841    
+    ## gap_emotionstability.tste_3_0_ct   0.075495   0.033845   2.231 0.025811 *  
+    ## star_user                          0.009814   0.057425   0.171 0.864321    
+    ## gap_agreeableness.tste_3_0_ct      0.030012   0.037350   0.804 0.421756    
+    ## gap_conscientiousness.tste_3_0_ct  0.020900   0.042501   0.492 0.622950    
+    ## gap_openness.tste_3_0_ct           0.031802   0.042218   0.753 0.451367    
+    ## star_GS                            0.043033   0.048376   0.890 0.373804    
+    ## gap_extraversion.tste_3_1_ct       0.018752   0.021736   0.863 0.388406    
+    ## gap_agreeableness.tste_3_1_ct     -0.027331   0.029574  -0.924 0.355502    
+    ## gap_conscientiousness.tste_3_1_ct  0.017929   0.033499   0.535 0.592564    
+    ## gap_emotionstability.tste_3_1_ct   0.092415   0.026394   3.501 0.000472 ***
+    ## gap_openness.tste_3_1_ct           0.005919   0.034087   0.174 0.862169    
+    ## gap_extraversion.tste_3_2_ct       0.008679   0.031843   0.273 0.785233    
+    ## gap_agreeableness.tste_3_2_ct      0.055189   0.042960   1.285 0.199049    
+    ## gap_openness.tste_3_2_ct           0.066352   0.048262   1.375 0.169330    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.45 on 2102 degrees of freedom
-    ## Multiple R-squared:  0.08329,    Adjusted R-squared:  0.06803 
-    ## F-statistic: 5.457 on 35 and 2102 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.447 on 2101 degrees of freedom
+    ## Multiple R-squared:  0.08731,    Adjusted R-squared:  0.07167 
+    ## F-statistic: 5.583 on 36 and 2101 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5127,338 +5148,59 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0480 -0.6875  0.3084  1.0473  2.6513 
-    ## 
-    ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       65.726970  14.498170   4.533 6.13e-06 ***
-    ## real_extraversion_ct               0.046661   0.025049   1.863  0.06263 .  
-    ## real_agreeableness_ct              0.016372   0.031320   0.523  0.60121    
-    ## real_conscientiousness_ct          0.084009   0.034764   2.417  0.01575 *  
-    ## real_emotionstability_ct          -0.025509   0.034461  -0.740  0.45923    
-    ## real_openness_ct                   0.107017   0.033309   3.213  0.00133 ** 
-    ## tste_4_0_ct                        0.191726   0.061017   3.142  0.00170 ** 
-    ## tste_4_1_ct                        0.043570   0.069775   0.624  0.53241    
-    ## tste_4_2_ct                        0.001860   0.051559   0.036  0.97122    
-    ## tste_4_3_ct                       -0.203983   0.048490  -4.207 2.70e-05 ***
-    ## release                           -0.029999   0.007127  -4.209 2.67e-05 ***
-    ## gap_openness                      -0.029207   0.043119  -0.677  0.49825    
-    ## income                             0.004190   0.017192   0.244  0.80749    
-    ## gap_extraversion                  -0.009491   0.025622  -0.370  0.71112    
-    ## gap_agreeableness                  0.082545   0.033516   2.463  0.01386 *  
-    ## gap_emotionstability              -0.041242   0.031563  -1.307  0.19147    
-    ## age                               -0.012773   0.004601  -2.776  0.00556 ** 
-    ## sex2                              -0.086073   0.072392  -1.189  0.23458    
-    ## gap_conscientiousness              0.005830   0.039761   0.147  0.88345    
-    ## race4                             -0.203808   0.141327  -1.442  0.14942    
-    ## education                          0.005200   0.026580   0.196  0.84492    
-    ## race2                              0.117632   0.131485   0.895  0.37108    
-    ## star_GS                            0.090315   0.052798   1.711  0.08731 .  
-    ## gap_extraversion.tste_4_0_ct       0.024620   0.031366   0.785  0.43259    
-    ## gap_agreeableness.tste_4_0_ct      0.058947   0.042356   1.392  0.16416    
-    ## gap_conscientiousness.tste_4_0_ct -0.014315   0.047407  -0.302  0.76272    
-    ## gap_openness.tste_4_0_ct           0.069031   0.048397   1.426  0.15392    
-    ## star_user                         -0.053165   0.064790  -0.821  0.41199    
-    ## gap_extraversion.tste_4_1_ct      -0.063545   0.032676  -1.945  0.05194 .  
-    ## gap_agreeableness.tste_4_1_ct      0.070556   0.045222   1.560  0.11886    
-    ## gap_conscientiousness.tste_4_1_ct  0.056885   0.050894   1.118  0.26381    
-    ## gap_openness.tste_4_1_ct           0.067238   0.048588   1.384  0.16656    
-    ## gap_extraversion.tste_4_2_ct       0.024091   0.025965   0.928  0.35361    
-    ## gap_agreeableness.tste_4_2_ct      0.067624   0.034993   1.933  0.05343 .  
-    ## gap_conscientiousness.tste_4_2_ct -0.016301   0.039807  -0.410  0.68221    
-    ## gap_openness.tste_4_2_ct           0.007020   0.040130   0.175  0.86114    
-    ## gap_extraversion.tste_4_3_ct      -0.013462   0.022569  -0.597  0.55091    
-    ## gap_agreeableness.tste_4_3_ct      0.053837   0.030497   1.765  0.07766 .  
-    ## gap_conscientiousness.tste_4_3_ct  0.016835   0.036006   0.468  0.64014    
-    ## gap_emotionstability.tste_4_3_ct  -0.052554   0.025946  -2.026  0.04294 *  
-    ## gap_openness.tste_4_3_ct           0.017577   0.035518   0.495  0.62073    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.451 on 2097 degrees of freedom
-    ## Multiple R-squared:  0.08467,    Adjusted R-squared:  0.06721 
-    ## F-statistic: 4.849 on 40 and 2097 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.1267 -0.6941  0.3079  1.0443  2.7392 
-    ## 
-    ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       53.920357  14.783468   3.647 0.000271 ***
-    ## real_extraversion_ct               0.050946   0.025058   2.033 0.042167 *  
-    ## real_agreeableness_ct              0.014647   0.031305   0.468 0.639913    
-    ## real_conscientiousness_ct          0.089937   0.034812   2.584 0.009847 ** 
-    ## real_emotionstability_ct          -0.019931   0.034471  -0.578 0.563197    
-    ## real_openness_ct                   0.107160   0.033336   3.215 0.001326 ** 
-    ## tste_5_0_ct                        0.144665   0.057564   2.513 0.012042 *  
-    ## tste_5_1_ct                       -0.175882   0.065377  -2.690 0.007196 ** 
-    ## tste_5_2_ct                       -0.084861   0.051002  -1.664 0.096286 .  
-    ## tste_5_3_ct                       -0.065848   0.062868  -1.047 0.295035    
-    ## tste_5_4_ct                        0.044926   0.063729   0.705 0.480917    
-    ## release                           -0.024130   0.007267  -3.320 0.000914 ***
-    ## gap_openness                      -0.026218   0.043284  -0.606 0.544760    
-    ## gap_extraversion.tste_5_0_ct       0.039688   0.029611   1.340 0.180296    
-    ## income                             0.004790   0.017195   0.279 0.780602    
-    ## gap_extraversion                  -0.009796   0.025610  -0.383 0.702126    
-    ## gap_agreeableness                  0.084377   0.033604   2.511 0.012117 *  
-    ## gap_emotionstability              -0.040265   0.031573  -1.275 0.202346    
-    ## age                               -0.013183   0.004600  -2.866 0.004202 ** 
-    ## sex2                              -0.100615   0.072405  -1.390 0.164793    
-    ## gap_conscientiousness              0.012407   0.039878   0.311 0.755748    
-    ## race4                             -0.225522   0.141239  -1.597 0.110474    
-    ## education                          0.008705   0.026570   0.328 0.743223    
-    ## race2                              0.101926   0.131424   0.776 0.438103    
-    ## gap_agreeableness.tste_5_0_ct      0.082948   0.041199   2.013 0.044204 *  
-    ## gap_openness.tste_5_0_ct           0.036674   0.046158   0.795 0.426981    
-    ## star_user                         -0.024903   0.067259  -0.370 0.711223    
-    ## gap_extraversion.tste_5_1_ct       0.020678   0.032441   0.637 0.523922    
-    ## gap_agreeableness.tste_5_1_ct      0.033222   0.042994   0.773 0.439777    
-    ## gap_conscientiousness.tste_5_1_ct -0.154500   0.050446  -3.063 0.002222 ** 
-    ## gap_openness.tste_5_1_ct           0.009160   0.049375   0.186 0.852837    
-    ## star_GS                            0.064796   0.053665   1.207 0.227408    
-    ## gap_extraversion.tste_5_2_ct      -0.005096   0.023888  -0.213 0.831081    
-    ## gap_agreeableness.tste_5_2_ct      0.048616   0.033217   1.464 0.143456    
-    ## gap_conscientiousness.tste_5_2_ct  0.084968   0.037882   2.243 0.025004 *  
-    ## gap_emotionstability.tste_5_2_ct  -0.056482   0.027030  -2.090 0.036774 *  
-    ## gap_openness.tste_5_2_ct           0.029765   0.038576   0.772 0.440443    
-    ## gap_extraversion.tste_5_3_ct       0.028297   0.030665   0.923 0.356224    
-    ## gap_agreeableness.tste_5_3_ct     -0.049902   0.042487  -1.175 0.240317    
-    ## gap_conscientiousness.tste_5_3_ct  0.009598   0.049764   0.193 0.847076    
-    ## gap_openness.tste_5_3_ct          -0.080633   0.046564  -1.732 0.083481 .  
-    ## gap_extraversion.tste_5_4_ct       0.034277   0.028397   1.207 0.227549    
-    ## gap_agreeableness.tste_5_4_ct     -0.011723   0.038373  -0.306 0.760008    
-    ## gap_conscientiousness.tste_5_4_ct -0.052146   0.041423  -1.259 0.208222    
-    ## gap_openness.tste_5_4_ct          -0.008976   0.043310  -0.207 0.835830    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.45 on 2093 degrees of freedom
-    ## Multiple R-squared:  0.08729,    Adjusted R-squared:  0.0681 
-    ## F-statistic: 4.549 on 44 and 2093 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.1725 -0.6720  0.3077  1.0449  3.0428 
-    ## 
-    ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       53.666076  14.923664   3.596 0.000331 ***
-    ## real_extraversion_ct               0.053107   0.025066   2.119 0.034234 *  
-    ## real_agreeableness_ct              0.011092   0.031303   0.354 0.723114    
-    ## real_conscientiousness_ct          0.090364   0.034806   2.596 0.009492 ** 
-    ## real_emotionstability_ct          -0.017717   0.034469  -0.514 0.607303    
-    ## real_openness_ct                   0.106994   0.033358   3.207 0.001359 ** 
-    ## tste_6_0_ct                        0.072917   0.064758   1.126 0.260293    
-    ## tste_6_1_ct                       -0.099044   0.063400  -1.562 0.118390    
-    ## tste_6_2_ct                        0.185330   0.053507   3.464 0.000544 ***
-    ## tste_6_3_ct                       -0.016265   0.066729  -0.244 0.807448    
-    ## tste_6_4_ct                       -0.006607   0.059140  -0.112 0.911055    
-    ## tste_6_5_ct                        0.085105   0.067500   1.261 0.207519    
-    ## release                           -0.023943   0.007337  -3.263 0.001119 ** 
-    ## gap_openness                      -0.029958   0.043274  -0.692 0.488825    
-    ## income                             0.004900   0.017185   0.285 0.775576    
-    ## gap_extraversion                  -0.009118   0.025666  -0.355 0.722425    
-    ## gap_agreeableness                  0.078793   0.033608   2.345 0.019146 *  
-    ## gap_emotionstability              -0.040954   0.031558  -1.298 0.194529    
-    ## age                               -0.012894   0.004596  -2.805 0.005072 ** 
-    ## sex2                              -0.100985   0.072318  -1.396 0.162743    
-    ## gap_conscientiousness              0.016467   0.039870   0.413 0.679636    
-    ## race4                             -0.223550   0.141307  -1.582 0.113799    
-    ## education                          0.006221   0.026551   0.234 0.814766    
-    ## race2                              0.087866   0.131453   0.668 0.503940    
-    ## star_user                         -0.045334   0.069637  -0.651 0.515115    
-    ## star_GS                            0.070855   0.054645   1.297 0.194892    
-    ## gap_extraversion.tste_6_0_ct       0.004144   0.032315   0.128 0.897961    
-    ## gap_agreeableness.tste_6_0_ct     -0.008659   0.044240  -0.196 0.844848    
-    ## gap_conscientiousness.tste_6_0_ct  0.016389   0.047603   0.344 0.730673    
-    ## gap_openness.tste_6_0_ct          -0.030868   0.050071  -0.616 0.537642    
-    ## gap_extraversion.tste_6_1_ct       0.031272   0.030198   1.036 0.300522    
-    ## gap_agreeableness.tste_6_1_ct     -0.017221   0.041414  -0.416 0.677580    
-    ## gap_conscientiousness.tste_6_1_ct -0.041997   0.046736  -0.899 0.368973    
-    ## gap_openness.tste_6_1_ct          -0.069129   0.044856  -1.541 0.123434    
-    ## gap_extraversion.tste_6_2_ct       0.029373   0.027378   1.073 0.283464    
-    ## gap_agreeableness.tste_6_2_ct      0.060987   0.037144   1.642 0.100763    
-    ## gap_conscientiousness.tste_6_2_ct -0.028196   0.038986  -0.723 0.469618    
-    ## gap_openness.tste_6_2_ct           0.017440   0.042055   0.415 0.678406    
-    ## gap_extraversion.tste_6_3_ct      -0.013054   0.032432  -0.403 0.687347    
-    ## gap_agreeableness.tste_6_3_ct      0.020882   0.044098   0.474 0.635877    
-    ## gap_conscientiousness.tste_6_3_ct  0.187189   0.050780   3.686 0.000233 ***
-    ## gap_openness.tste_6_3_ct           0.011054   0.050933   0.217 0.828206    
-    ## gap_extraversion.tste_6_4_ct       0.022777   0.029151   0.781 0.434690    
-    ## gap_agreeableness.tste_6_4_ct      0.081816   0.039687   2.062 0.039375 *  
-    ## gap_emotionstability.tste_6_4_ct  -0.100464   0.030623  -3.281 0.001052 ** 
-    ## gap_openness.tste_6_4_ct           0.053165   0.044996   1.182 0.237524    
-    ## gap_extraversion.tste_6_5_ct      -0.006184   0.030915  -0.200 0.841469    
-    ## gap_agreeableness.tste_6_5_ct     -0.029428   0.046210  -0.637 0.524307    
-    ## gap_conscientiousness.tste_6_5_ct  0.050795   0.049336   1.030 0.303331    
-    ## gap_emotionstability.tste_6_5_ct  -0.084195   0.038308  -2.198 0.028070 *  
-    ## gap_openness.tste_6_5_ct          -0.036084   0.051541  -0.700 0.483936    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.448 on 2087 degrees of freedom
-    ## Multiple R-squared:  0.09289,    Adjusted R-squared:  0.07116 
-    ## F-statistic: 4.274 on 50 and 2087 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.0243 -0.6952  0.2984  1.0470  2.7823 
-    ## 
-    ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       55.620596  15.233166   3.651 0.000267 ***
-    ## real_extraversion_ct               0.050163   0.025103   1.998 0.045814 *  
-    ## real_agreeableness_ct              0.013896   0.031383   0.443 0.657968    
-    ## real_conscientiousness_ct          0.091675   0.034857   2.630 0.008600 ** 
-    ## real_emotionstability_ct          -0.020687   0.034519  -0.599 0.549042    
-    ## real_openness_ct                   0.102257   0.033409   3.061 0.002236 ** 
-    ## tste_7_0_ct                       -0.198976   0.058845  -3.381 0.000735 ***
-    ## tste_7_1_ct                       -0.001461   0.065383  -0.022 0.982179    
-    ## tste_7_2_ct                       -0.062464   0.062754  -0.995 0.319665    
-    ## tste_7_3_ct                       -0.171476   0.048867  -3.509 0.000459 ***
-    ## tste_7_4_ct                       -0.007770   0.064799  -0.120 0.904570    
-    ## tste_7_5_ct                        0.014101   0.069595   0.203 0.839460    
-    ## tste_7_6_ct                        0.036071   0.073109   0.493 0.621792    
-    ## release                           -0.025014   0.007498  -3.336 0.000864 ***
-    ## gap_openness                      -0.035712   0.043427  -0.822 0.410980    
-    ## income                             0.005308   0.017221   0.308 0.757942    
-    ## gap_extraversion                  -0.006721   0.025786  -0.261 0.794388    
-    ## gap_agreeableness                  0.078186   0.033674   2.322 0.020338 *  
-    ## gap_emotionstability              -0.039090   0.031651  -1.235 0.216959    
-    ## age                               -0.013218   0.004609  -2.868 0.004170 ** 
-    ## sex2                              -0.104384   0.072516  -1.439 0.150171    
-    ## gap_conscientiousness              0.014051   0.039927   0.352 0.724938    
-    ## race4                             -0.223531   0.141983  -1.574 0.115558    
-    ## education                          0.010029   0.026629   0.377 0.706508    
-    ## race2                              0.100949   0.131667   0.767 0.443348    
-    ## star_user                         -0.017384   0.070705  -0.246 0.805806    
-    ## gap_extraversion.tste_7_0_ct       0.015540   0.028973   0.536 0.591752    
-    ## gap_agreeableness.tste_7_0_ct      0.016466   0.039277   0.419 0.675099    
-    ## gap_conscientiousness.tste_7_0_ct -0.009910   0.044841  -0.221 0.825118    
-    ## gap_openness.tste_7_0_ct          -0.017280   0.045290  -0.382 0.702843    
-    ## gap_extraversion.tste_7_1_ct      -0.028220   0.032496  -0.868 0.385261    
-    ## gap_agreeableness.tste_7_1_ct      0.087324   0.047873   1.824 0.068288 .  
-    ## gap_conscientiousness.tste_7_1_ct  0.013337   0.054647   0.244 0.807209    
-    ## gap_emotionstability.tste_7_1_ct   0.001399   0.039062   0.036 0.971424    
-    ## gap_openness.tste_7_1_ct           0.066222   0.053534   1.237 0.216231    
-    ## star_GS                            0.065879   0.053055   1.242 0.214481    
-    ## gap_extraversion.tste_7_2_ct      -0.055210   0.030481  -1.811 0.070241 .  
-    ## gap_agreeableness.tste_7_2_ct     -0.045421   0.040742  -1.115 0.265052    
-    ## gap_conscientiousness.tste_7_2_ct -0.031919   0.046469  -0.687 0.492224    
-    ## gap_openness.tste_7_2_ct          -0.026510   0.046639  -0.568 0.569819    
-    ## gap_extraversion.tste_7_3_ct      -0.001973   0.024337  -0.081 0.935388    
-    ## gap_agreeableness.tste_7_3_ct     -0.047839   0.032291  -1.481 0.138631    
-    ## gap_conscientiousness.tste_7_3_ct -0.005326   0.036734  -0.145 0.884733    
-    ## gap_openness.tste_7_3_ct          -0.026982   0.037273  -0.724 0.469207    
-    ## gap_extraversion.tste_7_4_ct      -0.017432   0.031540  -0.553 0.580532    
-    ## gap_agreeableness.tste_7_4_ct      0.031707   0.043110   0.735 0.462130    
-    ## gap_conscientiousness.tste_7_4_ct -0.076030   0.050524  -1.505 0.132523    
-    ## gap_openness.tste_7_4_ct           0.060976   0.047317   1.289 0.197659    
-    ## gap_extraversion.tste_7_5_ct      -0.028759   0.033178  -0.867 0.386142    
-    ## gap_agreeableness.tste_7_5_ct     -0.009309   0.046635  -0.200 0.841795    
-    ## gap_conscientiousness.tste_7_5_ct  0.185490   0.050900   3.644 0.000275 ***
-    ## gap_openness.tste_7_5_ct           0.041632   0.050922   0.818 0.413701    
-    ## gap_extraversion.tste_7_6_ct      -0.023796   0.034189  -0.696 0.486501    
-    ## gap_agreeableness.tste_7_6_ct      0.008371   0.045301   0.185 0.853422    
-    ## gap_conscientiousness.tste_7_6_ct  0.135544   0.051935   2.610 0.009122 ** 
-    ## gap_openness.tste_7_6_ct           0.009043   0.052740   0.171 0.863881    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.449 on 2082 degrees of freedom
-    ## Multiple R-squared:  0.09302,    Adjusted R-squared:  0.06906 
-    ## F-statistic: 3.882 on 55 and 2082 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.2279 -0.6784  0.2657  1.0183  3.2005 
+    ## -5.0579 -0.6823  0.3050  1.0510  2.6985 
     ## 
     ## Coefficients:
     ##                                     Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       61.1358795 15.9185099   3.841 0.000126 ***
-    ## real_extraversion_ct               0.0517367  0.0250219   2.068 0.038796 *  
-    ## real_agreeableness_ct              0.0151703  0.0312341   0.486 0.627234    
-    ## real_conscientiousness_ct          0.0857748  0.0347046   2.472 0.013532 *  
-    ## real_emotionstability_ct          -0.0289087  0.0344359  -0.839 0.401290    
-    ## real_openness_ct                   0.0987560  0.0332469   2.970 0.003008 ** 
-    ## tste_8_0_ct                       -0.1954059  0.0645505  -3.027 0.002499 ** 
-    ## tste_8_1_ct                        0.1655110  0.0720958   2.296 0.021792 *  
-    ## tste_8_2_ct                        0.0969499  0.0619044   1.566 0.117472    
-    ## tste_8_3_ct                        0.0651714  0.0595502   1.094 0.273909    
-    ## tste_8_4_ct                        0.0941547  0.0635293   1.482 0.138474    
-    ## tste_8_5_ct                        0.0597760  0.0612149   0.976 0.328933    
-    ## tste_8_6_ct                       -0.1765568  0.0638150  -2.767 0.005713 ** 
-    ## tste_8_7_ct                        0.0026344  0.0655260   0.040 0.967934    
-    ## release                           -0.0276382  0.0078348  -3.528 0.000428 ***
-    ## gap_openness                      -0.0457441  0.0431848  -1.059 0.289603    
-    ## gap_emotionstability.tste_8_1_ct  -0.1605277  0.0422770  -3.797 0.000151 ***
-    ## income                             0.0044340  0.0171541   0.258 0.796060    
-    ## gap_extraversion                  -0.0064298  0.0256306  -0.251 0.801945    
-    ## gap_agreeableness                  0.0777471  0.0335939   2.314 0.020747 *  
-    ## gap_emotionstability              -0.0467642  0.0314900  -1.485 0.137683    
-    ## age                               -0.0136128  0.0045856  -2.969 0.003026 ** 
-    ## sex2                              -0.1034846  0.0720893  -1.436 0.151294    
-    ## gap_conscientiousness              0.0102424  0.0397833   0.257 0.796853    
-    ## race4                             -0.1995575  0.1408664  -1.417 0.156737    
-    ## education                          0.0077933  0.0264897   0.294 0.768633    
-    ## race2                              0.0998988  0.1311595   0.762 0.446350    
-    ## star_user                         -0.0721523  0.0709353  -1.017 0.309198    
-    ## gap_extraversion.tste_8_0_ct       0.0548744  0.0319625   1.717 0.086158 .  
-    ## gap_agreeableness.tste_8_0_ct     -0.0570266  0.0435438  -1.310 0.190463    
-    ## gap_openness.tste_8_0_ct          -0.1059058  0.0509410  -2.079 0.037741 *  
-    ## star_GS                            0.0944772  0.0550550   1.716 0.086302 .  
-    ## gap_extraversion.tste_8_1_ct      -0.0098239  0.0353476  -0.278 0.781099    
-    ## gap_agreeableness.tste_8_1_ct      0.0401734  0.0488054   0.823 0.410526    
-    ## gap_conscientiousness.tste_8_1_ct  0.0317537  0.0573514   0.554 0.579865    
-    ## gap_openness.tste_8_1_ct          -0.0352089  0.0544537  -0.647 0.517972    
-    ## gap_extraversion.tste_8_2_ct       0.0301888  0.0289808   1.042 0.297679    
-    ## gap_agreeableness.tste_8_2_ct      0.0059336  0.0407612   0.146 0.884275    
-    ## gap_conscientiousness.tste_8_2_ct -0.0431733  0.0439938  -0.981 0.326534    
-    ## gap_openness.tste_8_2_ct          -0.0694409  0.0449173  -1.546 0.122264    
-    ## gap_extraversion.tste_8_3_ct       0.0086842  0.0301424   0.288 0.773293    
-    ## gap_agreeableness.tste_8_3_ct      0.0456244  0.0397770   1.147 0.251511    
-    ## gap_conscientiousness.tste_8_3_ct -0.1255335  0.0459883  -2.730 0.006393 ** 
-    ## gap_openness.tste_8_3_ct           0.0284988  0.0464988   0.613 0.540014    
-    ## gap_extraversion.tste_8_4_ct       0.0279182  0.0313948   0.889 0.373966    
-    ## gap_agreeableness.tste_8_4_ct     -0.0004573  0.0434831  -0.011 0.991610    
-    ## gap_conscientiousness.tste_8_4_ct  0.0573939  0.0465827   1.232 0.218056    
-    ## gap_openness.tste_8_4_ct           0.0046641  0.0477272   0.098 0.922161    
-    ## gap_extraversion.tste_8_5_ct       0.0167053  0.0281403   0.594 0.552816    
-    ## gap_agreeableness.tste_8_5_ct      0.0144604  0.0390216   0.371 0.710993    
-    ## gap_conscientiousness.tste_8_5_ct  0.0564640  0.0434236   1.300 0.193639    
-    ## gap_openness.tste_8_5_ct           0.0017127  0.0432459   0.040 0.968413    
-    ## gap_extraversion.tste_8_6_ct       0.0687065  0.0315854   2.175 0.029723 *  
-    ## gap_agreeableness.tste_8_6_ct      0.0444302  0.0448900   0.990 0.322409    
-    ## gap_conscientiousness.tste_8_6_ct -0.0943578  0.0497725  -1.896 0.058128 .  
-    ## gap_emotionstability.tste_8_6_ct  -0.0170792  0.0336490  -0.508 0.611809    
-    ## gap_openness.tste_8_6_ct          -0.0569277  0.0512210  -1.111 0.266519    
-    ## gap_extraversion.tste_8_7_ct      -0.0099332  0.0311658  -0.319 0.749971    
-    ## gap_agreeableness.tste_8_7_ct     -0.0694500  0.0430116  -1.615 0.106531    
-    ## gap_conscientiousness.tste_8_7_ct  0.0364459  0.0509127   0.716 0.474164    
-    ## gap_openness.tste_8_7_ct          -0.0725805  0.0499950  -1.452 0.146720    
+    ## (Intercept)                       64.7012849 14.4245355   4.486 7.67e-06 ***
+    ## real_extraversion_ct               0.0548406  0.0248785   2.204 0.027609 *  
+    ## real_agreeableness_ct              0.0137883  0.0311853   0.442 0.658432    
+    ## real_conscientiousness_ct          0.0884328  0.0346044   2.556 0.010673 *  
+    ## real_emotionstability_ct          -0.0275359  0.0343513  -0.802 0.422878    
+    ## real_openness_ct                   0.0925619  0.0330079   2.804 0.005090 ** 
+    ## gap_extraversion                  -0.0006042  0.0259609  -0.023 0.981434    
+    ## gap_agreeableness                  0.0697224  0.0336829   2.070 0.038578 *  
+    ## gap_conscientiousness              0.0041448  0.0398114   0.104 0.917091    
+    ## gap_emotionstability              -0.0446903  0.0316589  -1.412 0.158210    
+    ## gap_openness                      -0.0516476  0.0429859  -1.202 0.229693    
+    ## tste_4_0_ct                        0.1951085  0.0607642   3.211 0.001343 ** 
+    ## tste_4_1_ct                        0.0467801  0.0694680   0.673 0.500764    
+    ## tste_4_2_ct                        0.0172666  0.0513801   0.336 0.736862    
+    ## tste_4_3_ct                       -0.2023982  0.0483080  -4.190 2.91e-05 ***
+    ## release                           -0.0294685  0.0070905  -4.156 3.37e-05 ***
+    ## education                          0.0093766  0.0264600   0.354 0.723099    
+    ## income                             0.0073805  0.0171376   0.431 0.666758    
+    ## age                               -0.0139018  0.0045666  -3.044 0.002362 ** 
+    ## sex2                              -0.0691085  0.0722509  -0.957 0.338926    
+    ## race4                             -0.2278088  0.1406140  -1.620 0.105361    
+    ## gap_extraversion.tste_4_2_ct       0.0435545  0.0262312   1.660 0.096982 .  
+    ## race6                             -1.1061044  0.3522868  -3.140 0.001714 ** 
+    ## race7                             -0.1618740  0.1357233  -1.193 0.233131    
+    ## gap_emotionstability.tste_4_2_ct   0.1122660  0.0333525   3.366 0.000776 ***
+    ## gap_conscientiousness.tste_4_1_ct  0.0602096  0.0506803   1.188 0.234957    
+    ## star_GS                            0.0839097  0.0525789   1.596 0.110666    
+    ## gap_extraversion.tste_4_0_ct       0.0156893  0.0313113   0.501 0.616373    
+    ## gap_agreeableness.tste_4_0_ct      0.0592369  0.0421871   1.404 0.160423    
+    ## gap_conscientiousness.tste_4_0_ct -0.0125600  0.0472056  -0.266 0.790211    
+    ## gap_openness.tste_4_0_ct           0.0695275  0.0481975   1.443 0.149295    
+    ## star_user                         -0.0486602  0.0644550  -0.755 0.450365    
+    ## gap_extraversion.tste_4_1_ct      -0.0704767  0.0325760  -2.163 0.030619 *  
+    ## gap_agreeableness.tste_4_1_ct      0.0695099  0.0450534   1.543 0.123022    
+    ## gap_openness.tste_4_1_ct           0.0671299  0.0483549   1.388 0.165201    
+    ## gap_agreeableness.tste_4_2_ct      0.0167671  0.0369951   0.453 0.650433    
+    ## gap_conscientiousness.tste_4_2_ct  0.0227699  0.0414051   0.550 0.582425    
+    ## gap_openness.tste_4_2_ct           0.0346465  0.0416181   0.832 0.405230    
+    ## gap_extraversion.tste_4_3_ct      -0.0167019  0.0224904  -0.743 0.457793    
+    ## gap_agreeableness.tste_4_3_ct      0.0523520  0.0304103   1.722 0.085304 .  
+    ## gap_conscientiousness.tste_4_3_ct  0.0214075  0.0358658   0.597 0.550654    
+    ## gap_emotionstability.tste_4_3_ct  -0.0446282  0.0259732  -1.718 0.085901 .  
+    ## gap_openness.tste_4_3_ct           0.0227681  0.0354122   0.643 0.520329    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.442 on 2077 degrees of freedom
-    ## Multiple R-squared:  0.1047, Adjusted R-squared:  0.07879 
-    ## F-statistic: 4.046 on 60 and 2077 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.444 on 2095 degrees of freedom
+    ## Multiple R-squared:  0.09355,    Adjusted R-squared:  0.07537 
+    ## F-statistic: 5.148 on 42 and 2095 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5466,167 +5208,64 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1339 -0.6852  0.3024  1.0101  2.9098 
-    ## 
-    ## Coefficients:
-    ##                                    Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                       62.833947  16.078452   3.908 9.61e-05 ***
-    ## real_extraversion_ct               0.056017   0.025051   2.236 0.025453 *  
-    ## real_agreeableness_ct              0.009963   0.031216   0.319 0.749642    
-    ## real_conscientiousness_ct          0.091436   0.034742   2.632 0.008554 ** 
-    ## real_emotionstability_ct          -0.023035   0.034415  -0.669 0.503358    
-    ## real_openness_ct                   0.091229   0.033303   2.739 0.006209 ** 
-    ## tste_9_0_ct                       -0.152430   0.067386  -2.262 0.023798 *  
-    ## tste_9_1_ct                       -0.035389   0.061423  -0.576 0.564572    
-    ## tste_9_2_ct                       -0.330734   0.064575  -5.122 3.31e-07 ***
-    ## tste_9_3_ct                       -0.096171   0.070779  -1.359 0.174372    
-    ## tste_9_4_ct                        0.027221   0.055100   0.494 0.621339    
-    ## tste_9_5_ct                        0.057847   0.071681   0.807 0.419756    
-    ## tste_9_6_ct                        0.025803   0.064368   0.401 0.688554    
-    ## tste_9_7_ct                       -0.031494   0.066009  -0.477 0.633337    
-    ## tste_9_8_ct                        0.043158   0.059183   0.729 0.465942    
-    ## release                           -0.028605   0.007904  -3.619 0.000303 ***
-    ## gap_openness                      -0.046339   0.043339  -1.069 0.285090    
-    ## gap_extraversion.tste_9_2_ct       0.006748   0.031187   0.216 0.828732    
-    ## income                             0.007477   0.017181   0.435 0.663484    
-    ## gap_extraversion                  -0.002564   0.025679  -0.100 0.920465    
-    ## gap_agreeableness                  0.074579   0.033625   2.218 0.026663 *  
-    ## gap_emotionstability              -0.044227   0.031579  -1.401 0.161512    
-    ## age                               -0.013192   0.004593  -2.872 0.004117 ** 
-    ## sex2                              -0.092647   0.072178  -1.284 0.199431    
-    ## gap_conscientiousness              0.020752   0.040006   0.519 0.604011    
-    ## race4                             -0.172828   0.141586  -1.221 0.222354    
-    ## education                          0.005916   0.026513   0.223 0.823438    
-    ## race2                              0.105068   0.131167   0.801 0.423207    
-    ## star_user                         -0.085082   0.071620  -1.188 0.234982    
-    ## gap_extraversion.tste_9_0_ct      -0.006208   0.033113  -0.187 0.851312    
-    ## gap_agreeableness.tste_9_0_ct      0.051175   0.049629   1.031 0.302588    
-    ## gap_conscientiousness.tste_9_0_ct  0.016847   0.054075   0.312 0.755411    
-    ## gap_emotionstability.tste_9_0_ct   0.061838   0.040966   1.509 0.131328    
-    ## gap_openness.tste_9_0_ct           0.001779   0.055346   0.032 0.974356    
-    ## star_GS                            0.132971   0.056104   2.370 0.017874 *  
-    ## gap_extraversion.tste_9_1_ct       0.037699   0.031304   1.204 0.228619    
-    ## gap_agreeableness.tste_9_1_ct      0.045819   0.041080   1.115 0.264835    
-    ## gap_openness.tste_9_1_ct           0.038247   0.047902   0.798 0.424710    
-    ## gap_agreeableness.tste_9_2_ct     -0.008296   0.041961  -0.198 0.843289    
-    ## gap_conscientiousness.tste_9_2_ct -0.047525   0.047307  -1.005 0.315200    
-    ## gap_openness.tste_9_2_ct          -0.058180   0.048122  -1.209 0.226794    
-    ## gap_extraversion.tste_9_3_ct       0.077208   0.032563   2.371 0.017828 *  
-    ## gap_agreeableness.tste_9_3_ct     -0.012030   0.045777  -0.263 0.792743    
-    ## gap_conscientiousness.tste_9_3_ct -0.005884   0.053343  -0.110 0.912181    
-    ## gap_openness.tste_9_3_ct          -0.075191   0.050854  -1.479 0.139407    
-    ## gap_extraversion.tste_9_4_ct      -0.016740   0.026071  -0.642 0.520885    
-    ## gap_agreeableness.tste_9_4_ct     -0.051811   0.036165  -1.433 0.152116    
-    ## gap_conscientiousness.tste_9_4_ct  0.005490   0.040093   0.137 0.891094    
-    ## gap_openness.tste_9_4_ct          -0.000978   0.041399  -0.024 0.981155    
-    ## gap_extraversion.tste_9_5_ct      -0.027262   0.034481  -0.791 0.429237    
-    ## gap_agreeableness.tste_9_5_ct     -0.009658   0.047610  -0.203 0.839260    
-    ## gap_conscientiousness.tste_9_5_ct -0.126629   0.055241  -2.292 0.021989 *  
-    ## gap_openness.tste_9_5_ct           0.056506   0.054331   1.040 0.298454    
-    ## gap_extraversion.tste_9_6_ct      -0.014355   0.030933  -0.464 0.642640    
-    ## gap_agreeableness.tste_9_6_ct     -0.074514   0.040367  -1.846 0.065043 .  
-    ## gap_openness.tste_9_6_ct           0.019026   0.047375   0.402 0.688021    
-    ## gap_extraversion.tste_9_7_ct       0.015757   0.033365   0.472 0.636790    
-    ## gap_agreeableness.tste_9_7_ct     -0.042280   0.045364  -0.932 0.351432    
-    ## gap_conscientiousness.tste_9_7_ct -0.039356   0.050655  -0.777 0.437287    
-    ## gap_openness.tste_9_7_ct          -0.072512   0.049572  -1.463 0.143682    
-    ## gap_extraversion.tste_9_8_ct      -0.013329   0.028351  -0.470 0.638318    
-    ## gap_agreeableness.tste_9_8_ct      0.039473   0.038908   1.015 0.310452    
-    ## gap_conscientiousness.tste_9_8_ct  0.080189   0.041043   1.954 0.050864 .  
-    ## gap_emotionstability.tste_9_8_ct  -0.091728   0.030900  -2.969 0.003027 ** 
-    ## gap_openness.tste_9_8_ct           0.006519   0.044055   0.148 0.882374    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.442 on 2073 degrees of freedom
-    ## Multiple R-squared:  0.1062, Adjusted R-squared:  0.07863 
-    ## F-statistic:  3.85 on 64 and 2073 DF,  p-value: < 2.2e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.1232 -0.6900  0.2961  1.0106  3.1948 
+    ## -5.1225 -0.6860  0.3013  1.0331  3.0707 
     ## 
     ## Coefficients:
     ##                                     Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                        63.661251  15.889641   4.006 6.38e-05 ***
-    ## real_extraversion_ct                0.055875   0.025034   2.232 0.025722 *  
-    ## real_agreeableness_ct               0.009270   0.031342   0.296 0.767432    
-    ## real_conscientiousness_ct           0.085899   0.034709   2.475 0.013409 *  
-    ## real_emotionstability_ct           -0.026065   0.034399  -0.758 0.448699    
-    ## real_openness_ct                    0.087488   0.033257   2.631 0.008586 ** 
-    ## tste_10_0_ct                       -0.005437   0.057554  -0.094 0.924749    
-    ## tste_10_1_ct                        0.217288   0.063069   3.445 0.000582 ***
-    ## tste_10_2_ct                       -0.244028   0.066843  -3.651 0.000268 ***
-    ## tste_10_3_ct                       -0.152689   0.067475  -2.263 0.023746 *  
-    ## tste_10_4_ct                       -0.043575   0.066815  -0.652 0.514359    
-    ## tste_10_5_ct                       -0.038815   0.065180  -0.596 0.551574    
-    ## tste_10_6_ct                       -0.119828   0.065670  -1.825 0.068189 .  
-    ## tste_10_7_ct                        0.031748   0.056199   0.565 0.572198    
-    ## tste_10_8_ct                        0.046823   0.073374   0.638 0.523453    
-    ## tste_10_9_ct                        0.098819   0.062303   1.586 0.112870    
-    ## release                            -0.029101   0.007825  -3.719 0.000205 ***
-    ## gap_openness                       -0.050425   0.043285  -1.165 0.244168    
-    ## income                              0.005417   0.017176   0.315 0.752503    
-    ## gap_extraversion                   -0.004424   0.025772  -0.172 0.863732    
-    ## gap_agreeableness                   0.071806   0.033715   2.130 0.033308 *  
-    ## gap_emotionstability               -0.046084   0.031556  -1.460 0.144329    
-    ## age                                -0.013394   0.004590  -2.918 0.003559 ** 
-    ## sex2                               -0.092410   0.072226  -1.279 0.200876    
-    ## gap_conscientiousness               0.015147   0.039804   0.381 0.703574    
-    ## race4                              -0.188592   0.141615  -1.332 0.183099    
-    ## education                           0.003286   0.026486   0.124 0.901260    
-    ## race2                               0.120897   0.131364   0.920 0.357510    
-    ## star_user                          -0.053138   0.070885  -0.750 0.453561    
-    ## star_GS                             0.125202   0.056032   2.234 0.025557 *  
-    ## gap_extraversion.tste_10_0_ct       0.014639   0.028274   0.518 0.604683    
-    ## gap_agreeableness.tste_10_0_ct     -0.075110   0.038612  -1.945 0.051877 .  
-    ## gap_conscientiousness.tste_10_0_ct  0.029933   0.044773   0.669 0.503865    
-    ## gap_emotionstability.tste_10_0_ct   0.077946   0.029803   2.615 0.008977 ** 
-    ## gap_openness.tste_10_0_ct          -0.041605   0.043949  -0.947 0.343923    
-    ## gap_extraversion.tste_10_1_ct      -0.023062   0.030554  -0.755 0.450455    
-    ## gap_agreeableness.tste_10_1_ct     -0.029150   0.041631  -0.700 0.483884    
-    ## gap_conscientiousness.tste_10_1_ct  0.056474   0.049018   1.152 0.249408    
-    ## gap_openness.tste_10_1_ct           0.025198   0.048617   0.518 0.604301    
-    ## gap_extraversion.tste_10_2_ct       0.057547   0.033921   1.697 0.089938 .  
-    ## gap_agreeableness.tste_10_2_ct      0.025455   0.045473   0.560 0.575679    
-    ## gap_openness.tste_10_2_ct          -0.075406   0.051117  -1.475 0.140317    
-    ## gap_extraversion.tste_10_3_ct      -0.056647   0.033063  -1.713 0.086805 .  
-    ## gap_agreeableness.tste_10_3_ct      0.077330   0.044504   1.738 0.082429 .  
-    ## gap_conscientiousness.tste_10_3_ct  0.039754   0.050245   0.791 0.428913    
-    ## gap_openness.tste_10_3_ct           0.017479   0.052272   0.334 0.738122    
-    ## gap_extraversion.tste_10_4_ct       0.007854   0.032546   0.241 0.809333    
-    ## gap_agreeableness.tste_10_4_ct     -0.036735   0.044401  -0.827 0.408133    
-    ## gap_conscientiousness.tste_10_4_ct  0.006289   0.050539   0.124 0.900986    
-    ## gap_openness.tste_10_4_ct           0.005146   0.052142   0.099 0.921398    
-    ## gap_extraversion.tste_10_5_ct      -0.006206   0.032004  -0.194 0.846258    
-    ## gap_agreeableness.tste_10_5_ct      0.034197   0.043121   0.793 0.427842    
-    ## gap_openness.tste_10_5_ct           0.025945   0.049489   0.524 0.600156    
-    ## gap_extraversion.tste_10_6_ct       0.046027   0.030430   1.513 0.130546    
-    ## gap_agreeableness.tste_10_6_ct     -0.016708   0.043063  -0.388 0.698058    
-    ## gap_conscientiousness.tste_10_6_ct -0.123430   0.046008  -2.683 0.007359 ** 
-    ## gap_openness.tste_10_6_ct          -0.087789   0.046328  -1.895 0.058239 .  
-    ## gap_extraversion.tste_10_7_ct       0.056895   0.028116   2.024 0.043144 *  
-    ## gap_agreeableness.tste_10_7_ct      0.062253   0.040630   1.532 0.125630    
-    ## gap_emotionstability.tste_10_7_ct   0.051587   0.033030   1.562 0.118487    
-    ## gap_openness.tste_10_7_ct           0.002762   0.045506   0.061 0.951606    
-    ## gap_extraversion.tste_10_8_ct      -0.013602   0.034961  -0.389 0.697276    
-    ## gap_agreeableness.tste_10_8_ct      0.003450   0.046560   0.074 0.940947    
-    ## gap_conscientiousness.tste_10_8_ct -0.152525   0.053199  -2.867 0.004185 ** 
-    ## gap_openness.tste_10_8_ct           0.043694   0.054477   0.802 0.422609    
-    ## gap_extraversion.tste_10_9_ct       0.025405   0.032231   0.788 0.430659    
-    ## gap_agreeableness.tste_10_9_ct      0.050602   0.044309   1.142 0.253576    
-    ## gap_conscientiousness.tste_10_9_ct -0.084146   0.048166  -1.747 0.080785 .  
-    ## gap_openness.tste_10_9_ct           0.022178   0.050160   0.442 0.658424    
+    ## (Intercept)                        5.336e+01  1.473e+01   3.623 0.000299 ***
+    ## real_extraversion_ct               5.730e-02  2.491e-02   2.300 0.021541 *  
+    ## real_agreeableness_ct              1.211e-02  3.121e-02   0.388 0.697953    
+    ## real_conscientiousness_ct          9.008e-02  3.472e-02   2.594 0.009551 ** 
+    ## real_emotionstability_ct          -2.348e-02  3.440e-02  -0.683 0.494872    
+    ## real_openness_ct                   9.474e-02  3.307e-02   2.865 0.004209 ** 
+    ## gap_extraversion                   1.174e-05  2.600e-02   0.000 0.999640    
+    ## gap_agreeableness                  7.037e-02  3.383e-02   2.080 0.037650 *  
+    ## gap_conscientiousness              6.431e-03  4.000e-02   0.161 0.872311    
+    ## gap_emotionstability              -4.521e-02  3.171e-02  -1.426 0.154045    
+    ## gap_openness                      -4.545e-02  4.318e-02  -1.053 0.292610    
+    ## tste_5_0_ct                        1.566e-01  5.754e-02   2.721 0.006563 ** 
+    ## tste_5_1_ct                       -1.709e-01  6.520e-02  -2.621 0.008826 ** 
+    ## tste_5_2_ct                       -8.347e-02  5.086e-02  -1.641 0.100902    
+    ## tste_5_3_ct                       -6.150e-02  6.265e-02  -0.982 0.326425    
+    ## tste_5_4_ct                        4.154e-02  6.354e-02   0.654 0.513364    
+    ## release                           -2.382e-02  7.240e-03  -3.290 0.001017 ** 
+    ## gap_extraversion.tste_5_0_ct       5.417e-02  3.022e-02   1.793 0.073170 .  
+    ## education                          1.168e-02  2.649e-02   0.441 0.659158    
+    ## income                             7.584e-03  1.716e-02   0.442 0.658594    
+    ## age                               -1.410e-02  4.573e-03  -3.084 0.002067 ** 
+    ## sex2                              -8.607e-02  7.235e-02  -1.190 0.234330    
+    ## race4                             -2.489e-01  1.407e-01  -1.768 0.077167 .  
+    ## race6                             -1.083e+00  3.522e-01  -3.077 0.002122 ** 
+    ## race7                             -1.667e-01  1.359e-01  -1.226 0.220282    
+    ## gap_emotionstability.tste_5_0_ct   9.584e-02  3.694e-02   2.595 0.009538 ** 
+    ## gap_conscientiousness.tste_5_3_ct  8.786e-03  4.984e-02   0.176 0.860077    
+    ## gap_extraversion.tste_5_1_ct       1.919e-02  3.241e-02   0.592 0.553688    
+    ## gap_agreeableness.tste_5_0_ct      4.334e-02  4.313e-02   1.005 0.315153    
+    ## gap_conscientiousness.tste_5_0_ct  1.899e-02  4.661e-02   0.407 0.683816    
+    ## gap_openness.tste_5_0_ct           5.820e-02  4.746e-02   1.226 0.220258    
+    ## star_user                         -2.408e-02  6.701e-02  -0.359 0.719412    
+    ## gap_agreeableness.tste_5_1_ct      2.630e-02  4.289e-02   0.613 0.539767    
+    ## gap_conscientiousness.tste_5_1_ct -1.510e-01  5.034e-02  -3.000 0.002732 ** 
+    ## gap_openness.tste_5_1_ct           1.174e-02  4.930e-02   0.238 0.811764    
+    ## star_GS                            6.072e-02  5.351e-02   1.135 0.256646    
+    ## gap_extraversion.tste_5_2_ct      -9.938e-03  2.385e-02  -0.417 0.677005    
+    ## gap_agreeableness.tste_5_2_ct      4.723e-02  3.321e-02   1.422 0.155204    
+    ## gap_conscientiousness.tste_5_2_ct  8.674e-02  3.789e-02   2.289 0.022169 *  
+    ## gap_emotionstability.tste_5_2_ct  -4.824e-02  2.724e-02  -1.771 0.076721 .  
+    ## gap_openness.tste_5_2_ct           3.412e-02  3.849e-02   0.886 0.375454    
+    ## gap_extraversion.tste_5_3_ct       3.848e-02  3.074e-02   1.252 0.210713    
+    ## gap_agreeableness.tste_5_3_ct     -5.874e-02  4.248e-02  -1.383 0.166919    
+    ## gap_openness.tste_5_3_ct          -8.753e-02  4.656e-02  -1.880 0.060257 .  
+    ## gap_extraversion.tste_5_4_ct       3.467e-02  2.832e-02   1.224 0.221109    
+    ## gap_agreeableness.tste_5_4_ct     -6.723e-03  3.826e-02  -0.176 0.860537    
+    ## gap_conscientiousness.tste_5_4_ct -5.473e-02  4.180e-02  -1.309 0.190622    
+    ## gap_openness.tste_5_4_ct          -3.810e-03  4.319e-02  -0.088 0.929709    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.439 on 2069 degrees of freedom
-    ## Multiple R-squared:  0.1111, Adjusted R-squared:  0.08189 
-    ## F-statistic: 3.803 on 68 and 2069 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2090 degrees of freedom
+    ## Multiple R-squared:  0.09454,    Adjusted R-squared:  0.07418 
+    ## F-statistic: 4.643 on 47 and 2090 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5634,94 +5273,69 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.0577 -0.6844  0.2905  1.0288  3.3179 
+    ## -5.1711 -0.6790  0.3059  1.0297  3.2272 
     ## 
     ## Coefficients:
-    ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         65.9927482 16.1173360   4.095 4.39e-05 ***
-    ## real_extraversion_ct                 0.0563613  0.0250226   2.252 0.024401 *  
-    ## real_agreeableness_ct                0.0108773  0.0313528   0.347 0.728678    
-    ## real_conscientiousness_ct            0.0821900  0.0347307   2.366 0.018049 *  
-    ## real_emotionstability_ct            -0.0288843  0.0344541  -0.838 0.401936    
-    ## real_openness_ct                     0.0828134  0.0333254   2.485 0.013034 *  
-    ## tste_11_0_ct                        -0.0927246  0.0700576  -1.324 0.185800    
-    ## tste_11_1_ct                         0.0135657  0.0656660   0.207 0.836353    
-    ## tste_11_2_ct                        -0.1057714  0.0579853  -1.824 0.068281 .  
-    ## tste_11_3_ct                        -0.0158806  0.0706850  -0.225 0.822260    
-    ## tste_11_4_ct                        -0.0981597  0.0716534  -1.370 0.170860    
-    ## tste_11_5_ct                        -0.1153533  0.0631777  -1.826 0.068017 .  
-    ## tste_11_6_ct                         0.1462384  0.0605283   2.416 0.015777 *  
-    ## tste_11_7_ct                         0.0779860  0.0708252   1.101 0.270979    
-    ## tste_11_8_ct                        -0.2315388  0.0532891  -4.345 1.46e-05 ***
-    ## tste_11_9_ct                         0.1482831  0.0627760   2.362 0.018264 *  
-    ## tste_11_10_ct                        0.0572926  0.0664608   0.862 0.388760    
-    ## release                             -0.0303414  0.0079366  -3.823 0.000136 ***
-    ## gap_openness                        -0.0570139  0.0434243  -1.313 0.189347    
-    ## income                               0.0074149  0.0172044   0.431 0.666520    
-    ## gap_extraversion                    -0.0022840  0.0257254  -0.089 0.929262    
-    ## gap_agreeableness                    0.0700266  0.0336564   2.081 0.037591 *  
-    ## gap_emotionstability                -0.0467478  0.0315922  -1.480 0.139100    
-    ## age                                 -0.0134037  0.0045955  -2.917 0.003576 ** 
-    ## sex2                                -0.0868119  0.0723895  -1.199 0.230575    
-    ## gap_conscientiousness                0.0064745  0.0398455   0.162 0.870936    
-    ## race4                               -0.1926370  0.1417982  -1.359 0.174445    
-    ## education                            0.0075804  0.0265646   0.285 0.775399    
-    ## race2                                0.1286143  0.1314140   0.979 0.327845    
-    ## star_user                           -0.0659756  0.0725584  -0.909 0.363310    
-    ## gap_extraversion.tste_11_0_ct        0.0386953  0.0353626   1.094 0.273975    
-    ## gap_agreeableness.tste_11_0_ct       0.0076783  0.0471575   0.163 0.870674    
-    ## gap_conscientiousness.tste_11_0_ct  -0.1411787  0.0535988  -2.634 0.008502 ** 
-    ## gap_openness.tste_11_0_ct            0.0438138  0.0539062   0.813 0.416440    
-    ## star_GS                              0.1536180  0.0576518   2.665 0.007769 ** 
-    ## gap_extraversion.tste_11_1_ct        0.0409932  0.0311847   1.315 0.188815    
-    ## gap_agreeableness.tste_11_1_ct       0.0263636  0.0418700   0.630 0.528991    
-    ## gap_conscientiousness.tste_11_1_ct  -0.0093728  0.0492504  -0.190 0.849085    
-    ## gap_openness.tste_11_1_ct           -0.0176736  0.0489946  -0.361 0.718341    
-    ## gap_extraversion.tste_11_2_ct        0.0622741  0.0283682   2.195 0.028260 *  
-    ## gap_agreeableness.tste_11_2_ct       0.0228335  0.0401794   0.568 0.569900    
-    ## gap_conscientiousness.tste_11_2_ct  -0.0036446  0.0448872  -0.081 0.935294    
-    ## gap_emotionstability.tste_11_2_ct    0.0785779  0.0349211   2.250 0.024544 *  
-    ## gap_openness.tste_11_2_ct           -0.0668993  0.0462371  -1.447 0.148084    
-    ## gap_extraversion.tste_11_3_ct        0.0204606  0.0348490   0.587 0.557187    
-    ## gap_agreeableness.tste_11_3_ct       0.0336704  0.0476485   0.707 0.479870    
-    ## gap_conscientiousness.tste_11_3_ct  -0.0237307  0.0547262  -0.434 0.664606    
-    ## gap_emotionstability.tste_11_3_ct    0.0970949  0.0437975   2.217 0.026738 *  
-    ## gap_openness.tste_11_3_ct            0.0448444  0.0541570   0.828 0.407741    
-    ## gap_extraversion.tste_11_4_ct       -0.0336106  0.0334519  -1.005 0.315139    
-    ## gap_agreeableness.tste_11_4_ct      -0.0536564  0.0449351  -1.194 0.232582    
-    ## gap_openness.tste_11_4_ct            0.0084303  0.0534326   0.158 0.874649    
-    ## gap_extraversion.tste_11_5_ct       -0.0186469  0.0310718  -0.600 0.548492    
-    ## gap_agreeableness.tste_11_5_ct       0.0338034  0.0428826   0.788 0.430625    
-    ## gap_conscientiousness.tste_11_5_ct   0.0754945  0.0496864   1.519 0.128811    
-    ## gap_openness.tste_11_5_ct            0.0054553  0.0480098   0.114 0.909543    
-    ## gap_extraversion.tste_11_6_ct        0.0030199  0.0304104   0.099 0.920906    
-    ## gap_agreeableness.tste_11_6_ct       0.0091089  0.0429510   0.212 0.832069    
-    ## gap_conscientiousness.tste_11_6_ct   0.0185497  0.0458643   0.404 0.685926    
-    ## gap_openness.tste_11_6_ct            0.0395192  0.0474072   0.834 0.404597    
-    ## gap_extraversion.tste_11_7_ct        0.0485509  0.0350514   1.385 0.166162    
-    ## gap_agreeableness.tste_11_7_ct      -0.0770369  0.0503871  -1.529 0.126442    
-    ## gap_conscientiousness.tste_11_7_ct   0.0460372  0.0564196   0.816 0.414607    
-    ## gap_emotionstability.tste_11_7_ct   -0.0096816  0.0423140  -0.229 0.819045    
-    ## gap_openness.tste_11_7_ct           -0.0416036  0.0556180  -0.748 0.454531    
-    ## gap_extraversion.tste_11_8_ct        0.0093994  0.0268728   0.350 0.726544    
-    ## gap_agreeableness.tste_11_8_ct       0.0515972  0.0371512   1.389 0.165031    
-    ## gap_conscientiousness.tste_11_8_ct   0.0560685  0.0429817   1.304 0.192218    
-    ## gap_emotionstability.tste_11_8_ct   -0.0158659  0.0296186  -0.536 0.592243    
-    ## gap_openness.tste_11_8_ct           -0.0349102  0.0420136  -0.831 0.406112    
-    ## gap_extraversion.tste_11_9_ct       -0.0338442  0.0325729  -1.039 0.298913    
-    ## gap_agreeableness.tste_11_9_ct       0.0574277  0.0436180   1.317 0.188117    
-    ## gap_conscientiousness.tste_11_9_ct   0.0807933  0.0519457   1.555 0.120019    
-    ## gap_openness.tste_11_9_ct            0.0781496  0.0502177   1.556 0.119810    
-    ## gap_extraversion.tste_11_10_ct      -0.0070168  0.0304642  -0.230 0.817858    
-    ## gap_agreeableness.tste_11_10_ct     -0.0003882  0.0427286  -0.009 0.992752    
-    ## gap_conscientiousness.tste_11_10_ct  0.0958788  0.0465924   2.058 0.039733 *  
-    ## gap_openness.tste_11_10_ct          -0.0033966  0.0467032  -0.073 0.942030    
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       51.601457  14.872918   3.469 0.000532 ***
+    ## real_extraversion_ct               0.058895   0.024956   2.360 0.018368 *  
+    ## real_agreeableness_ct              0.009615   0.031239   0.308 0.758260    
+    ## real_conscientiousness_ct          0.094214   0.034785   2.708 0.006814 ** 
+    ## real_emotionstability_ct          -0.021280   0.034462  -0.617 0.536979    
+    ## real_openness_ct                   0.097863   0.033106   2.956 0.003151 ** 
+    ## gap_extraversion                   0.005663   0.026006   0.218 0.827642    
+    ## gap_agreeableness                  0.068954   0.033840   2.038 0.041710 *  
+    ## gap_conscientiousness              0.015014   0.040011   0.375 0.707513    
+    ## gap_emotionstability              -0.044669   0.031770  -1.406 0.159871    
+    ## gap_openness                      -0.049138   0.043217  -1.137 0.255670    
+    ## tste_6_0_ct                        0.067405   0.064642   1.043 0.297187    
+    ## tste_6_1_ct                       -0.096858   0.063285  -1.531 0.126040    
+    ## tste_6_2_ct                        0.188769   0.053350   3.538 0.000411 ***
+    ## tste_6_3_ct                       -0.013868   0.066594  -0.208 0.835055    
+    ## tste_6_4_ct                       -0.004149   0.058966  -0.070 0.943911    
+    ## tste_6_5_ct                        0.085155   0.067366   1.264 0.206352    
+    ## release                           -0.022896   0.007311  -3.132 0.001763 ** 
+    ## education                          0.010539   0.026524   0.397 0.691146    
+    ## income                             0.007512   0.017171   0.437 0.661825    
+    ## age                               -0.014257   0.004570  -3.119 0.001838 ** 
+    ## sex2                              -0.086101   0.072351  -1.190 0.234161    
+    ## race4                             -0.246658   0.140971  -1.750 0.080317 .  
+    ## race7                             -0.191201   0.136175  -1.404 0.160443    
+    ## race6                             -1.079944   0.353138  -3.058 0.002255 ** 
+    ## gap_conscientiousness.tste_6_1_ct -0.043848   0.046642  -0.940 0.347268    
+    ## gap_extraversion.tste_6_5_ct      -0.009898   0.030867  -0.321 0.748502    
+    ## gap_emotionstability.tste_6_0_ct  -0.011155   0.040363  -0.276 0.782299    
+    ## star_user                         -0.040520   0.069542  -0.583 0.560177    
+    ## star_GS                            0.065238   0.054601   1.195 0.232299    
+    ## gap_extraversion.tste_6_0_ct       0.002544   0.032608   0.078 0.937811    
+    ## gap_agreeableness.tste_6_0_ct     -0.001609   0.046596  -0.035 0.972464    
+    ## gap_conscientiousness.tste_6_0_ct  0.011772   0.049590   0.237 0.812381    
+    ## gap_openness.tste_6_0_ct          -0.029808   0.051683  -0.577 0.564173    
+    ## gap_extraversion.tste_6_1_ct       0.039203   0.030292   1.294 0.195754    
+    ## gap_agreeableness.tste_6_1_ct     -0.027687   0.041502  -0.667 0.504772    
+    ## gap_openness.tste_6_1_ct          -0.077195   0.044830  -1.722 0.085228 .  
+    ## gap_extraversion.tste_6_2_ct       0.034525   0.027372   1.261 0.207333    
+    ## gap_agreeableness.tste_6_2_ct      0.054079   0.037169   1.455 0.145836    
+    ## gap_conscientiousness.tste_6_2_ct -0.029620   0.038936  -0.761 0.446895    
+    ## gap_openness.tste_6_2_ct           0.012762   0.041999   0.304 0.761253    
+    ## gap_extraversion.tste_6_3_ct      -0.013314   0.032364  -0.411 0.680820    
+    ## gap_agreeableness.tste_6_3_ct      0.020371   0.044018   0.463 0.643564    
+    ## gap_conscientiousness.tste_6_3_ct  0.188733   0.050689   3.723 0.000202 ***
+    ## gap_openness.tste_6_3_ct           0.009517   0.050802   0.187 0.851411    
+    ## gap_extraversion.tste_6_4_ct       0.017928   0.029134   0.615 0.538372    
+    ## gap_agreeableness.tste_6_4_ct      0.085495   0.039924   2.141 0.032355 *  
+    ## gap_emotionstability.tste_6_4_ct  -0.102341   0.031609  -3.238 0.001224 ** 
+    ## gap_openness.tste_6_4_ct           0.055749   0.044917   1.241 0.214694    
+    ## gap_agreeableness.tste_6_5_ct     -0.026756   0.046241  -0.579 0.562903    
+    ## gap_conscientiousness.tste_6_5_ct  0.050499   0.049246   1.025 0.305278    
+    ## gap_emotionstability.tste_6_5_ct  -0.085561   0.038684  -2.212 0.027090 *  
+    ## gap_openness.tste_6_5_ct          -0.033723   0.051450  -0.655 0.512246    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.438 on 2060 degrees of freedom
-    ## Multiple R-squared:  0.1161, Adjusted R-squared:  0.08301 
-    ## F-statistic: 3.512 on 77 and 2060 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.445 on 2085 degrees of freedom
+    ## Multiple R-squared:  0.09749,    Adjusted R-squared:  0.07498 
+    ## F-statistic: 4.331 on 52 and 2085 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5729,95 +5343,73 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1898 -0.6753  0.2791  1.0303  3.1725 
+    ## -5.0492 -0.6942  0.2854  1.0422  2.9469 
     ## 
     ## Coefficients:
-    ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         51.5002883 16.4732480   3.126 0.001795 ** 
-    ## real_extraversion_ct                 0.0562820  0.0251295   2.240 0.025218 *  
-    ## real_agreeableness_ct                0.0170952  0.0313382   0.546 0.585465    
-    ## real_conscientiousness_ct            0.0765679  0.0348977   2.194 0.028342 *  
-    ## real_emotionstability_ct            -0.0359956  0.0345661  -1.041 0.297833    
-    ## real_openness_ct                     0.0851076  0.0333625   2.551 0.010813 *  
-    ## tste_12_0_ct                         0.1511396  0.0738596   2.046 0.040853 *  
-    ## tste_12_1_ct                         0.0609081  0.0613941   0.992 0.321273    
-    ## tste_12_2_ct                         0.0364695  0.0621280   0.587 0.557264    
-    ## tste_12_3_ct                         0.0001563  0.0688389   0.002 0.998189    
-    ## tste_12_4_ct                        -0.0257210  0.0642811  -0.400 0.689100    
-    ## tste_12_5_ct                         0.1103885  0.0680167   1.623 0.104751    
-    ## tste_12_6_ct                        -0.0888667  0.0686330  -1.295 0.195531    
-    ## tste_12_7_ct                         0.0888136  0.0683013   1.300 0.193637    
-    ## tste_12_8_ct                         0.1771236  0.0603262   2.936 0.003361 ** 
-    ## tste_12_9_ct                        -0.0888027  0.0646342  -1.374 0.169614    
-    ## tste_12_10_ct                        0.2086179  0.0560758   3.720 0.000204 ***
-    ## tste_12_11_ct                       -0.1379534  0.0599472  -2.301 0.021477 *  
-    ## release                             -0.0234000  0.0080957  -2.890 0.003887 ** 
-    ## gap_openness                        -0.0630203  0.0435030  -1.449 0.147590    
-    ## income                               0.0062494  0.0172156   0.363 0.716636    
-    ## gap_extraversion                    -0.0002913  0.0258501  -0.011 0.991010    
-    ## gap_agreeableness                    0.0680619  0.0338114   2.013 0.044246 *  
-    ## gap_emotionstability                -0.0536664  0.0316319  -1.697 0.089925 .  
-    ## age                                 -0.0130600  0.0046042  -2.837 0.004605 ** 
-    ## sex2                                -0.0793164  0.0724507  -1.095 0.273748    
-    ## gap_conscientiousness               -0.0040869  0.0400361  -0.102 0.918703    
-    ## race4                               -0.1941156  0.1417094  -1.370 0.170894    
-    ## education                            0.0083903  0.0265497   0.316 0.752018    
-    ## race2                                0.1169064  0.1315451   0.889 0.374259    
-    ## star_user                           -0.0318269  0.0725609  -0.439 0.660981    
-    ## star_GS                              0.1847620  0.0607735   3.040 0.002394 ** 
-    ## gap_extraversion.tste_12_0_ct        0.0116949  0.0336679   0.347 0.728357    
-    ## gap_agreeableness.tste_12_0_ct      -0.0157175  0.0465215  -0.338 0.735508    
-    ## gap_conscientiousness.tste_12_0_ct   0.0874000  0.0544022   1.607 0.108306    
-    ## gap_openness.tste_12_0_ct           -0.0543980  0.0512882  -1.061 0.288981    
-    ## gap_extraversion.tste_12_1_ct       -0.0031036  0.0275098  -0.113 0.910187    
-    ## gap_agreeableness.tste_12_1_ct      -0.0127644  0.0387799  -0.329 0.742075    
-    ## gap_openness.tste_12_1_ct            0.0405795  0.0450221   0.901 0.367522    
-    ## gap_extraversion.tste_12_2_ct       -0.0365845  0.0301225  -1.215 0.224687    
-    ## gap_agreeableness.tste_12_2_ct       0.0297757  0.0419209   0.710 0.477608    
-    ## gap_conscientiousness.tste_12_2_ct   0.0429579  0.0443391   0.969 0.332734    
-    ## gap_openness.tste_12_2_ct            0.0931312  0.0469965   1.982 0.047650 *  
-    ## gap_extraversion.tste_12_3_ct       -0.0306842  0.0342562  -0.896 0.370503    
-    ## gap_agreeableness.tste_12_3_ct       0.0622970  0.0450716   1.382 0.167067    
-    ## gap_conscientiousness.tste_12_3_ct   0.0542047  0.0513303   1.056 0.291093    
-    ## gap_openness.tste_12_3_ct            0.0073523  0.0532940   0.138 0.890288    
-    ## gap_extraversion.tste_12_4_ct       -0.0096271  0.0322443  -0.299 0.765301    
-    ## gap_agreeableness.tste_12_4_ct      -0.0326674  0.0426345  -0.766 0.443633    
-    ## gap_openness.tste_12_4_ct           -0.0420190  0.0495181  -0.849 0.396226    
-    ## gap_extraversion.tste_12_5_ct        0.0482254  0.0336923   1.431 0.152482    
-    ## gap_agreeableness.tste_12_5_ct      -0.0179658  0.0478645  -0.375 0.707440    
-    ## gap_conscientiousness.tste_12_5_ct  -0.1117544  0.0532993  -2.097 0.036139 *  
-    ## gap_emotionstability.tste_12_5_ct    0.0891505  0.0411195   2.168 0.030267 *  
-    ## gap_openness.tste_12_5_ct            0.0240107  0.0553361   0.434 0.664402    
-    ## gap_extraversion.tste_12_6_ct       -0.0143495  0.0339229  -0.423 0.672337    
-    ## gap_agreeableness.tste_12_6_ct       0.1032072  0.0474898   2.173 0.029875 *  
-    ## gap_conscientiousness.tste_12_6_ct   0.0226490  0.0502836   0.450 0.652452    
-    ## gap_openness.tste_12_6_ct            0.0062403  0.0533309   0.117 0.906863    
-    ## gap_extraversion.tste_12_7_ct       -0.0696888  0.0334359  -2.084 0.037260 *  
-    ## gap_agreeableness.tste_12_7_ct       0.1051310  0.0462741   2.272 0.023194 *  
-    ## gap_conscientiousness.tste_12_7_ct   0.0200104  0.0499660   0.400 0.688844    
-    ## gap_openness.tste_12_7_ct           -0.0090404  0.0546680  -0.165 0.868669    
-    ## gap_extraversion.tste_12_8_ct        0.0060886  0.0289272   0.210 0.833313    
-    ## gap_agreeableness.tste_12_8_ct      -0.0232411  0.0385497  -0.603 0.546651    
-    ## gap_conscientiousness.tste_12_8_ct   0.0534492  0.0425041   1.258 0.208713    
-    ## gap_openness.tste_12_8_ct           -0.0443030  0.0447321  -0.990 0.322091    
-    ## gap_extraversion.tste_12_9_ct        0.0309708  0.0333286   0.929 0.352865    
-    ## gap_agreeableness.tste_12_9_ct       0.0552841  0.0437637   1.263 0.206646    
-    ## gap_openness.tste_12_9_ct           -0.0560098  0.0513189  -1.091 0.275222    
-    ## gap_extraversion.tste_12_10_ct      -0.0465530  0.0274839  -1.694 0.090450 .  
-    ## gap_agreeableness.tste_12_10_ct     -0.0127893  0.0364757  -0.351 0.725905    
-    ## gap_conscientiousness.tste_12_10_ct  0.0660439  0.0429972   1.536 0.124691    
-    ## gap_openness.tste_12_10_ct           0.0732705  0.0425330   1.723 0.085098 .  
-    ## gap_extraversion.tste_12_11_ct      -0.0522108  0.0299097  -1.746 0.081027 .  
-    ## gap_agreeableness.tste_12_11_ct     -0.0175904  0.0438541  -0.401 0.688379    
-    ## gap_conscientiousness.tste_12_11_ct -0.0252646  0.0458395  -0.551 0.581589    
-    ## gap_emotionstability.tste_12_11_ct  -0.0744466  0.0358217  -2.078 0.037810 *  
-    ## gap_openness.tste_12_11_ct          -0.0565855  0.0473176  -1.196 0.231887    
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       53.465849  15.182660   3.522 0.000438 ***
+    ## real_extraversion_ct               0.055209   0.024984   2.210 0.027232 *  
+    ## real_agreeableness_ct              0.012550   0.031335   0.401 0.688817    
+    ## real_conscientiousness_ct          0.094966   0.034794   2.729 0.006399 ** 
+    ## real_emotionstability_ct          -0.024027   0.034501  -0.696 0.486253    
+    ## real_openness_ct                   0.094027   0.033159   2.836 0.004617 ** 
+    ## gap_extraversion                   0.005947   0.026121   0.228 0.819928    
+    ## gap_agreeableness                  0.069843   0.033903   2.060 0.039514 *  
+    ## gap_conscientiousness              0.012612   0.040086   0.315 0.753071    
+    ## gap_emotionstability              -0.043320   0.031840  -1.361 0.173810    
+    ## gap_openness                      -0.052958   0.043377  -1.221 0.222271    
+    ## tste_7_0_ct                       -0.195865   0.058747  -3.334 0.000871 ***
+    ## tste_7_1_ct                       -0.005795   0.065286  -0.089 0.929274    
+    ## tste_7_2_ct                       -0.063753   0.062601  -1.018 0.308605    
+    ## tste_7_3_ct                       -0.174860   0.048781  -3.585 0.000345 ***
+    ## tste_7_4_ct                       -0.010275   0.064675  -0.159 0.873786    
+    ## tste_7_5_ct                        0.017296   0.069489   0.249 0.803457    
+    ## tste_7_6_ct                        0.031075   0.073020   0.426 0.670468    
+    ## release                           -0.023919   0.007472  -3.201 0.001389 ** 
+    ## education                          0.012873   0.026572   0.484 0.628102    
+    ## income                             0.007832   0.017214   0.455 0.649180    
+    ## age                               -0.014443   0.004584  -3.150 0.001653 ** 
+    ## sex2                              -0.090292   0.072585  -1.244 0.213660    
+    ## race4                             -0.244631   0.141687  -1.727 0.084396 .  
+    ## race7                             -0.171669   0.136473  -1.258 0.208573    
+    ## race6                             -0.951340   0.355708  -2.675 0.007543 ** 
+    ## gap_extraversion.tste_7_0_ct       0.018696   0.028950   0.646 0.518473    
+    ## star_user                         -0.013893   0.070541  -0.197 0.843886    
+    ## gap_agreeableness.tste_7_0_ct      0.013533   0.039226   0.345 0.730123    
+    ## gap_conscientiousness.tste_7_0_ct -0.010426   0.044767  -0.233 0.815866    
+    ## gap_openness.tste_7_0_ct          -0.021181   0.045249  -0.468 0.639773    
+    ## gap_extraversion.tste_7_1_ct      -0.018329   0.032608  -0.562 0.574103    
+    ## gap_agreeableness.tste_7_1_ct      0.074855   0.048029   1.559 0.119260    
+    ## gap_conscientiousness.tste_7_1_ct  0.014239   0.054561   0.261 0.794135    
+    ## gap_emotionstability.tste_7_1_ct   0.004030   0.039007   0.103 0.917717    
+    ## gap_openness.tste_7_1_ct           0.059023   0.053512   1.103 0.270161    
+    ## star_GS                            0.060833   0.052977   1.148 0.250980    
+    ## gap_extraversion.tste_7_2_ct      -0.053314   0.030446  -1.751 0.080073 .  
+    ## gap_agreeableness.tste_7_2_ct     -0.049045   0.040686  -1.205 0.228164    
+    ## gap_conscientiousness.tste_7_2_ct -0.032207   0.046394  -0.694 0.487632    
+    ## gap_openness.tste_7_2_ct          -0.030244   0.046582  -0.649 0.516246    
+    ## gap_extraversion.tste_7_3_ct      -0.005142   0.024332  -0.211 0.832643    
+    ## gap_agreeableness.tste_7_3_ct     -0.042942   0.032284  -1.330 0.183621    
+    ## gap_conscientiousness.tste_7_3_ct -0.004623   0.036676  -0.126 0.899712    
+    ## gap_openness.tste_7_3_ct          -0.021787   0.037225  -0.585 0.558424    
+    ## gap_extraversion.tste_7_4_ct      -0.022612   0.031587  -0.716 0.474160    
+    ## gap_agreeableness.tste_7_4_ct      0.039478   0.043151   0.915 0.360359    
+    ## gap_conscientiousness.tste_7_4_ct -0.074360   0.050445  -1.474 0.140615    
+    ## gap_openness.tste_7_4_ct           0.067854   0.047314   1.434 0.151687    
+    ## gap_extraversion.tste_7_5_ct      -0.034337   0.033186  -1.035 0.300947    
+    ## gap_agreeableness.tste_7_5_ct     -0.005202   0.046598  -0.112 0.911120    
+    ## gap_conscientiousness.tste_7_5_ct  0.188054   0.050828   3.700 0.000221 ***
+    ## gap_openness.tste_7_5_ct           0.041821   0.050813   0.823 0.410573    
+    ## gap_extraversion.tste_7_6_ct      -0.020661   0.034157  -0.605 0.545311    
+    ## gap_agreeableness.tste_7_6_ct      0.009296   0.045227   0.206 0.837174    
+    ## gap_conscientiousness.tste_7_6_ct  0.135939   0.051831   2.623 0.008787 ** 
+    ## gap_openness.tste_7_6_ct           0.010214   0.052656   0.194 0.846215    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.44 on 2059 degrees of freedom
-    ## Multiple R-squared:  0.1148, Adjusted R-squared:  0.08127 
-    ## F-statistic: 3.423 on 78 and 2059 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.447 on 2081 degrees of freedom
+    ## Multiple R-squared:  0.09646,    Adjusted R-squared:  0.07215 
+    ## F-statistic: 3.967 on 56 and 2081 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5825,101 +5417,79 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.3529 -0.6729  0.2668  1.0270  2.8653 
+    ## -5.2514 -0.6924  0.2656  1.0147  3.4144 
     ## 
     ## Coefficients:
-    ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         49.8145283 16.8891120   2.950 0.003219 ** 
-    ## real_extraversion_ct                 0.0538358  0.0251374   2.142 0.032338 *  
-    ## real_agreeableness_ct                0.0241695  0.0313697   0.770 0.441108    
-    ## real_conscientiousness_ct            0.0883542  0.0349044   2.531 0.011437 *  
-    ## real_emotionstability_ct            -0.0308008  0.0346247  -0.890 0.373807    
-    ## real_openness_ct                     0.0851364  0.0334258   2.547 0.010937 *  
-    ## tste_13_0_ct                         0.0313114  0.0622416   0.503 0.614975    
-    ## tste_13_1_ct                        -0.1082463  0.0586133  -1.847 0.064922 .  
-    ## tste_13_2_ct                         0.1821962  0.0637099   2.860 0.004282 ** 
-    ## tste_13_3_ct                         0.0134863  0.0620268   0.217 0.827898    
-    ## tste_13_4_ct                        -0.0295861  0.0653768  -0.453 0.650923    
-    ## tste_13_5_ct                         0.1014605  0.0652134   1.556 0.119904    
-    ## tste_13_6_ct                         0.0210294  0.0696600   0.302 0.762769    
-    ## tste_13_7_ct                        -0.0890876  0.0635923  -1.401 0.161390    
-    ## tste_13_8_ct                         0.0934170  0.0581837   1.606 0.108526    
-    ## tste_13_9_ct                         0.0797234  0.0722632   1.103 0.270054    
-    ## tste_13_10_ct                        0.1915684  0.0611108   3.135 0.001744 ** 
-    ## tste_13_11_ct                        0.1041478  0.0675056   1.543 0.123033    
-    ## tste_13_12_ct                        0.0628942  0.0650415   0.967 0.333665    
-    ## release                             -0.0223568  0.0082951  -2.695 0.007092 ** 
-    ## gap_openness                        -0.0608635  0.0437026  -1.393 0.163869    
-    ## gap_extraversion.tste_13_4_ct       -0.0559435  0.0331626  -1.687 0.091766 .  
-    ## income                               0.0048341  0.0172236   0.281 0.778995    
-    ## gap_extraversion                    -0.0046405  0.0258812  -0.179 0.857720    
-    ## gap_agreeableness                    0.0732500  0.0338161   2.166 0.030416 *  
-    ## gap_emotionstability                -0.0427204  0.0317603  -1.345 0.178746    
-    ## age                                 -0.0134034  0.0046063  -2.910 0.003655 ** 
-    ## sex2                                -0.0862254  0.0725525  -1.188 0.234791    
-    ## gap_conscientiousness                0.0089072  0.0401832   0.222 0.824598    
-    ## race4                               -0.1782422  0.1414636  -1.260 0.207817    
-    ## education                            0.0113475  0.0266012   0.427 0.669732    
-    ## race2                                0.1323757  0.1315234   1.006 0.314303    
-    ## star_user                           -0.0753356  0.0720354  -1.046 0.295770    
-    ## gap_extraversion.tste_13_0_ct        0.0034640  0.0314540   0.110 0.912317    
-    ## gap_agreeableness.tste_13_0_ct      -0.0112065  0.0434869  -0.258 0.796666    
-    ## gap_conscientiousness.tste_13_0_ct  -0.0661927  0.0480231  -1.378 0.168245    
-    ## gap_openness.tste_13_0_ct           -0.0093884  0.0492273  -0.191 0.848768    
-    ## star_GS                              0.1801525  0.0597402   3.016 0.002596 ** 
-    ## gap_extraversion.tste_13_1_ct        0.0540671  0.0284129   1.903 0.057192 .  
-    ## gap_agreeableness.tste_13_1_ct      -0.0248810  0.0376694  -0.661 0.509001    
-    ## gap_conscientiousness.tste_13_1_ct   0.0824648  0.0430734   1.915 0.055693 .  
-    ## gap_emotionstability.tste_13_1_ct    0.1173052  0.0315121   3.723 0.000203 ***
-    ## gap_openness.tste_13_1_ct            0.0001420  0.0442229   0.003 0.997438    
-    ## gap_extraversion.tste_13_2_ct        0.0163915  0.0293227   0.559 0.576218    
-    ## gap_agreeableness.tste_13_2_ct      -0.0474565  0.0408196  -1.163 0.245131    
-    ## gap_conscientiousness.tste_13_2_ct   0.1096436  0.0472019   2.323 0.020284 *  
-    ## gap_openness.tste_13_2_ct           -0.0069045  0.0449395  -0.154 0.877909    
-    ## gap_extraversion.tste_13_3_ct        0.0496835  0.0311140   1.597 0.110459    
-    ## gap_agreeableness.tste_13_3_ct      -0.0570841  0.0408311  -1.398 0.162247    
-    ## gap_openness.tste_13_3_ct            0.0213924  0.0484025   0.442 0.658558    
-    ## gap_agreeableness.tste_13_4_ct      -0.0897636  0.0454398  -1.975 0.048352 *  
-    ## gap_openness.tste_13_4_ct            0.0551414  0.0517825   1.065 0.287062    
-    ## gap_extraversion.tste_13_5_ct        0.0243216  0.0312014   0.780 0.435774    
-    ## gap_agreeableness.tste_13_5_ct       0.0145178  0.0435026   0.334 0.738624    
-    ## gap_conscientiousness.tste_13_5_ct   0.0299831  0.0497867   0.602 0.547087    
-    ## gap_emotionstability.tste_13_5_ct    0.0457230  0.0386863   1.182 0.237386    
-    ## gap_openness.tste_13_5_ct            0.0299768  0.0495967   0.604 0.545637    
-    ## gap_extraversion.tste_13_6_ct        0.0164567  0.0334248   0.492 0.622525    
-    ## gap_agreeableness.tste_13_6_ct      -0.0361154  0.0435582  -0.829 0.407127    
-    ## gap_conscientiousness.tste_13_6_ct   0.0657789  0.0524453   1.254 0.209898    
-    ## gap_openness.tste_13_6_ct           -0.0762434  0.0524915  -1.452 0.146518    
-    ## gap_extraversion.tste_13_7_ct        0.0009776  0.0315396   0.031 0.975275    
-    ## gap_agreeableness.tste_13_7_ct       0.0593557  0.0427724   1.388 0.165376    
-    ## gap_conscientiousness.tste_13_7_ct  -0.0688755  0.0481508  -1.430 0.152751    
-    ## gap_openness.tste_13_7_ct            0.0159527  0.0477290   0.334 0.738236    
-    ## gap_extraversion.tste_13_8_ct        0.0157958  0.0293860   0.538 0.590960    
-    ## gap_agreeableness.tste_13_8_ct      -0.0700682  0.0394156  -1.778 0.075605 .  
-    ## gap_conscientiousness.tste_13_8_ct  -0.0371482  0.0470503  -0.790 0.429887    
-    ## gap_openness.tste_13_8_ct           -0.0101749  0.0473025  -0.215 0.829708    
-    ## gap_extraversion.tste_13_9_ct        0.0150065  0.0351213   0.427 0.669223    
-    ## gap_agreeableness.tste_13_9_ct      -0.0137493  0.0505045  -0.272 0.785465    
-    ## gap_conscientiousness.tste_13_9_ct   0.0885120  0.0532108   1.663 0.096381 .  
-    ## gap_openness.tste_13_9_ct            0.1065905  0.0564897   1.887 0.059314 .  
-    ## gap_extraversion.tste_13_10_ct      -0.0425210  0.0311048  -1.367 0.171768    
-    ## gap_agreeableness.tste_13_10_ct      0.0257851  0.0410810   0.628 0.530293    
-    ## gap_openness.tste_13_10_ct           0.0545137  0.0468182   1.164 0.244410    
-    ## gap_extraversion.tste_13_11_ct      -0.0378342  0.0326597  -1.158 0.246820    
-    ## gap_agreeableness.tste_13_11_ct      0.0568920  0.0451995   1.259 0.208286    
-    ## gap_conscientiousness.tste_13_11_ct -0.0636513  0.0533061  -1.194 0.232588    
-    ## gap_openness.tste_13_11_ct           0.0573040  0.0524320   1.093 0.274557    
-    ## gap_extraversion.tste_13_12_ct      -0.0066084  0.0317388  -0.208 0.835085    
-    ## gap_agreeableness.tste_13_12_ct      0.0008951  0.0472590   0.019 0.984890    
-    ## gap_conscientiousness.tste_13_12_ct -0.0098842  0.0527699  -0.187 0.851438    
-    ## gap_emotionstability.tste_13_12_ct   0.0409649  0.0371665   1.102 0.270504    
-    ## gap_openness.tste_13_12_ct           0.0537623  0.0538279   0.999 0.318019    
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       58.922277  15.869426   3.713 0.000210 ***
+    ## real_extraversion_ct               0.056688   0.024893   2.277 0.022874 *  
+    ## real_agreeableness_ct              0.014684   0.031171   0.471 0.637629    
+    ## real_conscientiousness_ct          0.088550   0.034628   2.557 0.010623 *  
+    ## real_emotionstability_ct          -0.033005   0.034408  -0.959 0.337551    
+    ## real_openness_ct                   0.089246   0.032993   2.705 0.006887 ** 
+    ## gap_extraversion                   0.004472   0.026020   0.172 0.863543    
+    ## gap_agreeableness                  0.068456   0.033803   2.025 0.042981 *  
+    ## gap_conscientiousness              0.007149   0.039938   0.179 0.857960    
+    ## gap_emotionstability              -0.051521   0.031674  -1.627 0.103971    
+    ## gap_openness                      -0.063102   0.043118  -1.463 0.143494    
+    ## tste_8_0_ct                       -0.188190   0.064430  -2.921 0.003529 ** 
+    ## tste_8_1_ct                        0.171102   0.071943   2.378 0.017483 *  
+    ## tste_8_2_ct                        0.094577   0.061766   1.531 0.125866    
+    ## tste_8_3_ct                        0.061440   0.059435   1.034 0.301383    
+    ## tste_8_4_ct                        0.098320   0.063408   1.551 0.121150    
+    ## tste_8_5_ct                        0.066131   0.061108   1.082 0.279286    
+    ## tste_8_6_ct                       -0.176522   0.063687  -2.772 0.005626 ** 
+    ## tste_8_7_ct                       -0.008072   0.065457  -0.123 0.901862    
+    ## release                           -0.026521   0.007810  -3.396 0.000697 ***
+    ## gap_emotionstability.tste_8_1_ct  -0.157053   0.042542  -3.692 0.000228 ***
+    ## education                          0.011835   0.026432   0.448 0.654382    
+    ## income                             0.006998   0.017141   0.408 0.683114    
+    ## age                               -0.014774   0.004560  -3.240 0.001214 ** 
+    ## sex2                              -0.090647   0.072125  -1.257 0.208967    
+    ## race4                             -0.223785   0.140495  -1.593 0.111350    
+    ## race7                             -0.170403   0.136262  -1.251 0.211238    
+    ## gap_emotionstability.tste_8_7_ct  -0.059155   0.038449  -1.539 0.124073    
+    ## race6                             -0.995786   0.354725  -2.807 0.005044 ** 
+    ## gap_conscientiousness.tste_8_5_ct  0.056509   0.043338   1.304 0.192404    
+    ## gap_extraversion.tste_8_7_ct      -0.020503   0.031603  -0.649 0.516562    
+    ## star_user                         -0.065454   0.070791  -0.925 0.355282    
+    ## gap_extraversion.tste_8_0_ct       0.045713   0.031942   1.431 0.152547    
+    ## gap_agreeableness.tste_8_0_ct     -0.051195   0.043558  -1.175 0.240002    
+    ## gap_openness.tste_8_0_ct          -0.100918   0.050849  -1.985 0.047311 *  
+    ## star_GS                            0.087553   0.054979   1.592 0.111433    
+    ## gap_extraversion.tste_8_1_ct      -0.010963   0.035311  -0.310 0.756243    
+    ## gap_agreeableness.tste_8_1_ct      0.038846   0.048857   0.795 0.426654    
+    ## gap_conscientiousness.tste_8_1_ct  0.032065   0.057244   0.560 0.575435    
+    ## gap_openness.tste_8_1_ct          -0.040506   0.054473  -0.744 0.457197    
+    ## gap_extraversion.tste_8_2_ct       0.041004   0.029114   1.408 0.159158    
+    ## gap_agreeableness.tste_8_2_ct     -0.001808   0.040853  -0.044 0.964700    
+    ## gap_conscientiousness.tste_8_2_ct -0.048370   0.043932  -1.101 0.271012    
+    ## gap_openness.tste_8_2_ct          -0.074978   0.044886  -1.670 0.094988 .  
+    ## gap_extraversion.tste_8_3_ct       0.006298   0.030095   0.209 0.834244    
+    ## gap_agreeableness.tste_8_3_ct      0.048668   0.039705   1.226 0.220439    
+    ## gap_conscientiousness.tste_8_3_ct -0.122556   0.045910  -2.669 0.007656 ** 
+    ## gap_openness.tste_8_3_ct           0.033183   0.046438   0.715 0.474958    
+    ## gap_extraversion.tste_8_4_ct       0.022014   0.031357   0.702 0.482739    
+    ## gap_agreeableness.tste_8_4_ct      0.003220   0.043412   0.074 0.940879    
+    ## gap_conscientiousness.tste_8_4_ct  0.058440   0.046483   1.257 0.208810    
+    ## gap_openness.tste_8_4_ct           0.008228   0.047637   0.173 0.862881    
+    ## gap_extraversion.tste_8_5_ct       0.012992   0.028109   0.462 0.643985    
+    ## gap_agreeableness.tste_8_5_ct      0.017674   0.038979   0.453 0.650284    
+    ## gap_openness.tste_8_5_ct           0.002650   0.043148   0.061 0.951033    
+    ## gap_extraversion.tste_8_6_ct       0.065816   0.031598   2.083 0.037384 *  
+    ## gap_agreeableness.tste_8_6_ct      0.052413   0.044892   1.168 0.243126    
+    ## gap_conscientiousness.tste_8_6_ct -0.103065   0.049868  -2.067 0.038880 *  
+    ## gap_emotionstability.tste_8_6_ct  -0.032300   0.034810  -0.928 0.353582    
+    ## gap_openness.tste_8_6_ct          -0.054326   0.051128  -1.063 0.288111    
+    ## gap_agreeableness.tste_8_7_ct     -0.038442   0.045458  -0.846 0.397835    
+    ## gap_conscientiousness.tste_8_7_ct  0.011643   0.053038   0.220 0.826259    
+    ## gap_openness.tste_8_7_ct          -0.080347   0.051032  -1.574 0.115534    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.44 on 2053 degrees of freedom
-    ## Multiple R-squared:  0.1165, Adjusted R-squared:  0.08031 
-    ## F-statistic: 3.222 on 84 and 2053 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.439 on 2075 degrees of freedom
+    ## Multiple R-squared:  0.1093, Adjusted R-squared:  0.08267 
+    ## F-statistic: 4.106 on 62 and 2075 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -5927,108 +5497,266 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.4080 -0.6926  0.2589  1.0471  3.2628 
+    ## -5.1667 -0.6823  0.2912  1.0135  3.1081 
+    ## 
+    ## Coefficients:
+    ##                                    Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                       60.516694  16.041845   3.772 0.000166 ***
+    ## real_extraversion_ct               0.061260   0.024944   2.456 0.014134 *  
+    ## real_agreeableness_ct              0.009130   0.031167   0.293 0.769599    
+    ## real_conscientiousness_ct          0.094535   0.034688   2.725 0.006478 ** 
+    ## real_emotionstability_ct          -0.026392   0.034404  -0.767 0.443095    
+    ## real_openness_ct                   0.083293   0.033056   2.520 0.011818 *  
+    ## gap_extraversion                   0.009666   0.026009   0.372 0.710196    
+    ## gap_agreeableness                  0.067560   0.033842   1.996 0.046025 *  
+    ## gap_conscientiousness              0.018696   0.040159   0.466 0.641585    
+    ## gap_emotionstability              -0.049170   0.031788  -1.547 0.122063    
+    ## gap_openness                      -0.062808   0.043272  -1.451 0.146797    
+    ## tste_9_0_ct                       -0.153891   0.067288  -2.287 0.022295 *  
+    ## tste_9_1_ct                       -0.038672   0.061346  -0.630 0.528505    
+    ## tste_9_2_ct                       -0.325738   0.064502  -5.050  4.8e-07 ***
+    ## tste_9_3_ct                       -0.090215   0.070637  -1.277 0.201687    
+    ## tste_9_4_ct                        0.018640   0.055033   0.339 0.734863    
+    ## tste_9_5_ct                        0.052577   0.071589   0.734 0.462769    
+    ## tste_9_6_ct                        0.019363   0.064296   0.301 0.763323    
+    ## tste_9_7_ct                       -0.033166   0.065913  -0.503 0.614891    
+    ## tste_9_8_ct                        0.047147   0.059096   0.798 0.425073    
+    ## release                           -0.027428   0.007886  -3.478 0.000515 ***
+    ## gap_extraversion.tste_9_2_ct       0.002186   0.031168   0.070 0.944101    
+    ## education                          0.008690   0.026464   0.328 0.742663    
+    ## income                             0.009598   0.017174   0.559 0.576317    
+    ## age                               -0.014339   0.004567  -3.139 0.001716 ** 
+    ## sex2                              -0.079084   0.072252  -1.095 0.273836    
+    ## race4                             -0.193900   0.141313  -1.372 0.170172    
+    ## race7                             -0.180033   0.136630  -1.318 0.187759    
+    ## race6                             -0.904123   0.357053  -2.532 0.011409 *  
+    ## gap_conscientiousness.tste_9_0_ct  0.016884   0.053996   0.313 0.754551    
+    ## gap_conscientiousness.tste_9_5_ct -0.128206   0.055159  -2.324 0.020205 *  
+    ## gap_conscientiousness.tste_9_7_ct -0.040800   0.050606  -0.806 0.420208    
+    ## star_user                         -0.082037   0.071480  -1.148 0.251230    
+    ## gap_extraversion.tste_9_0_ct       0.003802   0.033254   0.114 0.908978    
+    ## gap_agreeableness.tste_9_0_ct      0.039697   0.049815   0.797 0.425614    
+    ## gap_emotionstability.tste_9_0_ct   0.066632   0.040943   1.627 0.103796    
+    ## gap_openness.tste_9_0_ct          -0.003576   0.055312  -0.065 0.948453    
+    ## star_GS                            0.128273   0.056042   2.289 0.022188 *  
+    ## gap_extraversion.tste_9_1_ct       0.032872   0.031353   1.048 0.294550    
+    ## gap_agreeableness.tste_9_1_ct      0.053886   0.041120   1.310 0.190189    
+    ## gap_openness.tste_9_1_ct           0.044894   0.047942   0.936 0.349162    
+    ## gap_agreeableness.tste_9_2_ct     -0.005795   0.041912  -0.138 0.890040    
+    ## gap_conscientiousness.tste_9_2_ct -0.045640   0.047237  -0.966 0.334056    
+    ## gap_openness.tste_9_2_ct          -0.055640   0.048029  -1.158 0.246809    
+    ## gap_extraversion.tste_9_3_ct       0.076209   0.032520   2.343 0.019199 *  
+    ## gap_agreeableness.tste_9_3_ct     -0.009582   0.045710  -0.210 0.833977    
+    ## gap_conscientiousness.tste_9_3_ct -0.005962   0.053261  -0.112 0.910878    
+    ## gap_openness.tste_9_3_ct          -0.073653   0.050786  -1.450 0.147138    
+    ## gap_extraversion.tste_9_4_ct      -0.019636   0.026140  -0.751 0.452611    
+    ## gap_agreeableness.tste_9_4_ct     -0.043679   0.036235  -1.205 0.228180    
+    ## gap_conscientiousness.tste_9_4_ct  0.004868   0.040043   0.122 0.903244    
+    ## gap_openness.tste_9_4_ct           0.007328   0.041451   0.177 0.859696    
+    ## gap_extraversion.tste_9_5_ct      -0.023590   0.034468  -0.684 0.493804    
+    ## gap_agreeableness.tste_9_5_ct     -0.014971   0.047583  -0.315 0.753083    
+    ## gap_openness.tste_9_5_ct           0.055472   0.054238   1.023 0.306545    
+    ## gap_extraversion.tste_9_6_ct      -0.015552   0.030900  -0.503 0.614794    
+    ## gap_agreeableness.tste_9_6_ct     -0.069627   0.040344  -1.726 0.084524 .  
+    ## gap_openness.tste_9_6_ct           0.020274   0.047428   0.427 0.669082    
+    ## gap_extraversion.tste_9_7_ct       0.014813   0.033292   0.445 0.656413    
+    ## gap_agreeableness.tste_9_7_ct     -0.041255   0.045290  -0.911 0.362451    
+    ## gap_openness.tste_9_7_ct          -0.071635   0.049484  -1.448 0.147869    
+    ## gap_extraversion.tste_9_8_ct      -0.017536   0.028369  -0.618 0.536559    
+    ## gap_agreeableness.tste_9_8_ct      0.041969   0.038876   1.080 0.280461    
+    ## gap_conscientiousness.tste_9_8_ct  0.082163   0.040992   2.004 0.045159 *  
+    ## gap_emotionstability.tste_9_8_ct  -0.095693   0.030898  -3.097 0.001980 ** 
+    ## gap_openness.tste_9_8_ct           0.005300   0.043978   0.121 0.904094    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.44 on 2072 degrees of freedom
+    ## Multiple R-squared:  0.1094, Adjusted R-squared:  0.08142 
+    ## F-statistic: 3.914 on 65 and 2072 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.1598 -0.6991  0.2831  1.0170  3.3731 
+    ## 
+    ## Coefficients:
+    ##                                     Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                        60.728682  15.857843   3.830 0.000132 ***
+    ## real_extraversion_ct                0.061875   0.024929   2.482 0.013141 *  
+    ## real_agreeableness_ct               0.007139   0.031310   0.228 0.819655    
+    ## real_conscientiousness_ct           0.090121   0.034653   2.601 0.009371 ** 
+    ## real_emotionstability_ct           -0.027502   0.034393  -0.800 0.424024    
+    ## real_openness_ct                    0.078441   0.033020   2.376 0.017614 *  
+    ## gap_extraversion                    0.007658   0.026118   0.293 0.769406    
+    ## gap_agreeableness                   0.062743   0.033959   1.848 0.064804 .  
+    ## gap_conscientiousness               0.014509   0.039974   0.363 0.716680    
+    ## gap_emotionstability               -0.047505   0.031843  -1.492 0.135894    
+    ## gap_openness                       -0.067861   0.043224  -1.570 0.116567    
+    ## tste_10_0_ct                       -0.005079   0.057486  -0.088 0.929601    
+    ## tste_10_1_ct                        0.216689   0.062975   3.441 0.000591 ***
+    ## tste_10_2_ct                       -0.229772   0.067011  -3.429 0.000618 ***
+    ## tste_10_3_ct                       -0.153062   0.067380  -2.272 0.023212 *  
+    ## tste_10_4_ct                       -0.048587   0.066768  -0.728 0.466883    
+    ## tste_10_5_ct                       -0.041685   0.065089  -0.640 0.521963    
+    ## tste_10_6_ct                       -0.119314   0.065561  -1.820 0.068920 .  
+    ## tste_10_7_ct                        0.042937   0.056133   0.765 0.444407    
+    ## tste_10_8_ct                        0.045758   0.073265   0.625 0.532337    
+    ## tste_10_9_ct                        0.095949   0.062229   1.542 0.123259    
+    ## release                            -0.027614   0.007809  -3.536 0.000415 ***
+    ## education                           0.006541   0.026444   0.247 0.804655    
+    ## income                              0.008403   0.017181   0.489 0.624840    
+    ## age                                -0.014686   0.004564  -3.217 0.001314 ** 
+    ## sex2                               -0.079249   0.072282  -1.096 0.273041    
+    ## race4                              -0.208029   0.141341  -1.472 0.141221    
+    ## gap_extraversion.tste_10_7_ct       0.061343   0.028141   2.180 0.029379 *  
+    ## race7                              -0.146516   0.136624  -1.072 0.283665    
+    ## gap_emotionstability.tste_10_7_ct   0.054041   0.033057   1.635 0.102245    
+    ## race6                              -0.941060   0.356222  -2.642 0.008309 ** 
+    ## gap_conscientiousness.tste_10_6_ct -0.126111   0.045955  -2.744 0.006118 ** 
+    ## gap_emotionstability.tste_10_2_ct   0.041080   0.041135   0.999 0.318072    
+    ## star_user                          -0.051223   0.070755  -0.724 0.469178    
+    ## star_GS                             0.120589   0.055967   2.155 0.031304 *  
+    ## gap_extraversion.tste_10_0_ct       0.016492   0.028243   0.584 0.559321    
+    ## gap_agreeableness.tste_10_0_ct     -0.070906   0.038875  -1.824 0.068301 .  
+    ## gap_conscientiousness.tste_10_0_ct  0.028934   0.044762   0.646 0.518097    
+    ## gap_emotionstability.tste_10_0_ct   0.074938   0.030325   2.471 0.013546 *  
+    ## gap_openness.tste_10_0_ct          -0.043040   0.043913  -0.980 0.327136    
+    ## gap_extraversion.tste_10_1_ct      -0.019810   0.030579  -0.648 0.517176    
+    ## gap_agreeableness.tste_10_1_ct     -0.036269   0.041636  -0.871 0.383802    
+    ## gap_conscientiousness.tste_10_1_ct  0.053932   0.048972   1.101 0.270909    
+    ## gap_openness.tste_10_1_ct           0.018158   0.048561   0.374 0.708497    
+    ## gap_extraversion.tste_10_2_ct       0.059316   0.034430   1.723 0.085073 .  
+    ## gap_agreeableness.tste_10_2_ct      0.010758   0.048625   0.221 0.824929    
+    ## gap_openness.tste_10_2_ct          -0.062804   0.052386  -1.199 0.230713    
+    ## gap_extraversion.tste_10_3_ct      -0.048035   0.033209  -1.446 0.148206    
+    ## gap_agreeableness.tste_10_3_ct      0.065054   0.044723   1.455 0.145937    
+    ## gap_conscientiousness.tste_10_3_ct  0.042398   0.050217   0.844 0.398598    
+    ## gap_openness.tste_10_3_ct           0.007335   0.052408   0.140 0.888713    
+    ## gap_extraversion.tste_10_4_ct       0.008689   0.032505   0.267 0.789263    
+    ## gap_agreeableness.tste_10_4_ct     -0.034895   0.044341  -0.787 0.431380    
+    ## gap_conscientiousness.tste_10_4_ct  0.001577   0.050529   0.031 0.975111    
+    ## gap_openness.tste_10_4_ct           0.004384   0.052130   0.084 0.932981    
+    ## gap_extraversion.tste_10_5_ct      -0.001412   0.032000  -0.044 0.964816    
+    ## gap_agreeableness.tste_10_5_ct      0.031383   0.043093   0.728 0.466532    
+    ## gap_openness.tste_10_5_ct           0.023142   0.049430   0.468 0.639703    
+    ## gap_extraversion.tste_10_6_ct       0.051265   0.030453   1.683 0.092448 .  
+    ## gap_agreeableness.tste_10_6_ct     -0.022360   0.043126  -0.518 0.604184    
+    ## gap_openness.tste_10_6_ct          -0.090307   0.046209  -1.954 0.050799 .  
+    ## gap_agreeableness.tste_10_7_ct      0.052978   0.040718   1.301 0.193367    
+    ## gap_openness.tste_10_7_ct          -0.005004   0.045498  -0.110 0.912427    
+    ## gap_extraversion.tste_10_8_ct      -0.015105   0.034960  -0.432 0.665736    
+    ## gap_agreeableness.tste_10_8_ct      0.004890   0.046499   0.105 0.916261    
+    ## gap_conscientiousness.tste_10_8_ct -0.151547   0.053135  -2.852 0.004386 ** 
+    ## gap_openness.tste_10_8_ct           0.045414   0.054410   0.835 0.404000    
+    ## gap_extraversion.tste_10_9_ct       0.025450   0.032182   0.791 0.429157    
+    ## gap_agreeableness.tste_10_9_ct      0.051568   0.044247   1.165 0.243970    
+    ## gap_conscientiousness.tste_10_9_ct -0.086943   0.048083  -1.808 0.070727 .  
+    ## gap_openness.tste_10_9_ct           0.024000   0.050068   0.479 0.631746    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.437 on 2067 degrees of freedom
+    ## Multiple R-squared:  0.1146, Adjusted R-squared:  0.08465 
+    ## F-statistic: 3.823 on 70 and 2067 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.0969 -0.6883  0.2829  1.0267  3.4679 
     ## 
     ## Coefficients:
     ##                                      Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         45.004691  16.832643   2.674 0.007563 ** 
-    ## real_extraversion_ct                 0.055638   0.025171   2.210 0.027188 *  
-    ## real_agreeableness_ct                0.024024   0.031524   0.762 0.446101    
-    ## real_conscientiousness_ct            0.080814   0.035030   2.307 0.021153 *  
-    ## real_emotionstability_ct            -0.036222   0.034716  -1.043 0.296895    
-    ## real_openness_ct                     0.087407   0.033476   2.611 0.009094 ** 
-    ## tste_14_0_ct                        -0.076454   0.065394  -1.169 0.242488    
-    ## tste_14_1_ct                         0.015231   0.063479   0.240 0.810399    
-    ## tste_14_2_ct                         0.085047   0.061646   1.380 0.167860    
-    ## tste_14_3_ct                         0.078179   0.059019   1.325 0.185439    
-    ## tste_14_4_ct                         0.020983   0.055418   0.379 0.705004    
-    ## tste_14_5_ct                         0.004219   0.067558   0.062 0.950211    
-    ## tste_14_6_ct                         0.045700   0.064192   0.712 0.476592    
-    ## tste_14_7_ct                        -0.245918   0.072882  -3.374 0.000754 ***
-    ## tste_14_8_ct                         0.113321   0.056296   2.013 0.044251 *  
-    ## tste_14_9_ct                         0.003682   0.064949   0.057 0.954792    
-    ## tste_14_10_ct                        0.100732   0.061943   1.626 0.104059    
-    ## tste_14_11_ct                       -0.023229   0.061279  -0.379 0.704676    
-    ## tste_14_12_ct                        0.104763   0.063430   1.652 0.098766 .  
-    ## tste_14_13_ct                        0.123193   0.064757   1.902 0.057260 .  
-    ## release                             -0.020093   0.008277  -2.427 0.015291 *  
-    ## gap_openness                        -0.062455   0.043860  -1.424 0.154604    
-    ## income                               0.005122   0.017277   0.296 0.766898    
-    ## gap_extraversion                     0.005945   0.025951   0.229 0.818841    
-    ## gap_agreeableness                    0.072307   0.033910   2.132 0.033097 *  
-    ## gap_emotionstability                -0.044807   0.031909  -1.404 0.160410    
-    ## age                                 -0.013423   0.004625  -2.902 0.003745 ** 
-    ## sex2                                -0.086375   0.072865  -1.185 0.235988    
-    ## gap_conscientiousness                0.005835   0.040529   0.144 0.885530    
-    ## race4                               -0.176159   0.141897  -1.241 0.214578    
-    ## education                            0.004025   0.026667   0.151 0.880042    
-    ## race2                                0.081573   0.131917   0.618 0.536405    
-    ## star_user                           -0.024114   0.072678  -0.332 0.740082    
-    ## gap_extraversion.tste_14_0_ct       -0.065645   0.031165  -2.106 0.035294 *  
-    ## gap_agreeableness.tste_14_0_ct       0.032707   0.042934   0.762 0.446267    
-    ## gap_conscientiousness.tste_14_0_ct   0.145226   0.048220   3.012 0.002629 ** 
-    ## gap_openness.tste_14_0_ct            0.007476   0.048641   0.154 0.877860    
-    ## star_GS                              0.163872   0.060187   2.723 0.006530 ** 
-    ## gap_extraversion.tste_14_1_ct       -0.006003   0.030076  -0.200 0.841828    
-    ## gap_agreeableness.tste_14_1_ct       0.012522   0.041602   0.301 0.763454    
-    ## gap_openness.tste_14_1_ct            0.006016   0.046416   0.130 0.896888    
-    ## gap_extraversion.tste_14_2_ct       -0.014094   0.030179  -0.467 0.640530    
-    ## gap_agreeableness.tste_14_2_ct      -0.010803   0.040842  -0.265 0.791418    
-    ## gap_conscientiousness.tste_14_2_ct  -0.003312   0.047029  -0.070 0.943858    
-    ## gap_openness.tste_14_2_ct           -0.025258   0.047062  -0.537 0.591543    
-    ## gap_extraversion.tste_14_3_ct        0.006984   0.029316   0.238 0.811739    
-    ## gap_agreeableness.tste_14_3_ct       0.034847   0.039903   0.873 0.382604    
-    ## gap_conscientiousness.tste_14_3_ct   0.046076   0.045231   1.019 0.308470    
-    ## gap_openness.tste_14_3_ct            0.010061   0.044696   0.225 0.821929    
-    ## gap_extraversion.tste_14_4_ct        0.017838   0.028338   0.629 0.529109    
-    ## gap_agreeableness.tste_14_4_ct      -0.061816   0.037483  -1.649 0.099270 .  
-    ## gap_conscientiousness.tste_14_4_ct  -0.062602   0.042233  -1.482 0.138415    
-    ## gap_openness.tste_14_4_ct            0.032087   0.044260   0.725 0.468557    
-    ## gap_extraversion.tste_14_5_ct        0.023239   0.033766   0.688 0.491376    
-    ## gap_agreeableness.tste_14_5_ct      -0.134280   0.045645  -2.942 0.003299 ** 
-    ## gap_conscientiousness.tste_14_5_ct   0.070992   0.052651   1.348 0.177698    
-    ## gap_openness.tste_14_5_ct           -0.053759   0.052451  -1.025 0.305512    
-    ## gap_extraversion.tste_14_6_ct       -0.025849   0.031309  -0.826 0.409115    
-    ## gap_agreeableness.tste_14_6_ct       0.059450   0.044336   1.341 0.180099    
-    ## gap_emotionstability.tste_14_6_ct   -0.051369   0.035331  -1.454 0.146116    
-    ## gap_openness.tste_14_6_ct           -0.074587   0.050824  -1.468 0.142375    
-    ## gap_extraversion.tste_14_7_ct       -0.044643   0.033950  -1.315 0.188670    
-    ## gap_agreeableness.tste_14_7_ct       0.104686   0.051617   2.028 0.042678 *  
-    ## gap_conscientiousness.tste_14_7_ct  -0.122649   0.056773  -2.160 0.030862 *  
-    ## gap_emotionstability.tste_14_7_ct   -0.068157   0.041893  -1.627 0.103906    
-    ## gap_openness.tste_14_7_ct           -0.015621   0.057500  -0.272 0.785908    
-    ## gap_extraversion.tste_14_8_ct        0.015543   0.028116   0.553 0.580444    
-    ## gap_agreeableness.tste_14_8_ct       0.058248   0.038375   1.518 0.129204    
-    ## gap_conscientiousness.tste_14_8_ct   0.032396   0.038277   0.846 0.397455    
-    ## gap_emotionstability.tste_14_8_ct   -0.032423   0.032360  -1.002 0.316491    
-    ## gap_openness.tste_14_8_ct           -0.005963   0.044286  -0.135 0.892901    
-    ## gap_extraversion.tste_14_9_ct       -0.043905   0.032153  -1.366 0.172235    
-    ## gap_agreeableness.tste_14_9_ct      -0.001637   0.044107  -0.037 0.970406    
-    ## gap_openness.tste_14_9_ct            0.062150   0.049843   1.247 0.212570    
-    ## gap_extraversion.tste_14_10_ct      -0.016171   0.031952  -0.506 0.612851    
-    ## gap_agreeableness.tste_14_10_ct      0.001244   0.044184   0.028 0.977540    
-    ## gap_conscientiousness.tste_14_10_ct  0.054795   0.051315   1.068 0.285723    
-    ## gap_openness.tste_14_10_ct           0.025370   0.050925   0.498 0.618415    
-    ## gap_extraversion.tste_14_11_ct       0.015336   0.030133   0.509 0.610842    
-    ## gap_agreeableness.tste_14_11_ct     -0.050852   0.040501  -1.256 0.209414    
-    ## gap_conscientiousness.tste_14_11_ct -0.060101   0.048667  -1.235 0.216997    
-    ## gap_openness.tste_14_11_ct          -0.045411   0.047030  -0.966 0.334371    
-    ## gap_extraversion.tste_14_12_ct      -0.054262   0.032372  -1.676 0.093855 .  
-    ## gap_agreeableness.tste_14_12_ct      0.040052   0.045661   0.877 0.380501    
-    ## gap_conscientiousness.tste_14_12_ct  0.049789   0.050896   0.978 0.328070    
-    ## gap_emotionstability.tste_14_12_ct  -0.045798   0.039839  -1.150 0.250449    
-    ## gap_openness.tste_14_12_ct           0.001502   0.050725   0.030 0.976387    
-    ## gap_extraversion.tste_14_13_ct      -0.032787   0.031011  -1.057 0.290511    
-    ## gap_agreeableness.tste_14_13_ct     -0.044776   0.044803  -0.999 0.317720    
-    ## gap_conscientiousness.tste_14_13_ct  0.082279   0.049951   1.647 0.099670 .  
-    ## gap_emotionstability.tste_14_13_ct   0.063194   0.038503   1.641 0.100896    
-    ## gap_openness.tste_14_13_ct           0.110330   0.050848   2.170 0.030138 *  
+    ## (Intercept)                         63.491726  16.079388   3.949 8.12e-05 ***
+    ## real_extraversion_ct                 0.062078   0.024918   2.491 0.012806 *  
+    ## real_agreeableness_ct                0.009937   0.031310   0.317 0.750996    
+    ## real_conscientiousness_ct            0.086078   0.034674   2.482 0.013126 *  
+    ## real_emotionstability_ct            -0.031217   0.034436  -0.907 0.364773    
+    ## real_openness_ct                     0.074284   0.033089   2.245 0.024876 *  
+    ## gap_extraversion                     0.009375   0.026044   0.360 0.718916    
+    ## gap_agreeableness                    0.062345   0.033883   1.840 0.065907 .  
+    ## gap_conscientiousness                0.005201   0.040015   0.130 0.896595    
+    ## gap_emotionstability                -0.050542   0.031802  -1.589 0.112159    
+    ## gap_openness                        -0.073775   0.043362  -1.701 0.089026 .  
+    ## tste_11_0_ct                        -0.091073   0.069974  -1.302 0.193225    
+    ## tste_11_1_ct                         0.009479   0.065593   0.145 0.885107    
+    ## tste_11_2_ct                        -0.100785   0.057877  -1.741 0.081770 .  
+    ## tste_11_3_ct                        -0.013115   0.070587  -0.186 0.852623    
+    ## tste_11_4_ct                        -0.107357   0.071543  -1.501 0.133614    
+    ## tste_11_5_ct                        -0.110325   0.063117  -1.748 0.080623 .  
+    ## tste_11_6_ct                         0.143616   0.060467   2.375 0.017634 *  
+    ## tste_11_7_ct                         0.081108   0.070735   1.147 0.251664    
+    ## tste_11_8_ct                        -0.227126   0.053234  -4.267 2.08e-05 ***
+    ## tste_11_9_ct                         0.144719   0.062700   2.308 0.021090 *  
+    ## tste_11_10_ct                        0.059964   0.066373   0.903 0.366402    
+    ## release                             -0.029067   0.007917  -3.671 0.000248 ***
+    ## education                            0.010138   0.026520   0.382 0.702309    
+    ## income                               0.009780   0.017198   0.569 0.569659    
+    ## age                                 -0.014616   0.004569  -3.199 0.001400 ** 
+    ## sex2                                -0.074487   0.072458  -1.028 0.304069    
+    ## race4                               -0.212967   0.141512  -1.505 0.132493    
+    ## race7                               -0.149193   0.136313  -1.094 0.273869    
+    ## race6                               -0.924890   0.356549  -2.594 0.009554 ** 
+    ## gap_extraversion.tste_11_9_ct       -0.028891   0.032481  -0.889 0.373845    
+    ## star_user                           -0.064455   0.072431  -0.890 0.373635    
+    ## gap_extraversion.tste_11_0_ct        0.035663   0.035329   1.009 0.312874    
+    ## gap_agreeableness.tste_11_0_ct       0.009974   0.047098   0.212 0.832301    
+    ## gap_conscientiousness.tste_11_0_ct  -0.140665   0.053521  -2.628 0.008647 ** 
+    ## gap_openness.tste_11_0_ct            0.046585   0.053841   0.865 0.387015    
+    ## star_GS                              0.149294   0.057580   2.593 0.009586 ** 
+    ## gap_extraversion.tste_11_1_ct        0.033965   0.031339   1.084 0.278581    
+    ## gap_agreeableness.tste_11_1_ct       0.037932   0.042058   0.902 0.367223    
+    ## gap_conscientiousness.tste_11_1_ct  -0.009508   0.049182  -0.193 0.846724    
+    ## gap_openness.tste_11_1_ct           -0.008263   0.049106  -0.168 0.866385    
+    ## gap_extraversion.tste_11_2_ct        0.068542   0.028427   2.411 0.015991 *  
+    ## gap_agreeableness.tste_11_2_ct       0.015287   0.040252   0.380 0.704139    
+    ## gap_conscientiousness.tste_11_2_ct  -0.004789   0.044810  -0.107 0.914892    
+    ## gap_emotionstability.tste_11_2_ct    0.082468   0.034894   2.363 0.018202 *  
+    ## gap_openness.tste_11_2_ct           -0.070860   0.046199  -1.534 0.125235    
+    ## gap_extraversion.tste_11_3_ct        0.019338   0.034826   0.555 0.578759    
+    ## gap_agreeableness.tste_11_3_ct       0.032248   0.047584   0.678 0.498028    
+    ## gap_conscientiousness.tste_11_3_ct  -0.023945   0.054640  -0.438 0.661260    
+    ## gap_emotionstability.tste_11_3_ct    0.095594   0.043815   2.182 0.029238 *  
+    ## gap_openness.tste_11_3_ct            0.042022   0.054077   0.777 0.437205    
+    ## gap_extraversion.tste_11_4_ct       -0.034076   0.033404  -1.020 0.307795    
+    ## gap_agreeableness.tste_11_4_ct      -0.051376   0.044867  -1.145 0.252308    
+    ## gap_openness.tste_11_4_ct            0.010157   0.053418   0.190 0.849211    
+    ## gap_extraversion.tste_11_5_ct       -0.018561   0.031029  -0.598 0.549788    
+    ## gap_agreeableness.tste_11_5_ct       0.032874   0.042824   0.768 0.442788    
+    ## gap_conscientiousness.tste_11_5_ct   0.076562   0.049623   1.543 0.123015    
+    ## gap_openness.tste_11_5_ct            0.002828   0.047953   0.059 0.952971    
+    ## gap_extraversion.tste_11_6_ct        0.006046   0.030415   0.199 0.842452    
+    ## gap_agreeableness.tste_11_6_ct       0.005968   0.042917   0.139 0.889408    
+    ## gap_conscientiousness.tste_11_6_ct   0.017754   0.045795   0.388 0.698294    
+    ## gap_openness.tste_11_6_ct            0.035446   0.047321   0.749 0.453907    
+    ## gap_extraversion.tste_11_7_ct        0.042483   0.035067   1.211 0.225856    
+    ## gap_agreeableness.tste_11_7_ct      -0.068350   0.050422  -1.356 0.175392    
+    ## gap_conscientiousness.tste_11_7_ct   0.043679   0.056348   0.775 0.438337    
+    ## gap_emotionstability.tste_11_7_ct   -0.013176   0.042286  -0.312 0.755377    
+    ## gap_openness.tste_11_7_ct           -0.039756   0.055599  -0.715 0.474663    
+    ## gap_extraversion.tste_11_8_ct        0.010460   0.026839   0.390 0.696766    
+    ## gap_agreeableness.tste_11_8_ct       0.048519   0.037134   1.307 0.191496    
+    ## gap_conscientiousness.tste_11_8_ct   0.057343   0.042923   1.336 0.181718    
+    ## gap_emotionstability.tste_11_8_ct   -0.015512   0.029603  -0.524 0.600335    
+    ## gap_openness.tste_11_8_ct           -0.037230   0.041961  -0.887 0.375054    
+    ## gap_agreeableness.tste_11_9_ct       0.052973   0.043551   1.216 0.223990    
+    ## gap_conscientiousness.tste_11_9_ct   0.080576   0.051881   1.553 0.120557    
+    ## gap_openness.tste_11_9_ct            0.071962   0.050095   1.437 0.151005    
+    ## gap_extraversion.tste_11_10_ct      -0.010586   0.030447  -0.348 0.728110    
+    ## gap_agreeableness.tste_11_10_ct      0.003129   0.042709   0.073 0.941609    
+    ## gap_conscientiousness.tste_11_10_ct  0.096338   0.046515   2.071 0.038473 *  
+    ## gap_openness.tste_11_10_ct          -0.003554   0.046652  -0.076 0.939287    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.442 on 2046 degrees of freedom
-    ## Multiple R-squared:  0.118,  Adjusted R-squared:  0.07882 
-    ## F-statistic: 3.009 on 91 and 2046 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.436 on 2059 degrees of freedom
+    ## Multiple R-squared:  0.119,  Adjusted R-squared:  0.08558 
+    ## F-statistic: 3.564 on 78 and 2059 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -6036,112 +5764,426 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.3437 -0.6538  0.2713  1.0160  3.5981 
+    ## -5.2321 -0.6720  0.2688  1.0169  3.3580 
+    ## 
+    ## Coefficients:
+    ##                                       Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                         49.6512642 16.4453095   3.019 0.002566 ** 
+    ## real_extraversion_ct                 0.0627759  0.0250363   2.507 0.012239 *  
+    ## real_agreeableness_ct                0.0156893  0.0312967   0.501 0.616207    
+    ## real_conscientiousness_ct            0.0805198  0.0348391   2.311 0.020921 *  
+    ## real_emotionstability_ct            -0.0380553  0.0345465  -1.102 0.270778    
+    ## real_openness_ct                     0.0774962  0.0331062   2.341 0.019336 *  
+    ## gap_extraversion                     0.0107954  0.0261668   0.413 0.679973    
+    ## gap_agreeableness                    0.0630841  0.0340136   1.855 0.063786 .  
+    ## gap_conscientiousness               -0.0060473  0.0402024  -0.150 0.880446    
+    ## gap_emotionstability                -0.0614579  0.0319267  -1.925 0.054371 .  
+    ## gap_openness                        -0.0766728  0.0434011  -1.767 0.077442 .  
+    ## tste_12_0_ct                         0.1608583  0.0738066   2.179 0.029411 *  
+    ## tste_12_1_ct                         0.0583232  0.0613401   0.951 0.341809    
+    ## tste_12_2_ct                         0.0401363  0.0620503   0.647 0.517811    
+    ## tste_12_3_ct                        -0.0008292  0.0687429  -0.012 0.990377    
+    ## tste_12_4_ct                        -0.0285789  0.0641650  -0.445 0.656080    
+    ## tste_12_5_ct                         0.1135976  0.0679463   1.672 0.094702 .  
+    ## tste_12_6_ct                        -0.0833166  0.0685636  -1.215 0.224440    
+    ## tste_12_7_ct                         0.0981202  0.0683382   1.436 0.151210    
+    ## tste_12_8_ct                         0.1798890  0.0602507   2.986 0.002863 ** 
+    ## tste_12_9_ct                        -0.0846902  0.0645601  -1.312 0.189733    
+    ## tste_12_10_ct                        0.2047896  0.0560137   3.656 0.000263 ***
+    ## tste_12_11_ct                       -0.1330559  0.0598893  -2.222 0.026412 *  
+    ## release                             -0.0224579  0.0080817  -2.779 0.005505 ** 
+    ## education                            0.0100589  0.0265091   0.379 0.704391    
+    ## income                               0.0082763  0.0172067   0.481 0.630575    
+    ## age                                 -0.0140550  0.0045768  -3.071 0.002162 ** 
+    ## sex2                                -0.0652575  0.0725380  -0.900 0.368421    
+    ## race4                               -0.2139277  0.1414218  -1.513 0.130511    
+    ## race7                               -0.1612512  0.1365197  -1.181 0.237677    
+    ## gap_emotionstability.tste_12_11_ct  -0.0657063  0.0360892  -1.821 0.068803 .  
+    ## race6                               -0.8609283  0.3616027  -2.381 0.017362 *  
+    ## gap_extraversion.tste_12_11_ct      -0.0528514  0.0298629  -1.770 0.076908 .  
+    ## gap_emotionstability.tste_12_7_ct    0.0652618  0.0404784   1.612 0.107058    
+    ## star_user                           -0.0334148  0.0724440  -0.461 0.644668    
+    ## star_GS                              0.1847271  0.0607107   3.043 0.002374 ** 
+    ## gap_extraversion.tste_12_0_ct        0.0126566  0.0336430   0.376 0.706806    
+    ## gap_agreeableness.tste_12_0_ct      -0.0167891  0.0464910  -0.361 0.718042    
+    ## gap_conscientiousness.tste_12_0_ct   0.0890769  0.0543263   1.640 0.101228    
+    ## gap_openness.tste_12_0_ct           -0.0588760  0.0512659  -1.148 0.250919    
+    ## gap_extraversion.tste_12_1_ct       -0.0058253  0.0274999  -0.212 0.832261    
+    ## gap_agreeableness.tste_12_1_ct      -0.0082941  0.0387866  -0.214 0.830693    
+    ## gap_openness.tste_12_1_ct            0.0378708  0.0450838   0.840 0.401001    
+    ## gap_extraversion.tste_12_2_ct       -0.0345446  0.0301444  -1.146 0.251940    
+    ## gap_agreeableness.tste_12_2_ct       0.0256106  0.0419075   0.611 0.541186    
+    ## gap_conscientiousness.tste_12_2_ct   0.0452300  0.0443064   1.021 0.307448    
+    ## gap_openness.tste_12_2_ct            0.0868908  0.0469748   1.850 0.064495 .  
+    ## gap_extraversion.tste_12_3_ct       -0.0283102  0.0342006  -0.828 0.407897    
+    ## gap_agreeableness.tste_12_3_ct       0.0589114  0.0449879   1.309 0.190513    
+    ## gap_conscientiousness.tste_12_3_ct   0.0530720  0.0512550   1.035 0.300581    
+    ## gap_openness.tste_12_3_ct            0.0034625  0.0532220   0.065 0.948135    
+    ## gap_extraversion.tste_12_4_ct       -0.0058192  0.0322536  -0.180 0.856842    
+    ## gap_agreeableness.tste_12_4_ct      -0.0364317  0.0426090  -0.855 0.392638    
+    ## gap_openness.tste_12_4_ct           -0.0455081  0.0494672  -0.920 0.357699    
+    ## gap_extraversion.tste_12_5_ct        0.0485782  0.0336366   1.444 0.148833    
+    ## gap_agreeableness.tste_12_5_ct      -0.0213210  0.0478137  -0.446 0.655704    
+    ## gap_conscientiousness.tste_12_5_ct  -0.1082586  0.0532825  -2.032 0.042304 *  
+    ## gap_emotionstability.tste_12_5_ct    0.0923163  0.0410841   2.247 0.024745 *  
+    ## gap_openness.tste_12_5_ct            0.0235497  0.0552551   0.426 0.670007    
+    ## gap_extraversion.tste_12_6_ct       -0.0098964  0.0339348  -0.292 0.770599    
+    ## gap_agreeableness.tste_12_6_ct       0.1006910  0.0474432   2.122 0.033928 *  
+    ## gap_conscientiousness.tste_12_6_ct   0.0220237  0.0502216   0.439 0.661048    
+    ## gap_openness.tste_12_6_ct            0.0026702  0.0532994   0.050 0.960048    
+    ## gap_extraversion.tste_12_7_ct       -0.0530258  0.0339664  -1.561 0.118649    
+    ## gap_agreeableness.tste_12_7_ct       0.0700450  0.0485859   1.442 0.149547    
+    ## gap_conscientiousness.tste_12_7_ct   0.0446663  0.0523934   0.853 0.394026    
+    ## gap_openness.tste_12_7_ct           -0.0033128  0.0556696  -0.060 0.952553    
+    ## gap_extraversion.tste_12_8_ct        0.0064082  0.0289066   0.222 0.824579    
+    ## gap_agreeableness.tste_12_8_ct      -0.0245462  0.0385878  -0.636 0.524773    
+    ## gap_conscientiousness.tste_12_8_ct   0.0497542  0.0424681   1.172 0.241507    
+    ## gap_openness.tste_12_8_ct           -0.0453586  0.0447127  -1.014 0.310490    
+    ## gap_extraversion.tste_12_9_ct        0.0261892  0.0333192   0.786 0.431953    
+    ## gap_agreeableness.tste_12_9_ct       0.0590848  0.0437310   1.351 0.176813    
+    ## gap_openness.tste_12_9_ct           -0.0558202  0.0512594  -1.089 0.276293    
+    ## gap_extraversion.tste_12_10_ct      -0.0511178  0.0274840  -1.860 0.063041 .  
+    ## gap_agreeableness.tste_12_10_ct     -0.0093717  0.0364947  -0.257 0.797363    
+    ## gap_conscientiousness.tste_12_10_ct  0.0691114  0.0429648   1.609 0.107866    
+    ## gap_openness.tste_12_10_ct           0.0777426  0.0424900   1.830 0.067444 .  
+    ## gap_agreeableness.tste_12_11_ct     -0.0234896  0.0439299  -0.535 0.592910    
+    ## gap_conscientiousness.tste_12_11_ct -0.0242240  0.0457593  -0.529 0.596600    
+    ## gap_openness.tste_12_11_ct          -0.0544326  0.0471928  -1.153 0.248877    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.438 on 2057 degrees of freedom
+    ## Multiple R-squared:  0.1183, Adjusted R-squared:  0.08397 
+    ## F-statistic: 3.449 on 80 and 2057 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.3872 -0.6755  0.2613  1.0215  2.9872 
+    ## 
+    ## Coefficients:
+    ##                                       Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                         47.5766240 16.8565859   2.822 0.004812 ** 
+    ## real_extraversion_ct                 0.0596876  0.0250296   2.385 0.017184 *  
+    ## real_agreeableness_ct                0.0227533  0.0313317   0.726 0.467794    
+    ## real_conscientiousness_ct            0.0919120  0.0348516   2.637 0.008421 ** 
+    ## real_emotionstability_ct            -0.0332698  0.0346074  -0.961 0.336490    
+    ## real_openness_ct                     0.0765854  0.0331784   2.308 0.021082 *  
+    ## gap_extraversion                     0.0068973  0.0261957   0.263 0.792348    
+    ## gap_agreeableness                    0.0667245  0.0340187   1.961 0.049967 *  
+    ## gap_conscientiousness                0.0070851  0.0403296   0.176 0.860563    
+    ## gap_emotionstability                -0.0474719  0.0319532  -1.486 0.137520    
+    ## gap_openness                        -0.0770286  0.0436257  -1.766 0.077599 .  
+    ## tste_13_0_ct                         0.0257250  0.0621804   0.414 0.679125    
+    ## tste_13_1_ct                        -0.1055969  0.0585382  -1.804 0.071394 .  
+    ## tste_13_2_ct                         0.1845972  0.0636445   2.900 0.003766 ** 
+    ## tste_13_3_ct                         0.0124799  0.0619554   0.201 0.840380    
+    ## tste_13_4_ct                        -0.0365815  0.0652864  -0.560 0.575319    
+    ## tste_13_5_ct                         0.0988948  0.0651606   1.518 0.129242    
+    ## tste_13_6_ct                         0.0222143  0.0695767   0.319 0.749548    
+    ## tste_13_7_ct                        -0.0970018  0.0635342  -1.527 0.126974    
+    ## tste_13_8_ct                         0.0898530  0.0581354   1.546 0.122360    
+    ## tste_13_9_ct                         0.0769380  0.0721735   1.066 0.286542    
+    ## tste_13_10_ct                        0.1899747  0.0610243   3.113 0.001877 ** 
+    ## tste_13_11_ct                        0.1085517  0.0674396   1.610 0.107636    
+    ## tste_13_12_ct                        0.0619546  0.0649515   0.954 0.340267    
+    ## release                             -0.0212203  0.0082788  -2.563 0.010442 *  
+    ## gap_extraversion.tste_13_4_ct       -0.0584849  0.0331327  -1.765 0.077684 .  
+    ## education                            0.0137293  0.0265600   0.517 0.605270    
+    ## income                               0.0071129  0.0172181   0.413 0.679571    
+    ## age                                 -0.0146355  0.0045802  -3.195 0.001418 ** 
+    ## sex2                                -0.0732382  0.0726434  -1.008 0.313483    
+    ## race4                               -0.2014045  0.1412089  -1.426 0.153938    
+    ## race7                               -0.1682669  0.1369416  -1.229 0.219307    
+    ## race6                               -0.9012262  0.3606376  -2.499 0.012533 *  
+    ## gap_openness.tste_13_11_ct           0.0496750  0.0524185   0.948 0.343414    
+    ## star_user                           -0.0735758  0.0719037  -1.023 0.306309    
+    ## gap_extraversion.tste_13_0_ct        0.0018418  0.0314182   0.059 0.953260    
+    ## gap_agreeableness.tste_13_0_ct      -0.0065130  0.0434472  -0.150 0.880853    
+    ## gap_conscientiousness.tste_13_0_ct  -0.0692431  0.0480044  -1.442 0.149333    
+    ## gap_openness.tste_13_0_ct           -0.0048645  0.0492013  -0.099 0.921252    
+    ## star_GS                              0.1774929  0.0596687   2.975 0.002968 ** 
+    ## gap_extraversion.tste_13_1_ct        0.0540291  0.0283771   1.904 0.057054 .  
+    ## gap_agreeableness.tste_13_1_ct      -0.0245218  0.0376182  -0.652 0.514564    
+    ## gap_conscientiousness.tste_13_1_ct   0.0814880  0.0429946   1.895 0.058192 .  
+    ## gap_emotionstability.tste_13_1_ct    0.1187790  0.0314759   3.774 0.000165 ***
+    ## gap_openness.tste_13_1_ct           -0.0016288  0.0441802  -0.037 0.970594    
+    ## gap_extraversion.tste_13_2_ct        0.0133563  0.0293344   0.455 0.648934    
+    ## gap_agreeableness.tste_13_2_ct      -0.0418054  0.0408286  -1.024 0.305991    
+    ## gap_conscientiousness.tste_13_2_ct   0.1104119  0.0471407   2.342 0.019267 *  
+    ## gap_openness.tste_13_2_ct           -0.0057099  0.0448824  -0.127 0.898779    
+    ## gap_extraversion.tste_13_3_ct        0.0403799  0.0312769   1.291 0.196833    
+    ## gap_agreeableness.tste_13_3_ct      -0.0446809  0.0410794  -1.088 0.276868    
+    ## gap_openness.tste_13_3_ct            0.0302994  0.0486059   0.623 0.533112    
+    ## gap_agreeableness.tste_13_4_ct      -0.0860838  0.0454025  -1.896 0.058098 .  
+    ## gap_openness.tste_13_4_ct            0.0570182  0.0517786   1.101 0.270942    
+    ## gap_extraversion.tste_13_5_ct        0.0275456  0.0311847   0.883 0.377175    
+    ## gap_agreeableness.tste_13_5_ct       0.0103916  0.0434846   0.239 0.811151    
+    ## gap_conscientiousness.tste_13_5_ct   0.0320329  0.0497225   0.644 0.519496    
+    ## gap_emotionstability.tste_13_5_ct    0.0482825  0.0386449   1.249 0.211665    
+    ## gap_openness.tste_13_5_ct            0.0275386  0.0495487   0.556 0.578417    
+    ## gap_extraversion.tste_13_6_ct        0.0215083  0.0334320   0.643 0.520072    
+    ## gap_agreeableness.tste_13_6_ct      -0.0388530  0.0435329  -0.892 0.372231    
+    ## gap_conscientiousness.tste_13_6_ct   0.0632811  0.0523973   1.208 0.227296    
+    ## gap_openness.tste_13_6_ct           -0.0808226  0.0524553  -1.541 0.123522    
+    ## gap_extraversion.tste_13_7_ct        0.0003908  0.0315341   0.012 0.990113    
+    ## gap_agreeableness.tste_13_7_ct       0.0640383  0.0427562   1.498 0.134351    
+    ## gap_conscientiousness.tste_13_7_ct  -0.0701451  0.0480820  -1.459 0.144756    
+    ## gap_openness.tste_13_7_ct            0.0222720  0.0477507   0.466 0.640963    
+    ## gap_extraversion.tste_13_8_ct        0.0156269  0.0293366   0.533 0.594315    
+    ## gap_agreeableness.tste_13_8_ct      -0.0687139  0.0393672  -1.745 0.081054 .  
+    ## gap_conscientiousness.tste_13_8_ct  -0.0384546  0.0469845  -0.818 0.413194    
+    ## gap_openness.tste_13_8_ct           -0.0072928  0.0472508  -0.154 0.877355    
+    ## gap_extraversion.tste_13_9_ct        0.0150717  0.0350863   0.430 0.667560    
+    ## gap_agreeableness.tste_13_9_ct      -0.0164406  0.0504316  -0.326 0.744458    
+    ## gap_conscientiousness.tste_13_9_ct   0.0909071  0.0531686   1.710 0.087456 .  
+    ## gap_openness.tste_13_9_ct            0.1028560  0.0563839   1.824 0.068266 .  
+    ## gap_extraversion.tste_13_10_ct      -0.0400786  0.0310425  -1.291 0.196819    
+    ## gap_agreeableness.tste_13_10_ct      0.0249890  0.0410244   0.609 0.542509    
+    ## gap_openness.tste_13_10_ct           0.0511649  0.0467385   1.095 0.273773    
+    ## gap_extraversion.tste_13_11_ct      -0.0321997  0.0327341  -0.984 0.325391    
+    ## gap_agreeableness.tste_13_11_ct      0.0488412  0.0452511   1.079 0.280564    
+    ## gap_conscientiousness.tste_13_11_ct -0.0660203  0.0532421  -1.240 0.215117    
+    ## gap_extraversion.tste_13_12_ct      -0.0037079  0.0317177  -0.117 0.906949    
+    ## gap_agreeableness.tste_13_12_ct     -0.0025597  0.0472132  -0.054 0.956768    
+    ## gap_conscientiousness.tste_13_12_ct -0.0086127  0.0527026  -0.163 0.870204    
+    ## gap_emotionstability.tste_13_12_ct   0.0428472  0.0371630   1.153 0.249064    
+    ## gap_openness.tste_13_12_ct           0.0516013  0.0537980   0.959 0.337588    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.438 on 2052 degrees of freedom
+    ## Multiple R-squared:  0.1193, Adjusted R-squared:  0.08279 
+    ## F-statistic: 3.269 on 85 and 2052 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.4411 -0.6929  0.2616  1.0361  3.3693 
+    ## 
+    ## Coefficients:
+    ##                                      Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                         43.094627  16.814751   2.563 0.010451 *  
+    ## real_extraversion_ct                 0.060390   0.025107   2.405 0.016247 *  
+    ## real_agreeableness_ct                0.022487   0.031500   0.714 0.475380    
+    ## real_conscientiousness_ct            0.084127   0.034999   2.404 0.016319 *  
+    ## real_emotionstability_ct            -0.038495   0.034712  -1.109 0.267574    
+    ## real_openness_ct                     0.081063   0.033230   2.439 0.014795 *  
+    ## gap_extraversion                     0.016407   0.026293   0.624 0.532687    
+    ## gap_agreeableness                    0.066756   0.034119   1.957 0.050534 .  
+    ## gap_conscientiousness                0.004240   0.040703   0.104 0.917042    
+    ## gap_emotionstability                -0.049257   0.032131  -1.533 0.125434    
+    ## gap_openness                        -0.076430   0.043803  -1.745 0.081163 .  
+    ## tste_14_0_ct                        -0.075338   0.065349  -1.153 0.249105    
+    ## tste_14_1_ct                         0.013560   0.063416   0.214 0.830701    
+    ## tste_14_2_ct                         0.078191   0.061647   1.268 0.204812    
+    ## tste_14_3_ct                         0.081038   0.058988   1.374 0.169652    
+    ## tste_14_4_ct                         0.020241   0.055368   0.366 0.714715    
+    ## tste_14_5_ct                         0.004578   0.067503   0.068 0.945941    
+    ## tste_14_6_ct                         0.053203   0.064268   0.828 0.407859    
+    ## tste_14_7_ct                        -0.250695   0.072861  -3.441 0.000592 ***
+    ## tste_14_8_ct                         0.114791   0.056265   2.040 0.041460 *  
+    ## tste_14_9_ct                         0.002238   0.065204   0.034 0.972625    
+    ## tste_14_10_ct                        0.098420   0.061919   1.589 0.112107    
+    ## tste_14_11_ct                       -0.022306   0.061219  -0.364 0.715629    
+    ## tste_14_12_ct                        0.109035   0.063390   1.720 0.085573 .  
+    ## tste_14_13_ct                        0.121359   0.064706   1.876 0.060862 .  
+    ## release                             -0.019124   0.008268  -2.313 0.020827 *  
+    ## education                            0.006995   0.026646   0.263 0.792954    
+    ## income                               0.006926   0.017276   0.401 0.688541    
+    ## age                                 -0.014387   0.004599  -3.128 0.001783 ** 
+    ## sex2                                -0.074197   0.072980  -1.017 0.309425    
+    ## race4                               -0.196239   0.141656  -1.385 0.166104    
+    ## race7                               -0.161952   0.137683  -1.176 0.239624    
+    ## race6                               -0.821056   0.362948  -2.262 0.023790 *  
+    ## gap_conscientiousness.tste_14_3_ct   0.048754   0.045185   1.079 0.280716    
+    ## gap_conscientiousness.tste_14_7_ct  -0.120750   0.056722  -2.129 0.033389 *  
+    ## star_user                           -0.024134   0.072624  -0.332 0.739687    
+    ## gap_extraversion.tste_14_0_ct       -0.066708   0.031173  -2.140 0.032480 *  
+    ## gap_agreeableness.tste_14_0_ct       0.034955   0.042914   0.815 0.415423    
+    ## gap_conscientiousness.tste_14_0_ct   0.145677   0.048152   3.025 0.002514 ** 
+    ## gap_openness.tste_14_0_ct            0.007539   0.048613   0.155 0.876766    
+    ## star_GS                              0.162500   0.060166   2.701 0.006973 ** 
+    ## gap_extraversion.tste_14_1_ct       -0.002223   0.030053  -0.074 0.941044    
+    ## gap_agreeableness.tste_14_1_ct       0.009495   0.041558   0.228 0.819302    
+    ## gap_openness.tste_14_1_ct            0.003250   0.046369   0.070 0.944129    
+    ## gap_extraversion.tste_14_2_ct       -0.014326   0.030161  -0.475 0.634846    
+    ## gap_agreeableness.tste_14_2_ct      -0.007258   0.040837  -0.178 0.858946    
+    ## gap_conscientiousness.tste_14_2_ct  -0.005748   0.047026  -0.122 0.902733    
+    ## gap_openness.tste_14_2_ct           -0.019308   0.047080  -0.410 0.681761    
+    ## gap_extraversion.tste_14_3_ct        0.003006   0.029366   0.102 0.918475    
+    ## gap_agreeableness.tste_14_3_ct       0.040572   0.039967   1.015 0.310155    
+    ## gap_openness.tste_14_3_ct            0.013960   0.044699   0.312 0.754842    
+    ## gap_extraversion.tste_14_4_ct        0.014854   0.028336   0.524 0.600191    
+    ## gap_agreeableness.tste_14_4_ct      -0.058450   0.037482  -1.559 0.119052    
+    ## gap_conscientiousness.tste_14_4_ct  -0.062956   0.042199  -1.492 0.135884    
+    ## gap_openness.tste_14_4_ct            0.035711   0.044245   0.807 0.419692    
+    ## gap_extraversion.tste_14_5_ct        0.016807   0.033876   0.496 0.619848    
+    ## gap_agreeableness.tste_14_5_ct      -0.126323   0.045744  -2.762 0.005805 ** 
+    ## gap_conscientiousness.tste_14_5_ct   0.073326   0.052614   1.394 0.163576    
+    ## gap_openness.tste_14_5_ct           -0.049443   0.052477  -0.942 0.346210    
+    ## gap_extraversion.tste_14_6_ct       -0.021564   0.031328  -0.688 0.491323    
+    ## gap_agreeableness.tste_14_6_ct       0.052822   0.044454   1.188 0.234878    
+    ## gap_emotionstability.tste_14_6_ct   -0.049415   0.035328  -1.399 0.162044    
+    ## gap_openness.tste_14_6_ct           -0.078098   0.050857  -1.536 0.124784    
+    ## gap_extraversion.tste_14_7_ct       -0.042825   0.033928  -1.262 0.206999    
+    ## gap_agreeableness.tste_14_7_ct       0.104271   0.051702   2.017 0.043849 *  
+    ## gap_emotionstability.tste_14_7_ct   -0.070145   0.042368  -1.656 0.097951 .  
+    ## gap_openness.tste_14_7_ct           -0.013516   0.057576  -0.235 0.814421    
+    ## gap_extraversion.tste_14_8_ct        0.016514   0.028093   0.588 0.556701    
+    ## gap_agreeableness.tste_14_8_ct       0.056798   0.038347   1.481 0.138718    
+    ## gap_conscientiousness.tste_14_8_ct   0.033439   0.038250   0.874 0.382088    
+    ## gap_emotionstability.tste_14_8_ct   -0.032558   0.032429  -1.004 0.315508    
+    ## gap_openness.tste_14_8_ct           -0.008109   0.044257  -0.183 0.854637    
+    ## gap_extraversion.tste_14_9_ct       -0.042522   0.032561  -1.306 0.191724    
+    ## gap_agreeableness.tste_14_9_ct      -0.006092   0.047953  -0.127 0.898917    
+    ## gap_emotionstability.tste_14_9_ct    0.010837   0.038436   0.282 0.778004    
+    ## gap_openness.tste_14_9_ct            0.064975   0.051013   1.274 0.202914    
+    ## gap_extraversion.tste_14_10_ct      -0.018674   0.031949  -0.584 0.558959    
+    ## gap_agreeableness.tste_14_10_ct      0.003278   0.044155   0.074 0.940833    
+    ## gap_conscientiousness.tste_14_10_ct  0.057003   0.051310   1.111 0.266715    
+    ## gap_openness.tste_14_10_ct           0.027486   0.050930   0.540 0.589484    
+    ## gap_extraversion.tste_14_11_ct       0.017479   0.030149   0.580 0.562131    
+    ## gap_agreeableness.tste_14_11_ct     -0.055749   0.040514  -1.376 0.168964    
+    ## gap_conscientiousness.tste_14_11_ct -0.062458   0.048643  -1.284 0.199287    
+    ## gap_openness.tste_14_11_ct          -0.047169   0.047003  -1.004 0.315716    
+    ## gap_extraversion.tste_14_12_ct      -0.046743   0.032526  -1.437 0.150847    
+    ## gap_agreeableness.tste_14_12_ct      0.029733   0.045945   0.647 0.517611    
+    ## gap_conscientiousness.tste_14_12_ct  0.051267   0.050889   1.007 0.313850    
+    ## gap_emotionstability.tste_14_12_ct  -0.039938   0.040190  -0.994 0.320471    
+    ## gap_openness.tste_14_12_ct          -0.004128   0.050818  -0.081 0.935269    
+    ## gap_extraversion.tste_14_13_ct      -0.034050   0.031052  -1.097 0.272968    
+    ## gap_agreeableness.tste_14_13_ct     -0.046175   0.044827  -1.030 0.303104    
+    ## gap_conscientiousness.tste_14_13_ct  0.084327   0.049914   1.689 0.091287 .  
+    ## gap_emotionstability.tste_14_13_ct   0.061082   0.038642   1.581 0.114100    
+    ## gap_openness.tste_14_13_ct           0.107156   0.050807   2.109 0.035060 *  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.44 on 2044 degrees of freedom
+    ## Multiple R-squared:  0.1206, Adjusted R-squared:  0.08061 
+    ## F-statistic: 3.015 on 93 and 2044 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.3815 -0.6704  0.2696  1.0033  3.5973 
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)   
-    ## (Intercept)                         52.5198628 17.8554730   2.941  0.00330 **
-    ## real_extraversion_ct                 0.0607083  0.0251887   2.410  0.01603 * 
-    ## real_agreeableness_ct                0.0196444  0.0314851   0.624  0.53274   
-    ## real_conscientiousness_ct            0.0819656  0.0350664   2.337  0.01951 * 
-    ## real_emotionstability_ct            -0.0259910  0.0347424  -0.748  0.45448   
-    ## real_openness_ct                     0.0867456  0.0334860   2.591  0.00965 **
-    ## tste_15_0_ct                        -0.0097803  0.0609405  -0.160  0.87251   
-    ## tste_15_1_ct                        -0.1347152  0.0653080  -2.063  0.03926 * 
-    ## tste_15_2_ct                         0.1288042  0.0607479   2.120  0.03410 * 
-    ## tste_15_3_ct                         0.0894336  0.0647029   1.382  0.16706   
-    ## tste_15_4_ct                         0.0184798  0.0583914   0.316  0.75167   
-    ## tste_15_5_ct                        -0.0641368  0.0671899  -0.955  0.33991   
-    ## tste_15_6_ct                        -0.0347541  0.0589660  -0.589  0.55566   
-    ## tste_15_7_ct                        -0.0897827  0.0630780  -1.423  0.15478   
-    ## tste_15_8_ct                        -0.1082436  0.0666562  -1.624  0.10455   
-    ## tste_15_9_ct                         0.0033174  0.0645061   0.051  0.95899   
-    ## tste_15_10_ct                        0.0318264  0.0669746   0.475  0.63469   
-    ## tste_15_11_ct                        0.1762015  0.0688865   2.558  0.01060 * 
-    ## tste_15_12_ct                       -0.0491845  0.0482494  -1.019  0.30814   
-    ## tste_15_13_ct                        0.0427434  0.0568337   0.752  0.45209   
-    ## tste_15_14_ct                        0.0299945  0.0586549   0.511  0.60915   
-    ## release                             -0.0236123  0.0087704  -2.692  0.00715 **
-    ## gap_openness                        -0.0590413  0.0438373  -1.347  0.17818   
-    ## gap_extraversion.tste_15_2_ct        0.0365881  0.0309196   1.183  0.23682   
-    ## income                               0.0057941  0.0172893   0.335  0.73756   
-    ## gap_extraversion                     0.0092482  0.0259325   0.357  0.72141   
-    ## gap_agreeableness                    0.0635701  0.0339686   1.871  0.06143 . 
-    ## gap_emotionstability                -0.0436984  0.0318965  -1.370  0.17084   
-    ## age                                 -0.0131936  0.0046233  -2.854  0.00436 **
-    ## sex2                                -0.0905816  0.0728472  -1.243  0.21385   
-    ## gap_conscientiousness                0.0073190  0.0405299   0.181  0.85671   
-    ## race4                               -0.1836991  0.1420626  -1.293  0.19613   
-    ## education                            0.0045000  0.0266448   0.169  0.86590   
-    ## race2                                0.0935391  0.1320393   0.708  0.47877   
-    ## gap_extraversion.tste_15_0_ct       -0.0253599  0.0305577  -0.830  0.40669   
-    ## gap_agreeableness.tste_15_0_ct       0.0170901  0.0429547   0.398  0.69077   
-    ## gap_conscientiousness.tste_15_0_ct  -0.0681787  0.0472579  -1.443  0.14926   
-    ## gap_openness.tste_15_0_ct           -0.0206757  0.0475183  -0.435  0.66353   
-    ## star_user                           -0.0504442  0.0762750  -0.661  0.50846   
-    ## gap_extraversion.tste_15_1_ct        0.0451222  0.0307214   1.469  0.14205   
-    ## gap_agreeableness.tste_15_1_ct       0.0032907  0.0404242   0.081  0.93513   
-    ## gap_openness.tste_15_1_ct           -0.0562563  0.0482576  -1.166  0.24385   
-    ## star_GS                              0.1346819  0.0607696   2.216  0.02678 * 
-    ## gap_agreeableness.tste_15_2_ct       0.0201451  0.0413044   0.488  0.62580   
-    ## gap_openness.tste_15_2_ct           -0.0478936  0.0493475  -0.971  0.33189   
-    ## gap_extraversion.tste_15_3_ct       -0.0081336  0.0303985  -0.268  0.78906   
-    ## gap_agreeableness.tste_15_3_ct      -0.0317755  0.0460289  -0.690  0.49006   
-    ## gap_conscientiousness.tste_15_3_ct   0.1383662  0.0489353   2.828  0.00474 **
-    ## gap_emotionstability.tste_15_3_ct    0.0027322  0.0394901   0.069  0.94485   
-    ## gap_openness.tste_15_3_ct            0.0071652  0.0518742   0.138  0.89015   
-    ## gap_extraversion.tste_15_4_ct        0.0104715  0.0296416   0.353  0.72392   
-    ## gap_agreeableness.tste_15_4_ct       0.0079706  0.0409053   0.195  0.84553   
-    ## gap_conscientiousness.tste_15_4_ct   0.0668046  0.0446650   1.496  0.13489   
-    ## gap_emotionstability.tste_15_4_ct    0.0646378  0.0342469   1.887  0.05925 . 
-    ## gap_openness.tste_15_4_ct           -0.0070281  0.0458813  -0.153  0.87827   
-    ## gap_extraversion.tste_15_5_ct        0.0456183  0.0320810   1.422  0.15519   
-    ## gap_agreeableness.tste_15_5_ct      -0.0895505  0.0440756  -2.032  0.04231 * 
-    ## gap_conscientiousness.tste_15_5_ct  -0.0363339  0.0517460  -0.702  0.48266   
-    ## gap_openness.tste_15_5_ct           -0.0455969  0.0507066  -0.899  0.36864   
-    ## gap_extraversion.tste_15_6_ct       -0.0527600  0.0294606  -1.791  0.07346 . 
-    ## gap_agreeableness.tste_15_6_ct      -0.0492836  0.0400621  -1.230  0.21877   
-    ## gap_conscientiousness.tste_15_6_ct   0.0821649  0.0428281   1.918  0.05519 . 
-    ## gap_openness.tste_15_6_ct           -0.0380707  0.0450788  -0.845  0.39847   
-    ## gap_extraversion.tste_15_7_ct        0.0056205  0.0314281   0.179  0.85808   
-    ## gap_agreeableness.tste_15_7_ct       0.0529508  0.0397726   1.331  0.18323   
-    ## gap_openness.tste_15_7_ct            0.0052274  0.0470820   0.111  0.91161   
-    ## gap_extraversion.tste_15_8_ct       -0.0115683  0.0337211  -0.343  0.73159   
-    ## gap_agreeableness.tste_15_8_ct       0.0565806  0.0478059   1.184  0.23673   
-    ## gap_conscientiousness.tste_15_8_ct   0.0258433  0.0530983   0.487  0.62652   
-    ## gap_emotionstability.tste_15_8_ct   -0.0049774  0.0425690  -0.117  0.90693   
-    ## gap_openness.tste_15_8_ct           -0.0973317  0.0546908  -1.780  0.07528 . 
-    ## gap_extraversion.tste_15_9_ct        0.0065243  0.0301637   0.216  0.82878   
-    ## gap_agreeableness.tste_15_9_ct       0.0516991  0.0444964   1.162  0.24542   
-    ## gap_conscientiousness.tste_15_9_ct   0.0391017  0.0503499   0.777  0.43748   
-    ## gap_emotionstability.tste_15_9_ct   -0.0415841  0.0385381  -1.079  0.28070   
-    ## gap_openness.tste_15_9_ct           -0.0251837  0.0505517  -0.498  0.61841   
-    ## gap_extraversion.tste_15_10_ct       0.0542332  0.0321133   1.689  0.09141 . 
-    ## gap_agreeableness.tste_15_10_ct     -0.0976621  0.0436585  -2.237  0.02540 * 
-    ## gap_openness.tste_15_10_ct          -0.0117283  0.0503132  -0.233  0.81570   
-    ## gap_extraversion.tste_15_11_ct      -0.0370610  0.0340725  -1.088  0.27685   
-    ## gap_agreeableness.tste_15_11_ct      0.0134577  0.0455766   0.295  0.76781   
-    ## gap_conscientiousness.tste_15_11_ct  0.1437890  0.0537839   2.673  0.00757 **
-    ## gap_openness.tste_15_11_ct           0.0418826  0.0545793   0.767  0.44295   
-    ## gap_extraversion.tste_15_12_ct      -0.0140967  0.0238570  -0.591  0.55466   
-    ## gap_agreeableness.tste_15_12_ct      0.0325947  0.0345905   0.942  0.34615   
-    ## gap_conscientiousness.tste_15_12_ct -0.0539322  0.0385081  -1.401  0.16150   
-    ## gap_openness.tste_15_12_ct           0.0358646  0.0373117   0.961  0.33656   
-    ## gap_extraversion.tste_15_13_ct       0.0103190  0.0288962   0.357  0.72105   
-    ## gap_agreeableness.tste_15_13_ct     -0.0461743  0.0392619  -1.176  0.23971   
-    ## gap_conscientiousness.tste_15_13_ct  0.0446298  0.0436450   1.023  0.30664   
-    ## gap_emotionstability.tste_15_13_ct   0.0534320  0.0339711   1.573  0.11590   
-    ## gap_openness.tste_15_13_ct          -0.0006742  0.0439406  -0.015  0.98776   
-    ## gap_extraversion.tste_15_14_ct       0.0252169  0.0270776   0.931  0.35182   
-    ## gap_agreeableness.tste_15_14_ct     -0.0052729  0.0368017  -0.143  0.88608   
-    ## gap_conscientiousness.tste_15_14_ct  0.0025725  0.0413816   0.062  0.95044   
-    ## gap_openness.tste_15_14_ct          -0.0250754  0.0425261  -0.590  0.55549   
+    ## (Intercept)                         51.3312313 17.8436284   2.877  0.00406 **
+    ## real_extraversion_ct                 0.0657395  0.0250874   2.620  0.00885 **
+    ## real_agreeableness_ct                0.0178242  0.0314412   0.567  0.57084   
+    ## real_conscientiousness_ct            0.0837696  0.0350082   2.393  0.01681 * 
+    ## real_emotionstability_ct            -0.0294885  0.0347242  -0.849  0.39586   
+    ## real_openness_ct                     0.0786757  0.0332337   2.367  0.01801 * 
+    ## gap_extraversion                     0.0180608  0.0262579   0.688  0.49164   
+    ## gap_agreeableness                    0.0552677  0.0341955   1.616  0.10620   
+    ## gap_conscientiousness                0.0035009  0.0406787   0.086  0.93143   
+    ## gap_emotionstability                -0.0498398  0.0320852  -1.553  0.12049   
+    ## gap_openness                        -0.0761333  0.0437706  -1.739  0.08212 . 
+    ## tste_15_0_ct                        -0.0076411  0.0608692  -0.126  0.90011   
+    ## tste_15_1_ct                        -0.1295230  0.0652876  -1.984  0.04740 * 
+    ## tste_15_2_ct                         0.1295870  0.0606541   2.136  0.03276 * 
+    ## tste_15_3_ct                         0.0914284  0.0646214   1.415  0.15727   
+    ## tste_15_4_ct                         0.0158753  0.0583093   0.272  0.78545   
+    ## tste_15_5_ct                        -0.0707618  0.0671279  -1.054  0.29195   
+    ## tste_15_6_ct                        -0.0363260  0.0588546  -0.617  0.53716   
+    ## tste_15_7_ct                        -0.0832790  0.0630484  -1.321  0.18669   
+    ## tste_15_8_ct                        -0.1052153  0.0665975  -1.580  0.11429   
+    ## tste_15_9_ct                         0.0087880  0.0644283   0.136  0.89152   
+    ## tste_15_10_ct                        0.0241388  0.0669135   0.361  0.71833   
+    ## tste_15_11_ct                        0.1771725  0.0687867   2.576  0.01007 * 
+    ## tste_15_12_ct                       -0.0536644  0.0482336  -1.113  0.26601   
+    ## tste_15_13_ct                        0.0425104  0.0567858   0.749  0.45418   
+    ## tste_15_14_ct                        0.0321287  0.0585727   0.549  0.58339   
+    ## release                             -0.0229902  0.0087644  -2.623  0.00878 **
+    ## gap_extraversion.tste_15_2_ct        0.0333405  0.0309116   1.079  0.28090   
+    ## education                            0.0071965  0.0265977   0.271  0.78675   
+    ## income                               0.0081104  0.0172784   0.469  0.63884   
+    ## age                                 -0.0141102  0.0045973  -3.069  0.00217 **
+    ## sex2                                -0.0775504  0.0729004  -1.064  0.28755   
+    ## race4                               -0.2040827  0.1417104  -1.440  0.14998   
+    ## race7                               -0.1789218  0.1372409  -1.304  0.19248   
+    ## gap_emotionstability.tste_15_7_ct    0.0551484  0.0355328   1.552  0.12081   
+    ## race6                               -0.8299572  0.3639326  -2.281  0.02268 * 
+    ## gap_extraversion.tste_15_7_ct        0.0128531  0.0320452   0.401  0.68839   
+    ## gap_extraversion.tste_15_0_ct       -0.0199608  0.0305738  -0.653  0.51391   
+    ## gap_agreeableness.tste_15_0_ct       0.0085773  0.0430109   0.199  0.84195   
+    ## gap_conscientiousness.tste_15_0_ct  -0.0753633  0.0472938  -1.594  0.11120   
+    ## gap_openness.tste_15_0_ct           -0.0263025  0.0475025  -0.554  0.57984   
+    ## star_user                           -0.0495185  0.0761494  -0.650  0.51558   
+    ## gap_extraversion.tste_15_1_ct        0.0434658  0.0306616   1.418  0.15646   
+    ## gap_agreeableness.tste_15_1_ct       0.0036918  0.0403696   0.091  0.92714   
+    ## gap_openness.tste_15_1_ct           -0.0566001  0.0481822  -1.175  0.24025   
+    ## star_GS                              0.1295139  0.0607346   2.132  0.03309 * 
+    ## gap_agreeableness.tste_15_2_ct       0.0194390  0.0412703   0.471  0.63768   
+    ## gap_openness.tste_15_2_ct           -0.0430119  0.0493071  -0.872  0.38313   
+    ## gap_extraversion.tste_15_3_ct       -0.0146943  0.0304615  -0.482  0.62958   
+    ## gap_agreeableness.tste_15_3_ct      -0.0252577  0.0461241  -0.548  0.58402   
+    ## gap_conscientiousness.tste_15_3_ct   0.1370145  0.0488599   2.804  0.00509 **
+    ## gap_emotionstability.tste_15_3_ct   -0.0005774  0.0394637  -0.015  0.98833   
+    ## gap_openness.tste_15_3_ct            0.0091802  0.0517915   0.177  0.85933   
+    ## gap_extraversion.tste_15_4_ct        0.0122881  0.0296011   0.415  0.67810   
+    ## gap_agreeableness.tste_15_4_ct       0.0095770  0.0408326   0.235  0.81459   
+    ## gap_conscientiousness.tste_15_4_ct   0.0677323  0.0445722   1.520  0.12876   
+    ## gap_emotionstability.tste_15_4_ct    0.0686982  0.0343476   2.000  0.04562 * 
+    ## gap_openness.tste_15_4_ct           -0.0065424  0.0457798  -0.143  0.88638   
+    ## gap_extraversion.tste_15_5_ct        0.0462925  0.0320368   1.445  0.14862   
+    ## gap_agreeableness.tste_15_5_ct      -0.0871303  0.0440144  -1.980  0.04788 * 
+    ## gap_conscientiousness.tste_15_5_ct  -0.0402015  0.0516824  -0.778  0.43674   
+    ## gap_openness.tste_15_5_ct           -0.0436528  0.0506347  -0.862  0.38873   
+    ## gap_extraversion.tste_15_6_ct       -0.0525585  0.0294723  -1.783  0.07468 . 
+    ## gap_agreeableness.tste_15_6_ct      -0.0468148  0.0400523  -1.169  0.24260   
+    ## gap_conscientiousness.tste_15_6_ct   0.0819432  0.0427159   1.918  0.05521 . 
+    ## gap_openness.tste_15_6_ct           -0.0344359  0.0449930  -0.765  0.44415   
+    ## gap_agreeableness.tste_15_7_ct       0.0322289  0.0428608   0.752  0.45217   
+    ## gap_openness.tste_15_7_ct            0.0190048  0.0479256   0.397  0.69174   
+    ## gap_extraversion.tste_15_8_ct       -0.0107160  0.0336815  -0.318  0.75040   
+    ## gap_agreeableness.tste_15_8_ct       0.0588741  0.0477666   1.233  0.21789   
+    ## gap_conscientiousness.tste_15_8_ct   0.0244375  0.0530220   0.461  0.64492   
+    ## gap_emotionstability.tste_15_8_ct   -0.0150024  0.0428291  -0.350  0.72616   
+    ## gap_openness.tste_15_8_ct           -0.0996692  0.0546058  -1.825  0.06811 . 
+    ## gap_extraversion.tste_15_9_ct        0.0084331  0.0301233   0.280  0.77954   
+    ## gap_agreeableness.tste_15_9_ct       0.0468454  0.0444584   1.054  0.29215   
+    ## gap_conscientiousness.tste_15_9_ct   0.0399954  0.0502986   0.795  0.42661   
+    ## gap_emotionstability.tste_15_9_ct   -0.0377947  0.0385498  -0.980  0.32700   
+    ## gap_openness.tste_15_9_ct           -0.0299098  0.0505249  -0.592  0.55393   
+    ## gap_extraversion.tste_15_10_ct       0.0485289  0.0321754   1.508  0.13164   
+    ## gap_agreeableness.tste_15_10_ct     -0.0901597  0.0437327  -2.062  0.03937 * 
+    ## gap_openness.tste_15_10_ct          -0.0039901  0.0504095  -0.079  0.93692   
+    ## gap_extraversion.tste_15_11_ct      -0.0275732  0.0342357  -0.805  0.42069   
+    ## gap_agreeableness.tste_15_11_ct      0.0063579  0.0457838   0.139  0.88957   
+    ## gap_conscientiousness.tste_15_11_ct  0.1494152  0.0538253   2.776  0.00555 **
+    ## gap_openness.tste_15_11_ct           0.0351807  0.0546711   0.643  0.51997   
+    ## gap_extraversion.tste_15_12_ct      -0.0157607  0.0238305  -0.661  0.50845   
+    ## gap_agreeableness.tste_15_12_ct      0.0337993  0.0345496   0.978  0.32805   
+    ## gap_conscientiousness.tste_15_12_ct -0.0530900  0.0384510  -1.381  0.16752   
+    ## gap_openness.tste_15_12_ct           0.0381640  0.0372762   1.024  0.30604   
+    ## gap_extraversion.tste_15_13_ct       0.0103192  0.0288759   0.357  0.72086   
+    ## gap_agreeableness.tste_15_13_ct     -0.0448042  0.0391909  -1.143  0.25308   
+    ## gap_conscientiousness.tste_15_13_ct  0.0465310  0.0435783   1.068  0.28576   
+    ## gap_emotionstability.tste_15_13_ct   0.0607546  0.0341513   1.779  0.07539 . 
+    ## gap_openness.tste_15_13_ct           0.0021282  0.0438769   0.049  0.96132   
+    ## gap_extraversion.tste_15_14_ct       0.0225131  0.0271155   0.830  0.40648   
+    ## gap_agreeableness.tste_15_14_ct      0.0012039  0.0368373   0.033  0.97393   
+    ## gap_conscientiousness.tste_15_14_ct -0.0008045  0.0413446  -0.019  0.98448   
+    ## gap_openness.tste_15_14_ct          -0.0230293  0.0425716  -0.541  0.58860   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.441 on 2042 degrees of freedom
-    ## Multiple R-squared:  0.1199, Adjusted R-squared:  0.07897 
-    ## F-statistic: 2.929 on 95 and 2042 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.439 on 2040 degrees of freedom
+    ## Multiple R-squared:  0.1235, Adjusted R-squared:  0.08187 
+    ## F-statistic: 2.964 on 97 and 2040 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -6149,117 +6191,120 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1567 -0.6763  0.2629  1.0240  3.3918 
+    ## -5.1925 -0.6732  0.2468  1.0189  3.6581 
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         34.5877658 17.8886918   1.933 0.053313 .  
-    ## real_extraversion_ct                 0.0568587  0.0251319   2.262 0.023777 *  
-    ## real_agreeableness_ct                0.0166616  0.0313423   0.532 0.595060    
-    ## real_conscientiousness_ct            0.0815188  0.0349588   2.332 0.019806 *  
-    ## real_emotionstability_ct            -0.0229593  0.0346942  -0.662 0.508198    
-    ## real_openness_ct                     0.0873266  0.0333849   2.616 0.008969 ** 
-    ## tste_16_0_ct                         0.1813080  0.0618968   2.929 0.003436 ** 
-    ## tste_16_1_ct                        -0.1003415  0.0619144  -1.621 0.105248    
-    ## tste_16_2_ct                        -0.0347392  0.0566796  -0.613 0.540007    
-    ## tste_16_3_ct                        -0.1344391  0.0622078  -2.161 0.030802 *  
-    ## tste_16_4_ct                        -0.1410515  0.0524504  -2.689 0.007220 ** 
-    ## tste_16_5_ct                         0.1256415  0.0616232   2.039 0.041592 *  
-    ## tste_16_6_ct                         0.0815474  0.0550471   1.481 0.138652    
-    ## tste_16_7_ct                         0.0421460  0.0549919   0.766 0.443525    
-    ## tste_16_8_ct                        -0.1351433  0.0647421  -2.087 0.036975 *  
-    ## tste_16_9_ct                         0.2040251  0.0566578   3.601 0.000325 ***
-    ## tste_16_10_ct                       -0.0855227  0.0552669  -1.547 0.121911    
-    ## tste_16_11_ct                        0.1601825  0.0620972   2.580 0.009963 ** 
-    ## tste_16_12_ct                        0.0407910  0.0586088   0.696 0.486516    
-    ## tste_16_13_ct                        0.0365113  0.0627668   0.582 0.560834    
-    ## tste_16_14_ct                        0.1270877  0.0582938   2.180 0.029362 *  
-    ## tste_16_15_ct                        0.0057669  0.0631341   0.091 0.927228    
-    ## release                             -0.0147008  0.0087889  -1.673 0.094550 .  
-    ## gap_openness                        -0.0663530  0.0438642  -1.513 0.130513    
-    ## income                               0.0114231  0.0172580   0.662 0.508111    
-    ## gap_extraversion                    -0.0058671  0.0259606  -0.226 0.821223    
-    ## gap_agreeableness                    0.0635121  0.0339421   1.871 0.061462 .  
-    ## gap_emotionstability                -0.0439741  0.0317229  -1.386 0.165840    
-    ## age                                 -0.0120228  0.0046201  -2.602 0.009328 ** 
-    ## sex2                                -0.0794732  0.0726075  -1.095 0.273839    
-    ## gap_conscientiousness                0.0056725  0.0401690   0.141 0.887713    
-    ## race4                               -0.1852757  0.1415479  -1.309 0.190707    
-    ## education                            0.0040100  0.0266341   0.151 0.880338    
-    ## race2                                0.1111069  0.1316548   0.844 0.398810    
-    ## star_user                           -0.0693213  0.0731176  -0.948 0.343202    
-    ## gap_extraversion.tste_16_0_ct       -0.0210166  0.0316699  -0.664 0.507013    
-    ## gap_agreeableness.tste_16_0_ct      -0.0615860  0.0440688  -1.397 0.162416    
-    ## gap_conscientiousness.tste_16_0_ct   0.0454046  0.0455265   0.997 0.318726    
-    ## gap_openness.tste_16_0_ct            0.0930253  0.0492394   1.889 0.059001 .  
-    ## star_GS                              0.1530149  0.0589175   2.597 0.009469 ** 
-    ## gap_extraversion.tste_16_1_ct       -0.0060898  0.0299217  -0.204 0.838746    
-    ## gap_agreeableness.tste_16_1_ct      -0.0323556  0.0407942  -0.793 0.427787    
-    ## gap_openness.tste_16_1_ct            0.0438198  0.0455440   0.962 0.336092    
-    ## gap_extraversion.tste_16_2_ct       -0.0256800  0.0275797  -0.931 0.351901    
-    ## gap_agreeableness.tste_16_2_ct      -0.0068786  0.0397422  -0.173 0.862605    
-    ## gap_conscientiousness.tste_16_2_ct   0.0831289  0.0444641   1.870 0.061686 .  
-    ## gap_emotionstability.tste_16_2_ct    0.0977516  0.0327227   2.987 0.002848 ** 
-    ## gap_openness.tste_16_2_ct            0.0543461  0.0446996   1.216 0.224200    
-    ## gap_extraversion.tste_16_3_ct       -0.0525064  0.0296745  -1.769 0.076975 .  
-    ## gap_agreeableness.tste_16_3_ct       0.0873636  0.0409648   2.133 0.033073 *  
-    ## gap_conscientiousness.tste_16_3_ct  -0.0685133  0.0469497  -1.459 0.144639    
-    ## gap_openness.tste_16_3_ct            0.0393711  0.0455996   0.863 0.388014    
-    ## gap_extraversion.tste_16_4_ct       -0.0077612  0.0260516  -0.298 0.765796    
-    ## gap_agreeableness.tste_16_4_ct       0.0097428  0.0348684   0.279 0.779953    
-    ## gap_conscientiousness.tste_16_4_ct  -0.0209300  0.0404558  -0.517 0.604965    
-    ## gap_openness.tste_16_4_ct           -0.0301190  0.0406205  -0.741 0.458491    
-    ## gap_extraversion.tste_16_5_ct        0.0001370  0.0311140   0.004 0.996488    
-    ## gap_agreeableness.tste_16_5_ct       0.0031142  0.0440963   0.071 0.943705    
-    ## gap_conscientiousness.tste_16_5_ct   0.0086044  0.0481364   0.179 0.858151    
-    ## gap_emotionstability.tste_16_5_ct   -0.0044462  0.0341230  -0.130 0.896342    
-    ## gap_openness.tste_16_5_ct           -0.0474519  0.0501358  -0.946 0.344023    
-    ## gap_extraversion.tste_16_6_ct        0.0059903  0.0279467   0.214 0.830298    
-    ## gap_agreeableness.tste_16_6_ct       0.0453897  0.0423418   1.072 0.283855    
-    ## gap_conscientiousness.tste_16_6_ct  -0.0638113  0.0449928  -1.418 0.156269    
-    ## gap_emotionstability.tste_16_6_ct    0.0321811  0.0347806   0.925 0.354940    
-    ## gap_openness.tste_16_6_ct            0.0367849  0.0457569   0.804 0.421537    
-    ## gap_extraversion.tste_16_7_ct       -0.0061738  0.0273357  -0.226 0.821339    
-    ## gap_agreeableness.tste_16_7_ct       0.0770043  0.0371147   2.075 0.038134 *  
-    ## gap_openness.tste_16_7_ct            0.0312730  0.0434986   0.719 0.472259    
-    ## gap_extraversion.tste_16_8_ct        0.0632863  0.0307567   2.058 0.039751 *  
-    ## gap_agreeableness.tste_16_8_ct      -0.0099616  0.0413693  -0.241 0.809736    
-    ## gap_openness.tste_16_8_ct            0.0091616  0.0489429   0.187 0.851530    
-    ## gap_extraversion.tste_16_9_ct       -0.0368799  0.0285018  -1.294 0.195829    
-    ## gap_agreeableness.tste_16_9_ct      -0.0491439  0.0381098  -1.290 0.197359    
-    ## gap_conscientiousness.tste_16_9_ct   0.1051208  0.0431552   2.436 0.014941 *  
-    ## gap_openness.tste_16_9_ct           -0.0175266  0.0431869  -0.406 0.684909    
-    ## gap_extraversion.tste_16_10_ct       0.0510186  0.0273047   1.868 0.061837 .  
-    ## gap_agreeableness.tste_16_10_ct     -0.0267463  0.0356799  -0.750 0.453571    
-    ## gap_conscientiousness.tste_16_10_ct -0.0498745  0.0422263  -1.181 0.237691    
-    ## gap_openness.tste_16_10_ct          -0.0624482  0.0412837  -1.513 0.130521    
-    ## gap_extraversion.tste_16_11_ct       0.0398749  0.0285509   1.397 0.162679    
-    ## gap_agreeableness.tste_16_11_ct     -0.0190248  0.0411621  -0.462 0.643992    
-    ## gap_emotionstability.tste_16_11_ct   0.0630585  0.0336127   1.876 0.060794 .  
-    ## gap_openness.tste_16_11_ct          -0.0174813  0.0469923  -0.372 0.709928    
-    ## gap_extraversion.tste_16_12_ct       0.0078110  0.0291119   0.268 0.788487    
-    ## gap_agreeableness.tste_16_12_ct     -0.0042899  0.0419188  -0.102 0.918499    
-    ## gap_conscientiousness.tste_16_12_ct  0.0234219  0.0488153   0.480 0.631416    
-    ## gap_emotionstability.tste_16_12_ct   0.0016202  0.0366854   0.044 0.964778    
-    ## gap_openness.tste_16_12_ct           0.0417976  0.0484714   0.862 0.388617    
-    ## gap_extraversion.tste_16_13_ct      -0.0198157  0.0308639  -0.642 0.520923    
-    ## gap_agreeableness.tste_16_13_ct      0.0540665  0.0426061   1.269 0.204591    
-    ## gap_conscientiousness.tste_16_13_ct  0.0460677  0.0471069   0.978 0.328220    
-    ## gap_openness.tste_16_13_ct           0.0168406  0.0481776   0.350 0.726712    
-    ## gap_extraversion.tste_16_14_ct       0.0007915  0.0277359   0.029 0.977236    
-    ## gap_agreeableness.tste_16_14_ct     -0.0343152  0.0364030  -0.943 0.345973    
-    ## gap_conscientiousness.tste_16_14_ct -0.0087604  0.0403617  -0.217 0.828193    
-    ## gap_openness.tste_16_14_ct           0.0203577  0.0424801   0.479 0.631828    
-    ## gap_extraversion.tste_16_15_ct      -0.0147955  0.0317105  -0.467 0.640849    
-    ## gap_agreeableness.tste_16_15_ct      0.0106134  0.0441645   0.240 0.810110    
-    ## gap_conscientiousness.tste_16_15_ct  0.0937599  0.0493092   1.901 0.057382 .  
-    ## gap_openness.tste_16_15_ct          -0.0667878  0.0511147  -1.307 0.191487    
+    ## (Intercept)                          3.188e+01  1.787e+01   1.784 0.074532 .  
+    ## real_extraversion_ct                 6.380e-02  2.504e-02   2.548 0.010911 *  
+    ## real_agreeableness_ct                1.620e-02  3.134e-02   0.517 0.605184    
+    ## real_conscientiousness_ct            8.426e-02  3.491e-02   2.413 0.015889 *  
+    ## real_emotionstability_ct            -2.662e-02  3.468e-02  -0.768 0.442801    
+    ## real_openness_ct                     7.754e-02  3.314e-02   2.340 0.019398 *  
+    ## gap_extraversion                     6.588e-03  2.627e-02   0.251 0.802025    
+    ## gap_agreeableness                    5.714e-02  3.412e-02   1.675 0.094156 .  
+    ## gap_conscientiousness                4.469e-03  4.049e-02   0.110 0.912114    
+    ## gap_emotionstability                -5.071e-02  3.192e-02  -1.589 0.112236    
+    ## gap_openness                        -7.945e-02  4.377e-02  -1.815 0.069679 .  
+    ## tste_16_0_ct                         1.716e-01  6.187e-02   2.773 0.005609 ** 
+    ## tste_16_1_ct                        -1.011e-01  6.195e-02  -1.633 0.102720    
+    ## tste_16_2_ct                        -3.236e-02  5.661e-02  -0.572 0.567621    
+    ## tste_16_3_ct                        -1.420e-01  6.215e-02  -2.285 0.022418 *  
+    ## tste_16_4_ct                        -1.438e-01  5.239e-02  -2.744 0.006115 ** 
+    ## tste_16_5_ct                         1.234e-01  6.152e-02   2.006 0.044955 *  
+    ## tste_16_6_ct                         8.098e-02  5.501e-02   1.472 0.141152    
+    ## tste_16_7_ct                         4.362e-02  5.490e-02   0.794 0.426998    
+    ## tste_16_8_ct                        -1.318e-01  6.474e-02  -2.036 0.041841 *  
+    ## tste_16_9_ct                         1.957e-01  5.663e-02   3.455 0.000562 ***
+    ## tste_16_10_ct                       -8.321e-02  5.520e-02  -1.507 0.131839    
+    ## tste_16_11_ct                        1.555e-01  6.200e-02   2.508 0.012229 *  
+    ## tste_16_12_ct                        4.384e-02  5.853e-02   0.749 0.453919    
+    ## tste_16_13_ct                        3.234e-02  6.269e-02   0.516 0.605987    
+    ## tste_16_14_ct                        1.281e-01  5.825e-02   2.200 0.027926 *  
+    ## tste_16_15_ct                        1.029e-02  6.312e-02   0.163 0.870549    
+    ## release                             -1.333e-02  8.778e-03  -1.519 0.128928    
+    ## education                            5.934e-03  2.659e-02   0.223 0.823412    
+    ## income                               1.336e-02  1.725e-02   0.775 0.438672    
+    ## age                                 -1.301e-02  4.594e-03  -2.832 0.004678 ** 
+    ## sex2                                -7.371e-02  7.271e-02  -1.014 0.310820    
+    ## race4                               -2.060e-01  1.412e-01  -1.459 0.144841    
+    ## race7                               -1.590e-01  1.368e-01  -1.162 0.245421    
+    ## race6                               -8.308e-01  3.662e-01  -2.269 0.023376 *  
+    ## gap_conscientiousness.tste_16_1_ct  -8.502e-02  4.619e-02  -1.841 0.065780 .  
+    ## gap_conscientiousness.tste_16_8_ct  -6.216e-02  5.316e-02  -1.169 0.242462    
+    ## star_user                           -6.341e-02  7.303e-02  -0.868 0.385385    
+    ## gap_extraversion.tste_16_0_ct       -1.794e-02  3.162e-02  -0.567 0.570528    
+    ## gap_agreeableness.tste_16_0_ct      -6.340e-02  4.399e-02  -1.441 0.149689    
+    ## gap_conscientiousness.tste_16_0_ct   5.534e-02  4.666e-02   1.186 0.235788    
+    ## gap_openness.tste_16_0_ct            9.500e-02  4.925e-02   1.929 0.053865 .  
+    ## star_GS                              1.462e-01  5.897e-02   2.480 0.013227 *  
+    ## gap_extraversion.tste_16_1_ct       -4.708e-03  3.012e-02  -0.156 0.875798    
+    ## gap_agreeableness.tste_16_1_ct      -3.890e-02  4.125e-02  -0.943 0.345756    
+    ## gap_openness.tste_16_1_ct            5.591e-02  4.573e-02   1.223 0.221601    
+    ## gap_extraversion.tste_16_2_ct       -2.619e-02  2.756e-02  -0.950 0.342080    
+    ## gap_agreeableness.tste_16_2_ct      -5.837e-03  3.970e-02  -0.147 0.883136    
+    ## gap_conscientiousness.tste_16_2_ct   8.468e-02  4.493e-02   1.885 0.059602 .  
+    ## gap_emotionstability.tste_16_2_ct    1.006e-01  3.269e-02   3.078 0.002112 ** 
+    ## gap_openness.tste_16_2_ct            5.322e-02  4.466e-02   1.192 0.233582    
+    ## gap_extraversion.tste_16_3_ct       -4.930e-02  2.963e-02  -1.664 0.096269 .  
+    ## gap_agreeableness.tste_16_3_ct       8.480e-02  4.090e-02   2.073 0.038295 *  
+    ## gap_conscientiousness.tste_16_3_ct  -7.022e-02  4.692e-02  -1.497 0.134619    
+    ## gap_openness.tste_16_3_ct            4.417e-02  4.557e-02   0.969 0.332545    
+    ## gap_extraversion.tste_16_4_ct       -2.968e-03  2.608e-02  -0.114 0.909394    
+    ## gap_agreeableness.tste_16_4_ct       2.654e-03  3.494e-02   0.076 0.939453    
+    ## gap_conscientiousness.tste_16_4_ct  -3.177e-02  4.076e-02  -0.779 0.435779    
+    ## gap_openness.tste_16_4_ct           -3.294e-02  4.062e-02  -0.811 0.417478    
+    ## gap_extraversion.tste_16_5_ct       -1.806e-03  3.116e-02  -0.058 0.953789    
+    ## gap_agreeableness.tste_16_5_ct       6.073e-03  4.414e-02   0.138 0.890590    
+    ## gap_conscientiousness.tste_16_5_ct   7.877e-05  4.831e-02   0.002 0.998699    
+    ## gap_emotionstability.tste_16_5_ct   -7.301e-03  3.414e-02  -0.214 0.830686    
+    ## gap_openness.tste_16_5_ct           -4.288e-02  5.025e-02  -0.853 0.393591    
+    ## gap_extraversion.tste_16_6_ct        1.029e-02  2.803e-02   0.367 0.713553    
+    ## gap_agreeableness.tste_16_6_ct       3.881e-02  4.245e-02   0.914 0.360653    
+    ## gap_conscientiousness.tste_16_6_ct  -4.839e-02  4.621e-02  -1.047 0.295226    
+    ## gap_emotionstability.tste_16_6_ct    3.431e-02  3.480e-02   0.986 0.324219    
+    ## gap_openness.tste_16_6_ct            3.412e-02  4.572e-02   0.746 0.455542    
+    ## gap_extraversion.tste_16_7_ct       -1.826e-03  2.735e-02  -0.067 0.946775    
+    ## gap_agreeableness.tste_16_7_ct       7.189e-02  3.711e-02   1.937 0.052879 .  
+    ## gap_openness.tste_16_7_ct            2.254e-02  4.349e-02   0.518 0.604236    
+    ## gap_extraversion.tste_16_8_ct        5.902e-02  3.115e-02   1.895 0.058290 .  
+    ## gap_agreeableness.tste_16_8_ct      -8.634e-03  4.195e-02  -0.206 0.836943    
+    ## gap_openness.tste_16_8_ct            1.494e-02  4.904e-02   0.305 0.760649    
+    ## gap_extraversion.tste_16_9_ct       -3.473e-02  2.849e-02  -1.219 0.223035    
+    ## gap_agreeableness.tste_16_9_ct      -4.575e-02  3.812e-02  -1.200 0.230183    
+    ## gap_conscientiousness.tste_16_9_ct   1.105e-01  4.328e-02   2.553 0.010747 *  
+    ## gap_openness.tste_16_9_ct           -1.191e-02  4.319e-02  -0.276 0.782695    
+    ## gap_extraversion.tste_16_10_ct       4.403e-02  2.737e-02   1.609 0.107799    
+    ## gap_agreeableness.tste_16_10_ct     -2.100e-02  3.570e-02  -0.588 0.556416    
+    ## gap_conscientiousness.tste_16_10_ct -5.068e-02  4.231e-02  -1.198 0.231113    
+    ## gap_openness.tste_16_10_ct          -5.751e-02  4.130e-02  -1.392 0.163989    
+    ## gap_extraversion.tste_16_11_ct       4.256e-02  2.854e-02   1.491 0.136102    
+    ## gap_agreeableness.tste_16_11_ct     -1.987e-02  4.113e-02  -0.483 0.628962    
+    ## gap_emotionstability.tste_16_11_ct   5.874e-02  3.370e-02   1.743 0.081423 .  
+    ## gap_openness.tste_16_11_ct          -1.695e-02  4.696e-02  -0.361 0.718132    
+    ## gap_extraversion.tste_16_12_ct       4.549e-03  2.911e-02   0.156 0.875809    
+    ## gap_agreeableness.tste_16_12_ct     -1.531e-03  4.187e-02  -0.037 0.970825    
+    ## gap_conscientiousness.tste_16_12_ct  3.131e-02  4.964e-02   0.631 0.528298    
+    ## gap_emotionstability.tste_16_12_ct   1.295e-03  3.663e-02   0.035 0.971806    
+    ## gap_openness.tste_16_12_ct           3.642e-02  4.851e-02   0.751 0.452829    
+    ## gap_extraversion.tste_16_13_ct      -2.196e-02  3.082e-02  -0.712 0.476314    
+    ## gap_agreeableness.tste_16_13_ct      5.744e-02  4.254e-02   1.350 0.177106    
+    ## gap_conscientiousness.tste_16_13_ct  6.441e-02  4.799e-02   1.342 0.179655    
+    ## gap_openness.tste_16_13_ct           1.563e-02  4.812e-02   0.325 0.745332    
+    ## gap_extraversion.tste_16_14_ct       1.737e-03  2.781e-02   0.062 0.950199    
+    ## gap_agreeableness.tste_16_14_ct     -3.904e-02  3.641e-02  -1.072 0.283772    
+    ## gap_conscientiousness.tste_16_14_ct -1.315e-02  4.069e-02  -0.323 0.746553    
+    ## gap_openness.tste_16_14_ct           1.811e-02  4.248e-02   0.426 0.669952    
+    ## gap_extraversion.tste_16_15_ct      -2.026e-02  3.171e-02  -0.639 0.523008    
+    ## gap_agreeableness.tste_16_15_ct      1.082e-02  4.416e-02   0.245 0.806455    
+    ## gap_conscientiousness.tste_16_15_ct  1.043e-01  4.990e-02   2.089 0.036823 *  
+    ## gap_openness.tste_16_15_ct          -6.411e-02  5.105e-02  -1.256 0.209346    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.436 on 2037 degrees of freedom
-    ## Multiple R-squared:  0.1283, Adjusted R-squared:  0.08546 
-    ## F-statistic: 2.997 on 100 and 2037 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.434 on 2034 degrees of freedom
+    ## Multiple R-squared:  0.1324, Adjusted R-squared:  0.08842 
+    ## F-statistic: 3.012 on 103 and 2034 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -6267,122 +6312,124 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.3854 -0.6684  0.2226  1.0296  3.3778 
+    ## -5.4180 -0.6703  0.2230  1.0283  3.5330 
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         35.4146198 18.4804906   1.916  0.05546 .  
-    ## real_extraversion_ct                 0.0541944  0.0251406   2.156  0.03123 *  
-    ## real_agreeableness_ct                0.0295796  0.0314578   0.940  0.34718    
-    ## real_conscientiousness_ct            0.0868409  0.0349730   2.483  0.01311 *  
-    ## real_emotionstability_ct            -0.0273149  0.0347227  -0.787  0.43157    
-    ## real_openness_ct                     0.0882249  0.0333506   2.645  0.00822 ** 
-    ## tste_17_0_ct                         0.3221263  0.0618612   5.207 2.11e-07 ***
-    ## tste_17_1_ct                         0.0853546  0.0534913   1.596  0.11072    
-    ## tste_17_2_ct                        -0.0211106  0.0642447  -0.329  0.74249    
-    ## tste_17_3_ct                         0.0435473  0.0595100   0.732  0.46440    
-    ## tste_17_4_ct                         0.1184912  0.0634353   1.868  0.06192 .  
-    ## tste_17_5_ct                         0.0213537  0.0586875   0.364  0.71601    
-    ## tste_17_6_ct                        -0.0726735  0.0612006  -1.187  0.23518    
-    ## tste_17_7_ct                         0.1044568  0.0550415   1.898  0.05787 .  
-    ## tste_17_8_ct                        -0.0792532  0.0599387  -1.322  0.18624    
-    ## tste_17_9_ct                        -0.0772394  0.0583408  -1.324  0.18567    
-    ## tste_17_10_ct                        0.0361695  0.0534286   0.677  0.49850    
-    ## tste_17_11_ct                        0.0256408  0.0582871   0.440  0.66005    
-    ## tste_17_12_ct                       -0.1246891  0.0517477  -2.410  0.01606 *  
-    ## tste_17_13_ct                        0.1045666  0.0618091   1.692  0.09084 .  
-    ## tste_17_14_ct                        0.0369408  0.0556904   0.663  0.50720    
-    ## tste_17_15_ct                       -0.0488968  0.0689829  -0.709  0.47851    
-    ## tste_17_16_ct                       -0.0376144  0.0531559  -0.708  0.47926    
-    ## release                             -0.0152241  0.0090537  -1.682  0.09281 .  
-    ## gap_openness                        -0.0517628  0.0437964  -1.182  0.23739    
-    ## gap_extraversion.tste_17_12_ct      -0.0364308  0.0256498  -1.420  0.15567    
-    ## income                               0.0100332  0.0172345   0.582  0.56053    
-    ## gap_extraversion                    -0.0011514  0.0259933  -0.044  0.96467    
-    ## gap_agreeableness                    0.0742153  0.0340239   2.181  0.02928 *  
-    ## gap_emotionstability                -0.0471830  0.0318750  -1.480  0.13896    
-    ## age                                 -0.0118901  0.0046158  -2.576  0.01007 *  
-    ## sex2                                -0.0936479  0.0724799  -1.292  0.19649    
-    ## gap_conscientiousness                0.0174854  0.0403600   0.433  0.66489    
-    ## race4                               -0.1977472  0.1413487  -1.399  0.16196    
-    ## education                            0.0059054  0.0265925   0.222  0.82428    
-    ## race2                                0.1032452  0.1315972   0.785  0.43281    
-    ## star_user                           -0.0742011  0.0778006  -0.954  0.34033    
-    ## gap_extraversion.tste_17_0_ct       -0.0097517  0.0293211  -0.333  0.73948    
-    ## gap_agreeableness.tste_17_0_ct      -0.0454163  0.0409509  -1.109  0.26754    
-    ## gap_conscientiousness.tste_17_0_ct   0.0619690  0.0476748   1.300  0.19381    
-    ## gap_openness.tste_17_0_ct            0.0223739  0.0488333   0.458  0.64688    
-    ## star_GS                              0.1828342  0.0608594   3.004  0.00270 ** 
-    ## gap_extraversion.tste_17_1_ct       -0.0119560  0.0258236  -0.463  0.64342    
-    ## gap_agreeableness.tste_17_1_ct      -0.0231808  0.0378650  -0.612  0.54048    
-    ## gap_conscientiousness.tste_17_1_ct  -0.0366173  0.0424421  -0.863  0.38837    
-    ## gap_emotionstability.tste_17_1_ct    0.0593937  0.0315129   1.885  0.05961 .  
-    ## gap_openness.tste_17_1_ct            0.0754683  0.0435374   1.733  0.08317 .  
-    ## gap_extraversion.tste_17_2_ct       -0.0487316  0.0328396  -1.484  0.13798    
-    ## gap_agreeableness.tste_17_2_ct       0.0275973  0.0468904   0.589  0.55623    
-    ## gap_conscientiousness.tste_17_2_ct  -0.1102355  0.0508813  -2.167  0.03039 *  
-    ## gap_emotionstability.tste_17_2_ct   -0.0831101  0.0381232  -2.180  0.02937 *  
-    ## gap_openness.tste_17_2_ct           -0.0246662  0.0510451  -0.483  0.62899    
-    ## gap_extraversion.tste_17_3_ct       -0.0083208  0.0299319  -0.278  0.78105    
-    ## gap_agreeableness.tste_17_3_ct      -0.0337359  0.0424469  -0.795  0.42683    
-    ## gap_emotionstability.tste_17_3_ct   -0.0257224  0.0356193  -0.722  0.47029    
-    ## gap_openness.tste_17_3_ct            0.0546786  0.0459076   1.191  0.23377    
-    ## gap_extraversion.tste_17_4_ct        0.0053364  0.0315473   0.169  0.86569    
-    ## gap_agreeableness.tste_17_4_ct      -0.0748065  0.0444043  -1.685  0.09221 .  
-    ## gap_conscientiousness.tste_17_4_ct  -0.0516876  0.0477487  -1.082  0.27916    
-    ## gap_openness.tste_17_4_ct            0.0081428  0.0515328   0.158  0.87446    
-    ## gap_extraversion.tste_17_5_ct        0.0455737  0.0268622   1.697  0.08993 .  
-    ## gap_agreeableness.tste_17_5_ct      -0.0072668  0.0365348  -0.199  0.84236    
-    ## gap_conscientiousness.tste_17_5_ct  -0.0268524  0.0406411  -0.661  0.50887    
-    ## gap_openness.tste_17_5_ct           -0.0886454  0.0421278  -2.104  0.03548 *  
-    ## gap_extraversion.tste_17_6_ct       -0.0046104  0.0303766  -0.152  0.87938    
-    ## gap_agreeableness.tste_17_6_ct       0.0668684  0.0458138   1.460  0.14456    
-    ## gap_conscientiousness.tste_17_6_ct  -0.0943090  0.0500907  -1.883  0.05988 .  
-    ## gap_emotionstability.tste_17_6_ct   -0.0026089  0.0369020  -0.071  0.94365    
-    ## gap_openness.tste_17_6_ct            0.0151679  0.0511609   0.296  0.76690    
-    ## gap_extraversion.tste_17_7_ct       -0.0093286  0.0274582  -0.340  0.73409    
-    ## gap_agreeableness.tste_17_7_ct      -0.0416062  0.0365723  -1.138  0.25540    
-    ## gap_conscientiousness.tste_17_7_ct   0.0043084  0.0414348   0.104  0.91719    
-    ## gap_openness.tste_17_7_ct            0.0401927  0.0430569   0.933  0.35068    
-    ## gap_extraversion.tste_17_8_ct        0.0419018  0.0304682   1.375  0.16920    
-    ## gap_agreeableness.tste_17_8_ct      -0.0747976  0.0441167  -1.695  0.09014 .  
-    ## gap_emotionstability.tste_17_8_ct   -0.0446349  0.0360639  -1.238  0.21598    
-    ## gap_openness.tste_17_8_ct           -0.0264796  0.0481630  -0.550  0.58252    
-    ## gap_extraversion.tste_17_9_ct        0.0236732  0.0300330   0.788  0.43065    
-    ## gap_agreeableness.tste_17_9_ct      -0.0231634  0.0390561  -0.593  0.55319    
-    ## gap_conscientiousness.tste_17_9_ct  -0.0742740  0.0441713  -1.681  0.09282 .  
-    ## gap_openness.tste_17_9_ct           -0.0529790  0.0455464  -1.163  0.24489    
-    ## gap_extraversion.tste_17_10_ct       0.0222059  0.0271465   0.818  0.41345    
-    ## gap_agreeableness.tste_17_10_ct      0.0755941  0.0392964   1.924  0.05453 .  
-    ## gap_emotionstability.tste_17_10_ct   0.0052118  0.0321767   0.162  0.87134    
-    ## gap_openness.tste_17_10_ct           0.0352379  0.0440436   0.800  0.42376    
-    ## gap_extraversion.tste_17_11_ct      -0.0161517  0.0282091  -0.573  0.56700    
-    ## gap_agreeableness.tste_17_11_ct      0.0343696  0.0397333   0.865  0.38714    
-    ## gap_conscientiousness.tste_17_11_ct  0.0989290  0.0455396   2.172  0.02994 *  
-    ## gap_openness.tste_17_11_ct          -0.0212792  0.0434811  -0.489  0.62462    
-    ## gap_agreeableness.tste_17_12_ct      0.0058148  0.0346720   0.168  0.86683    
-    ## gap_openness.tste_17_12_ct          -0.0294763  0.0394792  -0.747  0.45537    
-    ## gap_extraversion.tste_17_13_ct      -0.0004564  0.0280655  -0.016  0.98703    
-    ## gap_agreeableness.tste_17_13_ct      0.0077300  0.0371835   0.208  0.83534    
-    ## gap_openness.tste_17_13_ct          -0.0483942  0.0447131  -1.082  0.27924    
-    ## gap_extraversion.tste_17_14_ct       0.0269012  0.0270628   0.994  0.32033    
-    ## gap_agreeableness.tste_17_14_ct     -0.0447454  0.0357247  -1.253  0.21053    
-    ## gap_conscientiousness.tste_17_14_ct -0.0311914  0.0432656  -0.721  0.47104    
-    ## gap_openness.tste_17_14_ct          -0.0044392  0.0421404  -0.105  0.91611    
-    ## gap_extraversion.tste_17_15_ct       0.0271441  0.0315716   0.860  0.39002    
-    ## gap_agreeableness.tste_17_15_ct     -0.0468909  0.0450103  -1.042  0.29764    
-    ## gap_conscientiousness.tste_17_15_ct  0.1280736  0.0493103   2.597  0.00946 ** 
-    ## gap_openness.tste_17_15_ct          -0.0333960  0.0518333  -0.644  0.51946    
-    ## gap_extraversion.tste_17_16_ct      -0.0080102  0.0261958  -0.306  0.75980    
-    ## gap_agreeableness.tste_17_16_ct      0.0250490  0.0352828   0.710  0.47782    
-    ## gap_conscientiousness.tste_17_16_ct -0.0428410  0.0386914  -1.107  0.26832    
-    ## gap_openness.tste_17_16_ct          -0.0025506  0.0391399  -0.065  0.94805    
+    ## (Intercept)                         33.9257790 18.4593769   1.838  0.06623 .  
+    ## real_extraversion_ct                 0.0595367  0.0250447   2.377  0.01754 *  
+    ## real_agreeableness_ct                0.0271704  0.0314389   0.864  0.38757    
+    ## real_conscientiousness_ct            0.0903611  0.0349260   2.587  0.00974 ** 
+    ## real_emotionstability_ct            -0.0283667  0.0347210  -0.817  0.41403    
+    ## real_openness_ct                     0.0810821  0.0330899   2.450  0.01436 *  
+    ## gap_extraversion                     0.0088104  0.0262909   0.335  0.73757    
+    ## gap_agreeableness                    0.0673419  0.0342187   1.968  0.04921 *  
+    ## gap_conscientiousness                0.0142279  0.0405417   0.351  0.72567    
+    ## gap_emotionstability                -0.0502001  0.0320846  -1.565  0.11783    
+    ## gap_openness                        -0.0660558  0.0436893  -1.512  0.13070    
+    ## tste_17_0_ct                         0.3234213  0.0618058   5.233 1.84e-07 ***
+    ## tste_17_1_ct                         0.0826772  0.0534857   1.546  0.12231    
+    ## tste_17_2_ct                        -0.0168633  0.0642127  -0.263  0.79287    
+    ## tste_17_3_ct                         0.0359841  0.0595262   0.605  0.54557    
+    ## tste_17_4_ct                         0.1201890  0.0633692   1.897  0.05802 .  
+    ## tste_17_5_ct                         0.0207170  0.0586297   0.353  0.72386    
+    ## tste_17_6_ct                        -0.0648949  0.0612749  -1.059  0.28969    
+    ## tste_17_7_ct                         0.1059285  0.0550565   1.924  0.05449 .  
+    ## tste_17_8_ct                        -0.0808164  0.0598874  -1.349  0.17734    
+    ## tste_17_9_ct                        -0.0765983  0.0582855  -1.314  0.18893    
+    ## tste_17_10_ct                        0.0354584  0.0534012   0.664  0.50677    
+    ## tste_17_11_ct                        0.0284058  0.0582274   0.488  0.62571    
+    ## tste_17_12_ct                       -0.1283786  0.0517430  -2.481  0.01318 *  
+    ## tste_17_13_ct                        0.1129885  0.0618164   1.828  0.06773 .  
+    ## tste_17_14_ct                        0.0372658  0.0556500   0.670  0.50316    
+    ## tste_17_15_ct                       -0.0488281  0.0689206  -0.708  0.47874    
+    ## tste_17_16_ct                       -0.0390299  0.0531392  -0.734  0.46274    
+    ## release                             -0.0144545  0.0090432  -1.598  0.11011    
+    ## gap_extraversion.tste_17_12_ct      -0.0344726  0.0260905  -1.321  0.18656    
+    ## education                            0.0092978  0.0265688   0.350  0.72641    
+    ## income                               0.0120833  0.0172306   0.701  0.48321    
+    ## age                                 -0.0129789  0.0045896  -2.828  0.00473 ** 
+    ## sex2                                -0.0838344  0.0725780  -1.155  0.24819    
+    ## race4                               -0.2204398  0.1411550  -1.562  0.11852    
+    ## race7                               -0.1309239  0.1375426  -0.952  0.34127    
+    ## race6                               -0.8756420  0.3685718  -2.376  0.01760 *  
+    ## gap_conscientiousness.tste_17_12_ct  0.0382176  0.0407561   0.938  0.34850    
+    ## star_user                           -0.0735130  0.0778449  -0.944  0.34510    
+    ## gap_extraversion.tste_17_0_ct       -0.0054522  0.0293891  -0.186  0.85284    
+    ## gap_agreeableness.tste_17_0_ct      -0.0529250  0.0410093  -1.291  0.19700    
+    ## gap_conscientiousness.tste_17_0_ct   0.0623925  0.0476742   1.309  0.19078    
+    ## gap_openness.tste_17_0_ct            0.0178059  0.0489109   0.364  0.71586    
+    ## star_GS                              0.1786154  0.0609305   2.931  0.00341 ** 
+    ## gap_extraversion.tste_17_1_ct       -0.0092554  0.0258185  -0.358  0.72002    
+    ## gap_agreeableness.tste_17_1_ct      -0.0268623  0.0378686  -0.709  0.47819    
+    ## gap_conscientiousness.tste_17_1_ct  -0.0353763  0.0423943  -0.834  0.40412    
+    ## gap_emotionstability.tste_17_1_ct    0.0606187  0.0314930   1.925  0.05439 .  
+    ## gap_openness.tste_17_1_ct            0.0740840  0.0435338   1.702  0.08895 .  
+    ## gap_extraversion.tste_17_2_ct       -0.0488754  0.0328184  -1.489  0.13657    
+    ## gap_agreeableness.tste_17_2_ct       0.0258243  0.0468918   0.551  0.58189    
+    ## gap_conscientiousness.tste_17_2_ct  -0.1159149  0.0513571  -2.257  0.02411 *  
+    ## gap_emotionstability.tste_17_2_ct   -0.0823754  0.0381614  -2.159  0.03100 *  
+    ## gap_openness.tste_17_2_ct           -0.0232071  0.0509835  -0.455  0.64902    
+    ## gap_extraversion.tste_17_3_ct       -0.0117397  0.0299544  -0.392  0.69516    
+    ## gap_agreeableness.tste_17_3_ct      -0.0267493  0.0424950  -0.629  0.52911    
+    ## gap_emotionstability.tste_17_3_ct   -0.0267110  0.0356067  -0.750  0.45324    
+    ## gap_openness.tste_17_3_ct            0.0574380  0.0458943   1.252  0.21089    
+    ## gap_extraversion.tste_17_4_ct       -0.0015640  0.0316286  -0.049  0.96057    
+    ## gap_agreeableness.tste_17_4_ct      -0.0708977  0.0444706  -1.594  0.11103    
+    ## gap_conscientiousness.tste_17_4_ct  -0.0509166  0.0477722  -1.066  0.28663    
+    ## gap_openness.tste_17_4_ct            0.0162672  0.0515973   0.315  0.75259    
+    ## gap_extraversion.tste_17_5_ct        0.0448486  0.0268547   1.670  0.09506 .  
+    ## gap_agreeableness.tste_17_5_ct      -0.0030297  0.0365068  -0.083  0.93387    
+    ## gap_conscientiousness.tste_17_5_ct  -0.0254472  0.0406586  -0.626  0.53147    
+    ## gap_openness.tste_17_5_ct           -0.0874253  0.0422399  -2.070  0.03860 *  
+    ## gap_extraversion.tste_17_6_ct        0.0038914  0.0306016   0.127  0.89882    
+    ## gap_agreeableness.tste_17_6_ct       0.0540109  0.0462234   1.168  0.24275    
+    ## gap_conscientiousness.tste_17_6_ct  -0.0926549  0.0500617  -1.851  0.06434 .  
+    ## gap_emotionstability.tste_17_6_ct   -0.0007188  0.0369232  -0.019  0.98447    
+    ## gap_openness.tste_17_6_ct            0.0116738  0.0513450   0.227  0.82017    
+    ## gap_extraversion.tste_17_7_ct       -0.0092815  0.0274686  -0.338  0.73548    
+    ## gap_agreeableness.tste_17_7_ct      -0.0436688  0.0365369  -1.195  0.23215    
+    ## gap_conscientiousness.tste_17_7_ct   0.0026535  0.0414089   0.064  0.94891    
+    ## gap_openness.tste_17_7_ct            0.0388022  0.0430129   0.902  0.36711    
+    ## gap_extraversion.tste_17_8_ct        0.0389725  0.0304656   1.279  0.20096    
+    ## gap_agreeableness.tste_17_8_ct      -0.0710294  0.0440931  -1.611  0.10736    
+    ## gap_emotionstability.tste_17_8_ct   -0.0458977  0.0360439  -1.273  0.20303    
+    ## gap_openness.tste_17_8_ct           -0.0245800  0.0480977  -0.511  0.60938    
+    ## gap_extraversion.tste_17_9_ct        0.0215102  0.0299902   0.717  0.47331    
+    ## gap_agreeableness.tste_17_9_ct      -0.0209132  0.0390197  -0.536  0.59204    
+    ## gap_conscientiousness.tste_17_9_ct  -0.0755068  0.0441137  -1.712  0.08712 .  
+    ## gap_openness.tste_17_9_ct           -0.0518075  0.0455979  -1.136  0.25601    
+    ## gap_extraversion.tste_17_10_ct       0.0265541  0.0271343   0.979  0.32788    
+    ## gap_agreeableness.tste_17_10_ct      0.0729535  0.0393613   1.853  0.06397 .  
+    ## gap_emotionstability.tste_17_10_ct   0.0028767  0.0321832   0.089  0.92879    
+    ## gap_openness.tste_17_10_ct           0.0288769  0.0440884   0.655  0.51256    
+    ## gap_extraversion.tste_17_11_ct      -0.0173207  0.0281707  -0.615  0.53872    
+    ## gap_agreeableness.tste_17_11_ct      0.0372217  0.0397104   0.937  0.34870    
+    ## gap_conscientiousness.tste_17_11_ct  0.1034674  0.0455673   2.271  0.02327 *  
+    ## gap_openness.tste_17_11_ct          -0.0232019  0.0434482  -0.534  0.59339    
+    ## gap_agreeableness.tste_17_12_ct      0.0020024  0.0350356   0.057  0.95443    
+    ## gap_openness.tste_17_12_ct          -0.0346832  0.0395305  -0.877  0.38039    
+    ## gap_extraversion.tste_17_13_ct      -0.0026320  0.0280253  -0.094  0.92519    
+    ## gap_agreeableness.tste_17_13_ct      0.0092526  0.0371534   0.249  0.80336    
+    ## gap_openness.tste_17_13_ct          -0.0513302  0.0447268  -1.148  0.25125    
+    ## gap_extraversion.tste_17_14_ct       0.0287137  0.0270694   1.061  0.28893    
+    ## gap_agreeableness.tste_17_14_ct     -0.0489877  0.0357227  -1.371  0.17042    
+    ## gap_conscientiousness.tste_17_14_ct -0.0305977  0.0432196  -0.708  0.47905    
+    ## gap_openness.tste_17_14_ct          -0.0083860  0.0421308  -0.199  0.84225    
+    ## gap_extraversion.tste_17_15_ct       0.0247063  0.0315431   0.783  0.43357    
+    ## gap_agreeableness.tste_17_15_ct     -0.0438133  0.0449792  -0.974  0.33013    
+    ## gap_conscientiousness.tste_17_15_ct  0.1220710  0.0497089   2.456  0.01414 *  
+    ## gap_openness.tste_17_15_ct          -0.0341266  0.0517691  -0.659  0.50984    
+    ## gap_extraversion.tste_17_16_ct      -0.0086683  0.0261778  -0.331  0.74058    
+    ## gap_agreeableness.tste_17_16_ct      0.0234825  0.0352497   0.666  0.50537    
+    ## gap_conscientiousness.tste_17_16_ct -0.0437806  0.0386973  -1.131  0.25804    
+    ## gap_openness.tste_17_16_ct          -0.0030267  0.0391289  -0.077  0.93835    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.434 on 2032 degrees of freedom
-    ## Multiple R-squared:  0.1328, Adjusted R-squared:  0.08797 
-    ## F-statistic: 2.963 on 105 and 2032 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.433 on 2030 degrees of freedom
+    ## Multiple R-squared:  0.1357, Adjusted R-squared:  0.0901 
+    ## F-statistic: 2.978 on 107 and 2030 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -6390,127 +6437,128 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.1768 -0.6814  0.2506  1.0301  3.5010 
+    ## -5.2248 -0.6786  0.2503  1.0240  3.5962 
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         48.1751407 18.2790183   2.636 0.008464 ** 
-    ## real_extraversion_ct                 0.0513139  0.0251741   2.038 0.041643 *  
-    ## real_agreeableness_ct                0.0261240  0.0314801   0.830 0.406717    
-    ## real_conscientiousness_ct            0.0868099  0.0350309   2.478 0.013289 *  
-    ## real_emotionstability_ct            -0.0237025  0.0347708  -0.682 0.495520    
-    ## real_openness_ct                     0.0905356  0.0333962   2.711 0.006765 ** 
-    ## tste_18_0_ct                        -0.0927933  0.0589119  -1.575 0.115385    
-    ## tste_18_1_ct                         0.1820228  0.0589460   3.088 0.002043 ** 
-    ## tste_18_2_ct                        -0.0648031  0.0537457  -1.206 0.228060    
-    ## tste_18_3_ct                        -0.0006111  0.0582167  -0.010 0.991626    
-    ## tste_18_4_ct                         0.0819085  0.0633096   1.294 0.195890    
-    ## tste_18_5_ct                        -0.0590807  0.0615036  -0.961 0.336865    
-    ## tste_18_6_ct                        -0.0327585  0.0620097  -0.528 0.597363    
-    ## tste_18_7_ct                        -0.0773621  0.0550671  -1.405 0.160213    
-    ## tste_18_8_ct                         0.0132188  0.0599921   0.220 0.825627    
-    ## tste_18_9_ct                        -0.0797321  0.0605624  -1.317 0.188145    
-    ## tste_18_10_ct                        0.1014018  0.0586061   1.730 0.083742 .  
-    ## tste_18_11_ct                        0.0163167  0.0565216   0.289 0.772855    
-    ## tste_18_12_ct                       -0.0489007  0.0603453  -0.810 0.417836    
-    ## tste_18_13_ct                       -0.0437933  0.0593565  -0.738 0.460720    
-    ## tste_18_14_ct                        0.0556922  0.0640679   0.869 0.384803    
-    ## tste_18_15_ct                        0.2632024  0.0720139   3.655 0.000264 ***
-    ## tste_18_16_ct                       -0.3046532  0.0632480  -4.817 1.57e-06 ***
-    ## tste_18_17_ct                        0.0551491  0.0585732   0.942 0.346539    
-    ## release                             -0.0211887  0.0089717  -2.362 0.018285 *  
-    ## gap_openness                        -0.0457087  0.0440558  -1.038 0.299618    
-    ## gap_extraversion.tste_18_16_ct       0.0069373  0.0318148   0.218 0.827411    
-    ## gap_emotionstability.tste_18_9_ct    0.1225800  0.0371295   3.301 0.000979 ***
-    ## income                               0.0106293  0.0173317   0.613 0.539754    
-    ## gap_extraversion                    -0.0032015  0.0260866  -0.123 0.902335    
-    ## gap_agreeableness                    0.0658572  0.0340532   1.934 0.053258 .  
-    ## gap_emotionstability                -0.0434462  0.0318160  -1.366 0.172234    
-    ## age                                 -0.0114597  0.0046186  -2.481 0.013174 *  
-    ## sex2                                -0.0843969  0.0726556  -1.162 0.245533    
-    ## gap_conscientiousness                0.0106264  0.0406931   0.261 0.794014    
-    ## race4                               -0.1983405  0.1419676  -1.397 0.162541    
-    ## education                            0.0081075  0.0266717   0.304 0.761178    
-    ## race2                                0.1062784  0.1320009   0.805 0.420837    
-    ## star_user                           -0.0988736  0.0782295  -1.264 0.206415    
-    ## gap_extraversion.tste_18_0_ct       -0.0225715  0.0301439  -0.749 0.454070    
-    ## gap_agreeableness.tste_18_0_ct       0.0142107  0.0399636   0.356 0.722184    
-    ## gap_conscientiousness.tste_18_0_ct   0.0295060  0.0455577   0.648 0.517276    
-    ## gap_openness.tste_18_0_ct           -0.0196724  0.0466393  -0.422 0.673216    
-    ## star_GS                              0.1108440  0.0617097   1.796 0.072609 .  
-    ## gap_extraversion.tste_18_1_ct       -0.0419219  0.0273071  -1.535 0.124891    
-    ## gap_agreeableness.tste_18_1_ct      -0.0085126  0.0381357  -0.223 0.823388    
-    ## gap_conscientiousness.tste_18_1_ct  -0.0683983  0.0413499  -1.654 0.098254 .  
-    ## gap_openness.tste_18_1_ct            0.0723750  0.0437668   1.654 0.098353 .  
-    ## gap_extraversion.tste_18_2_ct        0.0051461  0.0261185   0.197 0.843825    
-    ## gap_agreeableness.tste_18_2_ct       0.0715193  0.0354519   2.017 0.043789 *  
-    ## gap_conscientiousness.tste_18_2_ct   0.0757818  0.0404023   1.876 0.060843 .  
-    ## gap_openness.tste_18_2_ct           -0.0033950  0.0409709  -0.083 0.933969    
-    ## gap_extraversion.tste_18_3_ct       -0.0302523  0.0287083  -1.054 0.292107    
-    ## gap_agreeableness.tste_18_3_ct       0.0004237  0.0410157   0.010 0.991759    
-    ## gap_conscientiousness.tste_18_3_ct  -0.0689838  0.0464552  -1.485 0.137712    
-    ## gap_emotionstability.tste_18_3_ct   -0.0234387  0.0348418  -0.673 0.501204    
-    ## gap_openness.tste_18_3_ct            0.0440074  0.0439156   1.002 0.316420    
-    ## gap_extraversion.tste_18_4_ct       -0.0232053  0.0320176  -0.725 0.468679    
-    ## gap_agreeableness.tste_18_4_ct      -0.0006871  0.0438200  -0.016 0.987491    
-    ## gap_conscientiousness.tste_18_4_ct   0.0417232  0.0478953   0.871 0.383784    
-    ## gap_openness.tste_18_4_ct            0.0014508  0.0504310   0.029 0.977053    
-    ## gap_extraversion.tste_18_5_ct       -0.0086659  0.0302590  -0.286 0.774607    
-    ## gap_agreeableness.tste_18_5_ct       0.0232309  0.0396714   0.586 0.558221    
-    ## gap_conscientiousness.tste_18_5_ct   0.1479399  0.0442998   3.340 0.000854 ***
-    ## gap_openness.tste_18_5_ct            0.0121891  0.0459166   0.265 0.790681    
-    ## gap_extraversion.tste_18_6_ct        0.0294148  0.0306084   0.961 0.336663    
-    ## gap_agreeableness.tste_18_6_ct      -0.0267158  0.0405933  -0.658 0.510528    
-    ## gap_conscientiousness.tste_18_6_ct   0.0297148  0.0452951   0.656 0.511881    
-    ## gap_openness.tste_18_6_ct            0.0278374  0.0460277   0.605 0.545382    
-    ## gap_extraversion.tste_18_7_ct       -0.0015845  0.0274200  -0.058 0.953924    
-    ## gap_agreeableness.tste_18_7_ct       0.0402585  0.0391098   1.029 0.303429    
-    ## gap_conscientiousness.tste_18_7_ct  -0.0150682  0.0413846  -0.364 0.715819    
-    ## gap_openness.tste_18_7_ct            0.0333721  0.0426407   0.783 0.433933    
-    ## gap_extraversion.tste_18_8_ct        0.0493593  0.0295546   1.670 0.095052 .  
-    ## gap_agreeableness.tste_18_8_ct       0.0024881  0.0415018   0.060 0.952200    
-    ## gap_conscientiousness.tste_18_8_ct  -0.0178647  0.0439295  -0.407 0.684295    
-    ## gap_openness.tste_18_8_ct            0.0179008  0.0478156   0.374 0.708167    
-    ## gap_extraversion.tste_18_9_ct       -0.0387113  0.0306482  -1.263 0.206704    
-    ## gap_agreeableness.tste_18_9_ct       0.0447134  0.0428507   1.043 0.296856    
-    ## gap_conscientiousness.tste_18_9_ct   0.0212666  0.0467552   0.455 0.649265    
-    ## gap_openness.tste_18_9_ct            0.0129634  0.0482720   0.269 0.788304    
-    ## gap_extraversion.tste_18_10_ct       0.0070897  0.0291718   0.243 0.808005    
-    ## gap_agreeableness.tste_18_10_ct     -0.0966962  0.0397672  -2.432 0.015120 *  
-    ## gap_conscientiousness.tste_18_10_ct  0.0505526  0.0437739   1.155 0.248285    
-    ## gap_openness.tste_18_10_ct           0.0163698  0.0466973   0.351 0.725961    
-    ## gap_extraversion.tste_18_11_ct      -0.0165232  0.0286676  -0.576 0.564427    
-    ## gap_agreeableness.tste_18_11_ct      0.0761331  0.0415861   1.831 0.067287 .  
-    ## gap_conscientiousness.tste_18_11_ct  0.0103176  0.0457872   0.225 0.821738    
-    ## gap_emotionstability.tste_18_11_ct  -0.0217794  0.0331206  -0.658 0.510883    
-    ## gap_openness.tste_18_11_ct           0.0584139  0.0454266   1.286 0.198626    
-    ## gap_extraversion.tste_18_12_ct      -0.0030860  0.0288795  -0.107 0.914912    
-    ## gap_agreeableness.tste_18_12_ct     -0.0435337  0.0419684  -1.037 0.299721    
-    ## gap_emotionstability.tste_18_12_ct  -0.0147023  0.0348425  -0.422 0.673096    
-    ## gap_openness.tste_18_12_ct          -0.0124865  0.0462944  -0.270 0.787404    
-    ## gap_extraversion.tste_18_13_ct      -0.0002965  0.0293137  -0.010 0.991931    
-    ## gap_agreeableness.tste_18_13_ct     -0.0284424  0.0430582  -0.661 0.508971    
-    ## gap_emotionstability.tste_18_13_ct  -0.0316477  0.0347996  -0.909 0.363233    
-    ## gap_openness.tste_18_13_ct           0.0203748  0.0486919   0.418 0.675668    
-    ## gap_extraversion.tste_18_14_ct      -0.0281846  0.0307255  -0.917 0.359093    
-    ## gap_agreeableness.tste_18_14_ct     -0.0149643  0.0416243  -0.360 0.719253    
-    ## gap_openness.tste_18_14_ct           0.0500673  0.0497575   1.006 0.314426    
-    ## gap_extraversion.tste_18_15_ct      -0.0648439  0.0327068  -1.983 0.047549 *  
-    ## gap_agreeableness.tste_18_15_ct     -0.0093133  0.0440655  -0.211 0.832635    
-    ## gap_openness.tste_18_15_ct          -0.0773556  0.0531270  -1.456 0.145533    
-    ## gap_agreeableness.tste_18_16_ct     -0.0012606  0.0439504  -0.029 0.977121    
-    ## gap_conscientiousness.tste_18_16_ct -0.0300820  0.0487600  -0.617 0.537344    
-    ## gap_openness.tste_18_16_ct          -0.0150151  0.0507554  -0.296 0.767388    
-    ## gap_extraversion.tste_18_17_ct      -0.0316992  0.0309560  -1.024 0.305954    
-    ## gap_agreeableness.tste_18_17_ct     -0.0079647  0.0434851  -0.183 0.854691    
-    ## gap_emotionstability.tste_18_17_ct  -0.0015018  0.0322355  -0.047 0.962846    
-    ## gap_openness.tste_18_17_ct           0.0598824  0.0496470   1.206 0.227896    
+    ## (Intercept)                         46.5110934 18.2493241   2.549 0.010887 *  
+    ## real_extraversion_ct                 0.0572294  0.0250686   2.283 0.022538 *  
+    ## real_agreeableness_ct                0.0246317  0.0314349   0.784 0.433380    
+    ## real_conscientiousness_ct            0.0901499  0.0349651   2.578 0.009999 ** 
+    ## real_emotionstability_ct            -0.0257616  0.0347394  -0.742 0.458436    
+    ## real_openness_ct                     0.0828282  0.0331295   2.500 0.012493 *  
+    ## gap_extraversion                     0.0080191  0.0263914   0.304 0.761271    
+    ## gap_agreeableness                    0.0597258  0.0342200   1.745 0.081075 .  
+    ## gap_conscientiousness                0.0088663  0.0408158   0.217 0.828053    
+    ## gap_emotionstability                -0.0482554  0.0320024  -1.508 0.131744    
+    ## gap_openness                        -0.0607363  0.0439213  -1.383 0.166865    
+    ## tste_18_0_ct                        -0.0999097  0.0588216  -1.699 0.089563 .  
+    ## tste_18_1_ct                         0.1832042  0.0588558   3.113 0.001879 ** 
+    ## tste_18_2_ct                        -0.0639958  0.0536734  -1.192 0.233276    
+    ## tste_18_3_ct                        -0.0014227  0.0581299  -0.024 0.980476    
+    ## tste_18_4_ct                         0.0844805  0.0632583   1.335 0.181868    
+    ## tste_18_5_ct                        -0.0655986  0.0614874  -1.067 0.286161    
+    ## tste_18_6_ct                        -0.0329098  0.0619172  -0.532 0.595122    
+    ## tste_18_7_ct                        -0.0789212  0.0549895  -1.435 0.151383    
+    ## tste_18_8_ct                         0.0170554  0.0598985   0.285 0.775874    
+    ## tste_18_9_ct                        -0.0737009  0.0605060  -1.218 0.223337    
+    ## tste_18_10_ct                        0.0985468  0.0585049   1.684 0.092254 .  
+    ## tste_18_11_ct                        0.0125276  0.0564742   0.222 0.824470    
+    ## tste_18_12_ct                       -0.0604687  0.0603523  -1.002 0.316497    
+    ## tste_18_13_ct                       -0.0412443  0.0592723  -0.696 0.486606    
+    ## tste_18_14_ct                        0.0553408  0.0639614   0.865 0.387019    
+    ## tste_18_15_ct                        0.2782437  0.0720452   3.862 0.000116 ***
+    ## tste_18_16_ct                       -0.3018211  0.0631558  -4.779 1.89e-06 ***
+    ## tste_18_17_ct                        0.0558691  0.0584780   0.955 0.339496    
+    ## release                             -0.0203244  0.0089569  -2.269 0.023365 *  
+    ## gap_extraversion.tste_18_16_ct       0.0046233  0.0317847   0.145 0.884364    
+    ## gap_emotionstability.tste_18_9_ct    0.1242892  0.0370894   3.351 0.000820 ***
+    ## education                            0.0106137  0.0266150   0.399 0.690094    
+    ## income                               0.0128418  0.0173237   0.741 0.458606    
+    ## age                                 -0.0126259  0.0045904  -2.750 0.006003 ** 
+    ## sex2                                -0.0707321  0.0727336  -0.972 0.330927    
+    ## race4                               -0.2205478  0.1416315  -1.557 0.119580    
+    ## race7                               -0.1698919  0.1378251  -1.233 0.217845    
+    ## race6                               -0.9340671  0.3672287  -2.544 0.011047 *  
+    ## gap_openness.tste_18_3_ct            0.0451130  0.0438588   1.029 0.303792    
+    ## star_user                           -0.1013255  0.0781053  -1.297 0.194678    
+    ## gap_extraversion.tste_18_0_ct       -0.0235667  0.0300896  -0.783 0.433591    
+    ## gap_agreeableness.tste_18_0_ct       0.0181906  0.0398844   0.456 0.648379    
+    ## gap_conscientiousness.tste_18_0_ct   0.0315729  0.0454635   0.694 0.487468    
+    ## gap_openness.tste_18_0_ct           -0.0159190  0.0465323  -0.342 0.732307    
+    ## star_GS                              0.1086844  0.0616004   1.764 0.077824 .  
+    ## gap_extraversion.tste_18_1_ct       -0.0422083  0.0273052  -1.546 0.122310    
+    ## gap_agreeableness.tste_18_1_ct      -0.0110942  0.0380847  -0.291 0.770849    
+    ## gap_conscientiousness.tste_18_1_ct  -0.0674253  0.0412901  -1.633 0.102632    
+    ## gap_openness.tste_18_1_ct            0.0695647  0.0437007   1.592 0.111576    
+    ## gap_extraversion.tste_18_2_ct        0.0095721  0.0261118   0.367 0.713970    
+    ## gap_agreeableness.tste_18_2_ct       0.0663353  0.0354553   1.871 0.061495 .  
+    ## gap_conscientiousness.tste_18_2_ct   0.0759814  0.0403470   1.883 0.059817 .  
+    ## gap_openness.tste_18_2_ct           -0.0069066  0.0409215  -0.169 0.865988    
+    ## gap_extraversion.tste_18_3_ct       -0.0305782  0.0286664  -1.067 0.286238    
+    ## gap_agreeableness.tste_18_3_ct      -0.0006229  0.0409582  -0.015 0.987868    
+    ## gap_conscientiousness.tste_18_3_ct  -0.0692567  0.0463825  -1.493 0.135550    
+    ## gap_emotionstability.tste_18_3_ct   -0.0216144  0.0348289  -0.621 0.534941    
+    ## gap_extraversion.tste_18_4_ct       -0.0321524  0.0321677  -1.000 0.317660    
+    ## gap_agreeableness.tste_18_4_ct       0.0052649  0.0438578   0.120 0.904460    
+    ## gap_conscientiousness.tste_18_4_ct   0.0446221  0.0478361   0.933 0.351028    
+    ## gap_openness.tste_18_4_ct            0.0031052  0.0503281   0.062 0.950808    
+    ## gap_extraversion.tste_18_5_ct       -0.0078670  0.0302529  -0.260 0.794858    
+    ## gap_agreeableness.tste_18_5_ct       0.0270884  0.0396252   0.684 0.494296    
+    ## gap_conscientiousness.tste_18_5_ct   0.1501319  0.0442098   3.396 0.000697 ***
+    ## gap_openness.tste_18_5_ct            0.0143756  0.0458715   0.313 0.754018    
+    ## gap_extraversion.tste_18_6_ct        0.0331942  0.0305949   1.085 0.278069    
+    ## gap_agreeableness.tste_18_6_ct      -0.0300017  0.0405487  -0.740 0.459451    
+    ## gap_conscientiousness.tste_18_6_ct   0.0303103  0.0452062   0.670 0.502623    
+    ## gap_openness.tste_18_6_ct            0.0227463  0.0460344   0.494 0.621277    
+    ## gap_extraversion.tste_18_7_ct        0.0002624  0.0273852   0.010 0.992356    
+    ## gap_agreeableness.tste_18_7_ct       0.0392635  0.0390531   1.005 0.314831    
+    ## gap_conscientiousness.tste_18_7_ct  -0.0153091  0.0413225  -0.370 0.711065    
+    ## gap_openness.tste_18_7_ct            0.0357470  0.0425894   0.839 0.401377    
+    ## gap_extraversion.tste_18_8_ct        0.0441272  0.0295420   1.494 0.135407    
+    ## gap_agreeableness.tste_18_8_ct       0.0077366  0.0414803   0.187 0.852061    
+    ## gap_conscientiousness.tste_18_8_ct  -0.0179743  0.0438573  -0.410 0.681970    
+    ## gap_openness.tste_18_8_ct            0.0199633  0.0477449   0.418 0.675900    
+    ## gap_extraversion.tste_18_9_ct       -0.0334044  0.0307179  -1.087 0.276964    
+    ## gap_agreeableness.tste_18_9_ct       0.0354368  0.0429531   0.825 0.409462    
+    ## gap_conscientiousness.tste_18_9_ct   0.0201368  0.0466855   0.431 0.666275    
+    ## gap_openness.tste_18_9_ct            0.0072537  0.0482407   0.150 0.880492    
+    ## gap_extraversion.tste_18_10_ct       0.0081718  0.0291418   0.280 0.779188    
+    ## gap_agreeableness.tste_18_10_ct     -0.0980755  0.0397112  -2.470 0.013604 *  
+    ## gap_conscientiousness.tste_18_10_ct  0.0494697  0.0437041   1.132 0.257801    
+    ## gap_openness.tste_18_10_ct           0.0136934  0.0466333   0.294 0.769064    
+    ## gap_extraversion.tste_18_11_ct      -0.0075955  0.0288525  -0.263 0.792383    
+    ## gap_agreeableness.tste_18_11_ct      0.0645165  0.0418781   1.541 0.123576    
+    ## gap_conscientiousness.tste_18_11_ct  0.0102465  0.0457122   0.224 0.822661    
+    ## gap_emotionstability.tste_18_11_ct  -0.0212130  0.0331447  -0.640 0.522236    
+    ## gap_openness.tste_18_11_ct           0.0522175  0.0455000   1.148 0.251254    
+    ## gap_extraversion.tste_18_12_ct      -0.0026405  0.0288725  -0.091 0.927140    
+    ## gap_agreeableness.tste_18_12_ct     -0.0396385  0.0419273  -0.945 0.344563    
+    ## gap_emotionstability.tste_18_12_ct  -0.0136747  0.0348224  -0.393 0.694582    
+    ## gap_openness.tste_18_12_ct          -0.0078623  0.0462507  -0.170 0.865033    
+    ## gap_extraversion.tste_18_13_ct      -0.0031278  0.0292919  -0.107 0.914974    
+    ## gap_agreeableness.tste_18_13_ct     -0.0261807  0.0430052  -0.609 0.542738    
+    ## gap_emotionstability.tste_18_13_ct  -0.0324259  0.0347708  -0.933 0.351157    
+    ## gap_openness.tste_18_13_ct           0.0198821  0.0486166   0.409 0.682614    
+    ## gap_extraversion.tste_18_14_ct      -0.0243675  0.0307069  -0.794 0.427550    
+    ## gap_agreeableness.tste_18_14_ct     -0.0184464  0.0415771  -0.444 0.657331    
+    ## gap_openness.tste_18_14_ct           0.0437558  0.0497355   0.880 0.379088    
+    ## gap_extraversion.tste_18_15_ct      -0.0625534  0.0327404  -1.911 0.056198 .  
+    ## gap_agreeableness.tste_18_15_ct     -0.0161951  0.0440880  -0.367 0.713407    
+    ## gap_openness.tste_18_15_ct          -0.0841756  0.0531113  -1.585 0.113147    
+    ## gap_agreeableness.tste_18_16_ct     -0.0018858  0.0438835  -0.043 0.965727    
+    ## gap_conscientiousness.tste_18_16_ct -0.0323335  0.0487015  -0.664 0.506822    
+    ## gap_openness.tste_18_16_ct          -0.0149126  0.0506843  -0.294 0.768616    
+    ## gap_extraversion.tste_18_17_ct      -0.0315252  0.0308977  -1.020 0.307704    
+    ## gap_agreeableness.tste_18_17_ct     -0.0067449  0.0434213  -0.155 0.876572    
+    ## gap_emotionstability.tste_18_17_ct  -0.0020790  0.0321911  -0.065 0.948511    
+    ## gap_openness.tste_18_17_ct           0.0597335  0.0496025   1.204 0.228636    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.436 on 2027 degrees of freedom
-    ## Multiple R-squared:  0.1333, Adjusted R-squared:  0.08628 
-    ## F-statistic: 2.834 on 110 and 2027 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.434 on 2026 degrees of freedom
+    ## Multiple R-squared:  0.1364, Adjusted R-squared:  0.08906 
+    ## F-statistic: 2.882 on 111 and 2026 DF,  p-value: < 2.2e-16
     ## 
     ## 
     ## Call:
@@ -6518,264 +6566,266 @@ for(model in slice(dfs, 96:114)$model_lm_1) print(summary(model))
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.3190 -0.6763  0.2384  1.0587  3.6233 
-    ## 
-    ## Coefficients:
-    ##                                      Estimate Std. Error t value Pr(>|t|)   
-    ## (Intercept)                         35.799259  18.755926   1.909  0.05644 . 
-    ## real_extraversion_ct                 0.052988   0.025348   2.090  0.03671 * 
-    ## real_agreeableness_ct                0.023912   0.031670   0.755  0.45032   
-    ## real_conscientiousness_ct            0.087210   0.035267   2.473  0.01349 * 
-    ## real_emotionstability_ct            -0.020609   0.035013  -0.589  0.55618   
-    ## real_openness_ct                     0.095190   0.033525   2.839  0.00457 **
-    ## tste_19_0_ct                         0.003483   0.059698   0.058  0.95348   
-    ## tste_19_1_ct                         0.060250   0.065004   0.927  0.35410   
-    ## tste_19_2_ct                         0.027578   0.060840   0.453  0.65040   
-    ## tste_19_3_ct                        -0.146142   0.059070  -2.474  0.01344 * 
-    ## tste_19_4_ct                        -0.084588   0.063008  -1.342  0.17959   
-    ## tste_19_5_ct                        -0.001777   0.068126  -0.026  0.97919   
-    ## tste_19_6_ct                         0.090150   0.062532   1.442  0.14956   
-    ## tste_19_7_ct                         0.096988   0.058226   1.666  0.09592 . 
-    ## tste_19_8_ct                         0.050798   0.058322   0.871  0.38387   
-    ## tste_19_9_ct                        -0.067641   0.063165  -1.071  0.28436   
-    ## tste_19_10_ct                        0.147665   0.061114   2.416  0.01577 * 
-    ## tste_19_11_ct                        0.123634   0.056075   2.205  0.02758 * 
-    ## tste_19_12_ct                        0.184724   0.056957   3.243  0.00120 **
-    ## tste_19_13_ct                       -0.004580   0.055365  -0.083  0.93407   
-    ## tste_19_14_ct                        0.153488   0.056703   2.707  0.00685 **
-    ## tste_19_15_ct                        0.027506   0.057082   0.482  0.62994   
-    ## tste_19_16_ct                        0.043781   0.059475   0.736  0.46174   
-    ## tste_19_17_ct                        0.109785   0.064335   1.706  0.08808 . 
-    ## tste_19_18_ct                       -0.036267   0.052713  -0.688  0.49153   
-    ## release                             -0.015371   0.009207  -1.669  0.09517 . 
-    ## gap_openness                        -0.050892   0.044138  -1.153  0.24903   
-    ## gap_extraversion.tste_19_12_ct       0.043734   0.026561   1.647  0.09981 . 
-    ## income                               0.013874   0.017384   0.798  0.42491   
-    ## gap_extraversion                    -0.003064   0.026198  -0.117  0.90692   
-    ## gap_agreeableness                    0.074909   0.034195   2.191  0.02859 * 
-    ## gap_emotionstability                -0.038777   0.032012  -1.211  0.22591   
-    ## age                                 -0.012270   0.004659  -2.634  0.00851 **
-    ## sex2                                -0.095436   0.073169  -1.304  0.19227   
-    ## gap_conscientiousness                0.005803   0.040636   0.143  0.88645   
-    ## race4                               -0.216709   0.142597  -1.520  0.12873   
-    ## education                            0.009053   0.026837   0.337  0.73589   
-    ## race2                                0.081925   0.132668   0.618  0.53696   
-    ## star_user                           -0.029483   0.075870  -0.389  0.69762   
-    ## star_GS                              0.125944   0.061265   2.056  0.03994 * 
-    ## gap_extraversion.tste_19_0_ct        0.021456   0.027277   0.787  0.43162   
-    ## gap_agreeableness.tste_19_0_ct       0.033506   0.037626   0.891  0.37330   
-    ## gap_conscientiousness.tste_19_0_ct  -0.051513   0.042452  -1.213  0.22510   
-    ## gap_openness.tste_19_0_ct           -0.035178   0.043853  -0.802  0.42255   
-    ## gap_extraversion.tste_19_1_ct       -0.020368   0.032868  -0.620  0.53553   
-    ## gap_agreeableness.tste_19_1_ct       0.023887   0.043498   0.549  0.58296   
-    ## gap_openness.tste_19_1_ct            0.024068   0.050231   0.479  0.63189   
-    ## gap_extraversion.tste_19_2_ct       -0.029307   0.030466  -0.962  0.33618   
-    ## gap_agreeableness.tste_19_2_ct       0.101024   0.043510   2.322  0.02034 * 
-    ## gap_emotionstability.tste_19_2_ct   -0.023328   0.036105  -0.646  0.51828   
-    ## gap_openness.tste_19_2_ct           -0.042286   0.049598  -0.853  0.39400   
-    ## gap_extraversion.tste_19_3_ct        0.008837   0.029864   0.296  0.76732   
-    ## gap_agreeableness.tste_19_3_ct       0.044042   0.041688   1.056  0.29089   
-    ## gap_conscientiousness.tste_19_3_ct   0.022413   0.045376   0.494  0.62139   
-    ## gap_openness.tste_19_3_ct            0.006992   0.044675   0.157  0.87564   
-    ## gap_extraversion.tste_19_4_ct       -0.004844   0.031339  -0.155  0.87718   
-    ## gap_agreeableness.tste_19_4_ct      -0.010210   0.042757  -0.239  0.81128   
-    ## gap_conscientiousness.tste_19_4_ct  -0.012501   0.052139  -0.240  0.81054   
-    ## gap_openness.tste_19_4_ct           -0.040618   0.050046  -0.812  0.41710   
-    ## gap_extraversion.tste_19_5_ct       -0.030980   0.031788  -0.975  0.32988   
-    ## gap_agreeableness.tste_19_5_ct       0.008935   0.042929   0.208  0.83514   
-    ## gap_conscientiousness.tste_19_5_ct  -0.049772   0.047785  -1.042  0.29773   
-    ## gap_openness.tste_19_5_ct           -0.013318   0.049888  -0.267  0.78953   
-    ## gap_extraversion.tste_19_6_ct        0.016482   0.030388   0.542  0.58762   
-    ## gap_agreeableness.tste_19_6_ct      -0.095002   0.041785  -2.274  0.02310 * 
-    ## gap_conscientiousness.tste_19_6_ct  -0.041905   0.048499  -0.864  0.38767   
-    ## gap_openness.tste_19_6_ct            0.033274   0.048293   0.689  0.49091   
-    ## gap_extraversion.tste_19_7_ct        0.005521   0.028930   0.191  0.84867   
-    ## gap_agreeableness.tste_19_7_ct       0.002114   0.038948   0.054  0.95673   
-    ## gap_openness.tste_19_7_ct           -0.013625   0.045076  -0.302  0.76249   
-    ## gap_extraversion.tste_19_8_ct       -0.028464   0.028979  -0.982  0.32612   
-    ## gap_agreeableness.tste_19_8_ct      -0.034934   0.038703  -0.903  0.36683   
-    ## gap_conscientiousness.tste_19_8_ct   0.088716   0.044884   1.977  0.04823 * 
-    ## gap_openness.tste_19_8_ct            0.027667   0.045527   0.608  0.54344   
-    ## gap_extraversion.tste_19_9_ct        0.026176   0.031435   0.833  0.40511   
-    ## gap_agreeableness.tste_19_9_ct       0.005522   0.043839   0.126  0.89978   
-    ## gap_conscientiousness.tste_19_9_ct  -0.075498   0.046665  -1.618  0.10585   
-    ## gap_openness.tste_19_9_ct           -0.087665   0.048631  -1.803  0.07159 . 
-    ## gap_extraversion.tste_19_10_ct      -0.040126   0.029014  -1.383  0.16681   
-    ## gap_agreeableness.tste_19_10_ct      0.049083   0.040969   1.198  0.23103   
-    ## gap_conscientiousness.tste_19_10_ct  0.008787   0.045295   0.194  0.84620   
-    ## gap_openness.tste_19_10_ct           0.039944   0.045834   0.871  0.38359   
-    ## gap_extraversion.tste_19_11_ct      -0.003043   0.027322  -0.111  0.91133   
-    ## gap_agreeableness.tste_19_11_ct     -0.038093   0.035454  -1.074  0.28274   
-    ## gap_conscientiousness.tste_19_11_ct  0.011581   0.040668   0.285  0.77585   
-    ## gap_openness.tste_19_11_ct          -0.047762   0.042021  -1.137  0.25584   
-    ## gap_agreeableness.tste_19_12_ct     -0.020403   0.037037  -0.551  0.58177   
-    ## gap_conscientiousness.tste_19_12_ct -0.024141   0.040417  -0.597  0.55038   
-    ## gap_openness.tste_19_12_ct           0.011688   0.042452   0.275  0.78309   
-    ## gap_extraversion.tste_19_13_ct       0.003070   0.027516   0.112  0.91117   
-    ## gap_agreeableness.tste_19_13_ct      0.025126   0.040366   0.622  0.53371   
-    ## gap_conscientiousness.tste_19_13_ct -0.089882   0.044976  -1.998  0.04580 * 
-    ## gap_emotionstability.tste_19_13_ct   0.077092   0.034368   2.243  0.02500 * 
-    ## gap_openness.tste_19_13_ct           0.033889   0.045316   0.748  0.45465   
-    ## gap_extraversion.tste_19_14_ct       0.033927   0.028983   1.171  0.24189   
-    ## gap_agreeableness.tste_19_14_ct     -0.035078   0.043929  -0.799  0.42466   
-    ## gap_emotionstability.tste_19_14_ct  -0.007632   0.033632  -0.227  0.82051   
-    ## gap_openness.tste_19_14_ct          -0.018871   0.046628  -0.405  0.68572   
-    ## gap_extraversion.tste_19_15_ct       0.017503   0.028437   0.616  0.53829   
-    ## gap_agreeableness.tste_19_15_ct     -0.013560   0.040963  -0.331  0.74066   
-    ## gap_emotionstability.tste_19_15_ct   0.028828   0.031895   0.904  0.36620   
-    ## gap_openness.tste_19_15_ct          -0.076101   0.044477  -1.711  0.08723 . 
-    ## gap_extraversion.tste_19_16_ct      -0.053720   0.029276  -1.835  0.06666 . 
-    ## gap_agreeableness.tste_19_16_ct      0.054040   0.041664   1.297  0.19476   
-    ## gap_conscientiousness.tste_19_16_ct  0.008542   0.044522   0.192  0.84787   
-    ## gap_emotionstability.tste_19_16_ct  -0.043398   0.034100  -1.273  0.20328   
-    ## gap_openness.tste_19_16_ct           0.027904   0.046961   0.594  0.55245   
-    ## gap_extraversion.tste_19_17_ct      -0.020744   0.030554  -0.679  0.49726   
-    ## gap_agreeableness.tste_19_17_ct     -0.041708   0.040086  -1.040  0.29826   
-    ## gap_openness.tste_19_17_ct          -0.044907   0.047710  -0.941  0.34669   
-    ## gap_extraversion.tste_19_18_ct       0.008737   0.026895   0.325  0.74533   
-    ## gap_agreeableness.tste_19_18_ct      0.040361   0.036611   1.102  0.27041   
-    ## gap_conscientiousness.tste_19_18_ct -0.034589   0.039932  -0.866  0.38649   
-    ## gap_openness.tste_19_18_ct           0.040818   0.040851   0.999  0.31782   
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 1.442 on 2024 degrees of freedom
-    ## Multiple R-squared:  0.1264, Adjusted R-squared:  0.07764 
-    ## F-statistic: 2.592 on 113 and 2024 DF,  p-value: 2.666e-16
-    ## 
-    ## 
-    ## Call:
-    ## lm(formula = preference ~ ., data = .x)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -5.0959 -0.6747  0.2500  1.0190  3.5020 
+    ## -5.3549 -0.6877  0.2420  1.0410  3.7658 
     ## 
     ## Coefficients:
     ##                                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)                         36.9602470 19.5402133   1.891  0.05870 .  
-    ## real_extraversion_ct                 0.0515835  0.0252389   2.044  0.04110 *  
-    ## real_agreeableness_ct                0.0266547  0.0315255   0.845  0.39793    
-    ## real_conscientiousness_ct            0.0772685  0.0351148   2.200  0.02789 *  
-    ## real_emotionstability_ct            -0.0246873  0.0348179  -0.709  0.47838    
-    ## real_openness_ct                     0.0957157  0.0334000   2.866  0.00420 ** 
-    ## tste_20_0_ct                         0.0254386  0.0665991   0.382  0.70253    
-    ## tste_20_1_ct                         0.0777784  0.0580429   1.340  0.18039    
-    ## tste_20_2_ct                         0.1011431  0.0543282   1.862  0.06279 .  
-    ## tste_20_3_ct                         0.1106444  0.0617753   1.791  0.07343 .  
-    ## tste_20_4_ct                         0.0276228  0.0555223   0.498  0.61888    
-    ## tste_20_5_ct                        -0.0650851  0.0565370  -1.151  0.24979    
-    ## tste_20_6_ct                         0.1082113  0.0653990   1.655  0.09815 .  
-    ## tste_20_7_ct                         0.2781625  0.0679119   4.096 4.37e-05 ***
-    ## tste_20_8_ct                         0.0005259  0.0659681   0.008  0.99364    
-    ## tste_20_9_ct                         0.1041370  0.0570969   1.824  0.06832 .  
-    ## tste_20_10_ct                        0.0900096  0.0620726   1.450  0.14719    
-    ## tste_20_11_ct                       -0.1428541  0.0577390  -2.474  0.01344 *  
-    ## tste_20_12_ct                        0.1078173  0.0589474   1.829  0.06754 .  
-    ## tste_20_13_ct                        0.1605865  0.0632036   2.541  0.01113 *  
-    ## tste_20_14_ct                       -0.1297814  0.0517901  -2.506  0.01229 *  
-    ## tste_20_15_ct                        0.1151904  0.0668508   1.723  0.08502 .  
-    ## tste_20_16_ct                       -0.0487219  0.0583233  -0.835  0.40360    
-    ## tste_20_17_ct                        0.0781583  0.0556844   1.404  0.16059    
-    ## tste_20_18_ct                        0.1030661  0.0535058   1.926  0.05421 .  
-    ## tste_20_19_ct                       -0.0058721  0.0600630  -0.098  0.92213    
-    ## release                             -0.0158237  0.0095925  -1.650  0.09918 .  
-    ## gap_openness                        -0.0454591  0.0440433  -1.032  0.30213    
-    ## income                               0.0133084  0.0173390   0.768  0.44285    
-    ## gap_extraversion                    -0.0055463  0.0260051  -0.213  0.83113    
-    ## gap_agreeableness                    0.0707600  0.0340476   2.078  0.03781 *  
-    ## gap_emotionstability                -0.0445829  0.0318688  -1.399  0.16198    
-    ## age                                 -0.0113357  0.0046371  -2.445  0.01459 *  
-    ## sex2                                -0.0797621  0.0729590  -1.093  0.27442    
-    ## gap_conscientiousness                0.0051995  0.0406697   0.128  0.89828    
-    ## race4                               -0.1791144  0.1422815  -1.259  0.20822    
-    ## education                            0.0041912  0.0266746   0.157  0.87516    
-    ## race2                                0.1050789  0.1321226   0.795  0.42652    
-    ## star_user                           -0.0207471  0.0794310  -0.261  0.79397    
-    ## star_GS                              0.0851303  0.0622906   1.367  0.17188    
-    ## gap_extraversion.tste_20_0_ct        0.0084404  0.0318072   0.265  0.79076    
-    ## gap_agreeableness.tste_20_0_ct       0.0572912  0.0431735   1.327  0.18466    
-    ## gap_conscientiousness.tste_20_0_ct   0.1034993  0.0501182   2.065  0.03904 *  
-    ## gap_openness.tste_20_0_ct           -0.0033767  0.0492152  -0.069  0.94531    
-    ## gap_extraversion.tste_20_1_ct        0.0093670  0.0287350   0.326  0.74447    
-    ## gap_agreeableness.tste_20_1_ct       0.0265626  0.0387279   0.686  0.49287    
-    ## gap_conscientiousness.tste_20_1_ct  -0.0655088  0.0416227  -1.574  0.11567    
-    ## gap_openness.tste_20_1_ct            0.0308618  0.0453144   0.681  0.49591    
-    ## gap_extraversion.tste_20_2_ct       -0.0002914  0.0284328  -0.010  0.99182    
-    ## gap_agreeableness.tste_20_2_ct      -0.0155241  0.0370405  -0.419  0.67518    
-    ## gap_openness.tste_20_2_ct           -0.0006859  0.0410121  -0.017  0.98666    
-    ## gap_extraversion.tste_20_3_ct        0.0451557  0.0310636   1.454  0.14620    
-    ## gap_agreeableness.tste_20_3_ct      -0.0471561  0.0410721  -1.148  0.25105    
-    ## gap_conscientiousness.tste_20_3_ct   0.0216931  0.0470427   0.461  0.64475    
-    ## gap_openness.tste_20_3_ct            0.0209958  0.0492852   0.426  0.67015    
-    ## gap_extraversion.tste_20_4_ct       -0.0328628  0.0266756  -1.232  0.21811    
-    ## gap_agreeableness.tste_20_4_ct       0.0916715  0.0383577   2.390  0.01694 *  
-    ## gap_conscientiousness.tste_20_4_ct  -0.0342428  0.0436232  -0.785  0.43256    
-    ## gap_openness.tste_20_4_ct            0.0189794  0.0443999   0.427  0.66909    
-    ## gap_extraversion.tste_20_5_ct       -0.0022244  0.0282218  -0.079  0.93719    
-    ## gap_agreeableness.tste_20_5_ct       0.0228620  0.0389616   0.587  0.55742    
-    ## gap_conscientiousness.tste_20_5_ct  -0.1019252  0.0427349  -2.385  0.01717 *  
-    ## gap_openness.tste_20_5_ct            0.0059708  0.0431860   0.138  0.89005    
-    ## gap_extraversion.tste_20_6_ct       -0.0764346  0.0316624  -2.414  0.01586 *  
-    ## gap_agreeableness.tste_20_6_ct      -0.0026006  0.0433896  -0.060  0.95221    
-    ## gap_conscientiousness.tste_20_6_ct   0.0046769  0.0485243   0.096  0.92323    
-    ## gap_openness.tste_20_6_ct            0.0453725  0.0504691   0.899  0.36875    
-    ## gap_extraversion.tste_20_7_ct       -0.0769515  0.0337040  -2.283  0.02252 *  
-    ## gap_agreeableness.tste_20_7_ct       0.0088954  0.0477393   0.186  0.85220    
-    ## gap_conscientiousness.tste_20_7_ct  -0.0005452  0.0510871  -0.011  0.99149    
-    ## gap_emotionstability.tste_20_7_ct   -0.0380863  0.0408592  -0.932  0.35138    
-    ## gap_openness.tste_20_7_ct           -0.0641555  0.0523734  -1.225  0.22073    
-    ## gap_extraversion.tste_20_8_ct       -0.0046582  0.0312331  -0.149  0.88145    
-    ## gap_agreeableness.tste_20_8_ct      -0.0798830  0.0411884  -1.939  0.05258 .  
-    ## gap_openness.tste_20_8_ct            0.0650949  0.0472082   1.379  0.16808    
-    ## gap_extraversion.tste_20_9_ct        0.0302378  0.0289725   1.044  0.29676    
-    ## gap_agreeableness.tste_20_9_ct      -0.0578312  0.0390797  -1.480  0.13908    
-    ## gap_conscientiousness.tste_20_9_ct   0.0098033  0.0416243   0.236  0.81383    
-    ## gap_openness.tste_20_9_ct           -0.0463382  0.0451854  -1.026  0.30524    
-    ## gap_extraversion.tste_20_10_ct      -0.0091387  0.0302629  -0.302  0.76270    
-    ## gap_agreeableness.tste_20_10_ct     -0.0441075  0.0413834  -1.066  0.28663    
-    ## gap_conscientiousness.tste_20_10_ct -0.0093462  0.0469469  -0.199  0.84222    
-    ## gap_emotionstability.tste_20_10_ct   0.0001344  0.0328116   0.004  0.99673    
-    ## gap_openness.tste_20_10_ct           0.0018632  0.0489428   0.038  0.96964    
-    ## gap_extraversion.tste_20_11_ct       0.0474046  0.0285864   1.658  0.09741 .  
-    ## gap_agreeableness.tste_20_11_ct      0.0169655  0.0400335   0.424  0.67177    
-    ## gap_conscientiousness.tste_20_11_ct -0.0186809  0.0461650  -0.405  0.68577    
-    ## gap_openness.tste_20_11_ct          -0.0867989  0.0450511  -1.927  0.05416 .  
-    ## gap_extraversion.tste_20_12_ct      -0.0083992  0.0304700  -0.276  0.78284    
-    ## gap_agreeableness.tste_20_12_ct      0.0262427  0.0433732   0.605  0.54522    
-    ## gap_emotionstability.tste_20_12_ct  -0.0937497  0.0329072  -2.849  0.00443 ** 
-    ## gap_openness.tste_20_12_ct          -0.0316938  0.0484422  -0.654  0.51302    
-    ## gap_extraversion.tste_20_13_ct      -0.0695282  0.0313312  -2.219  0.02659 *  
-    ## gap_agreeableness.tste_20_13_ct      0.0171496  0.0459580   0.373  0.70907    
-    ## gap_conscientiousness.tste_20_13_ct  0.0873177  0.0493662   1.769  0.07708 .  
-    ## gap_openness.tste_20_13_ct           0.0190615  0.0504603   0.378  0.70565    
-    ## gap_extraversion.tste_20_14_ct       0.0291194  0.0256377   1.136  0.25617    
-    ## gap_agreeableness.tste_20_14_ct      0.0354780  0.0350568   1.012  0.31165    
-    ## gap_conscientiousness.tste_20_14_ct -0.0491599  0.0406103  -1.211  0.22622    
-    ## gap_openness.tste_20_14_ct          -0.0346717  0.0409577  -0.847  0.39736    
-    ## gap_extraversion.tste_20_15_ct       0.0147616  0.0300416   0.491  0.62322    
-    ## gap_agreeableness.tste_20_15_ct     -0.0057749  0.0422143  -0.137  0.89120    
-    ## gap_openness.tste_20_15_ct          -0.0382576  0.0496691  -0.770  0.44124    
-    ## gap_extraversion.tste_20_16_ct      -0.0509904  0.0282565  -1.805  0.07129 .  
-    ## gap_agreeableness.tste_20_16_ct      0.0506591  0.0390854   1.296  0.19509    
-    ## gap_openness.tste_20_16_ct          -0.0218501  0.0463961  -0.471  0.63773    
-    ## gap_extraversion.tste_20_17_ct      -0.0100325  0.0268246  -0.374  0.70844    
-    ## gap_agreeableness.tste_20_17_ct     -0.0305439  0.0354179  -0.862  0.38858    
-    ## gap_conscientiousness.tste_20_17_ct  0.0084127  0.0427591   0.197  0.84405    
-    ## gap_openness.tste_20_17_ct          -0.0456934  0.0407609  -1.121  0.26242    
-    ## gap_extraversion.tste_20_18_ct       0.0079383  0.0263355   0.301  0.76312    
-    ## gap_agreeableness.tste_20_18_ct      0.0532446  0.0364688   1.460  0.14444    
-    ## gap_conscientiousness.tste_20_18_ct -0.0089244  0.0407028  -0.219  0.82647    
-    ## gap_openness.tste_20_18_ct           0.0290647  0.0412537   0.705  0.48118    
-    ## gap_extraversion.tste_20_19_ct      -0.0135359  0.0293420  -0.461  0.64462    
-    ## gap_agreeableness.tste_20_19_ct      0.0338788  0.0405893   0.835  0.40400    
-    ## gap_openness.tste_20_19_ct          -0.0553101  0.0468578  -1.180  0.23799    
+    ## (Intercept)                         34.4696061 18.7249158   1.841 0.065791 .  
+    ## real_extraversion_ct                 0.0582657  0.0252578   2.307 0.021164 *  
+    ## real_agreeableness_ct                0.0219593  0.0316362   0.694 0.487688    
+    ## real_conscientiousness_ct            0.0901314  0.0352072   2.560 0.010538 *  
+    ## real_emotionstability_ct            -0.0223818  0.0349926  -0.640 0.522496    
+    ## real_openness_ct                     0.0884760  0.0332743   2.659 0.007899 ** 
+    ## gap_extraversion                     0.0066719  0.0265008   0.252 0.801251    
+    ## gap_agreeableness                    0.0686911  0.0343537   2.000 0.045685 *  
+    ## gap_conscientiousness                0.0046393  0.0407567   0.114 0.909384    
+    ## gap_emotionstability                -0.0424446  0.0322198  -1.317 0.187873    
+    ## gap_openness                        -0.0642314  0.0440203  -1.459 0.144684    
+    ## tste_19_0_ct                         0.0107212  0.0596366   0.180 0.857346    
+    ## tste_19_1_ct                         0.0681634  0.0649922   1.049 0.294399    
+    ## tste_19_2_ct                         0.0284484  0.0607633   0.468 0.639704    
+    ## tste_19_3_ct                        -0.1491084  0.0590046  -2.527 0.011578 *  
+    ## tste_19_4_ct                        -0.0779500  0.0630095  -1.237 0.216188    
+    ## tste_19_5_ct                         0.0092816  0.0681275   0.136 0.891646    
+    ## tste_19_6_ct                         0.0932194  0.0624333   1.493 0.135566    
+    ## tste_19_7_ct                         0.1015882  0.0581933   1.746 0.081014 .  
+    ## tste_19_8_ct                         0.0556074  0.0582660   0.954 0.340010    
+    ## tste_19_9_ct                        -0.0602675  0.0631860  -0.954 0.340293    
+    ## tste_19_10_ct                        0.1493531  0.0610367   2.447 0.014492 *  
+    ## tste_19_11_ct                        0.1250437  0.0560052   2.233 0.025677 *  
+    ## tste_19_12_ct                        0.1896116  0.0569304   3.331 0.000882 ***
+    ## tste_19_13_ct                       -0.0027217  0.0552999  -0.049 0.960751    
+    ## tste_19_14_ct                        0.1534128  0.0566241   2.709 0.006799 ** 
+    ## tste_19_15_ct                        0.0352058  0.0570881   0.617 0.537507    
+    ## tste_19_16_ct                        0.0442977  0.0593959   0.746 0.455873    
+    ## tste_19_17_ct                        0.1099441  0.0642557   1.711 0.087227 .  
+    ## tste_19_18_ct                       -0.0332946  0.0526203  -0.633 0.526979    
+    ## release                             -0.0146810  0.0091916  -1.597 0.110375    
+    ## gap_extraversion.tste_19_12_ct       0.0397461  0.0265909   1.495 0.135143    
+    ## education                            0.0119355  0.0267901   0.446 0.655992    
+    ## income                               0.0156583  0.0173750   0.901 0.367592    
+    ## age                                 -0.0132324  0.0046305  -2.858 0.004311 ** 
+    ## sex2                                -0.0833741  0.0732548  -1.138 0.255198    
+    ## race4                               -0.2358320  0.1422517  -1.658 0.097503 .  
+    ## race7                               -0.1381214  0.1390699  -0.993 0.320741    
+    ## race6                               -0.8966363  0.3713490  -2.415 0.015843 *  
+    ## gap_conscientiousness.tste_19_12_ct -0.0225336  0.0404026  -0.558 0.577093    
+    ## gap_openness.tste_19_2_ct           -0.0422278  0.0495391  -0.852 0.394085    
+    ## star_user                           -0.0312747  0.0757484  -0.413 0.679741    
+    ## star_GS                              0.1238735  0.0611797   2.025 0.043024 *  
+    ## gap_extraversion.tste_19_0_ct        0.0270899  0.0273489   0.991 0.322033    
+    ## gap_agreeableness.tste_19_0_ct       0.0255106  0.0377427   0.676 0.499176    
+    ## gap_conscientiousness.tste_19_0_ct  -0.0525526  0.0424238  -1.239 0.215581    
+    ## gap_openness.tste_19_0_ct           -0.0397799  0.0439070  -0.906 0.365042    
+    ## gap_extraversion.tste_19_1_ct       -0.0215575  0.0328265  -0.657 0.511441    
+    ## gap_agreeableness.tste_19_1_ct       0.0229628  0.0434483   0.529 0.597205    
+    ## gap_openness.tste_19_1_ct            0.0204872  0.0502088   0.408 0.683288    
+    ## gap_extraversion.tste_19_2_ct       -0.0281465  0.0304430  -0.925 0.355304    
+    ## gap_agreeableness.tste_19_2_ct       0.1018375  0.0434400   2.344 0.019158 *  
+    ## gap_emotionstability.tste_19_2_ct   -0.0227307  0.0360614  -0.630 0.528548    
+    ## gap_extraversion.tste_19_3_ct        0.0158474  0.0299356   0.529 0.596598    
+    ## gap_agreeableness.tste_19_3_ct       0.0364156  0.0417746   0.872 0.383467    
+    ## gap_conscientiousness.tste_19_3_ct   0.0196422  0.0453110   0.433 0.664699    
+    ## gap_openness.tste_19_3_ct            0.0034968  0.0446519   0.078 0.937587    
+    ## gap_extraversion.tste_19_4_ct       -0.0114675  0.0314077  -0.365 0.715061    
+    ## gap_agreeableness.tste_19_4_ct      -0.0007569  0.0428462  -0.018 0.985908    
+    ## gap_conscientiousness.tste_19_4_ct  -0.0130245  0.0520933  -0.250 0.802595    
+    ## gap_openness.tste_19_4_ct           -0.0339894  0.0501029  -0.678 0.497600    
+    ## gap_extraversion.tste_19_5_ct       -0.0331884  0.0317861  -1.044 0.296557    
+    ## gap_agreeableness.tste_19_5_ct       0.0071326  0.0428790   0.166 0.867904    
+    ## gap_conscientiousness.tste_19_5_ct  -0.0493698  0.0477331  -1.034 0.301125    
+    ## gap_openness.tste_19_5_ct           -0.0159663  0.0498392  -0.320 0.748732    
+    ## gap_extraversion.tste_19_6_ct        0.0122968  0.0303788   0.405 0.685680    
+    ## gap_agreeableness.tste_19_6_ct      -0.0933469  0.0417450  -2.236 0.025452 *  
+    ## gap_conscientiousness.tste_19_6_ct  -0.0391667  0.0485021  -0.808 0.419459    
+    ## gap_openness.tste_19_6_ct            0.0334568  0.0482198   0.694 0.487863    
+    ## gap_extraversion.tste_19_7_ct        0.0075297  0.0288942   0.261 0.794431    
+    ## gap_agreeableness.tste_19_7_ct      -0.0007380  0.0389247  -0.019 0.984875    
+    ## gap_openness.tste_19_7_ct           -0.0152559  0.0450235  -0.339 0.734764    
+    ## gap_extraversion.tste_19_8_ct       -0.0264038  0.0289901  -0.911 0.362516    
+    ## gap_agreeableness.tste_19_8_ct      -0.0380611  0.0386796  -0.984 0.325228    
+    ## gap_conscientiousness.tste_19_8_ct   0.0883832  0.0448320   1.971 0.048811 *  
+    ## gap_openness.tste_19_8_ct            0.0203459  0.0455512   0.447 0.655169    
+    ## gap_extraversion.tste_19_9_ct        0.0272190  0.0315744   0.862 0.388757    
+    ## gap_agreeableness.tste_19_9_ct      -0.0029041  0.0438742  -0.066 0.947232    
+    ## gap_conscientiousness.tste_19_9_ct  -0.0752296  0.0466388  -1.613 0.106895    
+    ## gap_openness.tste_19_9_ct           -0.0918949  0.0486240  -1.890 0.058913 .  
+    ## gap_extraversion.tste_19_10_ct      -0.0353222  0.0290897  -1.214 0.224793    
+    ## gap_agreeableness.tste_19_10_ct      0.0424996  0.0410180   1.036 0.300270    
+    ## gap_conscientiousness.tste_19_10_ct  0.0105748  0.0452800   0.234 0.815364    
+    ## gap_openness.tste_19_10_ct           0.0360564  0.0458542   0.786 0.431768    
+    ## gap_extraversion.tste_19_11_ct       0.0009793  0.0273384   0.036 0.971429    
+    ## gap_agreeableness.tste_19_11_ct     -0.0432006  0.0354784  -1.218 0.223496    
+    ## gap_conscientiousness.tste_19_11_ct  0.0102360  0.0406203   0.252 0.801073    
+    ## gap_openness.tste_19_11_ct          -0.0517429  0.0419895  -1.232 0.217987    
+    ## gap_agreeableness.tste_19_12_ct     -0.0182166  0.0370316  -0.492 0.622829    
+    ## gap_openness.tste_19_12_ct           0.0117992  0.0423195   0.279 0.780417    
+    ## gap_extraversion.tste_19_13_ct       0.0043255  0.0274537   0.158 0.874824    
+    ## gap_agreeableness.tste_19_13_ct      0.0207077  0.0403525   0.513 0.607888    
+    ## gap_conscientiousness.tste_19_13_ct -0.0891544  0.0449120  -1.985 0.047269 *  
+    ## gap_emotionstability.tste_19_13_ct   0.0797277  0.0343393   2.322 0.020345 *  
+    ## gap_openness.tste_19_13_ct           0.0335947  0.0452576   0.742 0.457992    
+    ## gap_extraversion.tste_19_14_ct       0.0300454  0.0289865   1.037 0.300078    
+    ## gap_agreeableness.tste_19_14_ct     -0.0304009  0.0439198  -0.692 0.488897    
+    ## gap_emotionstability.tste_19_14_ct  -0.0118128  0.0336323  -0.351 0.725449    
+    ## gap_openness.tste_19_14_ct          -0.0191343  0.0465668  -0.411 0.681190    
+    ## gap_extraversion.tste_19_15_ct       0.0150459  0.0283949   0.530 0.596252    
+    ## gap_agreeableness.tste_19_15_ct     -0.0117176  0.0409161  -0.286 0.774615    
+    ## gap_emotionstability.tste_19_15_ct   0.0282041  0.0318554   0.885 0.376057    
+    ## gap_openness.tste_19_15_ct          -0.0771480  0.0444286  -1.736 0.082637 .  
+    ## gap_extraversion.tste_19_16_ct      -0.0508930  0.0292537  -1.740 0.082062 .  
+    ## gap_agreeableness.tste_19_16_ct      0.0507009  0.0416288   1.218 0.223393    
+    ## gap_conscientiousness.tste_19_16_ct  0.0110278  0.0444679   0.248 0.804164    
+    ## gap_emotionstability.tste_19_16_ct  -0.0422179  0.0340597  -1.240 0.215294    
+    ## gap_openness.tste_19_16_ct           0.0257170  0.0469576   0.548 0.583983    
+    ## gap_extraversion.tste_19_17_ct      -0.0252510  0.0305834  -0.826 0.409104    
+    ## gap_agreeableness.tste_19_17_ct     -0.0375304  0.0400855  -0.936 0.349252    
+    ## gap_openness.tste_19_17_ct          -0.0414927  0.0476770  -0.870 0.384246    
+    ## gap_extraversion.tste_19_18_ct       0.0095973  0.0268851   0.357 0.721149    
+    ## gap_agreeableness.tste_19_18_ct      0.0368417  0.0365759   1.007 0.313927    
+    ## gap_conscientiousness.tste_19_18_ct -0.0341019  0.0398792  -0.855 0.392580    
+    ## gap_openness.tste_19_18_ct           0.0387577  0.0408109   0.950 0.342382    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 1.436 on 2021 degrees of freedom
-    ## Multiple R-squared:  0.1353, Adjusted R-squared:  0.08566 
-    ## F-statistic: 2.726 on 116 and 2021 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 1.441 on 2023 degrees of freedom
+    ## Multiple R-squared:  0.1291, Adjusted R-squared:  0.08006 
+    ## F-statistic: 2.631 on 114 and 2023 DF,  p-value: < 2.2e-16
+    ## 
+    ## 
+    ## Call:
+    ## lm(formula = preference ~ ., data = .x)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -5.1263 -0.6762  0.2329  1.0096  3.6678 
+    ## 
+    ## Coefficients:
+    ##                                       Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                         35.2081622 19.5119657   1.804  0.07131 .  
+    ## real_extraversion_ct                 0.0570444  0.0251595   2.267  0.02348 *  
+    ## real_agreeableness_ct                0.0253492  0.0314917   0.805  0.42095    
+    ## real_conscientiousness_ct            0.0803149  0.0350626   2.291  0.02209 *  
+    ## real_emotionstability_ct            -0.0267050  0.0348055  -0.767  0.44302    
+    ## real_openness_ct                     0.0885068  0.0331399   2.671  0.00763 ** 
+    ## gap_extraversion                     0.0048064  0.0263179   0.183  0.85511    
+    ## gap_agreeableness                    0.0661789  0.0342005   1.935  0.05313 .  
+    ## gap_conscientiousness                0.0025178  0.0407850   0.062  0.95078    
+    ## gap_emotionstability                -0.0499351  0.0320819  -1.556  0.11975    
+    ## gap_openness                        -0.0592587  0.0439014  -1.350  0.17723    
+    ## tste_20_0_ct                         0.0266266  0.0665239   0.400  0.68901    
+    ## tste_20_1_ct                         0.0803337  0.0579629   1.386  0.16592    
+    ## tste_20_2_ct                         0.1047193  0.0542892   1.929  0.05388 .  
+    ## tste_20_3_ct                         0.1069935  0.0617187   1.734  0.08315 .  
+    ## tste_20_4_ct                         0.0253608  0.0554617   0.457  0.64753    
+    ## tste_20_5_ct                        -0.0639299  0.0565065  -1.131  0.25803    
+    ## tste_20_6_ct                         0.1071844  0.0653491   1.640  0.10112    
+    ## tste_20_7_ct                         0.2808189  0.0678309   4.140 3.62e-05 ***
+    ## tste_20_8_ct                        -0.0076623  0.0659792  -0.116  0.90756    
+    ## tste_20_9_ct                         0.1096418  0.0570704   1.921  0.05485 .  
+    ## tste_20_10_ct                        0.0883407  0.0620047   1.425  0.15439    
+    ## tste_20_11_ct                       -0.1384844  0.0576708  -2.401  0.01643 *  
+    ## tste_20_12_ct                        0.1159407  0.0589698   1.966  0.04942 *  
+    ## tste_20_13_ct                        0.1584998  0.0631293   2.511  0.01213 *  
+    ## tste_20_14_ct                       -0.1316785  0.0517271  -2.546  0.01098 *  
+    ## tste_20_15_ct                        0.1255832  0.0669084   1.877  0.06067 .  
+    ## tste_20_16_ct                       -0.0424694  0.0582934  -0.729  0.46636    
+    ## tste_20_17_ct                        0.0763697  0.0556222   1.373  0.16990    
+    ## tste_20_18_ct                        0.1005672  0.0534561   1.881  0.06007 .  
+    ## tste_20_19_ct                       -0.0061430  0.0599942  -0.102  0.91845    
+    ## release                             -0.0149255  0.0095785  -1.558  0.11934    
+    ## education                            0.0064473  0.0266324   0.242  0.80874    
+    ## income                               0.0148830  0.0173323   0.859  0.39062    
+    ## age                                 -0.0123934  0.0046091  -2.689  0.00723 ** 
+    ## sex2                                -0.0671963  0.0730707  -0.920  0.35789    
+    ## race4                               -0.2006078  0.1419556  -1.413  0.15776    
+    ## race7                               -0.1741925  0.1382113  -1.260  0.20769    
+    ## gap_agreeableness.tste_20_19_ct      0.0290359  0.0406152   0.715  0.47475    
+    ## race6                               -0.8163594  0.3706800  -2.202  0.02775 *  
+    ## gap_conscientiousness.tste_20_5_ct  -0.1021526  0.0426856  -2.393  0.01680 *  
+    ## star_user                           -0.0225744  0.0793270  -0.285  0.77600    
+    ## star_GS                              0.0847072  0.0622304   1.361  0.17361    
+    ## gap_extraversion.tste_20_0_ct        0.0126391  0.0318448   0.397  0.69149    
+    ## gap_agreeableness.tste_20_0_ct       0.0513819  0.0431928   1.190  0.23435    
+    ## gap_conscientiousness.tste_20_0_ct   0.1043899  0.0501058   2.083  0.03734 *  
+    ## gap_openness.tste_20_0_ct           -0.0082644  0.0492163  -0.168  0.86666    
+    ## gap_extraversion.tste_20_1_ct        0.0135804  0.0287588   0.472  0.63682    
+    ## gap_agreeableness.tste_20_1_ct       0.0232028  0.0387183   0.599  0.54906    
+    ## gap_conscientiousness.tste_20_1_ct  -0.0656801  0.0415735  -1.580  0.11430    
+    ## gap_openness.tste_20_1_ct            0.0295377  0.0452909   0.652  0.51436    
+    ## gap_extraversion.tste_20_2_ct        0.0003657  0.0284085   0.013  0.98973    
+    ## gap_agreeableness.tste_20_2_ct      -0.0146669  0.0369990  -0.396  0.69184    
+    ## gap_openness.tste_20_2_ct           -0.0022794  0.0409693  -0.056  0.95564    
+    ## gap_extraversion.tste_20_3_ct        0.0444452  0.0310302   1.432  0.15221    
+    ## gap_agreeableness.tste_20_3_ct      -0.0469321  0.0410255  -1.144  0.25277    
+    ## gap_conscientiousness.tste_20_3_ct   0.0238579  0.0470335   0.507  0.61203    
+    ## gap_openness.tste_20_3_ct            0.0238786  0.0492670   0.485  0.62796    
+    ## gap_extraversion.tste_20_4_ct       -0.0281283  0.0267081  -1.053  0.29239    
+    ## gap_agreeableness.tste_20_4_ct       0.0872910  0.0383768   2.275  0.02304 *  
+    ## gap_conscientiousness.tste_20_4_ct  -0.0358680  0.0435854  -0.823  0.41064    
+    ## gap_openness.tste_20_4_ct            0.0173172  0.0443419   0.391  0.69618    
+    ## gap_extraversion.tste_20_5_ct       -0.0013785  0.0282218  -0.049  0.96105    
+    ## gap_agreeableness.tste_20_5_ct       0.0191994  0.0389395   0.493  0.62202    
+    ## gap_openness.tste_20_5_ct            0.0063357  0.0431289   0.147  0.88323    
+    ## gap_extraversion.tste_20_6_ct       -0.0777457  0.0316199  -2.459  0.01403 *  
+    ## gap_agreeableness.tste_20_6_ct      -0.0010440  0.0433493  -0.024  0.98079    
+    ## gap_conscientiousness.tste_20_6_ct   0.0063850  0.0484695   0.132  0.89521    
+    ## gap_openness.tste_20_6_ct            0.0460430  0.0504111   0.913  0.36117    
+    ## gap_extraversion.tste_20_7_ct       -0.0767108  0.0336662  -2.279  0.02280 *  
+    ## gap_agreeableness.tste_20_7_ct       0.0078658  0.0476867   0.165  0.86900    
+    ## gap_conscientiousness.tste_20_7_ct  -0.0033572  0.0510674  -0.066  0.94759    
+    ## gap_emotionstability.tste_20_7_ct   -0.0380812  0.0408326  -0.933  0.35113    
+    ## gap_openness.tste_20_7_ct           -0.0662578  0.0523288  -1.266  0.20559    
+    ## gap_extraversion.tste_20_8_ct       -0.0041403  0.0312298  -0.133  0.89454    
+    ## gap_agreeableness.tste_20_8_ct      -0.0764036  0.0411640  -1.856  0.06359 .  
+    ## gap_openness.tste_20_8_ct            0.0664537  0.0471922   1.408  0.15924    
+    ## gap_extraversion.tste_20_9_ct        0.0258798  0.0290169   0.892  0.37256    
+    ## gap_agreeableness.tste_20_9_ct      -0.0577561  0.0390382  -1.479  0.13917    
+    ## gap_conscientiousness.tste_20_9_ct   0.0112356  0.0415855   0.270  0.78705    
+    ## gap_openness.tste_20_9_ct           -0.0463675  0.0451137  -1.028  0.30417    
+    ## gap_extraversion.tste_20_10_ct      -0.0134123  0.0302784  -0.443  0.65784    
+    ## gap_agreeableness.tste_20_10_ct     -0.0382619  0.0414193  -0.924  0.35572    
+    ## gap_conscientiousness.tste_20_10_ct -0.0057581  0.0468857  -0.123  0.90227    
+    ## gap_emotionstability.tste_20_10_ct   0.0021019  0.0327900   0.064  0.94889    
+    ## gap_openness.tste_20_10_ct           0.0075816  0.0489128   0.155  0.87683    
+    ## gap_extraversion.tste_20_11_ct       0.0453964  0.0285804   1.588  0.11236    
+    ## gap_agreeableness.tste_20_11_ct      0.0214771  0.0400003   0.537  0.59138    
+    ## gap_conscientiousness.tste_20_11_ct -0.0181339  0.0461124  -0.393  0.69417    
+    ## gap_openness.tste_20_11_ct          -0.0826836  0.0449998  -1.837  0.06629 .  
+    ## gap_extraversion.tste_20_12_ct      -0.0100566  0.0304504  -0.330  0.74124    
+    ## gap_agreeableness.tste_20_12_ct      0.0244701  0.0433345   0.565  0.57236    
+    ## gap_emotionstability.tste_20_12_ct  -0.0940135  0.0328675  -2.860  0.00427 ** 
+    ## gap_openness.tste_20_12_ct          -0.0336463  0.0483972  -0.695  0.48700    
+    ## gap_extraversion.tste_20_13_ct      -0.0734849  0.0313911  -2.341  0.01933 *  
+    ## gap_agreeableness.tste_20_13_ct      0.0256150  0.0460758   0.556  0.57832    
+    ## gap_conscientiousness.tste_20_13_ct  0.0902503  0.0492935   1.831  0.06727 .  
+    ## gap_openness.tste_20_13_ct           0.0206807  0.0505209   0.409  0.68233    
+    ## gap_extraversion.tste_20_14_ct       0.0258289  0.0257089   1.005  0.31518    
+    ## gap_agreeableness.tste_20_14_ct      0.0403982  0.0351009   1.151  0.24990    
+    ## gap_conscientiousness.tste_20_14_ct -0.0503828  0.0405614  -1.242  0.21433    
+    ## gap_openness.tste_20_14_ct          -0.0276581  0.0410299  -0.674  0.50033    
+    ## gap_extraversion.tste_20_15_ct       0.0101077  0.0300751   0.336  0.73684    
+    ## gap_agreeableness.tste_20_15_ct     -0.0063370  0.0421937  -0.150  0.88063    
+    ## gap_openness.tste_20_15_ct          -0.0388438  0.0496084  -0.783  0.43371    
+    ## gap_extraversion.tste_20_16_ct      -0.0466894  0.0283612  -1.646  0.09987 .  
+    ## gap_agreeableness.tste_20_16_ct      0.0412409  0.0392914   1.050  0.29402    
+    ## gap_openness.tste_20_16_ct          -0.0266430  0.0464228  -0.574  0.56609    
+    ## gap_extraversion.tste_20_17_ct      -0.0121668  0.0268110  -0.454  0.65002    
+    ## gap_agreeableness.tste_20_17_ct     -0.0258812  0.0354280  -0.731  0.46515    
+    ## gap_conscientiousness.tste_20_17_ct  0.0078774  0.0427100   0.184  0.85369    
+    ## gap_openness.tste_20_17_ct          -0.0424850  0.0407472  -1.043  0.29724    
+    ## gap_extraversion.tste_20_18_ct       0.0100722  0.0263179   0.383  0.70197    
+    ## gap_agreeableness.tste_20_18_ct      0.0490347  0.0364629   1.345  0.17885    
+    ## gap_conscientiousness.tste_20_18_ct -0.0088124  0.0406090  -0.217  0.82823    
+    ## gap_openness.tste_20_18_ct           0.0270116  0.0412323   0.655  0.51247    
+    ## gap_extraversion.tste_20_19_ct      -0.0071398  0.0293963  -0.243  0.80812    
+    ## gap_openness.tste_20_19_ct          -0.0575651  0.0468534  -1.229  0.21936    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 1.435 on 2020 degrees of freedom
+    ## Multiple R-squared:  0.1377, Adjusted R-squared:  0.08778 
+    ## F-statistic: 2.758 on 117 and 2020 DF,  p-value: < 2.2e-16
 
 Model summaries (Lasso select all variables)
 --------------------------------------------

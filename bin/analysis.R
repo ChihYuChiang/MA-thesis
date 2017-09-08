@@ -154,8 +154,8 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
                 gap_conscientiousness = game_conscientiousness - real_conscientiousness,
                 gap_emotionstability = game_emotionstability - real_emotionstability,
                 gap_openness = game_openness - real_openness,
-                gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + (-gap_emotionstability) + gap_openness,
-                real_sum = real_extraversion + real_agreeableness + real_conscientiousness + (-real_emotionstability) + real_openness,
+                gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + gap_emotionstability + gap_openness,
+                real_sum = real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness,
                 dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
                 satis_sum = satis_autonomy + satis_relatedness + satis_competence,
                 combined_sum = combined_autonomy + combined_relatedness + combined_competence
@@ -492,13 +492,13 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
   #--Setting up
   #The df with y and treatment variables (those vars will not be tested, and will always be included in the output df)
   df_ytreatment <- switch(form,
-                          "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+\\D_ct$"), matches("^tste.+\\d_ct$")),
+                          "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+[a-z]{4}$"), matches("^tste.+\\d_ct$")),
                           "2"=select(df_yx, matches(outcomeVar)),
                           "3"=select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar))))
 
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
   df_test <- switch(form,
-                    "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$"))),
+                    "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+[a-z]{4}$"), -matches("^tste.+\\d_ct$"))),
                     "2"=data.matrix(select(df_yx, -matches(outcomeVar))),
                     "3"=data.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar)))))
   
