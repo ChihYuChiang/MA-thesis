@@ -43,9 +43,10 @@ core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
 
 #Core game traditional genre data
 core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
-  select(-X1, -group, -idTag)
-colnames(core_tGenre)[2:length(colnames(core_tGenre))] <- #Give genre columns identification
-  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
+  select(-X1, -group, -idTag, -game_title) %>%
+  mutate(core_id = factor(core_id))
+colnames(core_tGenre)[3:length(colnames(core_tGenre))] <- #Give genre columns identification
+  unlist(lapply(X=colnames(core_tGenre)[3:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
 
 #Player-related survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
@@ -68,7 +69,7 @@ core_cluster <- mutate_each(core_cluster,
 #--Match up
 #Main df, key=player-game pair
 df <- bind_cols(core_cluster, core_tsteScore) %>%
-  left_join(core_tGenre, by=c("title" = "game_title")) %>%
+  left_join(core_tGenre, by=c("core_id")) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
 
 
@@ -130,19 +131,13 @@ Name | Definition | Unit
 ----------------------------------------------------------------------
 "
 updateVars <- function(df.outcome="preference", df_player.outcome="game_extraversion"){
-  #--Match up (repeat the set up section to work around the "data binding" bug)
-  #Main df, key=player-game pair
-  df <<- bind_cols(core_cluster, core_tsteScore) %>%
-    left_join(core_tGenre, by=c("title" = "game_title")) %>%
-    left_join(survey, by=c("core_id"), copy=FALSE)
-  
   #--Create response variable
   df <<- df %>%
     rowwise() %>% #Rowwise to make the ordinary functions work
     mutate(preference = mean(c(preference_3))) %>%
     ungroup() #Ungroup to cancel rowwise
   
-  
+
   #--Mean-center predictor variables
   df <<- mutate_at(df, vars(starts_with("tste"),
                             starts_with("game"),
@@ -151,7 +146,7 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
                             starts_with("dissatis"),
                             starts_with("combined")), funs(ct = . - mean(.)))
 
-  
+
   #--Compute personalty gap
   df <<- mutate(df,
                 gap_extraversion = game_extraversion - real_extraversion,
@@ -166,6 +161,7 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
                 combined_sum = combined_autonomy + combined_relatedness + combined_competence
                 )
 
+  
   #--Acquire player df, key=player
   df_player <<- distinct(df, respondent, .keep_all=TRUE)
   
@@ -231,7 +227,8 @@ df_c <- mutate(df,
                c_race = race,
                c_sex = sex,
                c_release = release,
-               c_star = star_user)
+               c_star = star_user,
+               c_starGS = star_GS)
 
 #Models with specific construct as main effect
 model_control <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_")))
@@ -391,6 +388,7 @@ updateVars()
 #Train models
 dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
 dfs_player$model_lm <- map(dfs_player$df_yx_selected, ~ lm(gap_extraversion ~ ., data=.x))
+model_lm <- lm(preference ~ ., data=df_c_selected) 
 
 #Summary
 for(model in dfs_player$model_lm) print(summary(model))
@@ -500,10 +498,10 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
 
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
   df_test <- switch(form,
-                    "1"=as.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$"))),
-                    "2"=as.matrix(select(df_yx, -matches(outcomeVar))),
-                    "3"=as.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar)))))
-
+                    "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+\\D_ct$"), -matches("^tste.+\\d_ct$"))),
+                    "2"=data.matrix(select(df_yx, -matches(outcomeVar))),
+                    "3"=data.matrix(select(df_yx, -matches(outcomeVar), -matches(sub("game", "real", outcomeVar)))))
+  
   #The number of observations
   n <- nrow(df_test)
   
@@ -556,7 +554,8 @@ updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
 
 #--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
 dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., outcomeVar="preference", form="1"))
-dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness", form="1"))
+dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness", form="3"))
+df_c_selected <- lassoSelect(select(df_c, preference, starts_with("c_"), starts_with("tg_")), outcomeVar="preference", form="2")
 
 
 
