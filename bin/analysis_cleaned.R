@@ -48,7 +48,7 @@ core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
 colnames(core_tGenre)[3:length(colnames(core_tGenre))] <- #Give genre columns identification
   unlist(lapply(X=colnames(core_tGenre)[3:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
 
-#Player-related survey data
+#Player survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
   mutate(race = factor(race),
          sex = factor(sex),
@@ -71,6 +71,10 @@ core_cluster <- mutate_each(core_cluster,
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(core_tGenre, by=c("core_id")) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
+
+
+#--Clean up unnecessary objs
+rm(core_cluster, core_tsteScore, core_tGenre, survey, imputation_mean)
 
 
 
@@ -189,6 +193,8 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
   row.names(dfs_player) <<- modelId
 }
 
+updateVars()
+
 
 
 
@@ -212,159 +218,9 @@ Models applying the variables selected. Two ways to select variables:
 
 
 "
-### Simple linear model (partial models)
-"
-........SimplePartial <- function() {}
-
-#Update vars
-updateVars()
-
-#Full df with control marked
-df_c <- mutate(df,
-               c_age = age,
-               c_education = education,
-               c_income = income,
-               c_race = race,
-               c_sex = sex,
-               c_release = release,
-               c_star = star_user,
-               c_starGS = star_GS)
-
-#Models with specific construct as main effect
-model_control <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_")))
-
-model_gChar_survey_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("distance_survey_mean")))
-model_gChar_survey_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("distance_survey_median")))
-model_gChar_review_mean <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_mean")))
-model_gChar_review_median <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("probability_review_median")))
-
-featureNo <- seq(2, 20)
-model_gChar_tstes <- map(featureNo, ~ lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep="")))))
-model_gChar_tGenre <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("tg_")))
-
-model_personality_game <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("game")))
-model_personality_real <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("real")))
-model_personality_gap <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("gap")))
-
-model_personality_satis <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("satis")))
-model_personality_dissatis <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("dissatis")))
-model_personality_combined <- lm(preference ~ ., data=select(df_c, preference, starts_with("c_"), starts_with("combined")))
-
-#Plug in for result
-#tste_2 = model_gChar_tstes[[1]]
-summary(model_gChar_tstes[[10]])
-summary(model_gChar_tGenre)
-
-
-
-
-"
-### Multivariate linear model
-"
-........MultivariateLinear <- function() {}
-
-#Update vars
-updateVars()
-
-#Player df with control marked
-df_player_c <- mutate(df_player,
-                      c_age = age,
-                      c_education = education,
-                      c_income = income,
-                      c_race = race,
-                      c_sex = sex)
-
-
-#--Train models
-#`ygap_sum` models are simple linear models with the sum of 5 gaps as dependent var
-#gap ~ real + c
-model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_")))
-model_ygap_sum <- lm(gap_sum ~ .,
-                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_")))
-
-#gap ~ satis + c
-model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), starts_with("c_"), matches("^combined.+ct$")))
-model_ygap_sum <- lm(gap_sum ~ .,
-                 data=select(df_player_c, gap_sum, starts_with("c_"), matches("^combined.+ct$")))
-
-#gap ~ real + satis + c
-model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ .,
-                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
-model_ygap_sum <- lm(gap_sum ~ .,
-                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
-
-#gap ~ real + satis + real * satis + c
-model_ygap <- lm(cbind(gap_extraversion, gap_agreeableness, gap_conscientiousness, gap_emotionstability, gap_openness) ~ . +
-                   (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
-                 data=select(df_player_c, starts_with("gap"), matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
-model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * (real_extraversion_ct + real_agreeableness_ct + real_conscientiousness_ct + real_emotionstability_ct + real_openness_ct),
-                 data=select(df_player_c, gap_sum, matches("^real.+ct$"), starts_with("c_"), matches("^combined.+ct$")))
-model_ygap_sum <- lm(gap_sum ~ . + (combined_autonomy_ct + combined_relatedness_ct + combined_competence_ct) * real_sum,
-                 data=select(df_player_c, gap_sum, real_sum, starts_with("c_"), matches("^combined.+ct$")))
-
-#Results of seperate models
-summary(model_ygap)
-
-#MANOVA
-Anova(model_ygap)
-summary(Anova(model_ygap))
-
-
-
-
-"
-### Tobit model
-"
-........Tobit <- function() {}
-
-#Update vars
-updateVars()
-
-#Player df with control marked
-df_player_c <- mutate(df_player,
-                      c_age = age,
-                      c_education = education,
-                      c_income = income,
-                      c_race = race,
-                      c_sex = sex)
-
-#--Acquire corresponding df for each game personality
-#Alphabetical order for personality response vars
-dfs_ygame <- list(select(df_player_c, game_p = game_agreeableness, real_p_ct = real_agreeableness_ct, starts_with("c_"), matches("^dissatis.*ct$")),
-                  select(df_player_c, game_p = game_conscientiousness, real_p_ct = real_conscientiousness_ct, starts_with("c_"), matches("^dissatis.*ct$")),
-                  select(df_player_c, game_p = game_emotionstability, real_p_ct = real_emotionstability_ct, starts_with("c_"), matches("^dissatis.*ct$")),
-                  select(df_player_c, game_p = game_extraversion, real_p_ct = real_extraversion_ct, starts_with("c_"), matches("^dissatis.*ct$")),
-                  select(df_player_c, game_p = game_openness, real_p_ct = real_openness_ct, starts_with("c_"), matches("^dissatis.*ct$")))
-
-
-#--Train models
-#Tobit, with upper=7, lower=1, imethod=(1, 2, 3) for dif initial values
-models_ygame_tobit <- map(dfs_ygame,
-                          ~ vglm(game_p ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * real_p_ct,
-                                 data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
-
-#Lm for comparison
-models_ygame_lm <- map(dfs_ygame,
-                       ~ lm(game_p ~ . + (dissatis_autonomy_ct + dissatis_relatedness_ct + dissatis_competence_ct) * real_p_ct,
-                            data=.x))
-
-
-#--Summary
-for(model in models_ygame_lm) print(summary(model))
-summary(models_ygame_lm[[1]])
-
-
-
-
-"
-### Tobit Model (full model)
+### Tobit Model
 "
 ........TobitFull <- function() {}
-
-#Update vars
-updateVars()
 
 #Train models
 dfs_player$model_tobit <- map(dfs_player$df_yx_selected,
@@ -378,12 +234,9 @@ summary(dfs["gap_8_i", "model_tobit"][[1]])
 
 
 "
-### Simple linear models (full model)
+### Simple linear model
 "
 ........SimpleFull <- function() {}
-
-#Update vars
-updateVars()
 
 #Train models
 dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
@@ -393,62 +246,6 @@ model_lm <- lm(preference ~ ., data=df_c_selected)
 #Summary
 for(model in dfs_player$model_lm) print(summary(model))
 summary(dfs["gap_8_i", "model_lm"][[1]])
-
-
-
-
-"
-### Grouped simple linear models (grouped by game characteristic)
-"
-........SimpleGrouped <- function() {}
-
-#Update vars
-updateVars()
-
-#Include `group survey` or `group review` for grouping (do not include in the csv, which makes dummies)
-#Group the data into multiple dfs
-df_yx_group <- dfs$df_yx[[1]] %>% 
-  bind_cols(data.frame(df$group_survey)) %>%
-  group_by(df.group_survey) %>%
-  nest()
-
-#Train models
-model_lm_group <- map2("preference ~ .", df_yx_group$data, lm)
-
-#Print the results
-for(i in seq(1, length(model_lm_group))) {
-  print(paste("group", i, sep=" "))
-  print(summary(model_lm_group[[i]]))
-}
-
-
-
-
-"
-### Lasso and ridge
-
-- `glmnet` alpha=1 -> lasso; alpha=0 -> ridge
-"
-........LassoRidge <- function() {}
-
-#Update vars
-updateVars()
-
-#Acquire various lambda levels (can be plugged in the `glmet` if needed; not used for now)
-lambdas <- 10^seq(3, -3, length=7)
-
-#Identify the best lambda level
-#Adjust `nfolds` to increase the folds
-dfs$lambda_las_best <- map(dfs$df_x, ~ cv.glmnet(x=.x, y=df$preference, alpha=1, nfolds=10)$lambda.min)
-
-#Train model with best lambda level
-#Better to standardize while the regulation counts on the units
-dfs$model_las_best <- map2(dfs$df_x, dfs$lambda_las_best, ~ glmnet(x=.x, y=df$preference, alpha=1,
-                                                                   lambda=.y,
-                                                                   standardize=TRUE))
-
-#Acquire the best result
-dfs$model_las_coef <- map(dfs$model_las_best, coef)
 
 
 
@@ -555,210 +352,6 @@ updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
 #--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
 dfs$df_yx_selected <- map(dfs$df_yx, ~ lassoSelect(., outcomeVar="preference", form="1"))
 dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="game_agreeableness", form="3"))
-df_c_selected <- lassoSelect(select(df_c, preference, starts_with("c_"), starts_with("tg_")), outcomeVar="preference", form="2")
-
-
-
-
-"
-### Predicting models
-"
-........PredictingModels <- function() {}
-
-
-#--Random forest (bagging)
-#Update vars
-updateVars()
-
-#Train model
-dfs$model_rf <- map(dfs$df_yx, ~ randomForest(preference ~ ., data=.x,
-                                              mtry=5, ntree=500))
-
-#Print results
-for(model in dfs$model_rf) print(summary(model))
-
-
-#--SVM (linear kernel)
-#Update vars
-updateVars()
-
-#Train model
-costs <- 10^seq(2, -3, length=20)
-dfs$model_svm <- map(dfs$df_yx, ~ tune.svm(preference ~ ., data=.x,
-                                           kernel="linear", range=list(cost=costs)))
-
-#Print results
-for(model in dfs$model_svm) print(summary(model))
-
-
-
-
-
-
-
-
-"
-----------------------------------------------------------------------
-## Cross validation
-----------------------------------------------------------------------
-"
-...CrossValidation <- function() {}
-
-
-
-
-"
-### MSE computation
-"
-#Works with simple regression, SVM, RF
-mse_1 <- function(model, data_yx){
-  res <- modelr:::residuals(model, data_yx)
-  mean(res^2, na.rm=TRUE)
-}
-
-#Works with lasso and ridge
-mse_2 <- function(model, lambda, data_y, data_x){
-  pred <- predict(model, s=lambda, newx=data_x)
-  mean((pred - data_y)^2, na.rm=TRUE)
-}
-
-
-
-
-"
-### partial linear model
-"
-........SimplePartial <- function() {}
-
-
-#--Create cross validation datasets
-df_c <- mutate(df,
-               c_age = age,
-               c_education = education,
-               c_income = income,
-               c_race = race,
-               c_sex = sex,
-               c_release = release,
-               c_star = star_user)
-
-df_c_tg <- select(df_c, preference, starts_with("c_"), starts_with("tg_"))
-dfs_c <- map(featureNo, ~ select(df_c, preference, starts_with("c_"), starts_with(paste("tste_", .x, "_", sep=""))))
-
-#Leave-one-out: k=nrow(df_yx)
-df_yx_cv <- crossv_kfold(df_c_tg, k=100)
-dfs_yx_cv <- map(dfs_c, ~ crossv_kfold(.x, k=100))
-
-
-#--Train models on each training df
-i <- 17
-model_lm_cv <- map(df_yx_cv$train, ~ lm(preference ~ ., data=.x))
-models_lm_cv <- map(dfs_yx_cv[[i]]$train, ~ lm(preference ~ ., data=.x))
-
-
-#--MSE stats
-#Acquire MSE of each model on training dfs
-mses_lm_cv <- map2_dbl(model_lm_cv, df_yx_cv$test, mse_1)
-msess_lm_cv <- map2_dbl(models_lm_cv, dfs_yx_cv[[i]]$test, mse_1)
-
-#MSE mean
-mses_lm_cv.mean <- mean(mses_lm_cv)
-msess_lm_cv.mean <- mean(msess_lm_cv)
-
-#MSE std
-mses_lm_cv.std <- sd(mses_lm_cv)
-msess_lm_cv.std <- sd(msess_lm_cv)
-
-#Box plot of all MSEs
-ggplot() +
-  geom_boxplot(mapping=aes(x="MSE_tGenre", y=data_frame(mses_lm_cv)[[1]])) +
-  geom_boxplot(mapping=aes(x="MSE_tste", y=data_frame(msess_lm_cv)[[1]])) +
-  labs(title="Boxplot of MSEs",
-       x=element_blank(),
-       y="MSE value")
-
-
-
-
-"
-### Simple linear model and predicting models
-"
-........SimpleFullnPredicting <- function() {}
-
-
-#--Create cross validation datasets
-#Update vars
-updateVars()
-
-#Leave-one-out: k=nrow(df_yx)
-df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
-
-
-#--Train models on each training df
-model_lm_cv <- map(df_yx_cv$train, ~ lm(preference ~ ., data=.x))
-
-
-#--MSE stats
-#Acquire MSE of each model on training dfs
-mses_lm_cv <- map2_dbl(model_lm_cv, df_yx_cv$test, mse_1)
-
-
-#Box plot of all MSEs
-ggplot(data=data_frame(mses_lm_cv), aes(x="MSE (cross validation)", y=data_frame(mses_lm_cv)[[1]])) +
-  geom_boxplot() +
-  labs(title="Boxplot of MSEs",
-       x=element_blank(),
-       y="MSE value")
-
-#MSE mean
-mse_lm_cv <- mean(mses_lm_cv)
-
-#MSE std
-mseSd_lm_cv <- sd(mses_lm_cv)
-
-
-
-
-"
-### Lasso and ridge
-"
-........LassoRidge <- function() {}
-
-
-#--Create cross validation datasets
-#Update vars
-updateVars(update_predictors=FALSE)
-
-#Leave-one-out: k=nrow(df_yx)
-df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
-
-
-#--Train models on each training df
-model_las_cv <- map(df_yx_cv$train, ~ glmnet(x=as.matrix(select(as.data.frame(.x), -preference)),
-                                               y=as.matrix(select(as.data.frame(.x), preference)),
-                                               alpha=1,
-                                               lambda=lambda_las_best,
-                                               standardize=TRUE))
-
-
-#--MSE stats
-#Acquire MSE of each model on training dfs
-mses_las_cv <- map2_dbl(model_las_cv, df_yx_cv$test, ~ mse_2(model=.x,
-                                                                lambda=lambda_las_best,
-                                                                data_x=as.matrix(select(as.data.frame(.y), -preference)),
-                                                                data_y=as.matrix(select(as.data.frame(.y), preference))))
-
-#Box plot of all MSEs
-ggplot(data=data_frame(mses_las_cv), aes(x="MSE (cross validation)", y=data_frame(mses_las_cv)[[1]])) +
-  geom_boxplot() +
-  labs(title="Boxplot of MSEs",
-       x=element_blank(),
-       y="MSE value")
-
-#MSE mean
-mse_las_cv <- mean(mses_las_cv)
-
-#MSE std
-mseSd_las_cv <- sd(mses_las_cv)
 
 
 
@@ -783,90 +376,22 @@ mseSd_las_cv <- sd(mses_las_cv)
 ........BIC <- function() {}
 
 
-#--preference ~ tstes
-BICs <- unlist(map(model_gChar_tstes, BIC))
-BICs_dif <- BICs[-1] - lag(BICs)[-1]
-
-ggplot(data=as.data.frame(BICs)) +
-  geom_line(mapping=aes(seq(2, 20), BICs)) +
-  labs(x="Number of features", y="BIC") +
-  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
-
-#Model 3 = the BIC change from 2-feature to 3-feature models 
-ggplot(data=as.data.frame(BICs_dif)) +
-  geom_line(mapping=aes(seq(3, 20), BICs_dif)) +
-  labs(x="Number of features", y="BIC difference") +
-  scale_x_continuous(breaks=seq(3, 20), minor_breaks=NULL) +
-  geom_hline(yintercept=0, linetype=3)
-
-
-#--lm models
+#Computation
 dfs$BIC <- unlist(map(dfs$model_lm, BIC))
 dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 
-#Seperate batch models from dfs
-dfs_real <- slice(dfs, 1:19)
-dfs_realI <- slice(dfs, 20:38)
-dfs_game <- slice(dfs, 39:57)
-dfs_gameI <- slice(dfs, 58:76)
-dfs_gap <- slice(dfs, 77:95)
-dfs_gapI <- slice(dfs, 96:114)
-
-dfs_real_dif <- slice(dfs, 2:19)
-dfs_realI_dif <- slice(dfs, 21:38)
-dfs_game_dif <- slice(dfs, 40:57)
-dfs_gameI_dif <- slice(dfs, 59:76)
-dfs_gap_dif <- slice(dfs, 78:95)
-dfs_gapI_dif <- slice(dfs, 97:114)
-
-#All models
+#Plot BIC
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC)) +
   labs(x="Model", y="BIC") +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
 
+#Plot BIC difference
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC_dif)) +
   labs(x="Model", y="BIC difference") +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
   geom_hline(yintercept=0, linetype=3)
-
-#Batch models
-ggplot() +
-  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), BIC, color="r")) +
-  geom_line(data=dfs_realI, mapping=aes(seq(1, dim(dfs_realI)[1]), BIC, color="r"), alpha=0.5) +
-  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), BIC, color="g")) +
-  geom_line(data=dfs_gameI, mapping=aes(seq(1, dim(dfs_gameI)[1]), BIC, color="g"), alpha=0.5) +
-  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), BIC, color="p")) +
-  geom_line(data=dfs_gapI, mapping=aes(seq(1, dim(dfs_gapI)[1]), BIC, color="p"), alpha=0.5) +
-  labs(x="Model (number of tste features)", y="BIC", title="Model BIC") +
-  theme(legend.position="top", legend.direction="vertical") +
-  scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
-  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
-                     labels=c("r"="tste + real + (tste*real)",
-                              "g"="tste + real + game + (tste*game)",
-                              "p"="tste + real + gap + (tste*gap)"))
-
-ggplot() +
-  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), BIC_dif, color="r")) +
-  geom_line(data=dfs_realI_dif, mapping=aes(seq(1, dim(dfs_realI_dif)[1]), BIC_dif, color="r"), alpha=0.5) +
-  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), BIC_dif, color="g")) +
-  geom_line(data=dfs_gameI_dif, mapping=aes(seq(1, dim(dfs_gameI_dif)[1]), BIC_dif, color="g"), alpha=0.5) +
-  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), BIC_dif, color="p")) +
-  geom_line(data=dfs_gapI_dif, mapping=aes(seq(1, dim(dfs_gapI_dif)[1]), BIC_dif, color="p"), alpha=0.5) +
-  labs(x="Model (number of tste features)", y="BIC difference", title="BIC difference when increasing the number of tste features") +
-  theme(legend.position="top", legend.direction="vertical") +
-  scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
-  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
-                     labels=c("r"="tste + real + (tste*real)",
-                              "g"="tste + real + game + (tste*game)",
-                              "p"="tste + real + gap + (tste*gap)")) +
-  geom_hline(yintercept=0, linetype=3)
-
-
-#--Tobit lm comparison
-BICs_ygame_tobit <- unlist(map(models_ygame_tobit, BIC))
-BICs_ygame_lm <- unlist(map(models_ygame_lm, BIC))
 
 
 
@@ -877,90 +402,22 @@ BICs_ygame_lm <- unlist(map(models_ygame_lm, BIC))
 ........AIC <- function() {}
 
 
-#--preference ~ tstes
-AICs <- unlist(map(model_gChar_tstes, AIC))
-AICs_dif <- AICs[-1] - lag(AICs)[-1]
-
-ggplot(data=as.data.frame(AICs)) +
-  geom_line(mapping=aes(seq(2, 20), AICs)) +
-  labs(x="Number of features", y="AIC") +
-  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
-
-#Model 3 = the AIC change from 2-feature to 3-feature models 
-ggplot(data=as.data.frame(AICs_dif)) +
-  geom_line(mapping=aes(seq(3, 20), AICs_dif)) +
-  labs(x="Number of features", y="AIC difference") +
-  scale_x_continuous(breaks=seq(3, 20), minor_breaks=NULL) +
-  geom_hline(yintercept=0, linetype=3)
-
-
-#--lm models
+#Computation
 dfs$AIC <- unlist(map(dfs$model_lm, AIC))
 dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 
-#Seperate batch models from dfs
-dfs_real <- slice(dfs, 1:19)
-dfs_realI <- slice(dfs, 20:38)
-dfs_game <- slice(dfs, 39:57)
-dfs_gameI <- slice(dfs, 58:76)
-dfs_gap <- slice(dfs, 77:95)
-dfs_gapI <- slice(dfs, 96:114)
-
-dfs_real_dif <- slice(dfs, 2:19)
-dfs_realI_dif <- slice(dfs, 21:38)
-dfs_game_dif <- slice(dfs, 40:57)
-dfs_gameI_dif <- slice(dfs, 59:76)
-dfs_gap_dif <- slice(dfs, 78:95)
-dfs_gapI_dif <- slice(dfs, 97:114)
-
-#All models
+#Plot AIC
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC)) +
   labs(x="Model", y="AIC") +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
 
+#Plot AIC difference
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC_dif)) +
   labs(x="Model", y="AIC difference") +
   scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
   geom_hline(yintercept=0, linetype=3)
-
-#Batch models
-ggplot() +
-  geom_line(data=dfs_real, mapping=aes(seq(1, dim(dfs_real)[1]), AIC, color="r")) +
-  geom_line(data=dfs_realI, mapping=aes(seq(1, dim(dfs_realI)[1]), AIC, color="r"), alpha=0.5) +
-  geom_line(data=dfs_game, mapping=aes(seq(1, dim(dfs_game)[1]), AIC, color="g")) +
-  geom_line(data=dfs_gameI, mapping=aes(seq(1, dim(dfs_gameI)[1]), AIC, color="g"), alpha=0.5) +
-  geom_line(data=dfs_gap, mapping=aes(seq(1, dim(dfs_gap)[1]), AIC, color="p")) +
-  geom_line(data=dfs_gapI, mapping=aes(seq(1, dim(dfs_gapI)[1]), AIC, color="p"), alpha=0.5) +
-  labs(x="Model (number of tste features)", y="AIC", title="Model AIC") +
-  theme(legend.position="top", legend.direction="vertical") +
-  scale_x_continuous(breaks=seq(1, dim(dfs_gap)[1]), minor_breaks=NULL, labels=seq(2, 20)) +
-  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
-                     labels=c("r"="tste + real + (tste*real)",
-                              "g"="tste + real + game + (tste*game)",
-                              "p"="tste + real + gap + (tste*gap)"))
-
-ggplot() +
-  geom_line(data=dfs_real_dif, mapping=aes(seq(1, dim(dfs_real_dif)[1]), AIC_dif, color="r")) +
-  geom_line(data=dfs_realI_dif, mapping=aes(seq(1, dim(dfs_realI_dif)[1]), AIC_dif, color="r"), alpha=0.5) +
-  geom_line(data=dfs_game_dif, mapping=aes(seq(1, dim(dfs_game_dif)[1]), AIC_dif, color="g")) +
-  geom_line(data=dfs_gameI_dif, mapping=aes(seq(1, dim(dfs_gameI_dif)[1]), AIC_dif, color="g"), alpha=0.5) +
-  geom_line(data=dfs_gap_dif, mapping=aes(seq(1, dim(dfs_gap_dif)[1]), AIC_dif, color="p")) +
-  geom_line(data=dfs_gapI_dif, mapping=aes(seq(1, dim(dfs_gapI_dif)[1]), AIC_dif, color="p"), alpha=0.5) +
-  labs(x="Model (number of tste features)", y="AIC difference", title="AIC difference when increasing the number of tste features") +
-  theme(legend.position="top", legend.direction="vertical") +
-  scale_x_continuous(breaks=seq(1, dim(dfs_gap_dif)[1]), minor_breaks=NULL, labels=seq(3, 20)) +
-  scale_color_manual(name="Type of model (interaction models are light-colored)", values=c("r"="red", "g"="blue", "p"="black"),
-                     labels=c("r"="tste + real + (tste*real)",
-                              "g"="tste + real + game + (tste*game)",
-                              "p"="tste + real + gap + (tste*gap)")) +
-  geom_hline(yintercept=0, linetype=3)
-
-
-#--Tobit lm comparison
-AICs_ygame_tobit <- unlist(map(models_ygame_tobit, AIC))
-AICs_ygame_lm <- unlist(map(models_ygame_lm, AIC))
 
 
 
@@ -1050,120 +507,3 @@ t.test(df_player$game_conscientiousness, df_player$real_conscientiousness, paire
 t.test(df_player$game_extraversion, df_player$real_extraversion, paired=TRUE)
 t.test(df_player$game_emotionstability, df_player$real_emotionstability, paired=TRUE)
 t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
-
-
-
-
-
-
-
-
-"
-----------------------------------------------------------------------
-## Regression assumptions
-
-- Applied on specific single model
-----------------------------------------------------------------------
-"
-...RegressionAssumption <- function(){}
-
-#Update vars
-updateVars()
-
-
-
-
-"
-### Multicollinearity
-"
-........Multicollinearity <- function() {}
-
-#VIF score (criterion: <10)
-vif(dfs$model_lm[[1]])
-
-
-
-
-"
-### P-value adjustment
-"
-........Bonferroni <- function() {}
-
-#Extract p-values for bonferroni
-#Use `str(summary(model))` to see object structure
-pValues_lm <- summary(dfs$model_lm[[1]])$coefficients[, 4]
-
-#Bonferroni correction
-p.adjust(pValues_lm, method=c("bonferroni"))
-
-
-
-
-"
-### Influential observations
-"
-........InfluentialObservations <- function() {}
-
-
-#--Observe
-#Add key statistics; add row name for graph reference
-df_influenceDetect <- dfs$df_yx[[1]]
-  rownames_to_column(var="row") %>%
-  mutate(hat=hatvalues(dfs$model_lm[[1]]),
-         student=rstudent(dfs$model_lm[[1]]),
-         cooksd=cooks.distance(dfs$model_lm[[1]]))
-
-#Draw bubble plot
-ggplot(df_influenceDetect, aes(hat, student)) +
-  geom_hline(yintercept=0, linetype=2) +
-  geom_point(aes(size=cooksd), shape=1) +
-  geom_text(data=df_influenceDetect %>%
-              arrange(-cooksd) %>%
-              slice(1:10),
-            aes(label=row, color="orange")) +
-  scale_size_continuous(range=c(1, 20)) +
-  labs(title="Bubble plot of influential indicators",
-       subtitle="Leverage, Sutentized residual, and Cook’s D (bubble size)",
-       x="Leverage",
-       y="Studentized residual") +
-  theme(legend.position ="none")
-
-
-#--Filter with separate criterion
-hat <- df_influenceDetect %>%
-  filter(hat > 2 * mean(hat))
-
-student <- df_influenceDetect %>%
-  filter(abs(student) > 2)
-
-cooksd <- df_influenceDetect %>%
-  filter(cooksd > 4 / (nrow(.) - (length(coef(model_lm)) - 1) - 1))
-
-#Combine to identify problematic observations
-bind_rows(hat, student, cooksd)
-
-
-
-
-"
-### Normally distributed
-"
-........NormalDistribution <- function() {}
-
-# car::qqPlot(lm_1)
-# 
-# augment(lm_1, df) %>%
-#   mutate(.student=rstudent(lm_1)) %>%
-#   ggplot(aes(.student)) +
-#   geom_density(adjust=.5) +
-#   labs(title = "Density plot of the studentized residuals",
-#        x="Studentized residuals",
-#        y="Estimated density")
-
-
-
-
-"
-### Heteroscedasticity
-"
-........Heteroscedasticity <- function() {}
