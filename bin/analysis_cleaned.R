@@ -16,8 +16,6 @@ library(corrplot)
 library(modelr)
 library(glmnet)
 library(VGAM)
-library(randomForest)
-library(e1071)
 library(car)
 library(rlist)
 library(pander)
@@ -45,8 +43,8 @@ core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
 core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
   select(-X1, -group, -idTag, -game_title) %>%
   mutate(core_id = factor(core_id))
-colnames(core_tGenre)[3:length(colnames(core_tGenre))] <- #Give genre columns identification
-  unlist(lapply(X=colnames(core_tGenre)[3:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
+colnames(core_tGenre)[2:length(colnames(core_tGenre))] <- #Give genre columns identification
+  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
 
 #Player survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
@@ -142,15 +140,17 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
     ungroup() #Ungroup to cancel rowwise
   
 
-  #--Mean-center predictor variables
-  df <<- mutate_at(df, vars(starts_with("tste"),
-                            starts_with("game"),
-                            starts_with("real"),
-                            starts_with("satis"),
-                            starts_with("dissatis"),
-                            starts_with("combined")), funs(ct = . - mean(.)))
+  #--Mean-center predictor variables (if haven't been produced)
+  if(ncol(select(df, matches("_ct$"))) == 0) {
+    df <<- mutate_at(df, vars(starts_with("tste"),
+                              starts_with("game"),
+                              starts_with("real"),
+                              starts_with("satis"),
+                              starts_with("dissatis"),
+                              starts_with("combined")), funs(ct = . - mean(.)))
+  }
 
-
+  
   #--Compute personalty gap
   df <<- mutate(df,
                 gap_extraversion = game_extraversion - real_extraversion,
@@ -191,10 +191,12 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
   #Set row names for reference
   row.names(dfs) <<- modelId
   row.names(dfs_player) <<- modelId
+  
+  
+  #--Print column names for
+  print(colnames(df))
 }
 
-updateVars()
-
 
 
 
@@ -204,59 +206,13 @@ updateVars()
 
 "
 ----------------------------------------------------------------------
-## Models
-Models applying the variables selected. Two ways to select variables:
-
-- Use `select` to include vars in the models from `df`/`df_player`.
-- Edited through `predictors.csv` (for complexed interaction terms).
-- Column name of `predictors.csv` = model id
-----------------------------------------------------------------------
-"
-....Models <- function() {}
-
-
-
-
-"
-### Tobit Model
-"
-........TobitFull <- function() {}
-
-#Train models
-dfs_player$model_tobit <- map(dfs_player$df_yx_selected,
-                              ~ vglm(game_agreeableness ~ ., data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
-
-#Summary
-for(model in dfs_player$model_tobit) print(summary(model))
-summary(dfs["gap_8_i", "model_tobit"][[1]])
-
-
-
-
-"
-### Simple linear model
-"
-........SimpleFull <- function() {}
-
-#Train models
-dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
-dfs_player$model_lm <- map(dfs_player$df_yx_selected, ~ lm(gap_extraversion ~ ., data=.x))
-model_lm <- lm(preference ~ ., data=df_c_selected) 
-
-#Summary
-for(model in dfs_player$model_lm) print(summary(model))
-summary(dfs["gap_8_i", "model_lm"][[1]])
-
-
-
-
-"
-### Double Lasso variable selection
+## Double Lasso variable selection
 
 - Based on paper `Using Double-Lasso Selection for Principled Variable Selection`
 - by Oleg Urminsky, Christian Hansen, and Victor Chernozhukov
+----------------------------------------------------------------------
 "
-........DoubleLasso <- function() {}
+....DoubleLasso <- function() {}
 
 
 #--Function for updating lambda used in selection
@@ -292,7 +248,7 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
                           "1"=select(df_yx, matches(outcomeVar), matches("^real.+\\D_ct$"), matches("^game.+\\D_ct$"), matches("^gap.+[a-z]{4}$"), matches("^tste.+\\d_ct$")),
                           "2"=select(df_yx, matches(outcomeVar)),
                           "3"=select(df_yx, matches(outcomeVar), matches(sub("game", "real", outcomeVar))))
-
+  
   #The df with only the variables to be tested (those vars will be tested, and not necessarily be included in the output df)
   df_test <- switch(form,
                     "1"=data.matrix(select(df_yx, -matches(outcomeVar), -matches("^real.+\\D_ct$"), -matches("^game.+\\D_ct$"), -matches("^gap.+[a-z]{4}$"), -matches("^tste.+\\d_ct$"))),
@@ -362,6 +318,66 @@ dfs_player$df_yx_selected <- map(dfs_player$df_yx, ~ lassoSelect(., outcomeVar="
 
 "
 ----------------------------------------------------------------------
+## Models
+Models applying the variables selected. Two ways to select variables:
+
+- Edited through `predictors.csv` (for complexed interaction terms).
+- Column name of `predictors.csv` = model id
+----------------------------------------------------------------------
+"
+....Models <- function() {}
+
+
+
+
+"
+### Simple linear model
+"
+........SimpleFull <- function() {}
+
+#Train models
+dfs$model_lm <- map(dfs$df_yx_selected, ~ lm(preference ~ ., data=.x))
+
+#Summary - all models
+for(i in 1:nrow(dfs)) {
+  print(row.names(dfs)[[i]])
+  print(summary(dfs$model_lm[[i]]))
+}
+
+#Summary - single model
+summary(dfs["gap_8_i", "model_lm"][[1]])
+
+
+
+
+"
+### Tobit Model
+"
+........TobitFull <- function() {}
+
+#Train models
+dfs_player$model_tobit <- map(dfs_player$df_yx_selected,
+                              ~ vglm(game_agreeableness ~ ., data=.x, family=tobit(Upper=7, Lower=1, imethod=1)))
+
+#Summary - all models
+for(i in 1:nrow(dfs_player)) {
+  print(row.names(dfs_player)[[i]])
+  print(summary(dfs_player$model_tobit[[i]]))
+}
+
+#Summary
+for(model in dfs_player$model_tobit) print(summary(model))
+summary(dfs_player["ss", "model_tobit"][[1]])
+
+
+
+
+
+
+
+
+"
+----------------------------------------------------------------------
 ## Information criteria
 ----------------------------------------------------------------------
 "
@@ -384,14 +400,16 @@ dfs$BIC_dif <- dfs$BIC - lag(dfs$BIC)
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC)) +
   labs(x="Model", y="BIC") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 #Plot BIC difference
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC_dif)) +
   labs(x="Model", y="BIC difference") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
-  geom_hline(yintercept=0, linetype=3)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  geom_hline(yintercept=0, linetype=3) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 
 
@@ -410,14 +428,16 @@ dfs$AIC_dif <- dfs$AIC - lag(dfs$AIC)
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC)) +
   labs(x="Model", y="AIC") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 #Plot AIC difference
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC_dif)) +
   labs(x="Model", y="AIC difference") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
-  geom_hline(yintercept=0, linetype=3)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  geom_hline(yintercept=0, linetype=3) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 
 
@@ -441,8 +461,6 @@ ggplot() +
 "
 ........DescriptiveStats <- function() {}
 
-#Update vars
-updateVars()
 
 #Get stats
 summary(df)

@@ -45,8 +45,8 @@ core_tsteScore <- read_csv("../data/tste_concat.csv", col_names=TRUE) %>%
 core_tGenre <- read_csv("../data/traditional_genre.csv", col_names=TRUE) %>%
   select(-X1, -group, -idTag, -game_title) %>%
   mutate(core_id = factor(core_id))
-colnames(core_tGenre)[3:length(colnames(core_tGenre))] <- #Give genre columns identification
-  unlist(lapply(X=colnames(core_tGenre)[3:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
+colnames(core_tGenre)[2:length(colnames(core_tGenre))] <- #Give genre columns identification
+  unlist(lapply(X=colnames(core_tGenre)[2:length(colnames(core_tGenre))], function(X) {paste("tg_", X, sep="")}))
 
 #Player-related survey data
 survey <- read_csv("../data/survey.csv", col_names=TRUE) %>%
@@ -71,6 +71,10 @@ core_cluster <- mutate_each(core_cluster,
 df <- bind_cols(core_cluster, core_tsteScore) %>%
   left_join(core_tGenre, by=c("core_id")) %>%
   left_join(survey, by=c("core_id"), copy=FALSE)
+
+
+#--Clean up unnecessary objs
+rm(core_cluster, core_tsteScore, core_tGenre, survey, imputation_mean)
 
 
 
@@ -138,13 +142,15 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
     ungroup() #Ungroup to cancel rowwise
   
 
-  #--Mean-center predictor variables
-  df <<- mutate_at(df, vars(starts_with("tste"),
-                            starts_with("game"),
-                            starts_with("real"),
-                            starts_with("satis"),
-                            starts_with("dissatis"),
-                            starts_with("combined")), funs(ct = . - mean(.)))
+  #--Mean-center predictor variables (if haven't been produced)
+  if(ncol(select(df, matches("_ct$"))) == 0) {
+    df <<- mutate_at(df, vars(starts_with("tste"),
+                              starts_with("game"),
+                              starts_with("real"),
+                              starts_with("satis"),
+                              starts_with("dissatis"),
+                              starts_with("combined")), funs(ct = . - mean(.)))
+  }
 
 
   #--Compute personalty gap
@@ -187,6 +193,10 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
   #Set row names for reference
   row.names(dfs) <<- modelId
   row.names(dfs_player) <<- modelId
+  
+  
+  #--Print column names for
+  print(colnames(df))
 }
 
 
@@ -823,12 +833,12 @@ dfs_gapI_dif <- slice(dfs, 97:114)
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC)) +
   labs(x="Model", y="BIC") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs))
 
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), BIC_dif)) +
   labs(x="Model", y="BIC difference") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
   geom_hline(yintercept=0, linetype=3)
 
 #Batch models
@@ -884,14 +894,16 @@ AICs_dif <- AICs[-1] - lag(AICs)[-1]
 ggplot(data=as.data.frame(AICs)) +
   geom_line(mapping=aes(seq(2, 20), AICs)) +
   labs(x="Number of features", y="AIC") +
-  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL)
+  scale_x_continuous(breaks=seq(2, 20), minor_breaks=NULL) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 #Model 3 = the AIC change from 2-feature to 3-feature models 
 ggplot(data=as.data.frame(AICs_dif)) +
   geom_line(mapping=aes(seq(3, 20), AICs_dif)) +
   labs(x="Number of features", y="AIC difference") +
   scale_x_continuous(breaks=seq(3, 20), minor_breaks=NULL) +
-  geom_hline(yintercept=0, linetype=3)
+  geom_hline(yintercept=0, linetype=3) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 
 #--lm models
@@ -917,13 +929,15 @@ dfs_gapI_dif <- slice(dfs, 97:114)
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC)) +
   labs(x="Model", y="AIC") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 ggplot() +
   geom_line(data=dfs, mapping=aes(seq(1, dim(dfs)[1]), AIC_dif)) +
   labs(x="Model", y="AIC difference") +
-  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=dfs$modelId) +
-  geom_hline(yintercept=0, linetype=3)
+  scale_x_continuous(breaks=seq(1, dim(dfs)[1]), labels=row.names(dfs)) +
+  geom_hline(yintercept=0, linetype=3) +
+  theme(axis.text.x=element_text(angle=45, hjust=1))
 
 #Batch models
 ggplot() +
