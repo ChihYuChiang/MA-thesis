@@ -143,7 +143,7 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
   
 
   #--Mean-center predictor variables (if haven't been produced)
-  if(ncol(select(df, matches("_ct$"))) == 0) {
+  if(!ncol(select(df, matches("_ct$")))) {
     df <<- mutate_at(df, vars(starts_with("tste"),
                               starts_with("game"),
                               starts_with("real"),
