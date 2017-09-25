@@ -198,6 +198,10 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
 }
 
 
+#--Update vars
+updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
+
+
 
 
 
@@ -299,10 +303,6 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
   #Return a new df_yx with variables selected
   return(df_yx_selected)
 }
-
-
-#--Update vars
-updateVars(df.outcome="preference", df_player.outcome="game_agreeableness")
 
 
 #--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
