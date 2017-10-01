@@ -119,7 +119,7 @@ Name | Definition | Unit
 `gap_xxxxx` | personality gap (game - real) | Likert 1-7
 `satis_xxxxx` | SDT satisfaction in real life | Likert 1-7
 `dissatis_xxxxx` | SDT dissatisfaction in real life | Likert 1-7
-`combined_xxxxx` | SDT combined (previous two) dissatisfaction in real life | Likert 1-7
+`combined_xxxxx` | SDT combined (previous two) satisfaction in real life | Likert 1-7
 
 - Control:
 Name | Definition | Unit
@@ -161,13 +161,14 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
                 gap_emotionstability = game_emotionstability - real_emotionstability,
                 gap_openness = game_openness - real_openness,
                 gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + gap_emotionstability + gap_openness,
+                gap_sum_abs = abs(gap_extraversion) + abs(gap_agreeableness) + abs(gap_conscientiousness) + abs(gap_emotionstability) + abs(gap_openness),
                 real_sum = real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness,
                 dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
                 satis_sum = satis_autonomy + satis_relatedness + satis_competence,
                 combined_sum = combined_autonomy + combined_relatedness + combined_competence
                 )
 
-  
+
   #--Acquire player df, key=player
   df_player <<- distinct(df, respondent, .keep_all=TRUE)
   
