@@ -162,6 +162,7 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
                 gap_openness = game_openness - real_openness,
                 gap_sum = gap_extraversion + gap_agreeableness + gap_conscientiousness + gap_emotionstability + gap_openness,
                 gap_sum_abs = abs(gap_extraversion) + abs(gap_agreeableness) + abs(gap_conscientiousness) + abs(gap_emotionstability) + abs(gap_openness),
+                game_sum = game_extraversion + game_agreeableness + game_conscientiousness + game_emotionstability + game_openness,
                 real_sum = real_extraversion + real_agreeableness + real_conscientiousness + real_emotionstability + real_openness,
                 dissatis_sum = dissatis_autonomy + dissatis_relatedness + dissatis_competence,
                 satis_sum = satis_autonomy + satis_relatedness + satis_competence,

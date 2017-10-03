@@ -64,9 +64,15 @@ summary(model)
 summary(model_abs)
 
 
-#--preference ~ gap_sum
-model <- lm(preference ~ ., data=select(df_player_c, preference, gap_sum))
-model_abs <- lm(preference ~ ., data=select(df_player_c, preference, gap_sum_abs))
+#--gap_sum ~ preference
+model <- lm(gap_sum ~ ., data=select(df, preference, gap_sum))
+model_abs <- lm(gap_sum_abs ~ ., data=select(df, preference, gap_sum_abs))
 
 summary(model)
 summary(model_abs)
+
+
+#--game_sum ~ preference
+model <- lm(game_sum ~ ., data=select(df, preference, game_sum))
+
+summary(model)
