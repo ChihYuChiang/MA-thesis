@@ -1,20 +1,49 @@
 dfs_playerG <- select(df_player, respondent)
 dfs_playerG$df <- map(dfs_playerG$respondent, ~ filter(df, respondent == .x))
 
+
+
+
+
 df_cor <- data.frame()
 for (i in seq(1:nrow(dfs_playerG))) {
   mx_temp <- cor(dfs_playerG$df[[i]]$preference, select(dfs_playerG$df[[i]], starts_with("tste_20"))[, c(1:20)]) %>%
     data.frame()
   df_cor <- bind_rows(df_cor, mx_temp)
 }
+df_cor <- na.omit(df_cor)
+
+betweenOnTotals <- array()
+for (i in c(1:50)) {
+  model_km <- kmeans(df_cor, centers=i, nstart=100, iter.max=1000)
+  betweenOnTotals[i] <- model_km$betweenss / model_km$totss
+}
+
+ggplot(data.frame(x=c(1:length(betweenOnTotals)), y=betweenOnTotals), aes(x=x, y=y)) +
+  geom_line() +
+  labs(x="Number of clusters", y="Variation explained between cluster",
+       title="Variation explained with different numbers of clusters") +
+  scale_y_continuous(labels=scales::percent)
+
+centerN <- 5
+model_km <- kmeans(df_cor, centers=centerN, nstart=100, iter.max=1000)
+df_cor$cluster <- model_km$cluster
+df_cor_arranged <- arrange(df_cor, cluster)
+
+df_cor_expand <- expand.grid(y=c(1:nrow(df_cor_arranged)), x=c(1:(ncol(df_cor_arranged) - 1))) %>%
+  rowwise() %>%
+  mutate(z=df_cor_arranged[y, x]) %>%
+  ungroup()
 
 ggplot(data=df_cor_expand, aes(x=x, y=y, fill=z)) +
-  geom_tile()
+  geom_tile() + 
+  geom_hline(data=data.frame(y=cumsum(model_km$size)[-centerN]), aes(yintercept=y), color="orange", size=0.5, linetype=2, alpha=1) +
+  labs(x="Tste var (from triplet embedding)", y="Individual", fill="Corelation",
+       title="Correlation between individual preference and tste vars",
+       subtitle="(The individuals are ordered by 5 clusters based on the correlations)") +
+  theme_minimal()
 
-df_cor_expand <- expand.grid(x=c(1:nrow(df_cor)), y=c(1:ncol(df_cor))) %>%
-  rowwise() %>%
-  mutate(z=df_cor[x, y]) %>%
-  ungroup()
+
 
 
 t.test(filter(df_player, sex == 1)$gap_agreeableness, filter(df_player, sex == 2)$gap_agreeableness, paired=FALSE)
