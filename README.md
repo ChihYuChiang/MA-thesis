@@ -2,6 +2,12 @@
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
 
+### 10/22/2017
+1. Add **analysis report 1022** corresponding to the changes in [report](/report) folder.
+1. Some description about SES-preference-gap.
+1. Correlation matrix between individual preference and tste vars.
+
+
 ### 10/15/2017
 1. Add **analysis report 1015** corresponding to the changes in [report](/report) folder.
 1. Some description about personality.
