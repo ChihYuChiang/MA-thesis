@@ -199,6 +199,10 @@ updateVars <- function(df.outcome="preference", df_player.outcome="game_extraver
   
   #--Print column names for
   print(colnames(df))
+  
+  
+  #--Save the environment objects for other projects
+  save.image()
 }
 
 
