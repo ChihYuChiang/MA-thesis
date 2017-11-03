@@ -1008,7 +1008,7 @@ AICs_ygame_lm <- unlist(map(models_ygame_lm, AIC))
 updateVars()
 
 #Get stats
-summary(df)
+summary(select(df, matches("^dissatis")))
 
 
 #--Distribution of real and game personality (comparison)
