@@ -4,36 +4,46 @@ Chih-Yu Chiang
 December 5, 2017
 
 -   [Setup](#setup)
--   [In-game / self - fellow - stereotype](#in-game-self---fellow---stereotype)
-    -   [Extraversion](#extraversion)
-    -   [Agreeableness](#agreeableness)
-    -   [Conscientiousness](#conscientiousness)
-    -   [Emotion stability](#emotion-stability)
-    -   [Openness](#openness)
--   [Real / self - fellow](#real-self---fellow)
-    -   [Extraversion](#extraversion-1)
-    -   [Agreeableness](#agreeableness-1)
-    -   [Conscientiousness](#conscientiousness-1)
-    -   [Emotion stability](#emotion-stability-1)
-    -   [Openness](#openness-1)
--   [In-game - real - ideal / self](#in-game---real---ideal-self)
-    -   [Extraversion](#extraversion-2)
-    -   [Agreeableness](#agreeableness-2)
-    -   [Conscientiousness](#conscientiousness-2)
-    -   [Emotion stability](#emotion-stability-2)
-    -   [Openness](#openness-2)
--   [In-game - real / self](#in-game---real-self)
-    -   [Extraversion](#extraversion-3)
-    -   [Agreeableness](#agreeableness-3)
-    -   [Conscientiousness](#conscientiousness-3)
-    -   [Emotion stability](#emotion-stability-3)
-    -   [Openness](#openness-3)
--   [In-game - real / fellow](#in-game---real-fellow)
-    -   [Extraversion](#extraversion-4)
-    -   [Agreeableness](#agreeableness-4)
-    -   [Conscientiousness](#conscientiousness-4)
-    -   [Emotion stability](#emotion-stability-4)
-    -   [Openness](#openness-4)
+-   [Personality](#personality)
+    -   [In-game / self - fellow - stereotype](#in-game-self---fellow---stereotype)
+        -   [Extraversion](#extraversion)
+        -   [Agreeableness](#agreeableness)
+        -   [Conscientiousness](#conscientiousness)
+        -   [Emotion stability](#emotion-stability)
+        -   [Openness](#openness)
+    -   [Real / self - fellow](#real-self---fellow)
+        -   [Extraversion](#extraversion-1)
+        -   [Agreeableness](#agreeableness-1)
+        -   [Conscientiousness](#conscientiousness-1)
+        -   [Emotion stability](#emotion-stability-1)
+        -   [Openness](#openness-1)
+    -   [In-game - real - ideal / self](#in-game---real---ideal-self)
+        -   [Extraversion](#extraversion-2)
+        -   [Agreeableness](#agreeableness-2)
+        -   [Conscientiousness](#conscientiousness-2)
+        -   [Emotion stability](#emotion-stability-2)
+        -   [Openness](#openness-2)
+    -   [In-game - real / self](#in-game---real-self)
+        -   [Extraversion](#extraversion-3)
+        -   [Agreeableness](#agreeableness-3)
+        -   [Conscientiousness](#conscientiousness-3)
+        -   [Emotion stability](#emotion-stability-3)
+        -   [Openness](#openness-3)
+    -   [In-game - real / fellow](#in-game---real-fellow)
+        -   [Extraversion](#extraversion-4)
+        -   [Agreeableness](#agreeableness-4)
+        -   [Conscientiousness](#conscientiousness-4)
+        -   [Emotion stability](#emotion-stability-4)
+        -   [Openness](#openness-4)
+-   [SDT](#sdt)
+    -   [In-game - real - ideal](#in-game---real---ideal)
+        -   [Autonomy](#autonomy)
+        -   [Relatedness](#relatedness)
+        -   [Competence](#competence)
+    -   [In-game - real](#in-game---real)
+        -   [Autonomy](#autonomy-1)
+        -   [Relatedness](#relatedness-1)
+        -   [Competence](#competence-1)
 
 ``` r
 knitr::opts_chunk$set(
@@ -102,7 +112,17 @@ newColName <- gsub("1_", "", grep("^Person.+1_\\d$", names(DT), value=TRUE))
 DT[, (newColName) := personalities]
 
 
-#--SDT (3 constructs; 4 items each)
+
+
+"
+## Plot distribution
+"
+```
+
+    ## [1] "\n## Plot distribution\n"
+
+``` r
+#--Personality
 #Computation
 subColIndex_1 <- matches("^SDT.+1_[135]$", vars=names(DT))
 subColIndex_2 <- matches("^SDT.+1_[246]$", vars=names(DT))
@@ -137,7 +157,36 @@ dist_personality <- function(DT, personality, types){
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
 }
+
+
+#--SDT
+#Function for distribution
+dist_SDT <- function(DT, SDT, types){
+  #A map for personality code and str pairs
+  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence")
+  typeCodec <- c("In"="In-game", "Out"="Real", "Id"="Ideal")
+  
+  #Acquire specific columns of that personality
+  targetColIndex <- matches(sprintf("^SDT.+-%s$", SDT), vars=names(DT))
+  
+  make_hist <- function(type) {
+    geom_histogram(mapping=aes_(x=as.name(sprintf("SDT%s-%s", type, SDT)), fill=toString(which(types == type))),
+                   binwidth=0.5, alpha=0.6)
+  }
+  geom_hists <- lapply(types, make_hist)
+  
+  #Use a list to add ggplot components
+  ggplot(data=DT[, targetColIndex, with=FALSE]) +
+    geom_hists +
+    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
+    labs(x="score", title=SDTCodec[toString(SDT)]) +
+    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
+    theme_minimal()
+}
 ```
+
+Personality
+===========
 
 In-game / self - fellow - stereotype
 ------------------------------------
@@ -353,3 +402,60 @@ dist_personality(DT, 5, list("InF", "OutF"))
 ```
 
 ![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-25-1.png)
+
+SDT
+===
+
+In-game - real - ideal
+----------------------
+
+### Autonomy
+
+``` r
+dist_SDT(DT, 1, list("In", "Out", "Id"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-26-1.png)
+
+### Relatedness
+
+``` r
+dist_SDT(DT, 2, list("In", "Out", "Id"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-27-1.png)
+
+### Competence
+
+``` r
+dist_SDT(DT, 3, list("In", "Out", "Id"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-28-1.png)
+
+In-game - real
+--------------
+
+### Autonomy
+
+``` r
+dist_SDT(DT, 1, list("In", "Out"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-29-1.png)
+
+### Relatedness
+
+``` r
+dist_SDT(DT, 2, list("In", "Out"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-30-1.png)
+
+### Competence
+
+``` r
+dist_SDT(DT, 3, list("In", "Out"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-31-1.png)
