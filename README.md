@@ -2,6 +2,11 @@
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
 
+### 12/5/2017
+1. Add **analysis report 1205** corresponding to the changes in [report](/report) folder.
+1. A glimpse of the new survey (fellow, ideal, and stereotype version)
+
+
 ### 10/23/2017
 1. Add **analysis report 1023** corresponding to the changes in [report](/report) folder.
 1. Random experiment for the correlation matrix.
