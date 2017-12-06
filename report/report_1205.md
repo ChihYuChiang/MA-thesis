@@ -16,18 +16,24 @@ December 5, 2017
     -   [Conscientiousness](#conscientiousness-1)
     -   [Emotion stability](#emotion-stability-1)
     -   [Openness](#openness-1)
--   [In-game - Real - ideal / self](#in-game---real---ideal-self)
+-   [In-game - real - ideal / self](#in-game---real---ideal-self)
     -   [Extraversion](#extraversion-2)
     -   [Agreeableness](#agreeableness-2)
     -   [Conscientiousness](#conscientiousness-2)
     -   [Emotion stability](#emotion-stability-2)
     -   [Openness](#openness-2)
--   [In-game - Real / fellow](#in-game---real-fellow)
+-   [In-game - real / self](#in-game---real-self)
     -   [Extraversion](#extraversion-3)
     -   [Agreeableness](#agreeableness-3)
     -   [Conscientiousness](#conscientiousness-3)
     -   [Emotion stability](#emotion-stability-3)
     -   [Openness](#openness-3)
+-   [In-game - real / fellow](#in-game---real-fellow)
+    -   [Extraversion](#extraversion-4)
+    -   [Agreeableness](#agreeableness-4)
+    -   [Conscientiousness](#conscientiousness-4)
+    -   [Emotion stability](#emotion-stability-4)
+    -   [Openness](#openness-4)
 
 ``` r
 knitr::opts_chunk$set(
@@ -119,14 +125,14 @@ dist_personality <- function(DT, personality, types){
   
   make_hist <- function(type) {
     geom_histogram(mapping=aes_(x=as.name(sprintf("Person%s-%s", type, personality)), fill=toString(which(types == type))),
-                   binwidth=1, alpha=0.6)
+                   binwidth=0.5, alpha=0.6)
   }
   geom_hists <- lapply(types, make_hist)
   
   #Use a list to add ggplot components
   ggplot(data=DT[, targetColIndex, with=FALSE]) +
     geom_hists +
-    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7)) +
+    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
     labs(x="score", title=personaCodec[toString(personality)]) +
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
@@ -219,7 +225,7 @@ dist_personality(DT, 5, list("OutS", "OutF"))
 
 ![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-10-1.png)
 
-In-game - Real - ideal / self
+In-game - real - ideal / self
 -----------------------------
 
 ### Extraversion
@@ -262,7 +268,50 @@ dist_personality(DT, 5, list("InS", "OutS", "IdS"))
 
 ![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
-In-game - Real / fellow
+In-game - real / self
+---------------------
+
+### Extraversion
+
+``` r
+dist_personality(DT, 1, list("InS", "OutS"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
+
+### Agreeableness
+
+``` r
+dist_personality(DT, 2, list("InS", "OutS"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+
+### Conscientiousness
+
+``` r
+dist_personality(DT, 3, list("InS", "OutS"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
+
+### Emotion stability
+
+``` r
+dist_personality(DT, 4, list("InS", "OutS"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
+
+### Openness
+
+``` r
+dist_personality(DT, 5, list("InS", "OutS"))
+```
+
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
+
+In-game - real / fellow
 -----------------------
 
 ### Extraversion
@@ -271,7 +320,7 @@ In-game - Real / fellow
 dist_personality(DT, 1, list("InF", "OutF"))
 ```
 
-![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-21-1.png)
 
 ### Agreeableness
 
@@ -279,7 +328,7 @@ dist_personality(DT, 1, list("InF", "OutF"))
 dist_personality(DT, 2, list("InF", "OutF"))
 ```
 
-![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-17-1.png)
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-22-1.png)
 
 ### Conscientiousness
 
@@ -287,7 +336,7 @@ dist_personality(DT, 2, list("InF", "OutF"))
 dist_personality(DT, 3, list("InF", "OutF"))
 ```
 
-![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-18-1.png)
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-23-1.png)
 
 ### Emotion stability
 
@@ -295,7 +344,7 @@ dist_personality(DT, 3, list("InF", "OutF"))
 dist_personality(DT, 4, list("InF", "OutF"))
 ```
 
-![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-19-1.png)
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-24-1.png)
 
 ### Openness
 
@@ -303,4 +352,4 @@ dist_personality(DT, 4, list("InF", "OutF"))
 dist_personality(DT, 5, list("InF", "OutF"))
 ```
 
-![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-20-1.png)
+![](report_1205_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-25-1.png)
