@@ -1,0 +1,27 @@
+h1, h2, h3, h4 {
+	color: #888888;
+}
+
+p {
+  padding-top: 15px;
+  line-height: 165%;
+}
+
+#authorship {
+  color: #707070;
+  font-size: 50%;
+  padding-left: 10px;
+}
+
+td.s-text {
+  font-size: 85%;
+}
+
+.ss-text {
+  font-size: 85%;
+}
+
+.footnote {
+  font-size: 70%;
+  text-align: right;
+}
