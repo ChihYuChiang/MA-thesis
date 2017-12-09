@@ -27,23 +27,31 @@ ui <- fluidPage(#--Set up title
                                  </h2>')),
                 
                 
-                #--Decide primary layout
-                sidebarLayout(
-                  sidebarPanel(
-                         checkboxGroupInput("type_personality",
-                                            "",
-                                            c("In-game / Self"="InS",
-                                              "Real / Self"="OutS",
-                                              "Ideal / Self"="IdS",
-                                              "In-game / Fellow"="InF",
-                                              "Real / Fellow"="OutF",
-                                              "Stereotype / Public"="SteS")),
-                         actionButton("distButton_personality", "Draw distribution")),
-                  mainPanel(
-                         plotOutput("dist_personality_1"),
-                         plotOutput("dist_personality_2"),
-                         plotOutput("dist_personality_3"),
-                         plotOutput("dist_personality_4"),
-                         plotOutput("dist_personality_5"))
+                tabsetPanel(
+                  tabPanel("Personality",
+                             checkboxGroupInput("type_personality",
+                                                "",
+                                                c("In-game / Self"="InS",
+                                                  "Real / Self"="OutS",
+                                                  "Ideal / Self"="IdS",
+                                                  "In-game / Fellow"="InF",
+                                                  "Real / Fellow"="OutF",
+                                                  "Stereotype / Public"="SteS")),
+                             actionButton("distButton_personality", "Draw distribution"),
+                             plotOutput("dist_personality_1"),
+                             plotOutput("dist_personality_2"),
+                             plotOutput("dist_personality_3"),
+                             plotOutput("dist_personality_4"),
+                             plotOutput("dist_personality_5")),
+                  tabPanel("SDT",
+                             checkboxGroupInput("type_SDT",
+                                                "",
+                                                c("In-game "="In",
+                                                  "Real"="Out",
+                                                  "Ideal"="Id")),
+                             actionButton("distButton_SDT", "Draw distribution"),
+                             plotOutput("dist_SDT_1"),
+                             plotOutput("dist_SDT_2"),
+                             plotOutput("dist_SDT_3"))
                 )
 )

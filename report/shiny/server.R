@@ -147,6 +147,16 @@ server <- function(input, output) {
     dist_personality(DT, 5, input$type_personality)
   })
   
+  dist_SDT_1.out <- eventReactive(input$distButton_SDT, {
+    dist_SDT(DT, 1, input$type_SDT)
+  })
+  dist_SDT_2.out <- eventReactive(input$distButton_SDT, {
+    dist_SDT(DT, 2, input$type_SDT)
+  })
+  dist_SDT_3.out <- eventReactive(input$distButton_SDT, {
+    dist_SDT(DT, 3, input$type_SDT)
+  })
+  
   
   
   
@@ -168,5 +178,15 @@ server <- function(input, output) {
   })
   output$dist_personality_5 <- renderPlot({
     dist_personality_5.out()
+  })
+  
+  output$dist_SDT_1 <- renderPlot({
+    dist_SDT_1.out()
+  })
+  output$dist_SDT_2 <- renderPlot({
+    dist_SDT_2.out()
+  })
+  output$dist_SDT_3 <- renderPlot({
+    dist_SDT_3.out()
   })
 }
