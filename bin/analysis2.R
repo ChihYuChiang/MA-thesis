@@ -1,6 +1,7 @@
 library(tidyverse)
 library(data.table)
 library(colorspace)
+library(corrplot)
 
 #Read in as DT
 DT <- fread("../data/survey2.csv")
@@ -134,6 +135,14 @@ DT[, "SDTId-sum" := rowSums(.SD), .SDcols=grep("^SDTId-\\d$", names(DT))]
 
 
 "
+## Clean temp vars
+"
+rm(list=ls()[which(ls() != "DT")]) #Preserve only DT
+
+
+
+
+"
 ## Distribution
 "
 #--Personality
@@ -196,4 +205,11 @@ dist_SDT <- function(DT, SDT, types){
 dist_SDT(DT, 3, list("In", "Out"))
 
 
+
+
+"
+## Cor table
+"
+corrplot(cor(select(df, preference, starts_with("gap"), starts_with("combined"))),
+         method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black")
 #--Filter by GProfile Demo Relation and Pref
