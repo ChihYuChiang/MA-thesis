@@ -210,6 +210,8 @@ dist_SDT(DT, 3, list("In", "Out"))
 "
 ## Cor table
 "
-corrplot(cor(select(df, preference, starts_with("gap"), starts_with("combined"))),
-         method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black")
+targetColIndex <- 
+corrplot(cor(DT[, , with=FALSE]),
+         method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black",
+         cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
 #--Filter by GProfile Demo Relation and Pref
