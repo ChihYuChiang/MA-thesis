@@ -10,8 +10,17 @@ DT <- fread("../data/survey2.csv")[
 
 
 
+
+
+
+
 "
-## Reverse (1-7 Likert) target responses
+----------------------------------------------------------------------
+## Initialization
+----------------------------------------------------------------------
+"
+"
+### Reverse (1-7 Likert) target responses
 "
 #--Select target columns
 #Personality: 1_24 2_135; SDT: 1_246 2_246; Preference: -2
@@ -30,7 +39,7 @@ DT[, (targetColIndex) := reversed]
 
 
 "
-## Combine sub-items
+### Combine sub-items
 "
 #--personalities (5 constructs; 2 items each)
 #Computation
@@ -66,7 +75,7 @@ DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[1234]$", names(DT))]
 
 
 "
-## Compute gaps and sums
+### Compute gaps and sums
 "
 #--Personality
 colIndex_InS <- grep("^PersonInS-\\d$", names(DT))
@@ -143,15 +152,24 @@ DT[, "SDTId-sum" := rowSums(.SD), .SDcols=grep("^SDTId-\\d$", names(DT))]
 
 
 "
-## Clean temp vars
+### Clean temp vars
 "
 rm(list=ls()[which(ls() != "DT")]) #Preserve only DT
 
 
 
 
+
+
+
+
 "
-## Distribution
+----------------------------------------------------------------------
+## Exploration
+----------------------------------------------------------------------
+"
+"
+### Distribution comparison
 "
 #--Personality
 #Function for distribution
@@ -216,10 +234,54 @@ dist_SDT(DT, 3, list("In", "Out"))
 
 
 "
-## Cor table
+### Distribution
 "
-targetColIndex <- grep(sprintf("^((%s)|(%s))-\\d$", "SDTIn", "PersonInS"), names(DT))
-corrplot(cor(DT[, targetColIndex, with=FALSE]),
+#Function for dist
+dist_gen <- function (targetColName) {
+  ggplot(data=DT[, targetColName, with=FALSE]) +
+    geom_histogram(mapping=aes_(x=as.name(targetColName)),
+                   bins=nrow(table(DT[, targetColName, with=FALSE])), binwidth=1, alpha=0.65) +
+    labs(title=targetColName) +
+    theme_minimal()
+}
+lapply(c("Demo-1", "Demo-2", "GProfile-1"), dist_gen)
+
+
+
+
+"
+### Cor table
+"
+#Use index or name for columns
+targetColIndex <- grep("(^Person.+((1_[24])|(2_[135]))$)|(^SDT.+_[246]$)|(^Pref.-2)", names(DT), value=TRUE)
+targetColName <- c("PersonInS-sum", "SDTId-2")
+
+corrplot(cor(DT[, targetColName, with=FALSE]),
          method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black",
          cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
-#--Filter by GProfile Demo Relation and Pref
+
+
+
+
+"
+### Scatter plot
+"
+#Use name for columns
+targetColName <- c("SDTInOut-sum", "PersonInSOutS-sum")
+criteria <- quote(get("PrefS-a1") > 0)
+
+#Common mapping
+p <- ggplot(mapping=aes_(x=as.name(targetColName[1]), y=as.name(targetColName[2])))
+
+#Use filtered row number decide if add additional layers
+if(DT[eval(criteria), .N,]) p <- p + geom_point(data=DT[eval(criteria), targetColName, with=FALSE], mapping=aes(color="g1"))
+if(DT[!eval(criteria), .N,]) p <- p + geom_point(data=DT[!eval(criteria), targetColName, with=FALSE], mapping=aes(color="g2"))
+
+#Plotting
+p + scale_color_discrete(name="Group", labels=c("g1"="PrefS-a1 > 5", "g2"="PrefS-a1 < 5"))
+
+#--Filter
+#PrefS-5
+#PrefS-a1
+#PrefS-a2
+#GProfile
