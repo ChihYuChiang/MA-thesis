@@ -4,7 +4,8 @@ library(colorspace)
 library(corrplot)
 
 #Read in as DT
-DT <- fread("../data/survey2.csv")
+DT <- fread("../data/survey2.csv")[
+  MTurkCode != "", ,] #Filter
 
 
 
@@ -13,8 +14,8 @@ DT <- fread("../data/survey2.csv")
 ## Reverse (1-7 Likert) target responses
 "
 #--Select target columns
-#Personality: 1_24 2_135; SDT: 1_246 2_246
-targetColIndex <- grep("(^Person.+((1_[24])|(2_[135]))$)|(^SDT.+_[246]$)", names(DT))
+#Personality: 1_24 2_135; SDT: 1_246 2_246; Preference: -2
+targetColIndex <- grep("(^Person.+((1_[24])|(2_[135]))$)|(^SDT.+_[246]$)|(^Pref.-2)", names(DT), value=TRUE)
 
 
 #--Reverse 1-7 likert
@@ -53,6 +54,13 @@ SDTs <- (DT[, subColIndex_1, with=FALSE] + DT[, subColIndex_2, with=FALSE] + DT[
 #Substitution
 newColName <- gsub("1_", "", grep("^SDT.+1_[123]$", names(DT), value=TRUE))
 DT[, (newColName) := SDTs]
+
+
+#--Preference (5 items)
+DT[, "PrefS-a1" := rowMeans(.SD), .SDcols=grep("^PrefS-\\d$", names(DT))] #All 5 measures
+DT[, "PrefS-a2" := rowMeans(.SD), .SDcols=grep("^PrefS-[1234]$", names(DT))] #Except play frequency
+DT[, "PrefF-a1" := rowMeans(.SD), .SDcols=grep("^PrefF-\\d$", names(DT))]
+DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[1234]$", names(DT))]
 
 
 
@@ -210,8 +218,8 @@ dist_SDT(DT, 3, list("In", "Out"))
 "
 ## Cor table
 "
-targetColIndex <- 
-corrplot(cor(DT[, , with=FALSE]),
+targetColIndex <- grep(sprintf("^((%s)|(%s))-\\d$", "SDTIn", "PersonInS"), names(DT))
+corrplot(cor(DT[, targetColIndex, with=FALSE]),
          method="color", type="upper", addCoef.col="black", diag=FALSE, tl.srt=45, tl.cex=0.8, tl.col="black",
          cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
 #--Filter by GProfile Demo Relation and Pref
