@@ -148,7 +148,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 Back end
 ------------------------------------------------------------
 "
-server <- function(input, output) {
+server <- function(session, input, output) {
   "
   Process outputs
   "
@@ -195,10 +195,10 @@ server <- function(input, output) {
              method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
              cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
   })
-  
 
-  
-  
+
+
+
   "
   Render output
   "
@@ -220,5 +220,25 @@ server <- function(input, output) {
   
   #--Render cor table
   output$cor <- renderPlot({cor.out()})
+  
+  
+  #--Clear selection
+  observeEvent(input$distButton_clear, {
+    updateCheckboxGroupInput(session, inputId="var_dist_1", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dist_2", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dist_3", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dist_4", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dist_5", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dist_6", selected=character(0))
+  })
+  
+  observeEvent(input$corButton_clear, {
+    updateCheckboxGroupInput(session, inputId="var_cor_1", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_cor_2", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_cor_3", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_cor_4", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_cor_5", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_cor_6", selected=character(0))
+  })
 
 }
