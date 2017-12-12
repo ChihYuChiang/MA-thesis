@@ -13,7 +13,7 @@ library(corrplot)
 
 "
 ----------------------------------------------------------------------
-## Exploration
+## Initialization
 ----------------------------------------------------------------------
 "
 "
@@ -84,27 +84,57 @@ dist_gen <- function (targetColName) {
     labs(title=targetColName) +
     theme_minimal()
 }
-lapply(c("Demo-1", "Demo-2", "GProfile-1"), dist_gen)
 
 
 
 
 "
-### Scatter plot
+### Multiple plot function (Cookbook for R)
 "
-#Use name for columns
-targetColName <- c("SDTInOut-sum", "PersonInSOutS-sum")
-criteria <- quote(get("PrefS-a1") > 0)
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
 
-#Common mapping
-p <- ggplot(mapping=aes_(x=as.name(targetColName[1]), y=as.name(targetColName[2])))
-
-#Use filtered row number decide if add additional layers
-if(DT[eval(criteria), .N,]) p <- p + geom_point(data=DT[eval(criteria), targetColName, with=FALSE], mapping=aes(color="g1"))
-if(DT[!eval(criteria), .N,]) p <- p + geom_point(data=DT[!eval(criteria), targetColName, with=FALSE], mapping=aes(color="g2"))
-
-#Plotting
-p + scale_color_discrete(name="Group", labels=c("g1"="PrefS-a1 > 5", "g2"="PrefS-a1 < 5"))
 
 
 
@@ -150,15 +180,23 @@ server <- function(input, output) {
   })
   
   
+  #--Dist table
+  dist.out <- eventReactive(input$distButton, {
+    targetColName <- c(input$var_dist_1, input$var_dist_2, input$var_dist_3, input$var_dist_4, input$var_dist_5, input$var_dist_6)
+    plots <- lapply(targetColName, dist_gen)
+    multiplot(plotlist=plots, cols=3)
+  })  
+  
+  
   #--Cor table
   cor.out <- eventReactive(input$corButton, {
-    targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3)
+    targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
     corrplot(cor(DT[, targetColName, with=FALSE]),
              method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
              cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
   })
   
-  
+
   
   
   "
@@ -174,6 +212,10 @@ server <- function(input, output) {
   output$dist_SDT_1 <- renderPlot({dist_SDT_1.out()})
   output$dist_SDT_2 <- renderPlot({dist_SDT_2.out()})
   output$dist_SDT_3 <- renderPlot({dist_SDT_3.out()})
+  
+  
+  #--Render dist table
+  output$dist <- renderPlot({dist.out()})
   
   
   #--Render cor table

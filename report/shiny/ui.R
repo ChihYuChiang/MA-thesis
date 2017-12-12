@@ -1,10 +1,17 @@
+library(shiny)
+
+
+
+
+
+
+
+
 "
 ------------------------------------------------------------
 Initialization
 ------------------------------------------------------------
 "
-library(shiny)
-
 PLOT_WIDTH <- "600px"
 
 #--Filter var for cor table
@@ -23,8 +30,14 @@ exc_minus <- c("MTurkCode")
 #Process exceptions
 var_cor <- c(var_cor, exc_plus)[!(c(var_cor, exc_plus) %in% exc_minus)]
 
-#Break into 3 columns
-var_cor_sub <- c(1, length(var_cor) %/% 3 + 1, length(var_cor) %/% 3 * 2 + 2, length(var_cor))
+#Break into 6 columns
+var_cor_sub <- c(1,
+                 length(var_cor) %/% 6 * 1 + 1,
+                 length(var_cor) %/% 6 * 2 + 2,
+                 length(var_cor) %/% 6 * 3 + 3,
+                 length(var_cor) %/% 6 * 4 + 4,
+                 length(var_cor) %/% 6 * 5 + 5,
+                 length(var_cor))
 
 
 
@@ -87,6 +100,37 @@ ui <- fluidPage(#--Header
                                            plotOutput("dist_SDT_3", width=PLOT_WIDTH)
                                     )
                             )),
+                  tabPanel("Dist Table",
+                           fluidRow(column(width=2,
+                                           checkboxGroupInput("var_dist_1",
+                                                              "",
+                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]]),
+                                           actionButton("distButton", "Draw dist table")),
+                                    column(width=2,
+                                           checkboxGroupInput("var_dist_2",
+                                                              "",
+                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_dist_3",
+                                                              "",
+                                                              var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_dist_4",
+                                                              "",
+                                                              var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_dist_5",
+                                                              "",
+                                                              var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_dist_6",
+                                                              "",
+                                                              var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
+                           ),
+                           fluidRow(column(width=12,
+                                           plotOutput("dist", width="100%")
+                           )
+                           )),
                   tabPanel("Cor Table",
                            fluidRow(column(width=2,
                                            checkboxGroupInput("var_cor_1",
@@ -101,8 +145,21 @@ ui <- fluidPage(#--Header
                                            checkboxGroupInput("var_cor_3",
                                                               "",
                                                               var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
-                                    column(width=8,
-                                           plotOutput("cor", width=PLOT_WIDTH)
+                                    column(width=2,
+                                           checkboxGroupInput("var_cor_4",
+                                                              "",
+                                                              var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_cor_5",
+                                                              "",
+                                                              var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_cor_6",
+                                                              "",
+                                                              var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
+                                    ),
+                            fluidRow(column(width=8,
+                                            plotOutput("cor", width=PLOT_WIDTH)
                                     )
                            ))
                 )
