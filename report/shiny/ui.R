@@ -5,7 +5,14 @@ Initialization
 "
 library(shiny)
 
-PLOT_WIDTH <- "600px" 
+PLOT_WIDTH <- "600px"
+
+#--Filter var for cor table
+#Numeric column, without "_"
+var_cor <- names(DT)[!(c(1:ncol(DT)) %in% grep("_", names(DT))) & sapply(DT, is.numeric)]
+
+#Break into 3 columns
+var_cor_sub <- c(1, length(var_cor) %/% 3, length(var_cor) %/% 3 * 2, length(var_cor))
 
 
 
@@ -67,6 +74,24 @@ ui <- fluidPage(#--Header
                                            plotOutput("dist_SDT_2", width=PLOT_WIDTH),
                                            plotOutput("dist_SDT_3", width=PLOT_WIDTH)
                                     )
-                            ))
+                            )),
+                  tabPanel("Cor Table",
+                           fluidRow(column(width=2,
+                                           checkboxGroupInput("var_cor_1",
+                                                              "",
+                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]]),
+                                           actionButton("corButton", "Draw cor table")),
+                                    column(width=2,
+                                           checkboxGroupInput("var_cor_2",
+                                                              "",
+                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]])),
+                                    column(width=2,
+                                           checkboxGroupInput("var_cor_3",
+                                                              "",
+                                                              var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
+                                    column(width=8,
+                                           plotOutput("cor", width=PLOT_WIDTH)
+                                    )
+                           ))
                 )
 )
