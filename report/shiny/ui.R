@@ -8,11 +8,23 @@ library(shiny)
 PLOT_WIDTH <- "600px"
 
 #--Filter var for cor table
-#Numeric column, without "_"
-var_cor <- names(DT)[!(c(1:ncol(DT)) %in% grep("_", names(DT))) & sapply(DT, is.numeric)]
+#Numeric column, without "_", skip first 30 vars
+var_cor <- names(DT)[30:ncol(DT)][!(c(30:ncol(DT)) %in% grep("_", names(DT))) & sapply(DT[, 30:ncol(DT)], is.numeric)]
+
+#Exception +
+exc_plus <- c("Duration (in seconds)",
+              "GProfile-3_1",
+              "GProfile-7_1", "GProfile-7_2", "GProfile-7_3", "GProfile-7_4", "GProfile-7_5", "GProfile-7_6",
+              "GProfile-10_2", "GProfile-11_2")
+
+#Exception -
+exc_minus <- c("MTurkCode")
+
+#Process exceptions
+var_cor <- c(var_cor, exc_plus)[!(c(var_cor, exc_plus) %in% exc_minus)]
 
 #Break into 3 columns
-var_cor_sub <- c(1, length(var_cor) %/% 3, length(var_cor) %/% 3 * 2, length(var_cor))
+var_cor_sub <- c(1, length(var_cor) %/% 3 + 1, length(var_cor) %/% 3 * 2 + 2, length(var_cor))
 
 
 
