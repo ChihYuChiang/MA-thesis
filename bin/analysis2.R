@@ -268,6 +268,9 @@ corrplot(cor(DT[, targetColName, with=FALSE]),
 "
 #Use name for columns
 targetColName <- c("SDTInOut-sum", "PersonInSOutS-sum")
+
+#Filter by criteria
+#Potential filters: PrefS-5, PrefS-a1, PrefS-a2, GProfile-2, GProfile-4, GProfile-135, GProfile-10 11
 criteria <- quote(get("PrefS-a1") > 0)
 
 #Common mapping
@@ -280,8 +283,19 @@ if(DT[!eval(criteria), .N,]) p <- p + geom_point(data=DT[!eval(criteria), target
 #Plotting
 p + scale_color_discrete(name="Group", labels=c("g1"="PrefS-a1 > 5", "g2"="PrefS-a1 < 5"))
 
-#--Filter
-#PrefS-5
-#PrefS-a1
-#PrefS-a2
-#GProfile
+
+
+
+
+
+
+
+"
+----------------------------------------------------------------------
+## Analysis
+----------------------------------------------------------------------
+"
+"
+### T test
+"
+t.test(DT$`PersonInS-1`, DT$`PersonOutS-1`, paired=TRUE)
