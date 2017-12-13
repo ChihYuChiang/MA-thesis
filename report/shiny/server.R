@@ -27,22 +27,23 @@ panderOptions("table.split.table", 200)
 #Function for distribution
 dist_personality <- function(DT, personality, types){
   #A map for personality code and str pairs
-  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness")
-  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Public")
+  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness", "sum"="Summation")
+  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self")
   
-  #Acquire specific columns of that personality
-  targetColIndex <- matches(sprintf("^Person.+-%s$", personality), vars=names(DT))
+  #Acquire specific columns of that personality (for efficiency)
+  targetColIndex <- grep(sprintf("^Person.+-%s$", personality), names(DT), value=TRUE)
   
   make_hist <- function(type) {
     geom_histogram(mapping=aes_(x=as.name(sprintf("Person%s-%s", type, personality)), fill=toString(which(types == type))),
-                   binwidth=0.5, alpha=0.6)
+                   binwidth=if (personality == "sum") 2.5 else 0.5, alpha=0.6)
   }
   geom_hists <- lapply(types, make_hist)
   
   #Use a list to add ggplot components
   ggplot(data=DT[, targetColIndex, with=FALSE]) +
     geom_hists +
-    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
+    {if (personality == "sum") scale_x_continuous(breaks=seq(5, 35, 5), minor_breaks=NULL, labels=seq(5, 35, 5), limits=c(2.5, 37.5))
+      else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
     labs(x="score", title=personaCodec[toString(personality)]) +
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
@@ -53,7 +54,7 @@ dist_personality <- function(DT, personality, types){
 #Function for distribution
 dist_SDT <- function(DT, SDT, types){
   #A map for personality code and str pairs
-  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence")
+  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summataion")
   typeCodec <- c("In"="In-game", "Out"="Real", "Id"="Ideal")
   
   #Acquire specific columns of that personality
@@ -61,14 +62,15 @@ dist_SDT <- function(DT, SDT, types){
   
   make_hist <- function(type) {
     geom_histogram(mapping=aes_(x=as.name(sprintf("SDT%s-%s", type, SDT)), fill=toString(which(types == type))),
-                   binwidth=0.5, alpha=0.6)
+                   binwidth=if (SDT == "sum") 1.5 else 0.5, alpha=0.6)
   }
   geom_hists <- lapply(types, make_hist)
   
   #Use a list to add ggplot components
   ggplot(data=DT[, targetColIndex, with=FALSE]) +
     geom_hists +
-    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
+    {if (SDT == "sum") scale_x_continuous(breaks=seq(3, 21, 3), minor_breaks=NULL, labels=seq(3, 21, 3), limits=c(1.5, 22.5))
+      else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
     labs(x="score", title=SDTCodec[toString(SDT)]) +
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
@@ -164,6 +166,9 @@ server <- function(session, input, output) {
   Process outputs
   "
   #--Acquire dist and t test
+  dist_personality_sum.out <- eventReactive(input$distButton_personality, {
+    dist_personality(DT, "sum", input$type_personality)
+  })
   dist_personality_1.out <- eventReactive(input$distButton_personality, {
     dist_personality(DT, 1, input$type_personality)
   })
@@ -180,7 +185,6 @@ server <- function(session, input, output) {
     dist_personality(DT, 5, input$type_personality)
   })
   
-  
   t_personality_1.out <- eventReactive(input$distButton_personality, {
     if (length(input$type_personality) == 2) {
       x1 <- sprintf("Person%s-1", input$type_personality[1])
@@ -189,7 +193,9 @@ server <- function(session, input, output) {
     }
   })
     
-  
+  dist_SDT_sum.out <- eventReactive(input$distButton_SDT, {
+    dist_SDT(DT, "sum", input$type_SDT)
+  })
   dist_SDT_1.out <- eventReactive(input$distButton_SDT, {
     dist_SDT(DT, 1, input$type_SDT)
   })
@@ -202,7 +208,7 @@ server <- function(session, input, output) {
   
   
   #--Dist table
-  dist.out <- eventReactive(input$distButton, {
+  dist.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     plots <- lapply(targetColName, dist_gen)
     multiplot(plotlist=plots, cols=3) #A self-defined function for combining a list of plots
@@ -210,7 +216,7 @@ server <- function(session, input, output) {
   
   
   #--Description table
-  desc.out <- eventReactive(input$distButton, {
+  desc.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     pander(summary(DT[, targetColName, with=FALSE]))
   })
@@ -240,12 +246,14 @@ server <- function(session, input, output) {
   Render output
   "
   #--Render dist and t-test
+  output$dist_personality_sum <- renderPlot({dist_personality_sum.out()})
   output$dist_personality_1 <- renderPlot({dist_personality_1.out()})
   output$dist_personality_2 <- renderPlot({dist_personality_2.out()})
   output$dist_personality_3 <- renderPlot({dist_personality_3.out()})
   output$dist_personality_4 <- renderPlot({dist_personality_4.out()})
   output$dist_personality_5 <- renderPlot({dist_personality_5.out()})
-  
+
+  output$dist_SDT_sum <- renderPlot({dist_SDT_sum.out()})  
   output$dist_SDT_1 <- renderPlot({dist_SDT_1.out()})
   output$dist_SDT_2 <- renderPlot({dist_SDT_2.out()})
   output$dist_SDT_3 <- renderPlot({dist_SDT_3.out()})
@@ -270,7 +278,7 @@ server <- function(session, input, output) {
   
   
   #--Clear selection
-  observeEvent(input$distButton_clear, {
+  observeEvent(input$descButton_clear, {
     updateCheckboxGroupInput(session, inputId="var_desc_1", selected=character(0))
     updateCheckboxGroupInput(session, inputId="var_desc_2", selected=character(0))
     updateCheckboxGroupInput(session, inputId="var_desc_3", selected=character(0))

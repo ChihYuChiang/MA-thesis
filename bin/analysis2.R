@@ -5,11 +5,11 @@ library(corrplot)
 
 #Read in as DT
 #Skip 2 for codec
-DT <- fread("../../data/survey2.csv", skip=2)[
+DT <- fread("../data/survey2.csv", skip=2)[
   MTurkCode != "", ,] #Filter
 
 #Read in codec
-codec <- as.data.table(t(fread("../../data/survey2.csv", nrows=1)), keep.rownames=TRUE)
+codec <- as.data.table(t(fread("../data/survey2.csv", nrows=1)), keep.rownames=TRUE)
 colnames(codec) <- c("Variable", "Description")
 
 
@@ -136,10 +136,11 @@ DT[, "PersonInSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-ab\\d$"
 DT[, "PersonIdSInS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-ab\\d$", names(DT))]
 DT[, "PersonIdSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-ab\\d$", names(DT))]
 
-#InS, OutS, IdS sum
+#InS, OutS, IdS, SteS sum
 DT[, "PersonInS-sum" := rowSums(.SD), .SDcols=grep("^PersonInS-\\d$", names(DT))]
 DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT))]
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
+DT[, "PersonSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonSteS-\\d$", names(DT))]
 
 #Update codec
 codec <- rbind(codec, list("PersonOO-Z",
@@ -220,22 +221,23 @@ rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 #Function for distribution
 dist_personality <- function(DT, personality, types){
   #A map for personality code and str pairs
-  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness")
-  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Public")
+  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness", "sum"="Summation")
+  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self")
   
-  #Acquire specific columns of that personality
-  targetColIndex <- matches(sprintf("^Person.+-%s$", personality), vars=names(DT))
+  #Acquire specific columns of that personality (for efficiency)
+  targetColIndex <- grep(sprintf("^Person.+-%s$", personality), names(DT), value=TRUE)
   
   make_hist <- function(type) {
     geom_histogram(mapping=aes_(x=as.name(sprintf("Person%s-%s", type, personality)), fill=toString(which(types == type))),
-                   binwidth=0.5, alpha=0.6)
+                   binwidth=if (personality == "sum") 2.5 else 0.5, alpha=0.6)
   }
   geom_hists <- lapply(types, make_hist)
   
   #Use a list to add ggplot components
   ggplot(data=DT[, targetColIndex, with=FALSE]) +
     geom_hists +
-    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
+    {if (personality == "sum") scale_x_continuous(breaks=seq(5, 35, 5), minor_breaks=NULL, labels=seq(5, 35, 5), limits=c(2.5, 37.5))
+     else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
     labs(x="score", title=personaCodec[toString(personality)]) +
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
@@ -243,14 +245,14 @@ dist_personality <- function(DT, personality, types){
 
 #Function call
 #InS OutS IdS InF OutF SteS
-dist_personality(DT, 4, list("IdS"))
+dist_personality(DT, "sum", list("InS", "OutS", "IdS"))
 
 
 #--SDT
 #Function for distribution
 dist_SDT <- function(DT, SDT, types){
   #A map for personality code and str pairs
-  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence")
+  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summataion")
   typeCodec <- c("In"="In-game", "Out"="Real", "Id"="Ideal")
   
   #Acquire specific columns of that personality
@@ -258,14 +260,15 @@ dist_SDT <- function(DT, SDT, types){
   
   make_hist <- function(type) {
     geom_histogram(mapping=aes_(x=as.name(sprintf("SDT%s-%s", type, SDT)), fill=toString(which(types == type))),
-                   binwidth=0.5, alpha=0.6)
+                   binwidth=if (SDT == "sum") 1.5 else 0.5, alpha=0.6)
   }
   geom_hists <- lapply(types, make_hist)
   
   #Use a list to add ggplot components
   ggplot(data=DT[, targetColIndex, with=FALSE]) +
     geom_hists +
-    scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5)) +
+    {if (SDT == "sum") scale_x_continuous(breaks=seq(3, 21, 3), minor_breaks=NULL, labels=seq(3, 21, 3), limits=c(1.5, 22.5))
+     else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
     labs(x="score", title=SDTCodec[toString(SDT)]) +
     scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
     theme_minimal()
@@ -273,7 +276,7 @@ dist_SDT <- function(DT, SDT, types){
 
 #Function call
 #In Out Id
-dist_SDT(DT, 3, list("In", "Out"))
+dist_SDT(DT, "sum", list("In", "Out", "Id"))
 
 
 

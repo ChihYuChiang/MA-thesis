@@ -57,9 +57,9 @@ Front end
 ------------------------------------------------------------
 "
 ui <- fluidPage(#--Header
-                #CSS
-                tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
+                #CSS,
                 tags$head(tags$link(rel="stylesheet", type="text/css", href="bootstrap-4.0.0-beta.2-dist/css/bootstrap.min.css")),
+                tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
   
                 #--Set up title
                 #Tab title
@@ -84,6 +84,8 @@ ui <- fluidPage(#--Header
                                                                 "Stereotype / Public"="SteS")),
                                            actionButton("distButton_personality", "Draw distribution")),
                                     column(width=8,
+                                           plotOutput("dist_personality_sum", width=PLOT_WIDTH),
+                                           hr(),
                                            plotOutput("dist_personality_1", width=PLOT_WIDTH),
                                            verbatimTextOutput("t_personality_1"),
                                            plotOutput("dist_personality_2", width=PLOT_WIDTH),
@@ -100,6 +102,8 @@ ui <- fluidPage(#--Header
                                                                 "Ideal"="Id")),
                                            actionButton("distButton_SDT", "Draw distribution")),
                                     column(width=8,
+                                           plotOutput("dist_SDT_sum", width=PLOT_WIDTH),
+                                           hr(),
                                            plotOutput("dist_SDT_1", width=PLOT_WIDTH),
                                            plotOutput("dist_SDT_2", width=PLOT_WIDTH),
                                            plotOutput("dist_SDT_3", width=PLOT_WIDTH))
@@ -109,12 +113,12 @@ ui <- fluidPage(#--Header
                                            checkboxGroupInput("var_desc_1",
                                                               "",
                                                               var_cor[var_cor_sub[1] : var_cor_sub[2]]),
-                                           actionButton("distButton", "Draw dist table")),
+                                           actionButton("descButton", "Describe variable")),
                                     column(width=2,
                                            checkboxGroupInput("var_desc_2",
                                                               "",
                                                               var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]]),
-                                           actionButton("distButton_clear", "Clear selection")),
+                                           actionButton("descButton_clear", "Clear selection")),
                                     column(width=2,
                                            checkboxGroupInput("var_desc_3",
                                                               "",
