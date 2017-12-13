@@ -103,3 +103,4 @@ test.py
 *.rmd
 
 bin/\.RData
+.csv
