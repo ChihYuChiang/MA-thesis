@@ -85,6 +85,7 @@ ui <- fluidPage(#--Header
                                            actionButton("distButton_personality", "Draw distribution")),
                                     column(width=8,
                                            plotOutput("dist_personality_1", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_1"),
                                            plotOutput("dist_personality_2", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_3", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_4", width=PLOT_WIDTH),

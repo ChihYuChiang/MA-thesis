@@ -3,6 +3,10 @@ library(tidyverse)
 library(data.table)
 library(colorspace)
 library(corrplot)
+library(pander)
+
+#Prevent output text wrapping
+panderOptions("table.split.table", 200)
 
 
 
@@ -142,7 +146,6 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 
 
-
 "
 ------------------------------------------------------------
 Back end
@@ -150,9 +153,17 @@ Back end
 "
 server <- function(session, input, output) {
   "
+  DT filtering
+  "
+  # observeEvent()
+  
+
+
+
+  "
   Process outputs
   "
-  #--Acquire dist
+  #--Acquire dist and t test
   dist_personality_1.out <- eventReactive(input$distButton_personality, {
     dist_personality(DT, 1, input$type_personality)
   })
@@ -168,6 +179,16 @@ server <- function(session, input, output) {
   dist_personality_5.out <- eventReactive(input$distButton_personality, {
     dist_personality(DT, 5, input$type_personality)
   })
+  
+  
+  t_personality_1.out <- eventReactive(input$distButton_personality, {
+    if (length(input$type_personality) == 2) {
+      x1 <- sprintf("Person%s-1", input$type_personality[1])
+      x2 <- sprintf("Person%s-1", input$type_personality[2])
+      pander(t.test(DT[[x1]], DT[[x2]], paired=TRUE))
+    }
+  })
+    
   
   dist_SDT_1.out <- eventReactive(input$distButton_SDT, {
     dist_SDT(DT, 1, input$type_SDT)
@@ -197,7 +218,7 @@ server <- function(session, input, output) {
   })
   
   
-  #--Codec
+  #--Codec (static content)
   #Remove first couple of vars
   codec.out <- codec[33:nrow(codec)]
   
@@ -211,7 +232,7 @@ server <- function(session, input, output) {
   "
   Render output
   "
-  #--Render dist
+  #--Render dist and t-test
   output$dist_personality_1 <- renderPlot({dist_personality_1.out()})
   output$dist_personality_2 <- renderPlot({dist_personality_2.out()})
   output$dist_personality_3 <- renderPlot({dist_personality_3.out()})
@@ -222,6 +243,8 @@ server <- function(session, input, output) {
   output$dist_SDT_2 <- renderPlot({dist_SDT_2.out()})
   output$dist_SDT_3 <- renderPlot({dist_SDT_3.out()})
   
+  output$t_personality_1 <- renderPrint({t_personality_1.out()})
+  
   
   #--Render dist table
   output$dist <- renderPlot({dist.out()})
@@ -231,7 +254,7 @@ server <- function(session, input, output) {
   output$cor <- renderPlot({cor.out()})
   
   
-  #--Render codec (static content)
+  #--Render codec
   output$codec <- renderTable({codec.out})
   
   
