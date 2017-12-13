@@ -89,8 +89,7 @@ ui <- fluidPage(#--Header
                                            plotOutput("dist_personality_2", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_3", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_4", width=PLOT_WIDTH),
-                                           plotOutput("dist_personality_5", width=PLOT_WIDTH)
-                                    )
+                                           plotOutput("dist_personality_5", width=PLOT_WIDTH))
                             )),
                   tabPanel("SDT",
                            fluidRow(column(width=2,
@@ -103,41 +102,40 @@ ui <- fluidPage(#--Header
                                     column(width=8,
                                            plotOutput("dist_SDT_1", width=PLOT_WIDTH),
                                            plotOutput("dist_SDT_2", width=PLOT_WIDTH),
-                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH)
-                                    )
+                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH))
                             )),
-                  tabPanel("Dist Table",
+                  tabPanel("Description",
                            fluidRow(column(width=2,
-                                           checkboxGroupInput("var_dist_1",
+                                           checkboxGroupInput("var_desc_1",
                                                               "",
                                                               var_cor[var_cor_sub[1] : var_cor_sub[2]]),
                                            actionButton("distButton", "Draw dist table")),
                                     column(width=2,
-                                           checkboxGroupInput("var_dist_2",
+                                           checkboxGroupInput("var_desc_2",
                                                               "",
                                                               var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]]),
                                            actionButton("distButton_clear", "Clear selection")),
                                     column(width=2,
-                                           checkboxGroupInput("var_dist_3",
+                                           checkboxGroupInput("var_desc_3",
                                                               "",
                                                               var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
                                     column(width=2,
-                                           checkboxGroupInput("var_dist_4",
+                                           checkboxGroupInput("var_desc_4",
                                                               "",
                                                               var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]])),
                                     column(width=2,
-                                           checkboxGroupInput("var_dist_5",
+                                           checkboxGroupInput("var_desc_5",
                                                               "",
                                                               var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]])),
                                     column(width=2,
-                                           checkboxGroupInput("var_dist_6",
+                                           checkboxGroupInput("var_desc_6",
                                                               "",
                                                               var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
-                           ),
+                            ),
                            fluidRow(column(width=12,
-                                           plotOutput("dist", width="100%")
-                           )
-                           )),
+                                           verbatimTextOutput("desc"),
+                                           plotOutput("dist", width="100%"))
+                            )),
                   tabPanel("Cor Table",
                            fluidRow(column(width=2,
                                            checkboxGroupInput("var_cor_1",
@@ -165,10 +163,9 @@ ui <- fluidPage(#--Header
                                            checkboxGroupInput("var_cor_6",
                                                               "",
                                                               var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
-                                    ),
+                            ),
                             fluidRow(column(width=8,
-                                            plotOutput("cor", width=PLOT_WIDTH)
-                                    )
+                                            plotOutput("cor", width=PLOT_WIDTH))
                            )),
                   tabPanel("Codec",
                            fluidRow(column(width=12,

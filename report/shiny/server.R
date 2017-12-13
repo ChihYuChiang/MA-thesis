@@ -203,10 +203,17 @@ server <- function(session, input, output) {
   
   #--Dist table
   dist.out <- eventReactive(input$distButton, {
-    targetColName <- c(input$var_dist_1, input$var_dist_2, input$var_dist_3, input$var_dist_4, input$var_dist_5, input$var_dist_6)
+    targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     plots <- lapply(targetColName, dist_gen)
     multiplot(plotlist=plots, cols=3) #A self-defined function for combining a list of plots
-  })  
+  })
+  
+  
+  #--Description table
+  desc.out <- eventReactive(input$distButton, {
+    targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
+    pander(summary(DT[, targetColName, with=FALSE]))
+  })
   
   
   #--Cor table
@@ -250,6 +257,10 @@ server <- function(session, input, output) {
   output$dist <- renderPlot({dist.out()})
   
   
+  #--Render description
+  output$desc <- renderPrint({desc.out()})
+  
+  
   #--Render cor table
   output$cor <- renderPlot({cor.out()})
   
@@ -260,12 +271,12 @@ server <- function(session, input, output) {
   
   #--Clear selection
   observeEvent(input$distButton_clear, {
-    updateCheckboxGroupInput(session, inputId="var_dist_1", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dist_2", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dist_3", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dist_4", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dist_5", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dist_6", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_1", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_2", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_3", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_4", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_5", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_desc_6", selected=character(0))
   })
   
   observeEvent(input$corButton_clear, {

@@ -158,21 +158,21 @@ InOut <- DT[, colIndex_In, with=FALSE] - DT[, colIndex_Out, with=FALSE]
 newColName <- gsub("In", "InOut", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := InOut]
 newColName <- gsub("(\\d)", "ab\\1", newColName)
-DT[, (newColName) := abs(InSOutS)]
+DT[, (newColName) := abs(InOut)]
 
 #Id - In (original and absolute)
 IdIn <- DT[, colIndex_Id, with=FALSE] - DT[, colIndex_In, with=FALSE]
 newColName <- gsub("In", "IdIn", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdIn]
 newColName <- gsub("(\\d)", "ab\\1", newColName)
-DT[, (newColName) := abs(InSOutS)]
+DT[, (newColName) := abs(IdIn)]
 
 #Id - Out (original and absolute)
 IdOut <- DT[, colIndex_Id, with=FALSE] - DT[, colIndex_Out, with=FALSE]
 newColName <- gsub("In", "IdOut", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdOut]
 newColName <- gsub("(\\d)", "ab\\1", newColName)
-DT[, (newColName) := abs(InSOutS)]
+DT[, (newColName) := abs(IdOut)]
 
 #Gap sum
 DT[, "SDTInOut-sum" := rowSums(.SD), .SDcols=grep("^SDTInOut-\\d$", names(DT))]
@@ -279,7 +279,7 @@ dist_SDT(DT, 3, list("In", "Out"))
 
 
 "
-### Distribution
+### Distribution and description
 "
 #Function for dist
 dist_gen <- function (targetColName) {
@@ -290,6 +290,9 @@ dist_gen <- function (targetColName) {
     theme_minimal()
 }
 lapply(c("Demo-1", "Demo-2", "GProfile-1"), dist_gen)
+
+#Description
+summary(DT[, c("Demo-1", "Demo-2", "GProfile-1"), with=FALSE])
 
 
 
