@@ -4,9 +4,13 @@ library(colorspace)
 library(corrplot)
 
 #Read in as DT
-DT <- fread("../data/survey2.csv")[
+#Skip 2 for codec
+DT <- fread("../../data/survey2.csv", skip=2)[
   MTurkCode != "", ,] #Filter
 
+#Read in codec
+codec <- as.data.table(t(fread("../../data/survey2.csv", nrows=1)), keep.rownames=TRUE)
+colnames(codec) <- c("Variable", "Description")
 
 
 
@@ -51,6 +55,13 @@ personalities <- (DT[, subColIndex_1, with=FALSE] + DT[, subColIndex_2, with=FAL
 newColName <- gsub("1_", "", grep("^Person.+1_\\d$", names(DT), value=TRUE))
 DT[, (newColName) := personalities]
 
+#Update codec
+codec <- rbind(codec, list("PersonXY-Z",
+                           "Combined personality measurement.
+                           X = {In: in-game, Out: real, Id: ideal, Ste: stereotype}
+                           Y = {S: self-version, F: fellow-version}
+                           Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation}"))
+
 
 #--SDT (3 constructs; 4 items each)
 #Computation
@@ -64,12 +75,24 @@ SDTs <- (DT[, subColIndex_1, with=FALSE] + DT[, subColIndex_2, with=FALSE] + DT[
 newColName <- gsub("1_", "", grep("^SDT.+1_[123]$", names(DT), value=TRUE))
 DT[, (newColName) := SDTs]
 
+#Update codec
+codec <- rbind(codec, list("SDTX-Z",
+                           "Combined SDT measurement.
+                           X = {In: in-game, Out: real, Id: ideal}
+                           Z = {1: autonomy, 2: relatedness, 3: competence, sum: summation}"))
+
 
 #--Preference (5 items)
 DT[, "PrefS-a1" := rowMeans(.SD), .SDcols=grep("^PrefS-\\d$", names(DT))] #All 5 measures
 DT[, "PrefS-a2" := rowMeans(.SD), .SDcols=grep("^PrefS-[1234]$", names(DT))] #Except play frequency
 DT[, "PrefF-a1" := rowMeans(.SD), .SDcols=grep("^PrefF-\\d$", names(DT))]
 DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[1234]$", names(DT))]
+
+#Update codec
+codec <- rbind(codec, list("PrefX-aZ",
+                           "Combined preference measurement.
+                           X = {S: self-version, F: fellow-version}
+                           Z = {1: all 5 measures, 2: exclude play frequency}"))
 
 
 
@@ -82,20 +105,26 @@ colIndex_InS <- grep("^PersonInS-\\d$", names(DT))
 colIndex_OutS <- grep("^PersonOutS-\\d$", names(DT))
 colIndex_IdS <- grep("^PersonIdS-\\d$", names(DT))
 
-#InS - OutS
+#InS - OutS (original and absolute)
 InSOutS <- DT[, colIndex_InS, with=FALSE] - DT[, colIndex_OutS, with=FALSE]
 newColName <- gsub("InS", "InSOutS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := InSOutS]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(InSOutS)]
 
-#IdS - InS
+#IdS - InS (original and absolute)
 IdSInS <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_InS, with=FALSE]
 newColName <- gsub("InS", "IdSInS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdSInS]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(IdSInS)]
 
-#IdS - OutS
+#IdS - OutS (original and absolute)
 IdSOutS <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_OutS, with=FALSE]
 newColName <- gsub("InS", "IdSOutS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdSOutS]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(IdSOutS)]
 
 #Gap sum
 DT[, "PersonInSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-\\d$", names(DT))]
@@ -103,14 +132,20 @@ DT[, "PersonIdSInS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-\\d$", name
 DT[, "PersonIdSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-\\d$", names(DT))]
 
 #Gap absolute sum
-DT[, "PersonInSOutS-absum" := rowSums(abs(.SD)), .SDcols=grep("^PersonInSOutS-\\d$", names(DT))]
-DT[, "PersonIdSInS-absum" := rowSums(abs(.SD)), .SDcols=grep("^PersonIdSInS-\\d$", names(DT))]
-DT[, "PersonIdSOutS-absum" := rowSums(abs(.SD)), .SDcols=grep("^PersonIdSOutS-\\d$", names(DT))]
+DT[, "PersonInSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-ab\\d$", names(DT))]
+DT[, "PersonIdSInS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-ab\\d$", names(DT))]
+DT[, "PersonIdSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-ab\\d$", names(DT))]
 
 #InS, OutS, IdS sum
 DT[, "PersonInS-sum" := rowSums(.SD), .SDcols=grep("^PersonInS-\\d$", names(DT))]
 DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT))]
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
+
+#Update codec
+codec <- rbind(codec, list("PersonOO-Z",
+                           "Personality gaps.
+                           OO = {InSOutS, IdSInS, IdSOutS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
+                           Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation, ab(prefix): absolute}"))
 
 
 #--SDT
@@ -118,20 +153,26 @@ colIndex_In <- grep("^SDTIn-\\d$", names(DT))
 colIndex_Out <- grep("^SDTOut-\\d$", names(DT))
 colIndex_Id <- grep("^SDTId-\\d$", names(DT))
 
-#In - Out
+#In - Out (original and absolute)
 InOut <- DT[, colIndex_In, with=FALSE] - DT[, colIndex_Out, with=FALSE]
 newColName <- gsub("In", "InOut", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := InOut]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(InSOutS)]
 
-#Id - In
+#Id - In (original and absolute)
 IdIn <- DT[, colIndex_Id, with=FALSE] - DT[, colIndex_In, with=FALSE]
 newColName <- gsub("In", "IdIn", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdIn]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(InSOutS)]
 
-#Id - Out
+#Id - Out (original and absolute)
 IdOut <- DT[, colIndex_Id, with=FALSE] - DT[, colIndex_Out, with=FALSE]
 newColName <- gsub("In", "IdOut", grep("^SDTIn-\\d$", names(DT), value=TRUE))
 DT[, (newColName) := IdOut]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(InSOutS)]
 
 #Gap sum
 DT[, "SDTInOut-sum" := rowSums(.SD), .SDcols=grep("^SDTInOut-\\d$", names(DT))]
@@ -139,22 +180,26 @@ DT[, "SDTIdIn-sum" := rowSums(.SD), .SDcols=grep("^SDTIdIn-\\d$", names(DT))]
 DT[, "SDTIdOut-sum" := rowSums(.SD), .SDcols=grep("^SDTIdOut-\\d$", names(DT))]
 
 #Gap absolute sum
-DT[, "SDTInOut-absum" := rowSums(abs(.SD)), .SDcols=grep("^SDTInOut-\\d$", names(DT))]
-DT[, "SDTIdIn-absum" := rowSums(abs(.SD)), .SDcols=grep("^SDTIdIn-\\d$", names(DT))]
-DT[, "SDTIdOut-absum" := rowSums(abs(.SD)), .SDcols=grep("^SDTIdOut-\\d$", names(DT))]
+DT[, "SDTInOut-absum" := rowSums(.SD), .SDcols=grep("^SDTInOut-ab\\d$", names(DT))]
+DT[, "SDTIdIn-absum" := rowSums(.SD), .SDcols=grep("^SDTIdIn-ab\\d$", names(DT))]
+DT[, "SDTIdOut-absum" := rowSums(.SD), .SDcols=grep("^SDTIdOut-ab\\d$", names(DT))]
 
 #In, Out, Id sum
 DT[, "SDTIn-sum" := rowSums(.SD), .SDcols=grep("^SDTIn-\\d$", names(DT))]
 DT[, "SDTOut-sum" := rowSums(.SD), .SDcols=grep("^SDTOut-\\d$", names(DT))]
 DT[, "SDTId-sum" := rowSums(.SD), .SDcols=grep("^SDTId-\\d$", names(DT))]
 
-
+#Update codec
+codec <- rbind(codec, list("SDTOO-Z",
+                           "SDT gaps.
+                           OO = {InOut, IdIn, IdOut; eg. IdIn: ideal - in-game}
+                           Z = {1: autonomy, 2: relatedness, 3: competence, sum: summation, ab(prefix): absolute}"))
 
 
 "
 ### Clean temp vars
 "
-rm(list=ls()[which(ls() != "DT")]) #Preserve only DT
+rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 
 
 
@@ -298,4 +343,8 @@ p + scale_color_discrete(name="Group", labels=c("g1"="PrefS-a1 > 5", "g2"="PrefS
 "
 ### T test
 "
-t.test(DT$`PersonInS-1`, DT$`PersonOutS-1`, paired=TRUE)
+t.test(DT$`PersonIdSInS-1`, DT$`PersonIdSOutS-1`, paired=TRUE)
+t.test(DT$`PersonIdSInS-2`, DT$`PersonIdSOutS-2`, paired=TRUE)
+t.test(DT$`PersonIdSInS-3`, DT$`PersonIdSOutS-3`, paired=TRUE)
+t.test(DT$`PersonIdSInS-4`, DT$`PersonIdSOutS-4`, paired=TRUE)
+t.test(DT$`PersonIdSInS-5`, DT$`PersonIdSOutS-5`, paired=TRUE)
