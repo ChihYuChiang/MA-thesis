@@ -14,7 +14,12 @@ Initialization
 "
 PLOT_WIDTH <- "600px"
 
-#--Filter var for cor table
+
+
+
+"
+### Filter var for cor table
+"
 #Numeric column, without "_", skip first 30 vars
 var_cor <- names(DT)[30:ncol(DT)][!(c(30:ncol(DT)) %in% grep("_", names(DT))) & sapply(DT[, 30:ncol(DT)], is.numeric)]
 
@@ -61,8 +66,8 @@ ui <- fluidPage(#--Header
                 title='Fellow version supplement',
                 
                 #Displayed title
-                titlePanel(HTML('<h2>Fellow version report supplement
-                                  <span id="authorship">Chih-Yu Chiang • chihyuchiang@uchicago.edu</span>
+                titlePanel(HTML('<h2>MAPSS Thesis IV
+                                  <span id="authorship">Chih-Yu Chiang • December 12, 2017</span>
                                  </h2>')),
                 
                 
@@ -163,6 +168,10 @@ ui <- fluidPage(#--Header
                             fluidRow(column(width=8,
                                             plotOutput("cor", width=PLOT_WIDTH)
                                     )
+                           )),
+                  tabPanel("Codec",
+                           fluidRow(column(width=12,
+                                           tableOutput("codec"))
                            ))
                 )
 )

@@ -2,9 +2,13 @@ library(tidyverse)
 library(data.table)
 
 #Read in as DT
-DT <- fread("../../data/survey2.csv")[
+#Skip 2 for codec
+DT <- fread("../../data/survey2.csv", skip=2)[
   MTurkCode != "", ,] #Filter
 
+#Read in codec
+codec <- as.data.table(t(fread("../../data/survey2.csv", nrows=1)), keep.rownames=TRUE)
+colnames(codec) <- c("Variable", "Description")
 
 
 
@@ -49,6 +53,13 @@ personalities <- (DT[, subColIndex_1, with=FALSE] + DT[, subColIndex_2, with=FAL
 newColName <- gsub("1_", "", grep("^Person.+1_\\d$", names(DT), value=TRUE))
 DT[, (newColName) := personalities]
 
+#Update codec
+codec <- rbind(codec, list("PersonXY-Z",
+                           "Combined personality measurement.
+                            X = {In: in-game, Out: real, Id: ideal, Ste: stereotype}
+                            Y = {S: self-version, F: fellow-version}
+                            Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation}"))
+
 
 #--SDT (3 constructs; 4 items each)
 #Computation
@@ -62,12 +73,24 @@ SDTs <- (DT[, subColIndex_1, with=FALSE] + DT[, subColIndex_2, with=FALSE] + DT[
 newColName <- gsub("1_", "", grep("^SDT.+1_[123]$", names(DT), value=TRUE))
 DT[, (newColName) := SDTs]
 
+#Update codec
+codec <- rbind(codec, list("SDTX-Z",
+                           "Combined SDT measurement.
+                            X = {In: in-game, Out: real, Id: ideal}
+                            Z = {1: autonomy, 2: relatedness, 3: competence, sum: summation}"))
+
 
 #--Preference (5 items)
 DT[, "PrefS-a1" := rowMeans(.SD), .SDcols=grep("^PrefS-\\d$", names(DT))] #All 5 measures
 DT[, "PrefS-a2" := rowMeans(.SD), .SDcols=grep("^PrefS-[1234]$", names(DT))] #Except play frequency
 DT[, "PrefF-a1" := rowMeans(.SD), .SDcols=grep("^PrefF-\\d$", names(DT))]
 DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[1234]$", names(DT))]
+
+#Update codec
+codec <- rbind(codec, list("PrefX-aZ",
+                           "Combined preference measurement.
+                            X = {S: self-version, F: fellow-version}
+                            Z = {1: all 5 measures, 2: exclude play frequency}"))
 
 
 
@@ -110,6 +133,12 @@ DT[, "PersonInS-sum" := rowSums(.SD), .SDcols=grep("^PersonInS-\\d$", names(DT))
 DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT))]
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
 
+#Update codec
+codec <- rbind(codec, list("PersonOO-Z",
+                           "Personality gaps.
+                            OO = {InSOutS, IdSInS, IdSOutS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
+                            Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation, absum: absolute then summation}"))
+
 
 #--SDT
 colIndex_In <- grep("^SDTIn-\\d$", names(DT))
@@ -146,10 +175,14 @@ DT[, "SDTIn-sum" := rowSums(.SD), .SDcols=grep("^SDTIn-\\d$", names(DT))]
 DT[, "SDTOut-sum" := rowSums(.SD), .SDcols=grep("^SDTOut-\\d$", names(DT))]
 DT[, "SDTId-sum" := rowSums(.SD), .SDcols=grep("^SDTId-\\d$", names(DT))]
 
-
+#Update codec
+codec <- rbind(codec, list("SDTOO-Z",
+                           "SDT gaps.
+                            OO = {InOut, IdIn, IdOut; eg. IdIn: ideal - in-game}
+                            Z = {1: autonomy, 2: relatedness, 3: competence, sum: summation, absum: absolute then summation}"))
 
 
 "
 ### Clean temp vars
 "
-rm(list=ls()[which(ls() != "DT")]) #Preserve only DT
+rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec

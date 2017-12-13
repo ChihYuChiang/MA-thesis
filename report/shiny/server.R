@@ -184,7 +184,7 @@ server <- function(session, input, output) {
   dist.out <- eventReactive(input$distButton, {
     targetColName <- c(input$var_dist_1, input$var_dist_2, input$var_dist_3, input$var_dist_4, input$var_dist_5, input$var_dist_6)
     plots <- lapply(targetColName, dist_gen)
-    multiplot(plotlist=plots, cols=3)
+    multiplot(plotlist=plots, cols=3) #A self-defined function for combining a list of plots
   })  
   
   
@@ -195,8 +195,17 @@ server <- function(session, input, output) {
              method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
              cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
   })
+  
+  
+  #--Codec
+  #Remove first couple of vars
+  codec.out <- codec[33:nrow(codec)]
+  
+  #Remove system vars
+  filter <- !(codec.out$Variable %in% grep("(Click)|(Submit)|(Count)|(MTurk)", names(DT), value=TRUE))
+  codec.out <- codec.out[filter]
 
-
+  
 
 
   "
@@ -220,6 +229,10 @@ server <- function(session, input, output) {
   
   #--Render cor table
   output$cor <- renderPlot({cor.out()})
+  
+  
+  #--Render codec (static content)
+  output$codec <- renderTable({codec.out})
   
   
   #--Clear selection
