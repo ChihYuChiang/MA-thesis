@@ -217,66 +217,65 @@ rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 "
 ### Distribution comparison
 "
-#--Personality
-#Function for distribution
-dist_personality <- function(DT, personality, types){
-  #A map for personality code and str pairs
-  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness", "sum"="Summation")
-  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self")
+#Function for distribution comparison
+dist_comparison <- function(DT, construct, types, item, gap) {
+  #A map for construct and item code and str pairs
+  strCodec <- list(
+    "Person"=list(
+      item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
+             "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
+      type=c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self",
+             "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
+    ),
+    "SDT"=list(
+      item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
+             "ab1"="Autonomy (absolute)", "ab2"="Relatedness (absolute)", "ab3"="Competence (absolute)", "absum"="Summation (absolute)"),
+      type=c("In"="In-game", "Out"="Real", "Id"="Ideal",
+             "InOut"="In-game - real", "IdIn"="Ideal - in-game", "IdOut"="Ideal - real")
+    )
+  )
   
-  #Acquire specific columns of that personality (for efficiency)
-  targetColIndex <- grep(sprintf("^Person.+-%s$", personality), names(DT), value=TRUE)
+  #Decide scales according to item and gap
+  #Complicated is bad!!!!!
+  itemNo <- c("Person"=5, "SDT"=3)[construct]
+  scales <- list(
+    binwidth=if (item == "sum" | item == "absum") 2.5 else 0.5,
+    limits=if (gap == 1) {
+      if (item == "sum" | item == "absum") c(-6 * itemNo - 2.5, 6 * itemNo + 2.5) else c(-6.5, 6.5)
+    } else if (gap == 0) {
+      if (item == "sum") c(1 * itemNo - 2.5, 7 * itemNo + 2.5) else c(0.5, 7.5)
+    },
+    breaks=if (gap == 1) {
+      if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
+    } else if (gap == 0) {
+      if (item == "sum") seq(1 * itemNo, 7 * itemNo, itemNo) else seq(1, 7)
+    }
+  )
   
+  #Make individual hist
   make_hist <- function(type) {
-    geom_histogram(mapping=aes_(x=as.name(sprintf("Person%s-%s", type, personality)), fill=toString(which(types == type))),
-                   binwidth=if (personality == "sum") 2.5 else 0.5, alpha=0.6)
+    geom_histogram(mapping=aes_(x=as.name(sprintf("%s%s-%s", construct, type, item)), fill=toString(which(types == type))),
+                   binwidth=scales$binwidth, alpha=0.6)
   }
+  
+  #Make hist list of all items
   geom_hists <- lapply(types, make_hist)
   
-  #Use a list to add ggplot components
-  ggplot(data=DT[, targetColIndex, with=FALSE]) +
+  #Use the list to add ggplot components
+  ggplot(data=DT) +
     geom_hists +
-    {if (personality == "sum") scale_x_continuous(breaks=seq(5, 35, 5), minor_breaks=NULL, labels=seq(5, 35, 5), limits=c(2.5, 37.5))
-     else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
-    labs(x="score", title=personaCodec[toString(personality)]) +
-    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
+    scale_x_continuous(breaks=scales$breaks, minor_breaks=NULL, labels=scales$breaks, limits=scales$limits) +
+    labs(x="score", title=strCodec[[construct]]$item[toString(item)]) +
+    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(strCodec[[construct]]$type[unlist(types)])) + #labels does not accept names vector
     theme_minimal()
 }
 
 #Function call
-#InS OutS IdS InF OutF SteS
-dist_personality(DT, "sum", list("InS", "OutS", "IdS"))
-
-
-#--SDT
-#Function for distribution
-dist_SDT <- function(DT, SDT, types){
-  #A map for personality code and str pairs
-  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summataion")
-  typeCodec <- c("In"="In-game", "Out"="Real", "Id"="Ideal")
-  
-  #Acquire specific columns of that personality
-  targetColIndex <- matches(sprintf("^SDT.+-%s$", SDT), vars=names(DT))
-  
-  make_hist <- function(type) {
-    geom_histogram(mapping=aes_(x=as.name(sprintf("SDT%s-%s", type, SDT)), fill=toString(which(types == type))),
-                   binwidth=if (SDT == "sum") 1.5 else 0.5, alpha=0.6)
-  }
-  geom_hists <- lapply(types, make_hist)
-  
-  #Use a list to add ggplot components
-  ggplot(data=DT[, targetColIndex, with=FALSE]) +
-    geom_hists +
-    {if (SDT == "sum") scale_x_continuous(breaks=seq(3, 21, 3), minor_breaks=NULL, labels=seq(3, 21, 3), limits=c(1.5, 22.5))
-     else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
-    labs(x="score", title=SDTCodec[toString(SDT)]) +
-    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
-    theme_minimal()
-}
-
-#Function call
-#In Out Id
-dist_SDT(DT, "sum", list("In", "Out", "Id"))
+#Options refer to the strCodec
+dist_comparison(DT, "Person", list("InS", "OutS", "IdS"), "sum", gap=0)
+dist_comparison(DT, "Person", list("IdSOutS", "IdSInS"), "sum", gap=1)
+dist_comparison(DT, "SDT", list("In", "Out", "Id"), 1, gap=0)
+dist_comparison(DT, "SDT", list("IdOut", "IdIn"), "sum", gap=1)
 
 
 
