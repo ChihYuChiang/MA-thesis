@@ -171,6 +171,10 @@ ui <- fluidPage(#--Header
                             fluidRow(column(width=8,
                                             plotOutput("cor", width=PLOT_WIDTH))
                            )),
+                  tabPanel("Text Answer",
+                           fluidRow(column(width=12,
+                                           tableOutput("textAnswer"))
+                           )),
                   tabPanel("Codec",
                            fluidRow(column(width=12,
                                            tableOutput("codec"))

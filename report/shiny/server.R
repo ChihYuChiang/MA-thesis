@@ -231,6 +231,10 @@ server <- function(session, input, output) {
   })
   
   
+  #--Short answers (static content)
+  textAnswer.out <- DT[, .(`Enough-2`, `GProfile-9`, `Demo-Feedback`)]
+  
+  
   #--Codec (static content)
   #Remove first couple of vars
   codec.out <- codec[33:nrow(codec)]
@@ -265,7 +269,7 @@ server <- function(session, input, output) {
   output$dist <- renderPlot({dist.out()})
   
   
-  #--Render description
+  #--Render description stat
   output$desc <- renderPrint({desc.out()})
   
   
@@ -273,6 +277,10 @@ server <- function(session, input, output) {
   output$cor <- renderPlot({cor.out()})
   
   
+  #--Render Short answers
+  output$textAnswer <- renderTable({textAnswer.out}, width="1000px")
+  
+
   #--Render codec
   output$codec <- renderTable({codec.out})
   
