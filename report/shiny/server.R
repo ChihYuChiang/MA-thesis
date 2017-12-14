@@ -23,56 +23,56 @@ panderOptions("table.split.table", 200)
 "
 ### Distribution comparison
 "
-#--Personality
-#Function for distribution
-dist_personality <- function(DT, personality, types){
-  #A map for personality code and str pairs
-  personaCodec <- c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness;", "4"="Emotion stability", "5"="Openness", "sum"="Summation")
-  typeCodec <- c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self")
+#Function for distribution comparison
+dist_compare <- function(DT, construct, types, item, gap=0) {
+  #A map for construct and item code and str pairs
+  strCodec <- list(
+    "Person"=list(
+      item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
+             "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
+      type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
+             "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
+    ),
+    "SDT"=list(
+      item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
+             "ab1"="Autonomy (absolute)", "ab2"="Relatedness (absolute)", "ab3"="Competence (absolute)", "absum"="Summation (absolute)"),
+      type=c("In"="In-game", "Out"="Real", "Id"="Ideal",
+             "InOut"="In-game - real", "IdIn"="Ideal - in-game", "IdOut"="Ideal - real")
+    )
+  )
   
-  #Acquire specific columns of that personality (for efficiency)
-  targetColIndex <- grep(sprintf("^Person.+-%s$", personality), names(DT), value=TRUE)
+  #Decide scales according to item and gap
+  #Complicated is bad!!!!!
+  itemNo <- c("Person"=5, "SDT"=3)[construct]
+  scales <- list(
+    binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
+    limits=if (gap == 1) {
+      if (item == "sum" | item == "absum") c(-6 * itemNo - 0.5 * itemNo, 6 * itemNo + 0.5 * itemNo) else c(-6.5, 6.5)
+    } else if (gap == 0) {
+      if (item == "sum") c(1 * itemNo - 0.5 * itemNo, 7 * itemNo + 0.5 * itemNo) else c(0.5, 7.5)
+    },
+    breaks=if (gap == 1) {
+      if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
+    } else if (gap == 0) {
+      if (item == "sum") seq(1 * itemNo, 7 * itemNo, itemNo) else seq(1, 7)
+    }
+  )
   
+  #Make individual hist
   make_hist <- function(type) {
-    geom_histogram(mapping=aes_(x=as.name(sprintf("Person%s-%s", type, personality)), fill=toString(which(types == type))),
-                   binwidth=if (personality == "sum") 2.5 else 0.5, alpha=0.6)
+    geom_histogram(mapping=aes_(x=as.name(sprintf("%s%s-%s", construct, type, item)), fill=toString(which(types == type))),
+                   binwidth=scales$binwidth, alpha=0.6)
   }
+  
+  #Make hist list of all items
   geom_hists <- lapply(types, make_hist)
   
-  #Use a list to add ggplot components
-  ggplot(data=DT[, targetColIndex, with=FALSE]) +
+  #Use the list to add ggplot components
+  ggplot(data=DT) +
     geom_hists +
-    {if (personality == "sum") scale_x_continuous(breaks=seq(5, 35, 5), minor_breaks=NULL, labels=seq(5, 35, 5), limits=c(2.5, 37.5))
-      else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
-    labs(x="score", title=personaCodec[toString(personality)]) +
-    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
-    theme_minimal()
-}
-
-
-#--SDT
-#Function for distribution
-dist_SDT <- function(DT, SDT, types){
-  #A map for personality code and str pairs
-  SDTCodec <- c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summataion")
-  typeCodec <- c("In"="In-game", "Out"="Real", "Id"="Ideal")
-  
-  #Acquire specific columns of that personality
-  targetColIndex <- matches(sprintf("^SDT.+-%s$", SDT), vars=names(DT))
-  
-  make_hist <- function(type) {
-    geom_histogram(mapping=aes_(x=as.name(sprintf("SDT%s-%s", type, SDT)), fill=toString(which(types == type))),
-                   binwidth=if (SDT == "sum") 1.5 else 0.5, alpha=0.6)
-  }
-  geom_hists <- lapply(types, make_hist)
-  
-  #Use a list to add ggplot components
-  ggplot(data=DT[, targetColIndex, with=FALSE]) +
-    geom_hists +
-    {if (SDT == "sum") scale_x_continuous(breaks=seq(3, 21, 3), minor_breaks=NULL, labels=seq(3, 21, 3), limits=c(1.5, 22.5))
-      else scale_x_continuous(breaks=seq(1, 7), minor_breaks=NULL, labels=seq(1, 7), limits=c(0.5, 7.5))} +
-    labs(x="score", title=SDTCodec[toString(SDT)]) +
-    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(typeCodec[unlist(types)])) +
+    scale_x_continuous(breaks=scales$breaks, minor_breaks=NULL, labels=scales$breaks, limits=scales$limits) +
+    labs(x="score", title=strCodec[[construct]]$item[toString(item)]) +
+    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(strCodec[[construct]]$type[unlist(types)])) + #labels does not accept names vector
     theme_minimal()
 }
 
@@ -166,23 +166,33 @@ server <- function(session, input, output) {
   Process outputs
   "
   #--Acquire dist and t test
-  dist_personality_sum.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, "sum", input$type_personality)
-  })
-  dist_personality_1.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, 1, input$type_personality)
-  })
-  dist_personality_2.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, 2, input$type_personality)
-  })
-  dist_personality_3.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, 3, input$type_personality)
-  })
-  dist_personality_4.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, 4, input$type_personality)
-  })
-  dist_personality_5.out <- eventReactive(input$distButton_personality, {
-    dist_personality(DT, 5, input$type_personality)
+  dist_personality.out <- eventReactive(input$distButton_personality, {
+    #If gaps are selected, use gap input, otherwise use default
+    if (length(input$type_personalityG) > 0) {
+      list(
+        isum=dist_compare(DT, "Person", input$type_personalityG, "sum", gap=1),
+        i1=dist_compare(DT, "Person", input$type_personalityG, 1, gap=1),
+        i2=dist_compare(DT, "Person", input$type_personalityG, 2, gap=1),
+        i3=dist_compare(DT, "Person", input$type_personalityG, 3, gap=1),
+        i4=dist_compare(DT, "Person", input$type_personalityG, 4, gap=1),
+        i5=dist_compare(DT, "Person", input$type_personalityG, 5, gap=1),
+        iabsum=dist_compare(DT, "Person", input$type_personalityG, "absum", gap=1),
+        iab1=dist_compare(DT, "Person", input$type_personalityG, "ab1", gap=1),
+        iab2=dist_compare(DT, "Person", input$type_personalityG, "ab2", gap=1),
+        iab3=dist_compare(DT, "Person", input$type_personalityG, "ab3", gap=1),
+        iab4=dist_compare(DT, "Person", input$type_personalityG, "ab4", gap=1),
+        iab5=dist_compare(DT, "Person", input$type_personalityG, "ab5", gap=1)
+      ) 
+    } else {
+      list(
+        isum=dist_compare(DT, "Person", input$type_personality, "sum"),
+        i1=dist_compare(DT, "Person", input$type_personality, 1),
+        i2=dist_compare(DT, "Person", input$type_personality, 2),
+        i3=dist_compare(DT, "Person", input$type_personality, 3),
+        i4=dist_compare(DT, "Person", input$type_personality, 4),
+        i5=dist_compare(DT, "Person", input$type_personality, 5)
+      ) 
+    }
   })
   
   t_personality_1.out <- eventReactive(input$distButton_personality, {
@@ -193,17 +203,27 @@ server <- function(session, input, output) {
     }
   })
     
-  dist_SDT_sum.out <- eventReactive(input$distButton_SDT, {
-    dist_SDT(DT, "sum", input$type_SDT)
-  })
-  dist_SDT_1.out <- eventReactive(input$distButton_SDT, {
-    dist_SDT(DT, 1, input$type_SDT)
-  })
-  dist_SDT_2.out <- eventReactive(input$distButton_SDT, {
-    dist_SDT(DT, 2, input$type_SDT)
-  })
-  dist_SDT_3.out <- eventReactive(input$distButton_SDT, {
-    dist_SDT(DT, 3, input$type_SDT)
+  dist_SDT.out <- eventReactive(input$distButton_SDT, {
+    #If gaps are selected, use gap input, otherwise use default
+    if (length(input$type_SDTG) > 0) {
+      list(
+        isum=dist_compare(DT, "SDT", input$type_SDTG, "sum", gap=1),
+        i1=dist_compare(DT, "SDT", input$type_SDTG, 1, gap=1),
+        i2=dist_compare(DT, "SDT", input$type_SDTG, 2, gap=1),
+        i3=dist_compare(DT, "SDT", input$type_SDTG, 3, gap=1),
+        iabsum=dist_compare(DT, "SDT", input$type_SDTG, "absum", gap=1),
+        iab1=dist_compare(DT, "SDT", input$type_SDTG, "ab1", gap=1),
+        iab2=dist_compare(DT, "SDT", input$type_SDTG, "ab2", gap=1),
+        iab3=dist_compare(DT, "SDT", input$type_SDTG, "ab3", gap=1)
+      )
+    } else {
+      list(
+        isum=dist_compare(DT, "SDT", input$type_SDT, "sum"),
+        i1=dist_compare(DT, "SDT", input$type_SDT, 1),
+        i2=dist_compare(DT, "SDT", input$type_SDT, 2),
+        i3=dist_compare(DT, "SDT", input$type_SDT, 3)
+      )
+    }
   })
   
   
@@ -250,17 +270,27 @@ server <- function(session, input, output) {
   Render output
   "
   #--Render dist and t-test
-  output$dist_personality_sum <- renderPlot({dist_personality_sum.out()})
-  output$dist_personality_1 <- renderPlot({dist_personality_1.out()})
-  output$dist_personality_2 <- renderPlot({dist_personality_2.out()})
-  output$dist_personality_3 <- renderPlot({dist_personality_3.out()})
-  output$dist_personality_4 <- renderPlot({dist_personality_4.out()})
-  output$dist_personality_5 <- renderPlot({dist_personality_5.out()})
+  output$dist_personality_sum <- renderPlot({dist_personality.out()$isum})
+  output$dist_personality_1 <- renderPlot({dist_personality.out()$i1})
+  output$dist_personality_2 <- renderPlot({dist_personality.out()$i2})
+  output$dist_personality_3 <- renderPlot({dist_personality.out()$i3})
+  output$dist_personality_4 <- renderPlot({dist_personality.out()$i4})
+  output$dist_personality_5 <- renderPlot({dist_personality.out()$i5})
+  output$dist_personality_absum <- renderPlot({dist_personality.out()$iabsum})
+  output$dist_personality_ab1 <- renderPlot({dist_personality.out()$iab1})
+  output$dist_personality_ab2 <- renderPlot({dist_personality.out()$iab2})
+  output$dist_personality_ab3 <- renderPlot({dist_personality.out()$iab3})
+  output$dist_personality_ab4 <- renderPlot({dist_personality.out()$iab4})
+  output$dist_personality_ab5 <- renderPlot({dist_personality.out()$iab5})
 
-  output$dist_SDT_sum <- renderPlot({dist_SDT_sum.out()})  
-  output$dist_SDT_1 <- renderPlot({dist_SDT_1.out()})
-  output$dist_SDT_2 <- renderPlot({dist_SDT_2.out()})
-  output$dist_SDT_3 <- renderPlot({dist_SDT_3.out()})
+  output$dist_SDT_sum <- renderPlot({dist_SDT.out()$isum})  
+  output$dist_SDT_1 <- renderPlot({dist_SDT.out()$i1})
+  output$dist_SDT_2 <- renderPlot({dist_SDT.out()$i2})
+  output$dist_SDT_3 <- renderPlot({dist_SDT.out()$i3})
+  output$dist_SDT_absum <- renderPlot({dist_SDT.out()$iabsum})  
+  output$dist_SDT_ab1 <- renderPlot({dist_SDT.out()$iab1})
+  output$dist_SDT_ab2 <- renderPlot({dist_SDT.out()$iab2})
+  output$dist_SDT_ab3 <- renderPlot({dist_SDT.out()$iab3})
   
   output$t_personality_1 <- renderPrint({t_personality_1.out()})
   
@@ -286,6 +316,7 @@ server <- function(session, input, output) {
   
   
   #--Clear selection
+  #When press button
   observeEvent(input$descButton_clear, {
     updateCheckboxGroupInput(session, inputId="var_desc_1", selected=character(0))
     updateCheckboxGroupInput(session, inputId="var_desc_2", selected=character(0))
@@ -302,6 +333,21 @@ server <- function(session, input, output) {
     updateCheckboxGroupInput(session, inputId="var_cor_4", selected=character(0))
     updateCheckboxGroupInput(session, inputId="var_cor_5", selected=character(0))
     updateCheckboxGroupInput(session, inputId="var_cor_6", selected=character(0))
+  })
+  
+  #When click on other set of options
+  observeEvent(input$type_personalityG, {
+    updateCheckboxGroupInput(session, inputId="type_personality", selected=character(0))
+  })
+  observeEvent(input$type_personality, {
+    updateCheckboxGroupInput(session, inputId="type_personalityG", selected=character(0))
+  })
+  
+  observeEvent(input$type_SDTG, {
+    updateCheckboxGroupInput(session, inputId="type_SDT", selected=character(0))
+  })
+  observeEvent(input$type_SDT, {
+    updateCheckboxGroupInput(session, inputId="type_SDTG", selected=character(0))
   })
 
 }

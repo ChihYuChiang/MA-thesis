@@ -141,6 +141,8 @@ DT[, "PersonInS-sum" := rowSums(.SD), .SDcols=grep("^PersonInS-\\d$", names(DT))
 DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT))]
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
 DT[, "PersonSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonSteS-\\d$", names(DT))]
+DT[, "PersonInF-sum" := rowSums(.SD), .SDcols=grep("^PersonInF-\\d$", names(DT))]
+DT[, "PersonOutF-sum" := rowSums(.SD), .SDcols=grep("^PersonOutF-\\d$", names(DT))]
 
 #Update codec
 codec <- rbind(codec, list("PersonOO-Z",
@@ -218,13 +220,13 @@ rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 ### Distribution comparison
 "
 #Function for distribution comparison
-dist_comparison <- function(DT, construct, types, item, gap) {
+dist_compare <- function(DT, construct, types, item, gap=0) {
   #A map for construct and item code and str pairs
   strCodec <- list(
     "Person"=list(
       item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
              "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
-      type=c("InS"="In-game / Self", "OutS"="Real / Self", "IdS"="Ideal / Self", "InF"="In-game / Fellow", "OutF"="Real / Fellow", "SteS"="Stereotype / Self",
+      type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
              "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
     ),
     "SDT"=list(
@@ -239,11 +241,11 @@ dist_comparison <- function(DT, construct, types, item, gap) {
   #Complicated is bad!!!!!
   itemNo <- c("Person"=5, "SDT"=3)[construct]
   scales <- list(
-    binwidth=if (item == "sum" | item == "absum") 2.5 else 0.5,
+    binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
     limits=if (gap == 1) {
-      if (item == "sum" | item == "absum") c(-6 * itemNo - 2.5, 6 * itemNo + 2.5) else c(-6.5, 6.5)
+      if (item == "sum" | item == "absum") c(-6 * itemNo - 0.5 * itemNo, 6 * itemNo + 0.5 * itemNo) else c(-6.5, 6.5)
     } else if (gap == 0) {
-      if (item == "sum") c(1 * itemNo - 2.5, 7 * itemNo + 2.5) else c(0.5, 7.5)
+      if (item == "sum") c(1 * itemNo - 0.5 * itemNo, 7 * itemNo + 0.5 * itemNo) else c(0.5, 7.5)
     },
     breaks=if (gap == 1) {
       if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
@@ -272,10 +274,10 @@ dist_comparison <- function(DT, construct, types, item, gap) {
 
 #Function call
 #Options refer to the strCodec
-dist_comparison(DT, "Person", list("InS", "OutS", "IdS"), "sum", gap=0)
-dist_comparison(DT, "Person", list("IdSOutS", "IdSInS"), "sum", gap=1)
-dist_comparison(DT, "SDT", list("In", "Out", "Id"), 1, gap=0)
-dist_comparison(DT, "SDT", list("IdOut", "IdIn"), "sum", gap=1)
+dist_compare(DT, "Person", list("InS", "OutS", "IdS"), "sum", gap=0)
+dist_compare(DT, "Person", list("IdSOutS", "IdSInS"), "sum", gap=1)
+dist_compare(DT, "SDT", list("In", "Out", "Id"), 1, gap=0)
+dist_compare(DT, "SDT", list("IdOut", "IdIn"), "sum", gap=1)
 
 
 

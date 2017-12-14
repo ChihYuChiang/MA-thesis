@@ -12,7 +12,7 @@ library(shiny)
 Initialization
 ------------------------------------------------------------
 "
-PLOT_WIDTH <- "600px"
+PLOT_WIDTH <- "500px"
 
 
 
@@ -73,17 +73,23 @@ ui <- fluidPage(#--Header
                 
                 tabsetPanel(
                   tabPanel("Personality",
-                           fluidRow(column(width=2,
+                           fluidRow(column(width=1,
                                            checkboxGroupInput("type_personality",
                                                               "",
-                                                              c("In-game / Self"="InS",
-                                                                "Real / Self"="OutS",
-                                                                "Ideal / Self"="IdS",
-                                                                "In-game / Fellow"="InF",
-                                                                "Real / Fellow"="OutF",
-                                                                "Stereotype / Public"="SteS")),
+                                                              c("In-game (self)"="InS",
+                                                                "Real (self)"="OutS",
+                                                                "Ideal (self)"="IdS",
+                                                                "In-game (fellow)"="InF",
+                                                                "Real (fellow)"="OutF",
+                                                                "Stereotype (Self)"="SteS")),
                                            actionButton("distButton_personality", "Draw distribution")),
-                                    column(width=8,
+                                    column(width=1,
+                                           checkboxGroupInput("type_personalityG",
+                                                              "",
+                                                              c("In-game - Real"="InSOutS",
+                                                                "Ideal - In-game"="IdSInS",
+                                                                "Ideal - Real"="IdSOutS"))),
+                                    column(width=4,
                                            plotOutput("dist_personality_sum", width=PLOT_WIDTH),
                                            hr(),
                                            plotOutput("dist_personality_1", width=PLOT_WIDTH),
@@ -91,8 +97,16 @@ ui <- fluidPage(#--Header
                                            plotOutput("dist_personality_2", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_3", width=PLOT_WIDTH),
                                            plotOutput("dist_personality_4", width=PLOT_WIDTH),
-                                           plotOutput("dist_personality_5", width=PLOT_WIDTH))
-                            )),
+                                           plotOutput("dist_personality_5", width=PLOT_WIDTH)),
+                                    column(width=4,
+                                           plotOutput("dist_personality_absum", width=PLOT_WIDTH),
+                                           hr(),
+                                           plotOutput("dist_personality_ab1", width=PLOT_WIDTH),
+                                           plotOutput("dist_personality_ab2", width=PLOT_WIDTH),
+                                           plotOutput("dist_personality_ab3", width=PLOT_WIDTH),
+                                           plotOutput("dist_personality_ab4", width=PLOT_WIDTH),
+                                           plotOutput("dist_personality_ab5", width=PLOT_WIDTH))
+                           )),
                   tabPanel("SDT",
                            fluidRow(column(width=2,
                                            checkboxGroupInput("type_SDT",
@@ -101,12 +115,24 @@ ui <- fluidPage(#--Header
                                                                 "Real"="Out",
                                                                 "Ideal"="Id")),
                                            actionButton("distButton_SDT", "Draw distribution")),
-                                    column(width=8,
+                                    column(width=2,
+                                           checkboxGroupInput("type_SDTG",
+                                                              "",
+                                                              c("In-game - Real"="InOut",
+                                                                "Ideal - In-Game"="IdIn",
+                                                                "Ideal - Real"="IdOut"))),                                           
+                                    column(width=4,
                                            plotOutput("dist_SDT_sum", width=PLOT_WIDTH),
                                            hr(),
                                            plotOutput("dist_SDT_1", width=PLOT_WIDTH),
                                            plotOutput("dist_SDT_2", width=PLOT_WIDTH),
-                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH))
+                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH)),
+                                    column(width=4,
+                                           plotOutput("dist_SDT_absum", width=PLOT_WIDTH),
+                                           hr(),
+                                           plotOutput("dist_SDT_ab1", width=PLOT_WIDTH),
+                                           plotOutput("dist_SDT_ab2", width=PLOT_WIDTH),
+                                           plotOutput("dist_SDT_ab3", width=PLOT_WIDTH))
                             )),
                   tabPanel("Description",
                            fluidRow(column(width=2,
