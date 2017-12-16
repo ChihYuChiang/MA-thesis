@@ -76,7 +76,8 @@ TEXT <- list(
   
   C1="This table shows results of primary survey items with text response.",
   C2="It includes the particular games they played, the main benefit of playing, and some general feedback regarding this survey.",
-  C3="Please allow some time (should be < 30 secs) for loading the table."
+  C3="Please allow some time (should be < 5 secs) for loading the table.",
+  C4="If the table is not displayed, try scroll the browser window."
 )
 
 
@@ -86,5 +87,6 @@ CODEC <- list(
   
   C1="This table shows primary items (variables) acquired in the survey.",
   C2="It includes the variable names and the actual prompts asked during the survey.",
-  C3="Please allow some time (should be < 30 secs) for the app to process."
+  C3="Please allow some time (should be < 5 secs) for the app to process.",
+  C4="If the table is not displayed, try scroll the browser window."
 )

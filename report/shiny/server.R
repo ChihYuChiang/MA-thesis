@@ -339,6 +339,9 @@ server <- function(session, input, output) {
   #--Short answers (static content)
   textAnswer.out <- DT[, .(`Enough-2`, `GProfile-9`, `Demo-Feedback`)]
   
+  #Rename for display
+  colnames(textAnswer.out) <- c("Game", "Video game benefit", "General comment")
+  
   
   #--Codec (static content)
   #Remove first couple of vars
@@ -419,11 +422,11 @@ server <- function(session, input, output) {
   
   
   #--Render text response
-  output$textAnswer <- renderTable({textAnswer.out}, width="800px")
+  output$textAnswer <- renderTable({textAnswer.out}, width="1100px")
   
 
   #--Render codec
-  output$codec <- renderTable({codec.out})
+  output$codec <- renderTable({codec.out}, width="1100px")
   
   
   #--Clear selection
@@ -461,9 +464,4 @@ server <- function(session, input, output) {
     updateCheckboxGroupInput(session, inputId="type_SDTG", selected=character(0))
   })
   
-  
-  # #--Some UI misc
-  # #Show hr when needed
-  # onclick("distButton_personality", {sapply(c("hr_personality_1", "hr_personality_2"), shinyjs::show)})
-  # onclick("distButton_SDT", {sapply(c("hr_SDT_1", "hr_SDT_2"), shinyjs::show)})
 }

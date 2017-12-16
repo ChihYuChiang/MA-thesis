@@ -280,7 +280,8 @@ ui <- fluidPage(#--Header
                                            tags$ol(
                                              tags$li(TEXT$C1),
                                              tags$li(TEXT$C2),
-                                             tags$li(TEXT$C3)
+                                             tags$li(TEXT$C3),
+                                             tags$li(TEXT$C4)
                                            ),
                                            hr())
                            ),
@@ -293,7 +294,8 @@ ui <- fluidPage(#--Header
                                            tags$ol(
                                              tags$li(CODEC$C1),
                                              tags$li(CODEC$C2),
-                                             tags$li(CODEC$C3)
+                                             tags$li(CODEC$C3),
+                                             tags$li(CODEC$C4)
                                            ),
                                            hr())
                            ),
