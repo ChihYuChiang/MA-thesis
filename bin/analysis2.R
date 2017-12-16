@@ -220,7 +220,7 @@ rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 ### Distribution comparison
 "
 #Function for distribution comparison
-dist_compare <- function(DT, construct, types, item, gap=0) {
+dist_compare <- function(construct, types, item, gap=0) {
   #A map for construct and item code and str pairs
   strCodec <- list(
     "Person"=list(
@@ -274,10 +274,10 @@ dist_compare <- function(DT, construct, types, item, gap=0) {
 
 #Function call
 #Options refer to the strCodec
-dist_compare(DT, "Person", list("InS", "OutS", "IdS"), "sum", gap=0)
-dist_compare(DT, "Person", list("IdSOutS", "IdSInS"), "sum", gap=1)
-dist_compare(DT, "SDT", list("In", "Out", "Id"), 1, gap=0)
-dist_compare(DT, "SDT", list("IdOut", "IdIn"), "sum", gap=1)
+dist_compare("Person", list("InS", "OutS", "IdS"), "sum", gap=0)
+dist_compare("Person", list("IdSOutS", "IdSInS"), "sum", gap=1)
+dist_compare("SDT", list("In", "Out", "Id"), 1, gap=0)
+dist_compare("SDT", list("IdOut", "IdIn"), "sum", gap=1)
 
 
 
@@ -348,10 +348,24 @@ p + scale_color_discrete(name="Group", labels=c("g1"="PrefS-a1 > 5", "g2"="PrefS
 ----------------------------------------------------------------------
 "
 "
-### T test
+### T test (paired)
 "
-t.test(DT$`PersonIdSInS-1`, DT$`PersonIdSOutS-1`, paired=TRUE)
-t.test(DT$`PersonIdSInS-2`, DT$`PersonIdSOutS-2`, paired=TRUE)
-t.test(DT$`PersonIdSInS-3`, DT$`PersonIdSOutS-3`, paired=TRUE)
-t.test(DT$`PersonIdSInS-4`, DT$`PersonIdSOutS-4`, paired=TRUE)
-t.test(DT$`PersonIdSInS-5`, DT$`PersonIdSOutS-5`, paired=TRUE)
+tTest <- function(construct, types, item) {
+  col1 <- sprintf("%s%s-%s", construct, types[1], item)
+  col2 <- sprintf("%s%s-%s", construct, types[2], item)
+  
+  #DT does not accept as.name (symbol); it requires object
+  testOutput <- t.test(DT[, get(col1)], DT[, get(col2)], paired=TRUE)
+  
+  #Rename the caption of output table
+  testOutput$data.name <- paste(col1, "and", col2, sep=" ")
+  
+  return(testOutput)
+}
+tTest("Person", list("InS", "OutS"), "sum")
+
+list(
+  t=tTest("Person", list("InS", "OutS"), "sum"),
+  e=tTest("Person", list("InS", "OutS"), "sum"),
+  r=tTest("Person", list("InS", "OutS"), "sum")
+)

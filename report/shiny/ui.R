@@ -1,5 +1,6 @@
 library(shiny)
-
+library(shinyjs)
+library(shinythemes)
 
 
 
@@ -12,7 +13,7 @@ library(shiny)
 Initialization
 ------------------------------------------------------------
 "
-PLOT_WIDTH <- "500px"
+PLOT_WIDTH <- "600px"
 
 
 
@@ -57,10 +58,14 @@ Front end
 ------------------------------------------------------------
 "
 ui <- fluidPage(#--Header
-                #CSS,
-                tags$head(tags$link(rel="stylesheet", type="text/css", href="bootstrap-4.0.0-beta.2-dist/css/bootstrap.min.css")),
+                #Enable shinyjs
+                useShinyjs(), 
+                
+                #CSS and shiny theme based on Bootstrap https://rstudio.github.io/shinythemes/
+                theme=shinytheme("yeti"),
                 tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
   
+                
                 #--Set up title
                 #Tab title
                 title='Fellow version supplement',
@@ -91,31 +96,42 @@ ui <- fluidPage(#--Header
                                                                 "Ideal - Real"="IdSOutS"))),
                                     column(width=4,
                                            plotOutput("dist_personality_sum", width=PLOT_WIDTH),
-                                           hr(),
+                                           verbatimTextOutput("t_personality_sum"),
+                                           hidden(hr(id="hr_personality_1")),
                                            plotOutput("dist_personality_1", width=PLOT_WIDTH),
                                            verbatimTextOutput("t_personality_1"),
                                            plotOutput("dist_personality_2", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_2"),
                                            plotOutput("dist_personality_3", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_3"),
                                            plotOutput("dist_personality_4", width=PLOT_WIDTH),
-                                           plotOutput("dist_personality_5", width=PLOT_WIDTH)),
+                                           verbatimTextOutput("t_personality_4"),
+                                           plotOutput("dist_personality_5", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_5")),
                                     column(width=4,
                                            plotOutput("dist_personality_absum", width=PLOT_WIDTH),
-                                           hr(),
+                                           verbatimTextOutput("t_personality_absum"),
+                                           hidden(hr(id="hr_personality_2")),
                                            plotOutput("dist_personality_ab1", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_ab1"),
                                            plotOutput("dist_personality_ab2", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_ab2"),
                                            plotOutput("dist_personality_ab3", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_ab3"),
                                            plotOutput("dist_personality_ab4", width=PLOT_WIDTH),
-                                           plotOutput("dist_personality_ab5", width=PLOT_WIDTH))
+                                           verbatimTextOutput("t_personality_ab4"),
+                                           plotOutput("dist_personality_ab5", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_personality_ab5"))
                            )),
                   tabPanel("SDT",
-                           fluidRow(column(width=2,
+                           fluidRow(column(width=1,
                                            checkboxGroupInput("type_SDT",
                                                               "",
                                                               c("In-game "="In",
                                                                 "Real"="Out",
                                                                 "Ideal"="Id")),
                                            actionButton("distButton_SDT", "Draw distribution")),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("type_SDTG",
                                                               "",
                                                               c("In-game - Real"="InOut",
@@ -123,79 +139,89 @@ ui <- fluidPage(#--Header
                                                                 "Ideal - Real"="IdOut"))),                                           
                                     column(width=4,
                                            plotOutput("dist_SDT_sum", width=PLOT_WIDTH),
-                                           hr(),
+                                           verbatimTextOutput("t_SDT_sum"),
+                                           hidden(hr(id="hr_SDT_1")),
                                            plotOutput("dist_SDT_1", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_SDT_1"),
                                            plotOutput("dist_SDT_2", width=PLOT_WIDTH),
-                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH)),
+                                           verbatimTextOutput("t_SDT_2"),
+                                           plotOutput("dist_SDT_3", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_SDT_3")),
                                     column(width=4,
                                            plotOutput("dist_SDT_absum", width=PLOT_WIDTH),
-                                           hr(),
+                                           verbatimTextOutput("t_SDT_absum"),
+                                           hidden(hr(id="hr_SDT_2")),
                                            plotOutput("dist_SDT_ab1", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_SDT_ab1"),
                                            plotOutput("dist_SDT_ab2", width=PLOT_WIDTH),
-                                           plotOutput("dist_SDT_ab3", width=PLOT_WIDTH))
+                                           verbatimTextOutput("t_SDT_ab2"),
+                                           plotOutput("dist_SDT_ab3", width=PLOT_WIDTH),
+                                           verbatimTextOutput("t_SDT_ab3"))
                             )),
                   tabPanel("Description",
-                           fluidRow(column(width=2,
+                           fluidRow(column(width=1,
                                            checkboxGroupInput("var_desc_1",
                                                               "",
-                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]]),
-                                           actionButton("descButton", "Describe variable")),
-                                    column(width=2,
+                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]])),
+                                    column(width=1,
                                            checkboxGroupInput("var_desc_2",
                                                               "",
-                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]]),
-                                           actionButton("descButton_clear", "Clear selection")),
-                                    column(width=2,
+                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]])),
+                                    column(width=1,
                                            checkboxGroupInput("var_desc_3",
                                                               "",
                                                               var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_desc_4",
                                                               "",
                                                               var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_desc_5",
                                                               "",
                                                               var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_desc_6",
                                                               "",
                                                               var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
                             ),
                            fluidRow(column(width=12,
+                                           div(display="inline", actionButton("descButton", "Describe variable"), actionButton("descButton_clear", "Clear selection")))
+                            ),
+                           fluidRow(column(width=12,
                                            verbatimTextOutput("desc"),
-                                           plotOutput("dist", width="100%"))
+                                           plotOutput("dist"))
                             )),
                   tabPanel("Cor Table",
-                           fluidRow(column(width=2,
+                           fluidRow(column(width=1,
                                            checkboxGroupInput("var_cor_1",
                                                               "",
-                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]]),
-                                           actionButton("corButton", "Draw cor table")),
-                                    column(width=2,
+                                                              var_cor[var_cor_sub[1] : var_cor_sub[2]])),
+                                    column(width=1,
                                            checkboxGroupInput("var_cor_2",
                                                               "",
-                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]]),
-                                           actionButton("corButton_clear", "Clear selection")),
-                                    column(width=2,
+                                                              var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]])),
+                                    column(width=1,
                                            checkboxGroupInput("var_cor_3",
                                                               "",
                                                               var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_cor_4",
                                                               "",
                                                               var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_cor_5",
                                                               "",
                                                               var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]])),
-                                    column(width=2,
+                                    column(width=1,
                                            checkboxGroupInput("var_cor_6",
                                                               "",
                                                               var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]]))
                             ),
-                            fluidRow(column(width=8,
-                                            plotOutput("cor", width=PLOT_WIDTH))
+                            fluidRow(column(width=12,
+                                            div(display="inline", actionButton("corButton", "Draw cor table"), actionButton("corButton_clear", "Clear selection")))
+                           ),
+                            fluidRow(column(width=12,
+                                            plotOutput("cor"))
                            )),
                   tabPanel("Text Answer",
                            fluidRow(column(width=12,

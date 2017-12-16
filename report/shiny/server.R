@@ -1,12 +1,10 @@
 library(shiny)
+library(shinyjs)
+library(pander)
 library(tidyverse)
 library(data.table)
 library(colorspace)
 library(corrplot)
-library(pander)
-
-#Prevent output text wrapping
-panderOptions("table.split.table", 200)
 
 
 
@@ -24,7 +22,7 @@ panderOptions("table.split.table", 200)
 ### Distribution comparison
 "
 #Function for distribution comparison
-dist_compare <- function(DT, construct, types, item, gap=0) {
+dist_compare <- function(construct, types, item, gap=0) {
   #A map for construct and item code and str pairs
   strCodec <- list(
     "Person"=list(
@@ -144,6 +142,26 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 
 
+"
+### T-test
+"
+tTest <- function(construct, types, item) {
+  col1 <- sprintf("%s%s-%s", construct, types[1], item)
+  col2 <- sprintf("%s%s-%s", construct, types[2], item)
+  
+  #DT does not accept as.name (symbol); it requires object
+  testOutput <- t.test(DT[, get(col1)], DT[, get(col2)], paired=TRUE)
+  
+  #Rename the caption of output table
+  testOutput$data.name <- paste(col1, "and", col2, sep=" ")
+  
+  #Use pander_return to preserve the string
+  return(testOutput)
+}
+
+
+
+
 
 
 
@@ -159,69 +177,115 @@ server <- function(session, input, output) {
   "
   # observeEvent()
   
-
-
+  
+  
 
   "
   Process outputs
   "
-  #--Acquire dist and t test
+  #--Acquire dists
   dist_personality.out <- eventReactive(input$distButton_personality, {
     #If gaps are selected, use gap input, otherwise use default
-    if (length(input$type_personalityG) > 0) {
+    if(length(input$type_personalityG) > 0) {
       list(
-        isum=dist_compare(DT, "Person", input$type_personalityG, "sum", gap=1),
-        i1=dist_compare(DT, "Person", input$type_personalityG, 1, gap=1),
-        i2=dist_compare(DT, "Person", input$type_personalityG, 2, gap=1),
-        i3=dist_compare(DT, "Person", input$type_personalityG, 3, gap=1),
-        i4=dist_compare(DT, "Person", input$type_personalityG, 4, gap=1),
-        i5=dist_compare(DT, "Person", input$type_personalityG, 5, gap=1),
-        iabsum=dist_compare(DT, "Person", input$type_personalityG, "absum", gap=1),
-        iab1=dist_compare(DT, "Person", input$type_personalityG, "ab1", gap=1),
-        iab2=dist_compare(DT, "Person", input$type_personalityG, "ab2", gap=1),
-        iab3=dist_compare(DT, "Person", input$type_personalityG, "ab3", gap=1),
-        iab4=dist_compare(DT, "Person", input$type_personalityG, "ab4", gap=1),
-        iab5=dist_compare(DT, "Person", input$type_personalityG, "ab5", gap=1)
+        isum=dist_compare("Person", input$type_personalityG, "sum", gap=1),
+        i1=dist_compare("Person", input$type_personalityG, 1, gap=1),
+        i2=dist_compare("Person", input$type_personalityG, 2, gap=1),
+        i3=dist_compare("Person", input$type_personalityG, 3, gap=1),
+        i4=dist_compare("Person", input$type_personalityG, 4, gap=1),
+        i5=dist_compare("Person", input$type_personalityG, 5, gap=1),
+        iabsum=dist_compare("Person", input$type_personalityG, "absum", gap=1),
+        iab1=dist_compare("Person", input$type_personalityG, "ab1", gap=1),
+        iab2=dist_compare("Person", input$type_personalityG, "ab2", gap=1),
+        iab3=dist_compare("Person", input$type_personalityG, "ab3", gap=1),
+        iab4=dist_compare("Person", input$type_personalityG, "ab4", gap=1),
+        iab5=dist_compare("Person", input$type_personalityG, "ab5", gap=1)
       ) 
     } else {
       list(
-        isum=dist_compare(DT, "Person", input$type_personality, "sum"),
-        i1=dist_compare(DT, "Person", input$type_personality, 1),
-        i2=dist_compare(DT, "Person", input$type_personality, 2),
-        i3=dist_compare(DT, "Person", input$type_personality, 3),
-        i4=dist_compare(DT, "Person", input$type_personality, 4),
-        i5=dist_compare(DT, "Person", input$type_personality, 5)
+        isum=dist_compare("Person", input$type_personality, "sum"),
+        i1=dist_compare("Person", input$type_personality, 1),
+        i2=dist_compare("Person", input$type_personality, 2),
+        i3=dist_compare("Person", input$type_personality, 3),
+        i4=dist_compare("Person", input$type_personality, 4),
+        i5=dist_compare("Person", input$type_personality, 5)
       ) 
     }
   })
   
-  t_personality_1.out <- eventReactive(input$distButton_personality, {
-    if (length(input$type_personality) == 2) {
-      x1 <- sprintf("Person%s-1", input$type_personality[1])
-      x2 <- sprintf("Person%s-1", input$type_personality[2])
-      pander(t.test(DT[[x1]], DT[[x2]], paired=TRUE))
-    }
-  })
-    
   dist_SDT.out <- eventReactive(input$distButton_SDT, {
     #If gaps are selected, use gap input, otherwise use default
     if (length(input$type_SDTG) > 0) {
       list(
-        isum=dist_compare(DT, "SDT", input$type_SDTG, "sum", gap=1),
-        i1=dist_compare(DT, "SDT", input$type_SDTG, 1, gap=1),
-        i2=dist_compare(DT, "SDT", input$type_SDTG, 2, gap=1),
-        i3=dist_compare(DT, "SDT", input$type_SDTG, 3, gap=1),
-        iabsum=dist_compare(DT, "SDT", input$type_SDTG, "absum", gap=1),
-        iab1=dist_compare(DT, "SDT", input$type_SDTG, "ab1", gap=1),
-        iab2=dist_compare(DT, "SDT", input$type_SDTG, "ab2", gap=1),
-        iab3=dist_compare(DT, "SDT", input$type_SDTG, "ab3", gap=1)
+        isum=dist_compare("SDT", input$type_SDTG, "sum", gap=1),
+        i1=dist_compare("SDT", input$type_SDTG, 1, gap=1),
+        i2=dist_compare("SDT", input$type_SDTG, 2, gap=1),
+        i3=dist_compare("SDT", input$type_SDTG, 3, gap=1),
+        iabsum=dist_compare("SDT", input$type_SDTG, "absum", gap=1),
+        iab1=dist_compare("SDT", input$type_SDTG, "ab1", gap=1),
+        iab2=dist_compare("SDT", input$type_SDTG, "ab2", gap=1),
+        iab3=dist_compare("SDT", input$type_SDTG, "ab3", gap=1)
       )
     } else {
       list(
-        isum=dist_compare(DT, "SDT", input$type_SDT, "sum"),
-        i1=dist_compare(DT, "SDT", input$type_SDT, 1),
-        i2=dist_compare(DT, "SDT", input$type_SDT, 2),
-        i3=dist_compare(DT, "SDT", input$type_SDT, 3)
+        isum=dist_compare("SDT", input$type_SDT, "sum"),
+        i1=dist_compare("SDT", input$type_SDT, 1),
+        i2=dist_compare("SDT", input$type_SDT, 2),
+        i3=dist_compare("SDT", input$type_SDT, 3)
+      )
+    }
+  })
+  
+  
+  #--Acquire paired t-tests
+  t_personality.out <- eventReactive(input$distButton_personality, {
+    if(length(input$type_personalityG) == 2) {
+      list(
+        isum=tTest("Person", input$type_personalityG, "sum"),
+        i1=tTest("Person", input$type_personalityG, 1),
+        i2=tTest("Person", input$type_personalityG, 2),
+        i3=tTest("Person", input$type_personalityG, 3),
+        i4=tTest("Person", input$type_personalityG, 4),
+        i5=tTest("Person", input$type_personalityG, 5),
+        iabsum=tTest("Person", input$type_personalityG, "absum"),
+        iab1=tTest("Person", input$type_personalityG, "ab1"),
+        iab2=tTest("Person", input$type_personalityG, "ab2"),
+        iab3=tTest("Person", input$type_personalityG, "ab3"),
+        iab4=tTest("Person", input$type_personalityG, "ab4"),
+        iab5=tTest("Person", input$type_personalityG, "ab5")
+      )
+    } else if(length(input$type_personality) == 2) {
+      list(
+        isum=tTest("Person", input$type_personality, "sum"),
+        i1=tTest("Person", input$type_personality, 1),
+        i2=tTest("Person", input$type_personality, 2),
+        i3=tTest("Person", input$type_personality, 3),
+        i4=tTest("Person", input$type_personality, 4),
+        i5=tTest("Person", input$type_personality, 5)
+      )
+    }
+    
+  })
+  
+  t_SDT.out <- eventReactive(input$distButton_SDT, {
+    #If gaps are selected, use gap input, otherwise use default
+    if(length(input$type_SDTG) == 2) {
+      list(
+        isum=tTest("SDT", input$type_SDTG, "sum"),
+        i1=tTest("SDT", input$type_SDTG, 1),
+        i2=tTest("SDT", input$type_SDTG, 2),
+        i3=tTest("SDT", input$type_SDTG, 3),
+        iabsum=tTest("SDT", input$type_SDTG, "absum"),
+        iab1=tTest("SDT", input$type_SDTG, "ab1"),
+        iab2=tTest("SDT", input$type_SDTG, "ab2"),
+        iab3=tTest("SDT", input$type_SDTG, "ab3")
+      )
+    } else if(length(input$type_SDT) == 2){
+      list(
+        isum=tTest("SDT", input$type_SDT, "sum"),
+        i1=tTest("SDT", input$type_SDT, 1),
+        i2=tTest("SDT", input$type_SDT, 2),
+        i3=tTest("SDT", input$type_SDT, 3)
       )
     }
   })
@@ -231,6 +295,7 @@ server <- function(session, input, output) {
   dist.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     plots <- lapply(targetColName, dist_gen)
+    
     multiplot(plotlist=plots, cols=3) #A self-defined function for combining a list of plots
   })
   
@@ -269,7 +334,7 @@ server <- function(session, input, output) {
   "
   Render output
   "
-  #--Render dist and t-test
+  #--Render dist comparison
   output$dist_personality_sum <- renderPlot({dist_personality.out()$isum})
   output$dist_personality_1 <- renderPlot({dist_personality.out()$i1})
   output$dist_personality_2 <- renderPlot({dist_personality.out()$i2})
@@ -292,11 +357,34 @@ server <- function(session, input, output) {
   output$dist_SDT_ab2 <- renderPlot({dist_SDT.out()$iab2})
   output$dist_SDT_ab3 <- renderPlot({dist_SDT.out()$iab3})
   
-  output$t_personality_1 <- renderPrint({t_personality_1.out()})
+  
+  #--Render t-tests
+  #If NULL, don't return to avoid vacant box in the UI
+  output$t_personality_sum <- renderPrint({if (!is.null(x <- t_personality.out()$isum)) x})
+  output$t_personality_1 <- renderPrint({if (!is.null(x <- t_personality.out()$i1)) x})
+  output$t_personality_2 <- renderPrint({if (!is.null(x <- t_personality.out()$i2)) x})
+  output$t_personality_3 <- renderPrint({if (!is.null(x <- t_personality.out()$i3)) x})
+  output$t_personality_4 <- renderPrint({if (!is.null(x <- t_personality.out()$i4)) x})
+  output$t_personality_5 <- renderPrint({if (!is.null(x <- t_personality.out()$i5)) x})
+  output$t_personality_absum <- renderPrint({if (!is.null(x <- t_personality.out()$iabsum)) x})
+  output$t_personality_ab1 <- renderPrint({if (!is.null(x <- t_personality.out()$iab1)) x})
+  output$t_personality_ab2 <- renderPrint({if (!is.null(x <- t_personality.out()$iab2)) x})
+  output$t_personality_ab3 <- renderPrint({if (!is.null(x <- t_personality.out()$iab3)) x})
+  output$t_personality_ab4 <- renderPrint({if (!is.null(x <- t_personality.out()$iab4)) x})
+  output$t_personality_ab5 <- renderPrint({if (!is.null(x <- t_personality.out()$iab5)) x})
+  
+  output$t_SDT_sum <- renderPrint({if (!is.null(x <- t_SDT.out()$isum)) x})
+  output$t_SDT_1 <- renderPrint({if (!is.null(x <- t_SDT.out()$i1)) x})
+  output$t_SDT_2 <- renderPrint({if (!is.null(x <- t_SDT.out()$i2)) x})
+  output$t_SDT_3 <- renderPrint({if (!is.null(x <- t_SDT.out()$i3)) x})
+  output$t_SDT_absum <- renderPrint({if (!is.null(x <- t_SDT.out()$iabsum)) x})
+  output$t_SDT_ab1 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab1)) x})
+  output$t_SDT_ab2 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab2)) x})
+  output$t_SDT_ab3 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab3)) x})
   
   
   #--Render dist table
-  output$dist <- renderPlot({dist.out()})
+  output$dist <- renderPlot({dist.out()}, width=800, height=800)
   
   
   #--Render description stat
@@ -304,7 +392,7 @@ server <- function(session, input, output) {
   
   
   #--Render cor table
-  output$cor <- renderPlot({cor.out()})
+  output$cor <- renderPlot({cor.out()}, width=800, height=800)
   
   
   #--Render Short answers
@@ -349,5 +437,10 @@ server <- function(session, input, output) {
   observeEvent(input$type_SDT, {
     updateCheckboxGroupInput(session, inputId="type_SDTG", selected=character(0))
   })
-
+  
+  
+  #--Some UI misc
+  #Show hr when needed
+  onclick("distButton_personality", {sapply(c("hr_personality_1", "hr_personality_2"), shinyjs::show)})
+  onclick("distButton_SDT", {sapply(c("hr_SDT_1", "hr_SDT_2"), shinyjs::show)})
 }
