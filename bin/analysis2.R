@@ -200,9 +200,11 @@ codec <- rbind(codec, list("SDTOO-Z",
 
 
 "
-### Clean temp vars
+### Clean temp vars and save the environment
 "
 rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
+
+save.image()
 
 
 

@@ -1,10 +1,51 @@
+h2 {
+  font-size: 2.5em;
+}
+
+h3 {
+  font-size: 2em;
+}
+
+hr {
+  border-color: #cccccc;
+}
+
+table {
+  font-size: 85%;
+}
+
+hr.large {
+  margin-top: 5em;
+}
+
+.note span {
+  padding-left: 20px;
+}
+
+.note {
+  font-size: 80%;
+}
+
+.shiny-input-checkboxgroup {
+  float: left;
+}
+
+.clear {
+  display: block;
+  clear: left;
+}
+
+.btn {
+  margin: 0.5em;
+  margin-left: 0;
+}
+
+.checkbox {
+  font-size: 80%;
+}
+
 #authorship {
   color: #707070;
   font-size: 50%;
   padding-left: 10px;
-}
-
-hr {
-  margin-top: 5em;
-  border-color: #cccccc;
 }

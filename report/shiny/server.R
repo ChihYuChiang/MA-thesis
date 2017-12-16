@@ -187,6 +187,11 @@ server <- function(session, input, output) {
   dist_personality.out <- eventReactive(input$distButton_personality, {
     #If gaps are selected, use gap input, otherwise use default
     if(length(input$type_personalityG) > 0) {
+      #Show hr when needed
+      shinyjs::show("hr_personality_1")
+      shinyjs::show("hr_personality_2")
+      
+      #Return the processed content
       list(
         isum=dist_compare("Person", input$type_personalityG, "sum", gap=1),
         i1=dist_compare("Person", input$type_personalityG, 1, gap=1),
@@ -202,6 +207,11 @@ server <- function(session, input, output) {
         iab5=dist_compare("Person", input$type_personalityG, "ab5", gap=1)
       ) 
     } else {
+      #Show hr when needed
+      shinyjs::show("hr_personality_1")
+      shinyjs::hide("hr_personality_2")
+      
+      #Return the processed content
       list(
         isum=dist_compare("Person", input$type_personality, "sum"),
         i1=dist_compare("Person", input$type_personality, 1),
@@ -216,6 +226,11 @@ server <- function(session, input, output) {
   dist_SDT.out <- eventReactive(input$distButton_SDT, {
     #If gaps are selected, use gap input, otherwise use default
     if (length(input$type_SDTG) > 0) {
+      #Show hr when needed
+      shinyjs::show("hr_SDT_1")
+      shinyjs::show("hr_SDT_2")
+      
+      #Return the processed content
       list(
         isum=dist_compare("SDT", input$type_SDTG, "sum", gap=1),
         i1=dist_compare("SDT", input$type_SDTG, 1, gap=1),
@@ -227,6 +242,11 @@ server <- function(session, input, output) {
         iab3=dist_compare("SDT", input$type_SDTG, "ab3", gap=1)
       )
     } else {
+      #Show hr when needed
+      shinyjs::show("hr_SDT_1")
+      shinyjs::hide("hr_SDT_2")
+      
+      #Return the processed content
       list(
         isum=dist_compare("SDT", input$type_SDT, "sum"),
         i1=dist_compare("SDT", input$type_SDT, 1),
@@ -327,6 +347,9 @@ server <- function(session, input, output) {
   #Remove system vars
   filter <- !(codec.out$Variable %in% grep("(Click)|(Submit)|(Count)|(MTurk)", names(DT), value=TRUE))
   codec.out <- codec.out[filter]
+  
+  #Rename for display
+  colnames(codec.out) <- c("Item/Variable", "Prompt/Description")
 
   
 
@@ -384,7 +407,7 @@ server <- function(session, input, output) {
   
   
   #--Render dist table
-  output$dist <- renderPlot({dist.out()}, width=800, height=800)
+  output$dist <- renderPlot({dist.out()}, width=600, height=600)
   
   
   #--Render description stat
@@ -392,11 +415,11 @@ server <- function(session, input, output) {
   
   
   #--Render cor table
-  output$cor <- renderPlot({cor.out()}, width=800, height=800)
+  output$cor <- renderPlot({cor.out()}, width=600, height=600)
   
   
-  #--Render Short answers
-  output$textAnswer <- renderTable({textAnswer.out}, width="1000px")
+  #--Render text response
+  output$textAnswer <- renderTable({textAnswer.out}, width="800px")
   
 
   #--Render codec
@@ -439,8 +462,8 @@ server <- function(session, input, output) {
   })
   
   
-  #--Some UI misc
-  #Show hr when needed
-  onclick("distButton_personality", {sapply(c("hr_personality_1", "hr_personality_2"), shinyjs::show)})
-  onclick("distButton_SDT", {sapply(c("hr_SDT_1", "hr_SDT_2"), shinyjs::show)})
+  # #--Some UI misc
+  # #Show hr when needed
+  # onclick("distButton_personality", {sapply(c("hr_personality_1", "hr_personality_2"), shinyjs::show)})
+  # onclick("distButton_SDT", {sapply(c("hr_SDT_1", "hr_SDT_2"), shinyjs::show)})
 }

@@ -104,3 +104,5 @@ test.py
 
 bin/\.RData
 data/
+
+report/shiny/\.RData
