@@ -334,9 +334,14 @@ server <- function(session, input, output) {
   })
   
   #Decide the height dynamically
+  dist.width <- eventReactive(input$descButton, {
+    targetLength <- length(c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6))
+    if(targetLength == 1) 2200 else 1100
+  })
+  
   dist.height <- eventReactive(input$descButton, {
     targetLength <- length(c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6))
-    ceiling(targetLength / 4) * 250
+    if(targetLength == 1) 500 else ceiling(targetLength / 4) * 250
   })
   
   
@@ -475,7 +480,7 @@ server <- function(session, input, output) {
   #Dynamic resizing
   output$dist_plot <- renderPlot({dist.out()})
   output$dist <- renderUI({plotOutput("dist_plot",
-                                      width=1100,
+                                      width=dist.width(),
                                       height=dist.height())})
   
   #--Render description stat

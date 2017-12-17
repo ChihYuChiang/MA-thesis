@@ -32,6 +32,7 @@ var_cor <- names(DT)[30:ncol(DT)][!(c(30:ncol(DT)) %in% grep("_", names(DT))) & 
 exc_plus <- c("Duration (in seconds)",
               "GProfile-3_1",
               "GProfile-7_1", "GProfile-7_2", "GProfile-7_3", "GProfile-7_4", "GProfile-7_5", "GProfile-7_6",
+              "GProfile-8",
               "GProfile-10_2", "GProfile-11_2")
 
 #Exception -
@@ -69,17 +70,18 @@ ui <- fluidPage(#--Header
                 theme=shinytheme("paper"),
                 tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
   
+                
+                #--Set up title
                 #Tab title
                 title='Fellow version supplement',
                 
-
+                #Displayed title
+                titlePanel(HTML('<h2>MAPSS Thesis IV
+                                  <span id="authorship">Chih-Yu Chiang • December 15, 2017</span>
+                                 </h2>')),
         #--Main content    
         sidebarLayout(
           sidebarPanel(width=2,
-                #Displayed title
-                titlePanel(HTML('<h2>MAPSS Thesis IV
-                                  <span id="authorship">Chih-Yu Chiang • December 17, 2017</span>
-                                </h2>')),
                 h4("testing"),
                 sliderInput("filter_gamer", "Gamer", min=1, max=7, value=c(1, 7))
           ),
