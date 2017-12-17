@@ -22,6 +22,9 @@ panderOptions("table.split.table", 200)
 ## Initialization
 ----------------------------------------------------------------------
 "
+....Initialization <- function() {}
+
+
 "
 ### Distribution comparison
 "
@@ -172,10 +175,14 @@ tTest <- function(construct, types, item) {
 Back end
 ------------------------------------------------------------
 "
+....BackEnd <- function() {}
+
+
 server <- function(session, input, output) {
   "
   DT filtering
   "
+  ........DTFilter <- function() {}
   # observeEvent()
   
   
@@ -185,6 +192,8 @@ server <- function(session, input, output) {
   Process outputs
   "
   #--Acquire dists
+  ........AcquireDists <- function() {}
+  
   dist_personality.out <- eventReactive(input$distButton_personality, {
     #If gaps are selected, use gap input, otherwise use default
     if(length(input$type_personalityG) > 0) {
@@ -259,6 +268,8 @@ server <- function(session, input, output) {
   
   
   #--Acquire paired t-tests
+  ........AcquireT <- function() {}
+  
   t_personality.out <- eventReactive(input$distButton_personality, {
     if(length(input$type_personalityG) == 2) {
       list(
@@ -313,6 +324,8 @@ server <- function(session, input, output) {
   
   
   #--Dist table
+  ........AcquireDistTable <- function() {}
+  
   dist.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     plots <- lapply(targetColName, dist_gen)
@@ -328,6 +341,8 @@ server <- function(session, input, output) {
   
   
   #--Description table
+  ........AcquireDesc <- function() {}
+  
   desc.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     descOutput <- pander_return(summary(DT[, targetColName, with=FALSE]), style="rmarkdown")
@@ -341,6 +356,8 @@ server <- function(session, input, output) {
 
   
   #--Cor table
+  ........AcquireCor <- function() {}
+  
   cor.out <- eventReactive(input$corButton, {
     targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
     
@@ -372,6 +389,8 @@ server <- function(session, input, output) {
   
   
   #--Short answers (static content)
+  ........AcquireTextAnswer <- function() {}
+  
   textAnswer.out <- DT[, .(`Enough-2`, `GProfile-9`, `Demo-Feedback`)]
   
   #Rename for display
@@ -379,6 +398,8 @@ server <- function(session, input, output) {
   
   
   #--Codec (static content)
+  ........AcquireCodec <- function() {}
+  
   #Remove first couple of vars
   codec.out <- codec[33:nrow(codec)]
   
@@ -396,6 +417,8 @@ server <- function(session, input, output) {
   Render output
   "
   #--Render dist comparison
+  ........RenderDists <- function() {}
+  
   output$dist_personality_sum <- renderPlot({dist_personality.out()$isum})
   output$dist_personality_1 <- renderPlot({dist_personality.out()$i1})
   output$dist_personality_2 <- renderPlot({dist_personality.out()$i2})
@@ -420,6 +443,8 @@ server <- function(session, input, output) {
   
   
   #--Render t-tests
+  ........RenderT <- function() {}
+  
   #If NULL, don't return to avoid vacant box in the UI
   output$t_personality_sum <- renderText({if (!is.null(x <- t_personality.out()$isum)) x})
   output$t_personality_1 <- renderText({if (!is.null(x <- t_personality.out()$i1)) x})
@@ -445,6 +470,8 @@ server <- function(session, input, output) {
   
 
   #--Render dist table
+  ........RenderDistTable <- function() {}
+  
   #Dynamic resizing
   output$dist_plot <- renderPlot({dist.out()})
   output$dist <- renderUI({plotOutput("dist_plot",
@@ -452,10 +479,14 @@ server <- function(session, input, output) {
                                       height=dist.height())})
   
   #--Render description stat
+  ........RenderDesc <- function() {}
+  
   output$desc <- renderText({desc.out()})
   
   
   #--Render cor table
+  ........RenderCor <- function() {}
+  
   #Dynamic resizing
   output$cor_plot <- renderPlot({cor.out()})
   output$cor <- renderUI({plotOutput("cor_plot",
@@ -464,14 +495,20 @@ server <- function(session, input, output) {
   
   
   #--Render text response
+  ........RenderTextAnswer <- function() {}
+  
   output$textAnswer <- renderTable({textAnswer.out}, width="1100px")
   
 
   #--Render codec
+  ........RenderCodec <- function() {}
+  
   output$codec <- renderTable({codec.out}, width="1100px")
   
   
   #--Clear selection
+  ........ClearSelection <- function() {}
+  
   #When press button
   observeEvent(input$descButton_clear, {
     updateCheckboxGroupInput(session, inputId="var_desc_1", selected=character(0))

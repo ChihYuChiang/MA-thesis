@@ -69,17 +69,21 @@ ui <- fluidPage(#--Header
                 theme=shinytheme("paper"),
                 tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
   
-                
-                #--Set up title
                 #Tab title
                 title='Fellow version supplement',
                 
+
+        #--Main content    
+        sidebarLayout(
+          sidebarPanel(width=2,
                 #Displayed title
                 titlePanel(HTML('<h2>MAPSS Thesis IV
-                                  <span id="authorship">Chih-Yu Chiang • December 15, 2017</span>
-                                 </h2>')),
-                
-                
+                                  <span id="authorship">Chih-Yu Chiang • December 17, 2017</span>
+                                </h2>')),
+                h4("testing"),
+                sliderInput("filter_gamer", "Gamer", min=1, max=7, value=c(1, 7))
+          ),
+          mainPanel(
                 tabsetPanel(
                   tabPanel("Personality",
                            fluidRow(column(width=12,
@@ -344,5 +348,5 @@ ui <- fluidPage(#--Header
                                            br(),
                                            br())
                            ))
-                ) #Tabset panel
-) #Fluid page
+                ) #tabsetPpanel
+))) #sidebarLayout, mainPanel, and fluidPage
