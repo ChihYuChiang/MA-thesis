@@ -15,6 +15,7 @@ PERSON <- list(
   N1="The absolute summation is acquired by first having the absolute value of each gap of each item and then doing the total.",
   N2="You can't and there's no reason to compare across primary versions and gap versions.",
   N3="Please allow some time (should be < 10 secs) for the app to process.",
+  N4="If the result is not display, try click the button again.",
   
   ST1="Primary",
   ST2="Gap"
@@ -35,6 +36,7 @@ SDT <- list(
   N1="The absolute summation is acquired by first having the absolute value of each gap of each item and then doing the total.",
   N2="You can't and there's no reason to compare across primary versions and gap versions.",
   N3="Please allow some time (should be < 10 secs) for the app to process.",
+  N4="If the result is not display, try click the button again.",
   
   ST1="Primary",
   ST2="Gap"
@@ -52,7 +54,8 @@ DESC <- list(
   C5="Click the \"CLEAR SELECTION\" button to remove current selections.",
   
   N1="For better display, select no more than 16 variables a time.",
-  N2="Please allow some time (should be < 10 secs) for the app to process."
+  N2="Please allow some time (should be < 10 secs) for the app to process.",
+  N3="If the result is not display, try click the button again."
 )
 
 
@@ -62,11 +65,13 @@ COR <- list(
   
   C1="Select 2 or more variables to examine the correlations.",
   C2="Refer to \"Codec\" section for additional information of the variables.",
-  C3="Click the \"DESCRIBE VARIABLE\" button to proceed.",
-  C4="Click the \"CLEAR SELECTION\" button to remove current selections.",
+  C3="If exactly 2 variables are selected, the scatter plot is also provided.",
+  C4="Click the \"DESCRIBE VARIABLE\" button to proceed.",
+  C5="Click the \"CLEAR SELECTION\" button to remove current selections.",
   
   N1="For better display, select more than 5 variables a time.",
-  N2="Please allow some time (should be < 10 secs) for the app to process."
+  N2="Please allow some time (should be < 10 secs) for the app to process.",
+  N3="If the result is not display, try click the button again."
 )
 
 
@@ -77,7 +82,8 @@ TEXT <- list(
   C1="This table shows results of primary survey items with text response.",
   C2="It includes the particular games they played, the main benefit of playing, and some general feedback regarding this survey.",
   C3="Please allow some time (should be < 5 secs) for loading the table.",
-  C4="If the table is not displayed, try scroll the browser window."
+  C4="If the table is not displayed, try scroll the browser window, resize the window, or switch to other tags and try again.
+  nd back."
 )
 
 
@@ -88,5 +94,6 @@ CODEC <- list(
   C1="This table shows primary items (variables) acquired in the survey.",
   C2="It includes the variable names and the actual prompts asked during the survey.",
   C3="Please allow some time (should be < 5 secs) for the app to process.",
-  C4="If the table is not displayed, try scroll the browser window."
+  C4="If the table is not displayed, try scroll the browser window, resize the window, or switch to other tags and try again.
+  nd back."
 )

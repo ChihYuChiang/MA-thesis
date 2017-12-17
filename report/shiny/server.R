@@ -343,9 +343,25 @@ server <- function(session, input, output) {
   #--Cor table
   cor.out <- eventReactive(input$corButton, {
     targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
+    
+    #Avoid error when 0 or 1 item is selected
+    if(length(targetColName) <= 1) return()
+    
+    #Main plot
     corrplot(cor(DT[, targetColName, with=FALSE]),
              method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
              cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
+    
+    #scatter plot (Special case when exactly 2 items are selected)
+    if(length(targetColName) == 2) {
+      p <- ggplot(data=DT[, targetColName, with=FALSE], mapping=aes_(x=as.name(targetColName[1]), y=as.name(targetColName[2]))) +
+        geom_jitter() + geom_smooth(color=diverge_hcl(5)[4], alpha=0.3, size=0.5)
+      
+      #Add label of correlation
+      p + annotate("text", x=max(DT[, targetColName[1], with=FALSE]) * 0.8, y=max(DT[, targetColName[2], with=FALSE]) * 0.8,
+                   label=sprintf("Cor = %s", round(cor(DT[, targetColName[1], with=FALSE], DT[, targetColName[2], with=FALSE]), digit=4)),
+                   size=5, color=diverge_hcl(5)[1], alpha=0.7)
+    }
   })
   
   #Decide the width and height dynamically

@@ -97,7 +97,8 @@ ui <- fluidPage(#--Header
                                              tags$ul(
                                                tags$li(PERSON$N1),
                                                tags$li(PERSON$N2),
-                                               tags$li(PERSON$N3)
+                                               tags$li(PERSON$N3),
+                                               tags$li(PERSON$N4)
                                              )
                                            ),
                                            hr())
@@ -179,7 +180,8 @@ ui <- fluidPage(#--Header
                                                 tags$ul(
                                                   tags$li(SDT$N1),
                                                   tags$li(SDT$N2),
-                                                  tags$li(SDT$N3)
+                                                  tags$li(SDT$N3),
+                                                  tags$li(SDT$N4)
                                                 )
                                            ),
                                            hr())
@@ -244,7 +246,8 @@ ui <- fluidPage(#--Header
                                                 span("Note"),
                                                 tags$ul(
                                                   tags$li(DESC$N1),
-                                                  tags$li(DESC$N2)
+                                                  tags$li(DESC$N2),
+                                                  tags$li(DESC$N3)
                                                 )
                                            ),
                                            hr())
@@ -277,13 +280,15 @@ ui <- fluidPage(#--Header
                                              tags$li(COR$C1),
                                              tags$li(COR$C2),
                                              tags$li(COR$C3),
-                                             tags$li(COR$C4)
+                                             tags$li(COR$C4),
+                                             tags$li(COR$C5)
                                            ),
                                            span(class="note",
                                                 span("Note"),
                                                 tags$ul(
                                                   tags$li(COR$N1),
-                                                  tags$li(COR$N2)
+                                                  tags$li(COR$N2),
+                                                  tags$li(COR$N3)
                                                 )
                                            ),
                                            hr())

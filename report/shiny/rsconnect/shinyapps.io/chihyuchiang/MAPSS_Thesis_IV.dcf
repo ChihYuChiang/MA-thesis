@@ -5,8 +5,8 @@ account: chihyuchiang
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 249368
-bundleId: 1138953
+bundleId: 1139069
 url: https://chihyuchiang.shinyapps.io/MAPSS_Thesis_IV/
-when: 1513485628.44917
+when: 1513494369.04553
 asMultiple: FALSE
 asStatic: FALSE
