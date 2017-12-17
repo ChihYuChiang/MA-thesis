@@ -158,6 +158,10 @@ ui <- fluidPage(#--Header
                                            br(),
                                            plotOutput("dist_personality_ab5"),
                                            htmlOutput("t_personality_ab5"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
                            )),
                   tabPanel("SDT",
                            fluidRow(column(width=12,
@@ -221,6 +225,10 @@ ui <- fluidPage(#--Header
                                            br(),
                                            plotOutput("dist_SDT_ab3"),
                                            htmlOutput("t_SDT_ab3"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
                            )),
                   tabPanel("Description",
                            fluidRow(column(width=12,
@@ -255,9 +263,12 @@ ui <- fluidPage(#--Header
                            ),
                            fluidRow(column(width=12,
                                            br(),
-                                           br(),
                                            htmlOutput("desc"),
                                            uiOutput("dist"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
                            )),
                   tabPanel("Cor Table",
                            fluidRow(column(width=12,
@@ -291,6 +302,10 @@ ui <- fluidPage(#--Header
                            ),
                             fluidRow(column(width=12,
                                             uiOutput("cor"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
                            )),
                   tabPanel("Text Response",
                            fluidRow(column(width=12,
@@ -319,6 +334,10 @@ ui <- fluidPage(#--Header
                            ),
                            fluidRow(column(width=12,
                                            tableOutput("codec"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
                            ))
-                )
-)
+                ) #Tabset panel
+) #Fluid page

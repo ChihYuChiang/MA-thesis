@@ -88,7 +88,7 @@ dist_compare <- function(construct, types, item, gap=0) {
 dist_gen <- function (targetColName) {
   ggplot(data=DT[, targetColName, with=FALSE]) +
     geom_histogram(mapping=aes_(x=as.name(targetColName)),
-                   bins=nrow(table(DT[, targetColName, with=FALSE])), binwidth=1, alpha=0.65) +
+                   bins=15, alpha=0.65) +
     labs(title=targetColName) +
     theme_minimal()
 }
