@@ -6,7 +6,7 @@ PERSON <- list(
   T1="Distribution of Personality Versions",
   
   C1="Select any number of versions to be displayed.",
-  C2="If more than 1 version are selected, they are marked by different colors and could be compared.",
+  C2="If more than 1 version is selected, they are marked by different colors and can be compared.",
   C3="If exactly 2 versions are selected, the result of paired t-tests is also reported.",
   C4="If comparing the primary versions (e.g. Real and Ideal), the app produces 6 plots corresponding to the Big five's 5 items plus their summation.",
   C5="If comparing the gap versions (e.g. Ideal - Read and Ideal - In-game), the app produces the above 6 plots as well as their abolute versions.",
@@ -27,7 +27,7 @@ SDT <- list(
   T1="Distribution of SDT Versions",
   
   C1="Select any number of versions to be displayed.",
-  C2="If more than 1 version are selected, they are marked by different colors and could be compared.",
+  C2="If more than 1 version is selected, they are marked by different colors and can be compared.",
   C3="If exactly 2 versions are selected, the result of paired t-tests is also reported.",
   C4="If comparing the primary versions (e.g. Real and Ideal), the app produces 3 plots corresponding to the SDT's 3 items plus their summation.",
   C5="If comparing the gap versions (e.g. Ideal - Read and Ideal - In-game), the app produces the above 3 plots as well as their abolute versions.",

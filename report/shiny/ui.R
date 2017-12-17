@@ -87,6 +87,9 @@ ui <- fluidPage(#--Header
           ),
           mainPanel(
                 tabsetPanel(
+
+                  
+                  #--Personality
                   tabPanel("Personality",
                            fluidRow(column(width=12,
                                            h3(PERSON$T1),
@@ -170,6 +173,9 @@ ui <- fluidPage(#--Header
                                            br(),
                                            br())
                            )),
+                  
+                  
+                  #--SDT
                   tabPanel("SDT",
                            fluidRow(column(width=12,
                                            h3(SDT$T1),
@@ -238,6 +244,9 @@ ui <- fluidPage(#--Header
                                            br(),
                                            br())
                            )),
+                  
+                  
+                  #--Description
                   tabPanel("Description",
                            fluidRow(column(width=12,
                                            h3(DESC$T1),
@@ -272,6 +281,7 @@ ui <- fluidPage(#--Header
                            ),
                            fluidRow(column(width=12,
                                            br(),
+                                           tableOutput("descCodec"),
                                            htmlOutput("desc"),
                                            uiOutput("dist"))
                            ),
@@ -279,6 +289,9 @@ ui <- fluidPage(#--Header
                                            br(),
                                            br())
                            )),
+                  
+                  
+                  #--Cor table
                   tabPanel("Cor Table",
                            fluidRow(column(width=12,
                                            h3(COR$T1),
@@ -311,13 +324,18 @@ ui <- fluidPage(#--Header
                                            span(class="clear"),
                                            span(actionButton("corButton", "Draw cor table"), actionButton("corButton_clear", "Clear selection")))
                            ),
-                            fluidRow(column(width=12,
-                                            uiOutput("cor"))
+                           fluidRow(column(width=12,
+                                           br(),
+                                           tableOutput("corCodec"),
+                                           uiOutput("cor"))
                            ),
                            fluidRow(column(width=12,
                                            br(),
                                            br())
                            )),
+                  
+                  
+                  #--Text response
                   tabPanel("Text Response",
                            fluidRow(column(width=12,
                                            h3(TEXT$T1),
@@ -332,6 +350,9 @@ ui <- fluidPage(#--Header
                            fluidRow(column(width=12,
                                            tableOutput("textAnswer"))
                            )),
+                  
+                  
+                  #--Codec
                   tabPanel("Codec",
                            fluidRow(column(width=12,
                                            h3(CODEC$T1),

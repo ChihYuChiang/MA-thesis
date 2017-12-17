@@ -63,3 +63,11 @@ hr.large {
 #textAnswer th:nth-child(3) {
   width: 45%;
 }
+
+#descCodec th:nth-child(1) {
+  width: 110px;
+}
+
+#corCodec th:nth-child(1) {
+  width: 110px;
+}

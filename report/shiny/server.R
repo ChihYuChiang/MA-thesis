@@ -356,13 +356,22 @@ server <- function(session, input, output) {
     descOutput <- gsub("<table>", sprintf('<table class="table" style="width: %spx">', 110 * if(length(targetColName) %% 10 == 0) 10 else length(targetColName) %% 10), markdownToHTML(text=descOutput, fragment.only=TRUE))
     
     #Centering table head
-    gsub('<th align="center">', '<th class="text-center">', descOutput)
+    descOutput <- gsub('<th align="center">', '<th class="text-center">', descOutput)
+    
+    #Acquire description of specific vars
+    #When no match, show the synthetic ones
+    filter <- codec$Variable %in% targetColName
+    descCodec <- if(nrow(codec[filter]) == 0) tail(codec, 5) else codec[filter]
+    
+    #Output
+    list(descOutput=descOutput, descCodec=descCodec)
   })
 
   
   #--Cor table
   ........AcquireCor <- function() {}
   
+  #The plot
   cor.out <- eventReactive(input$corButton, {
     targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
     
@@ -392,6 +401,19 @@ server <- function(session, input, output) {
     max(targetLength * 50, 500)
   })
   
+  #The corresponding codec
+  corCodec.out <- eventReactive(input$corButton, {
+    targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
+    
+    #Avoid error when 0 or 1 item is selected
+    if(length(targetColName) <= 1) return()
+    
+    #Acquire description of specific vars
+    #When no match, show the synthetic ones
+    filter <- codec$Variable %in% targetColName
+    if(nrow(codec[filter]) == 0) tail(codec, 5) else codec[filter]
+  })
+
   
   #--Short answers (static content)
   ........AcquireTextAnswer <- function() {}
@@ -486,11 +508,15 @@ server <- function(session, input, output) {
   #--Render description stat
   ........RenderDesc <- function() {}
   
-  output$desc <- renderText({desc.out()})
+  output$descCodec <- renderTable({desc.out()$descCodec}, width="1100px")
+  output$desc <- renderText({desc.out()$descOutput})
   
   
   #--Render cor table
   ........RenderCor <- function() {}
+  
+  #Descriptions
+  output$corCodec <- renderTable({corCodec.out()}, width="1100px")
   
   #Dynamic resizing
   output$cor_plot <- renderPlot({cor.out()})
