@@ -371,3 +371,9 @@ list(
   e=tTest("Person", list("InS", "OutS"), "sum"),
   r=tTest("Person", list("InS", "OutS"), "sum")
 )
+
+x <- c("PersonInS-1", "PersonInS-1")
+
+cc <-markdownToHTML(text=pander_return(summary(DT[, x, with=FALSE]), style="rmarkdown"), fragment.only=TRUE)
+sub(" +", "", text)
+HTML(cc)

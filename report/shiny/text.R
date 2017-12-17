@@ -60,12 +60,12 @@ DESC <- list(
 COR <- list(
   T1="Correlation Table",
   
-  C1="Select any number of variables to be included.",
+  C1="Select 2 or more variables to examine the correlations.",
   C2="Refer to \"Codec\" section for additional information of the variables.",
   C3="Click the \"DESCRIBE VARIABLE\" button to proceed.",
   C4="Click the \"CLEAR SELECTION\" button to remove current selections.",
   
-  N1="For better display, select no more than 16 variables a time.",
+  N1="For better display, select more than 5 variables a time.",
   N2="Please allow some time (should be < 10 secs) for the app to process."
 )
 

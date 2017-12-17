@@ -1,10 +1,14 @@
 library(shiny)
 library(shinyjs)
 library(pander)
+library(markdown)
 library(tidyverse)
 library(data.table)
 library(colorspace)
 library(corrplot)
+
+#Prevent pander wrapping
+panderOptions("table.split.table", 200)
 
 
 
@@ -93,7 +97,7 @@ dist_gen <- function (targetColName) {
 
 
 "
-### Multiple plot function (Cookbook for R)
+### Multiple plot function (Modify from Cookbook for R)
 "
 # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
 # - cols:   Number of columns in layout
@@ -103,7 +107,7 @@ dist_gen <- function (targetColName) {
 # then plot 1 will go in the upper left, 2 will go in the upper right, and
 # 3 will go all the way across the bottom.
 #
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+multiplot <- function(..., plotlist=NULL, file, cols=1) {
   library(grid)
   
   # Make a list from the ... arguments and plotlist
@@ -111,31 +115,23 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   
   numPlots = length(plots)
   
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
+  # Make the panel
+  # ncol: Number of columns of plots
+  # nrow: Number of rows needed, calculated from # of cols
+  layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                   ncol = cols, nrow = ceiling(numPlots/cols))
   
-  if (numPlots==1) {
-    print(plots[[1]])
+  # Set up the page
+  grid.newpage()
+  pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+  
+  # Make each plot, in the correct location
+  for (i in 1:numPlots) {
+    # Get the i,j matrix positions of the regions that contain this subplot
+    matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
     
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-    
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
+    print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                    layout.pos.col = matchidx$col))
   }
 }
 
@@ -155,7 +151,12 @@ tTest <- function(construct, types, item) {
   #Rename the caption of output table
   testOutput$data.name <- paste(col1, "and", col2, sep=" ")
   
-  #Use pander_return to preserve the string
+  #Use pander_return to preserve the string in rmd format
+  testOutput <- pander_return(testOutput, style="rmarkdown")
+  
+  #Transform rmd into html and add class for proper display
+  testOutput <- sub("<table>", '<table class="table" style="width: 80%">', markdownToHTML(text=testOutput, fragment.only=TRUE))
+  
   return(testOutput)
 }
 
@@ -316,16 +317,28 @@ server <- function(session, input, output) {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
     plots <- lapply(targetColName, dist_gen)
     
-    multiplot(plotlist=plots, cols=3) #A self-defined function for combining a list of plots
+    multiplot(plotlist=plots, cols=4) #A self-defined function for combining a list of plots
+  })
+  
+  #Decide the height dynamically
+  dist.height <- eventReactive(input$descButton, {
+    targetLength <- length(c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6))
+    ceiling(targetLength / 4) * 250
   })
   
   
   #--Description table
   desc.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
-    pander(summary(DT[, targetColName, with=FALSE]))
+    descOutput <- pander_return(summary(DT[, targetColName, with=FALSE]), style="rmarkdown")
+    
+    #Dynamically adjust table width
+    descOutput <- gsub("<table>", sprintf('<table class="table" style="width: %spx">', 110 * if(length(targetColName) %% 10 == 0) 10 else length(targetColName) %% 10), markdownToHTML(text=descOutput, fragment.only=TRUE))
+    
+    #Centering table head
+    gsub('<th align="center">', '<th class="text-center">', descOutput)
   })
-  
+
   
   #--Cor table
   cor.out <- eventReactive(input$corButton, {
@@ -333,6 +346,12 @@ server <- function(session, input, output) {
     corrplot(cor(DT[, targetColName, with=FALSE]),
              method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
              cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100)) #From the palette, how many color to extrapolate
+  })
+  
+  #Decide the width and height dynamically
+  cor.size <- eventReactive(input$corButton, {
+    targetLength <- length(c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6))
+    max(targetLength * 50, 500)
   })
   
   
@@ -386,39 +405,46 @@ server <- function(session, input, output) {
   
   #--Render t-tests
   #If NULL, don't return to avoid vacant box in the UI
-  output$t_personality_sum <- renderPrint({if (!is.null(x <- t_personality.out()$isum)) x})
-  output$t_personality_1 <- renderPrint({if (!is.null(x <- t_personality.out()$i1)) x})
-  output$t_personality_2 <- renderPrint({if (!is.null(x <- t_personality.out()$i2)) x})
-  output$t_personality_3 <- renderPrint({if (!is.null(x <- t_personality.out()$i3)) x})
-  output$t_personality_4 <- renderPrint({if (!is.null(x <- t_personality.out()$i4)) x})
-  output$t_personality_5 <- renderPrint({if (!is.null(x <- t_personality.out()$i5)) x})
-  output$t_personality_absum <- renderPrint({if (!is.null(x <- t_personality.out()$iabsum)) x})
-  output$t_personality_ab1 <- renderPrint({if (!is.null(x <- t_personality.out()$iab1)) x})
-  output$t_personality_ab2 <- renderPrint({if (!is.null(x <- t_personality.out()$iab2)) x})
-  output$t_personality_ab3 <- renderPrint({if (!is.null(x <- t_personality.out()$iab3)) x})
-  output$t_personality_ab4 <- renderPrint({if (!is.null(x <- t_personality.out()$iab4)) x})
-  output$t_personality_ab5 <- renderPrint({if (!is.null(x <- t_personality.out()$iab5)) x})
+  output$t_personality_sum <- renderText({if (!is.null(x <- t_personality.out()$isum)) x})
+  output$t_personality_1 <- renderText({if (!is.null(x <- t_personality.out()$i1)) x})
+  output$t_personality_2 <- renderText({if (!is.null(x <- t_personality.out()$i2)) x})
+  output$t_personality_3 <- renderText({if (!is.null(x <- t_personality.out()$i3)) x})
+  output$t_personality_4 <- renderText({if (!is.null(x <- t_personality.out()$i4)) x})
+  output$t_personality_5 <- renderText({if (!is.null(x <- t_personality.out()$i5)) x})
+  output$t_personality_absum <- renderText({if (!is.null(x <- t_personality.out()$iabsum)) x})
+  output$t_personality_ab1 <- renderText({if (!is.null(x <- t_personality.out()$iab1)) x})
+  output$t_personality_ab2 <- renderText({if (!is.null(x <- t_personality.out()$iab2)) x})
+  output$t_personality_ab3 <- renderText({if (!is.null(x <- t_personality.out()$iab3)) x})
+  output$t_personality_ab4 <- renderText({if (!is.null(x <- t_personality.out()$iab4)) x})
+  output$t_personality_ab5 <- renderText({if (!is.null(x <- t_personality.out()$iab5)) x})
   
-  output$t_SDT_sum <- renderPrint({if (!is.null(x <- t_SDT.out()$isum)) x})
-  output$t_SDT_1 <- renderPrint({if (!is.null(x <- t_SDT.out()$i1)) x})
-  output$t_SDT_2 <- renderPrint({if (!is.null(x <- t_SDT.out()$i2)) x})
-  output$t_SDT_3 <- renderPrint({if (!is.null(x <- t_SDT.out()$i3)) x})
-  output$t_SDT_absum <- renderPrint({if (!is.null(x <- t_SDT.out()$iabsum)) x})
-  output$t_SDT_ab1 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab1)) x})
-  output$t_SDT_ab2 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab2)) x})
-  output$t_SDT_ab3 <- renderPrint({if (!is.null(x <- t_SDT.out()$iab3)) x})
+  output$t_SDT_sum <- renderText({if (!is.null(x <- t_SDT.out()$isum)) x})
+  output$t_SDT_1 <- renderText({if (!is.null(x <- t_SDT.out()$i1)) x})
+  output$t_SDT_2 <- renderText({if (!is.null(x <- t_SDT.out()$i2)) x})
+  output$t_SDT_3 <- renderText({if (!is.null(x <- t_SDT.out()$i3)) x})
+  output$t_SDT_absum <- renderText({if (!is.null(x <- t_SDT.out()$iabsum)) x})
+  output$t_SDT_ab1 <- renderText({if (!is.null(x <- t_SDT.out()$iab1)) x})
+  output$t_SDT_ab2 <- renderText({if (!is.null(x <- t_SDT.out()$iab2)) x})
+  output$t_SDT_ab3 <- renderText({if (!is.null(x <- t_SDT.out()$iab3)) x})
   
-  
+
   #--Render dist table
-  output$dist <- renderPlot({dist.out()}, width=600, height=600)
-  
+  #Dynamic resizing
+  output$dist_plot <- renderPlot({dist.out()})
+  output$dist <- renderUI({plotOutput("dist_plot",
+                                      width=1100,
+                                      height=dist.height())})
   
   #--Render description stat
-  output$desc <- renderPrint({desc.out()})
+  output$desc <- renderText({desc.out()})
   
   
   #--Render cor table
-  output$cor <- renderPlot({cor.out()}, width=600, height=600)
+  #Dynamic resizing
+  output$cor_plot <- renderPlot({cor.out()})
+  output$cor <- renderUI({plotOutput("cor_plot",
+                                     width=cor.size(),
+                                     height=cor.size())})
   
   
   #--Render text response

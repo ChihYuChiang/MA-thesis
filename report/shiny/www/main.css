@@ -15,7 +15,8 @@ table {
 }
 
 hr.large {
-  margin-top: 5em;
+  margin-top: 10em;
+  border-width: 1px;
 }
 
 .note span {
