@@ -11,187 +11,191 @@ library(corrplot)
 panderOptions("table.split.table", 200)
 
 
-
-
-
-
-
-
-"
-----------------------------------------------------------------------
-## Initialization
-----------------------------------------------------------------------
-"
-....Initialization <- function() {}
-
-
-"
-### Distribution comparison
-"
-#Function for distribution comparison
-dist_compare <- function(construct, types, item, gap=0) {
-  #A map for construct and item code and str pairs
-  strCodec <- list(
-    "Person"=list(
-      item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
-             "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
-      type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
-             "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
-    ),
-    "SDT"=list(
-      item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
-             "ab1"="Autonomy (absolute)", "ab2"="Relatedness (absolute)", "ab3"="Competence (absolute)", "absum"="Summation (absolute)"),
-      type=c("In"="In-game", "Out"="Real", "Id"="Ideal",
-             "InOut"="In-game - real", "IdIn"="Ideal - in-game", "IdOut"="Ideal - real")
-    )
-  )
-  
-  #Decide scales according to item and gap
-  #Complicated is bad!!!!!
-  itemNo <- c("Person"=5, "SDT"=3)[construct]
-  scales <- list(
-    binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
-    limits=if (gap == 1) {
-      if (item == "sum" | item == "absum") c(-6 * itemNo - 0.5 * itemNo, 6 * itemNo + 0.5 * itemNo) else c(-6.5, 6.5)
-    } else if (gap == 0) {
-      if (item == "sum") c(1 * itemNo - 0.5 * itemNo, 7 * itemNo + 0.5 * itemNo) else c(0.5, 7.5)
-    },
-    breaks=if (gap == 1) {
-      if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
-    } else if (gap == 0) {
-      if (item == "sum") seq(1 * itemNo, 7 * itemNo, itemNo) else seq(1, 7)
-    }
-  )
-  
-  #Make individual hist
-  make_hist <- function(type) {
-    geom_histogram(mapping=aes_(x=as.name(sprintf("%s%s-%s", construct, type, item)), fill=toString(which(types == type))),
-                   binwidth=scales$binwidth, alpha=0.6)
-  }
-  
-  #Make hist list of all items
-  geom_hists <- lapply(types, make_hist)
-  
-  #Use the list to add ggplot components
-  ggplot(data=DT) +
-    geom_hists +
-    scale_x_continuous(breaks=scales$breaks, minor_breaks=NULL, labels=scales$breaks, limits=scales$limits) +
-    labs(x="score", title=strCodec[[construct]]$item[toString(item)]) +
-    scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(strCodec[[construct]]$type[unlist(types)])) + #labels does not accept names vector
-    theme_minimal()
-}
-
-
-
-
-"
-### Distribution
-"
-#Function for dist
-dist_gen <- function (targetColName) {
-  ggplot(data=DT[, targetColName, with=FALSE]) +
-    geom_histogram(mapping=aes_(x=as.name(targetColName)),
-                   bins=15, alpha=0.65) +
-    labs(title=targetColName) +
-    theme_minimal()
-}
-
-
-
-
-"
-### Multiple plot function (Modify from Cookbook for R)
-"
-# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-# - cols:   Number of columns in layout
-# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-#
-# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-# then plot 1 will go in the upper left, 2 will go in the upper right, and
-# 3 will go all the way across the bottom.
-#
-multiplot <- function(..., plotlist=NULL, file, cols=1) {
-  library(grid)
-  
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  
-  numPlots = length(plots)
-  
-  # Make the panel
-  # ncol: Number of columns of plots
-  # nrow: Number of rows needed, calculated from # of cols
-  layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                   ncol = cols, nrow = ceiling(numPlots/cols))
-  
-  # Set up the page
-  grid.newpage()
-  pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-  
-  # Make each plot, in the correct location
-  for (i in 1:numPlots) {
-    # Get the i,j matrix positions of the regions that contain this subplot
-    matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-    
-    print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                    layout.pos.col = matchidx$col))
-  }
-}
-
-
-
-
-"
-### T-test
-"
-tTest <- function(construct, types, item) {
-  col1 <- sprintf("%s%s-%s", construct, types[1], item)
-  col2 <- sprintf("%s%s-%s", construct, types[2], item)
-  
-  #DT does not accept as.name (symbol); it requires object
-  testOutput <- t.test(DT[, get(col1)], DT[, get(col2)], paired=TRUE)
-  
-  #Rename the caption of output table
-  testOutput$data.name <- paste(col1, "and", col2, sep=" ")
-  
-  #Use pander_return to preserve the string in rmd format
-  testOutput <- pander_return(testOutput, style="rmarkdown")
-  
-  #Transform rmd into html and add class for proper display
-  testOutput <- sub("<table>", '<table class="table" style="width: 80%">', markdownToHTML(text=testOutput, fragment.only=TRUE))
-  
-  return(testOutput)
-}
-
-
-
-
-
-
-
-
-"
-------------------------------------------------------------
-Back end
-------------------------------------------------------------
-"
-....BackEnd <- function() {}
-
-
 server <- function(session, input, output) {
   "
-  DT filtering
+  ----------------------------------------------------------------------
+  ## Initialization
+  ----------------------------------------------------------------------
   "
-  ........DTFilter <- function() {}
-  # observeEvent()
+  ....Initialization <- function() {}
+  
+  
+  
+  
+  "
+  ### Distribution comparison
+  "
+  #Function for distribution comparison
+  dist_compare <- function(construct, types, item, gap=0) {
+    #A map for construct and item code and str pairs
+    strCodec <- list(
+      "Person"=list(
+        item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
+               "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
+        type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
+               "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
+      ),
+      "SDT"=list(
+        item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
+               "ab1"="Autonomy (absolute)", "ab2"="Relatedness (absolute)", "ab3"="Competence (absolute)", "absum"="Summation (absolute)"),
+        type=c("In"="In-game", "Out"="Real", "Id"="Ideal",
+               "InOut"="In-game - real", "IdIn"="Ideal - in-game", "IdOut"="Ideal - real")
+      )
+    )
+    
+    #Decide scales according to item and gap
+    #Complicated is bad!!!!!
+    itemNo <- c("Person"=5, "SDT"=3)[construct]
+    scales <- list(
+      binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
+      limits=if (gap == 1) {
+        if (item == "sum" | item == "absum") c(-6 * itemNo - 0.5 * itemNo, 6 * itemNo + 0.5 * itemNo) else c(-6.5, 6.5)
+      } else if (gap == 0) {
+        if (item == "sum") c(1 * itemNo - 0.5 * itemNo, 7 * itemNo + 0.5 * itemNo) else c(0.5, 7.5)
+      },
+      breaks=if (gap == 1) {
+        if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
+      } else if (gap == 0) {
+        if (item == "sum") seq(1 * itemNo, 7 * itemNo, itemNo) else seq(1, 7)
+      }
+    )
+    
+    #Make individual hist
+    make_hist <- function(type) {
+      geom_histogram(mapping=aes_(x=as.name(sprintf("%s%s-%s", construct, type, item)), fill=toString(which(types == type))),
+                     binwidth=scales$binwidth, alpha=0.6)
+    }
+    
+    #Make hist list of all items
+    geom_hists <- lapply(types, make_hist)
+    
+    #Use the list to add ggplot components
+    ggplot(data=DT) +
+      geom_hists +
+      scale_x_continuous(breaks=scales$breaks, minor_breaks=NULL, labels=scales$breaks, limits=scales$limits) +
+      labs(x="score", title=strCodec[[construct]]$item[toString(item)]) +
+      scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(strCodec[[construct]]$type[unlist(types)])) + #labels does not accept names vector
+      theme_minimal()
+  }
+  
+  
+  
+  
+  "
+  ### Distribution
+  "
+  #Function for dist
+  dist_gen <- function(targetColName) {
+    ggplot(data=DT[, targetColName, with=FALSE]) +
+      geom_histogram(mapping=aes_(x=as.name(targetColName)),
+                     bins=15, alpha=0.65) +
+      labs(title=targetColName) +
+      theme_minimal()
+  }
+  
+  
+  
+  
+  "
+  ### Multiple plot function (Modify from Cookbook for R)
+  "
+  # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+  # - cols:   Number of columns in layout
+  # - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+  #
+  # If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+  # then plot 1 will go in the upper left, 2 will go in the upper right, and
+  # 3 will go all the way across the bottom.
+  #
+  multiplot <- function(..., plotlist=NULL, file, cols=1) {
+    library(grid)
+    
+    # Make a list from the ... arguments and plotlist
+    plots <- c(list(...), plotlist)
+    
+    numPlots = length(plots)
+    
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+    
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+  
+  
+  
+  
+  "
+  ### T-test
+  "
+  tTest <- function(construct, types, item) {
+    col1 <- sprintf("%s%s-%s", construct, types[1], item)
+    col2 <- sprintf("%s%s-%s", construct, types[2], item)
+    
+    #DT does not accept as.name (symbol); it requires object
+    testOutput <- t.test(DT[, get(col1)], DT[, get(col2)], paired=TRUE)
+    
+    #Rename the caption of output table
+    testOutput$data.name <- paste(col1, "and", col2, sep=" ")
+    
+    #Use pander_return to preserve the string in rmd format
+    testOutput <- pander_return(testOutput, style="rmarkdown")
+    
+    #Transform rmd into html and add class for proper display
+    testOutput <- sub("<table>", '<table class="table" style="width: 80%">', markdownToHTML(text=testOutput, fragment.only=TRUE))
+    
+    return(testOutput)
+  }
+
+
+
+
   
   
   
 
   "
-  Process outputs
+  ----------------------------------------------------------------------
+  ## Process Output
+  ----------------------------------------------------------------------
   "
-  #--Acquire dists
+  ....ProcessOutput <- function() {}
+  
+  
+  
+  
+  "
+  ### DT filter
+  "
+  ........DTFilter <- function() {}
+  
+  filter.out <- reactive({
+    #Filter DT
+    DT <<- DT_raw[`GProfile-3_1` >= input$filter_gamer[1] & `GProfile-3_1` <= input$filter_gamer[2]]
+    
+    #Output new number of observations
+    nrow(DT)
+  })
+  
+  
+  
+  
+  "
+  ### Acquire dists
+  "
   ........AcquireDists <- function() {}
   
   dist_personality.out <- eventReactive(input$distButton_personality, {
@@ -267,7 +271,11 @@ server <- function(session, input, output) {
   })
   
   
-  #--Acquire paired t-tests
+  
+  
+  "
+  ### Acquire paired t-tests
+  "
   ........AcquireT <- function() {}
   
   t_personality.out <- eventReactive(input$distButton_personality, {
@@ -323,7 +331,11 @@ server <- function(session, input, output) {
   })
   
   
-  #--Dist table
+  
+  
+  "
+  ### Dist table
+  "
   ........AcquireDistTable <- function() {}
   
   dist.out <- eventReactive(input$descButton, {
@@ -345,7 +357,11 @@ server <- function(session, input, output) {
   })
   
   
-  #--Description table
+  
+  
+  "
+  ### Description table
+  "
   ........AcquireDesc <- function() {}
   
   desc.out <- eventReactive(input$descButton, {
@@ -368,7 +384,11 @@ server <- function(session, input, output) {
   })
 
   
-  #--Cor table
+  
+  
+  "
+  ### Cor table
+  "
   ........AcquireCor <- function() {}
   
   #The plot
@@ -415,7 +435,11 @@ server <- function(session, input, output) {
   })
 
   
-  #--Short answers (static content)
+  
+  
+  "
+  ### Short answers (static content)
+  "
   ........AcquireTextAnswer <- function() {}
   
   textAnswer.out <- DT[, .(`Enough-2`, `GProfile-9`, `Demo-Feedback`)]
@@ -424,7 +448,11 @@ server <- function(session, input, output) {
   colnames(textAnswer.out) <- c("Game", "Video game benefit", "General comment")
   
   
-  #--Codec (static content)
+  
+  
+  "
+  ### Codec (static content)
+  "
   ........AcquireCodec <- function() {}
   
   #Remove first couple of vars
@@ -439,11 +467,24 @@ server <- function(session, input, output) {
 
   
 
-
+  
+  
+  
+  
+  
   "
-  Render output
+  ----------------------------------------------------------------------
+  ## Render Output
+  ----------------------------------------------------------------------
   "
-  #--Render dist comparison
+  ....RenderOutput <- function() {}
+  
+  
+  
+  
+  "
+  ### Render dists
+  "
   ........RenderDists <- function() {}
   
   output$dist_personality_sum <- renderPlot({dist_personality.out()$isum})
@@ -469,7 +510,11 @@ server <- function(session, input, output) {
   output$dist_SDT_ab3 <- renderPlot({dist_SDT.out()$iab3})
   
   
-  #--Render t-tests
+  
+  
+  "
+  ### Render t-tests
+  "
   ........RenderT <- function() {}
   
   #If NULL, don't return to avoid vacant box in the UI
@@ -496,7 +541,11 @@ server <- function(session, input, output) {
   output$t_SDT_ab3 <- renderText({if (!is.null(x <- t_SDT.out()$iab3)) x})
   
 
-  #--Render dist table
+  
+  
+  "
+  ### Render dist table
+  "
   ........RenderDistTable <- function() {}
   
   #Dynamic resizing
@@ -505,14 +554,23 @@ server <- function(session, input, output) {
                                       width=dist.width(),
                                       height=dist.height())})
   
-  #--Render description stat
+  
+  
+  
+  "
+  ### Render description stat
+  "
   ........RenderDesc <- function() {}
   
   output$descCodec <- renderTable({desc.out()$descCodec}, width="1100px")
   output$desc <- renderText({desc.out()$descOutput})
   
   
-  #--Render cor table
+  
+  
+  "
+  ### Render cor table
+  "
   ........RenderCor <- function() {}
   
   #Descriptions
@@ -525,19 +583,41 @@ server <- function(session, input, output) {
                                      height=cor.size())})
   
   
-  #--Render text response
+  
+  
+  "
+  ### Render text response (static content)
+  "
   ........RenderTextAnswer <- function() {}
   
   output$textAnswer <- renderTable({textAnswer.out}, width="1100px")
   
 
-  #--Render codec
+  
+  
+  "
+  ### Render codec (static content)
+  "
   ........RenderCodec <- function() {}
   
   output$codec <- renderTable({codec.out}, width="1100px")
   
   
-  #--Clear selection
+  
+  
+  "
+  ### Render obs number
+  "
+  ........RenderObsNumber <- function() {}
+  
+  output$filter <- renderText({filter.out()})
+  
+  
+  
+  
+  "
+  ### Clear selection
+  "
   ........ClearSelection <- function() {}
   
   #When press button
@@ -573,5 +653,5 @@ server <- function(session, input, output) {
   observeEvent(input$type_SDT, {
     updateCheckboxGroupInput(session, inputId="type_SDTG", selected=character(0))
   })
-  
+
 }
