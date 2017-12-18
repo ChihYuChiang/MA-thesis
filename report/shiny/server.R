@@ -184,7 +184,10 @@ server <- function(session, input, output) {
   
   filter.out <- reactive({
     #Filter DT
-    DT <<- DT_raw[`GProfile-3_1` >= input$filter_gamer[1] & `GProfile-3_1` <= input$filter_gamer[2]]
+    DT <<- DT_raw[
+      `GProfile-3_1` >= input$filter_1[1] & `GProfile-3_1` <= input$filter_1[2]][
+      `PrefS-a2` >= input$filter_2[1] & `PrefS-a2` <= input$filter_2[2]][
+      `PrefS-5` >= input$filter_3[1] & `PrefS-5` <= input$filter_3[2]]
     
     #Output new number of observations
     nrow(DT)
@@ -653,5 +656,18 @@ server <- function(session, input, output) {
   observeEvent(input$type_SDT, {
     updateCheckboxGroupInput(session, inputId="type_SDTG", selected=character(0))
   })
-
+  
+  
+  
+  
+  "
+  ### Reset filter
+  "
+  ........ResetFilter <- function() {}
+  observeEvent(input$filter_reset, {
+    updateSliderInput(session, inputId="filter_1", value=c(1, 7))
+    updateSliderInput(session, inputId="filter_2", value=c(1, 7))
+    updateSliderInput(session, inputId="filter_3", value=c(1, 7))
+  })
+  
 }

@@ -71,7 +71,7 @@ ui <- fluidPage(#--Header
                 tags$head(tags$link(rel="stylesheet", type="text/css", href="main.css")),
   
                 #Tab title
-                title='Fellow version supplement',
+                title="Fellow version supplement",
                 
 
         #--Main content    
@@ -79,19 +79,24 @@ ui <- fluidPage(#--Header
           sidebarPanel(width=3,
                 #Title
                 h3("MAPSS Thesis IV"),
-                span(id="authorship",
+                tags$p(id="authorship",
                      "Chih-Yu Chiang",
                      br(),
                      "December 15, 2017"),
                 hr(),
                 
                 #Filter
-                h4("Filter"),
-                tags$p(tags$b("Casual or Core Gamer"), br(), "(casual gamer = 1 core gamer = 7)"),
-                sliderInput("filter_gamer", NULL, min=1, max=7, value=c(1, 7)),
+                h4("Observation Filter",
+                   span(class="floatRight",
+                        actionButton("filter_reset", "Reset filter"))),
+                tags$p(tags$b("Casual or Core Gamer"), code("GProfile-3_1"), br(), "(casual gamer = 1, core gamer = 7)"),
+                sliderInput("filter_1", NULL, min=1, max=7, value=c(1, 7)),
+                tags$p(tags$b("Preference for the Focal Game"), code("PrefS-a2"), br(), "(low = 1, high = 7)"),
+                sliderInput("filter_2", NULL, min=1, max=7, value=c(1, 7)),
+                tags$p(tags$b("The Focal Game fir the taste"), code("PrefS-5"), br(), "(low = 1, high = 7)"),
+                sliderInput("filter_3", NULL, min=1, max=7, value=c(1, 7)),
                 tags$p(id="obs",
-                       "Current number of observations: ",
-                       textOutput("filter", inline=TRUE))
+                     "Current number of observations: ", tags$b(textOutput("filter", inline=TRUE)))
           ),
           mainPanel(width=9,
                 tabsetPanel(

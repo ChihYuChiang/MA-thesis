@@ -49,8 +49,20 @@ hr.large {
   font-size: 80%;
 }
 
+.floatRight {
+  float: right;
+}
+
+/*Adjust slider bar size*/
+.irs-bar {height: 8px;}
+.irs-bar-edge {height: 8px; width: 8px;}
+.irs-line {height: 8px;}
+.irs-slider {width: 17px; height: 17px; margin-top: 3px}
+
 #authorship {
   color: #707070;
+  line-height: 160%;
+  font-size: 90%;
 }
 
 #obs {
