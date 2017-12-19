@@ -3,6 +3,11 @@ _General writing progress will follow the schedule of <a href="https://github.co
 
 
 ### 12/5/2017
+1. Add **shiny** corresponding to the changes in [report](/report) folder.
+1. Explorative tool for the new survey data.
+
+
+### 12/5/2017
 1. Add **analysis report 1205** corresponding to the changes in [report](/report) folder.
 1. A glimpse of the new survey (fellow, ideal, and stereotype version)
 
