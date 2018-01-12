@@ -2,6 +2,7 @@ library(tidyverse)
 library(data.table)
 library(colorspace)
 library(corrplot)
+library(glmnet)
 
 #Read in as DT
 #Skip 2 for codec
@@ -240,7 +241,7 @@ dist_compare <- function(construct, types, item, gap=0) {
   )
   
   #Decide scales according to item and gap
-  #Complicated is bad!!!!!
+  #Complication is bad!!!!!
   itemNo <- c("Person"=5, "SDT"=3)[construct]
   scales <- list(
     binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
@@ -366,14 +367,94 @@ tTest <- function(construct, types, item) {
 }
 tTest("Person", list("InS", "OutS"), "sum")
 
-list(
-  t=tTest("Person", list("InS", "OutS"), "sum"),
-  e=tTest("Person", list("InS", "OutS"), "sum"),
-  r=tTest("Person", list("InS", "OutS"), "sum")
-)
 
-x <- c("PersonInS-1", "PersonInS-1")
 
-cc <-markdownToHTML(text=pander_return(summary(DT[, x, with=FALSE]), style="rmarkdown"), fragment.only=TRUE)
-sub(" +", "", text)
-HTML(cc)
+
+"
+### Double Lasso selection
+"
+#--Function for updating lambda used in selection
+#n = number of observation; p = number of independent variables; se = standard error of residual or dependent variable
+updateLambda <- function(n, p, se) {se * (1.1 / sqrt(n)) * qnorm(1 - (.1 / log(n)) / (2 * p))}
+
+
+#--Function for acquiring the indices of the selected variables in df_x
+#df_x = matrix with only variables to be tested; y = dependent variable or treatment variables; lambda = the initial lambda computed in advance 
+acquireBetaIndices <- function(df_x, y, lambda, n, p) {
+  #glmnet accept only matrix not df
+  df_x <- as.matrix(df_x)
+  
+  #Update lambda k times, k is selected based on literature
+  k <- 1
+  while(k < 15) {
+    model_las <- glmnet(x=df_x, y=y, alpha=1, lambda=lambda, standardize=TRUE)
+    beta <- coef(model_las)
+    residual.se <- sd(y - predict(model_las, df_x))
+    lambda <- updateLambda(n=n, p=p, se=residual.se)
+    k <- k + 1
+  }
+  
+  #Return the variable indices with absolute value of beta > 0
+  return(which(abs(beta) > 0))
+}
+
+
+#--Function to perform double lasso selection
+#output = a new df_yx with variables selected from df_yx
+lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
+  #--Setting up
+  #Df af all variables
+  df_yx <- cbind(df_ytreatment, df_test)
+  
+  #The number of observations
+  n <- nrow(df_test)
+  
+  #The number of variables to be tested
+  p <- ncol(df_test)
+  
+  
+  #--Select vars that predict outcome
+  #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
+  #If the treatment var is NULL, use the se pf dependent var to initiate
+  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(paste("`", outcomeVar, "`", " ~ .", sep="")), data=df_ytreatment)))}
+  lambda <- updateLambda(n=n, p=p, se=residual.se)
+  
+  #by Lasso model: dependent variable ~ test variables
+  betaIndices <- acquireBetaIndices(df_x=df_test, y=df_yx[[outcomeVar]], lambda=lambda, n=n, p=p)
+  
+  
+  #--Select vars that predict treatments
+  #Each column of the treatment variables as the y in the Lasso selection
+  #Starting from 2 because 1 is the dependent variable
+  if(ncol(df_ytreatment) != 1) { #Run only when treatment vars not NULL
+    for(i in seq(2, ncol(df_ytreatment))) {
+      #Acquire target treatment variable
+      treatment <- df_ytreatment[[i]]
+      
+      #Lambda is initialized as the se of the target treatment variable
+      treatment.se <- sd(treatment)
+      lambda <- updateLambda(n=n, p=p, se=treatment.se)
+      
+      #Acquire the indices and union the result indices of each treatment variable
+      betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=treatment, lambda=lambda, n=n, p=p))
+    }
+  }
+  
+  
+  #Process the result indices to remove the first term (the interaction term)
+  betaIndices <- setdiff((betaIndices - 1), 0)
+  
+  #Bind the selected variables with dependent and treatment variables
+  df_yx_selected <- cbind(df_ytreatment, df_test[, ..betaIndices])
+  
+  #Return a new df_yx with variables selected
+  return(df_yx_selected)
+}
+
+
+#--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
+DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar="PrefS-a1")
+
+df_ytreatment <- DT[, c("GProfile-1", "PrefS-a1")]
+df_test <- DT[, c("Demo-1", "Demo-2", "Demo-4", "PrefF-1")]
+df_yx <- cbind(df_ytreatment, df_test)
