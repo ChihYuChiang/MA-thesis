@@ -100,7 +100,54 @@ ui <- fluidPage(#--Header
           ),
           mainPanel(width=9,
                 tabsetPanel(
-
+                  #--Double Lasso selection
+                  tabPanel("Double Lasso Selection",
+                           fluidRow(column(width=12,
+                                           h3(DLS$T1),
+                                           tags$ol(
+                                             tags$li(DLS$C1),
+                                             tags$li(DLS$C2),
+                                             tags$li(DLS$C3),
+                                             tags$li(DLS$C4),
+                                             tags$li(DLS$C5)
+                                           ),
+                                           span(class="note",
+                                                span("Note"),
+                                                tags$ul(
+                                                  tags$li(DLS$N1),
+                                                  tags$li(DLS$N2),
+                                                  tags$li(DLS$N3)
+                                                )
+                                           ),
+                                           hr())
+                           ),
+                           fluidRow(column(width=12,
+                                           div(
+                                             checkboxGroupInput("var_dls_1", "", width=CHECKBOX_WIDTH, var_cor[var_cor_sub[1] : var_cor_sub[2]]),
+                                             checkboxGroupInput("var_dls_2", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[2] + 1) : var_cor_sub[3]]),
+                                             checkboxGroupInput("var_dls_3", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[3] + 1) : var_cor_sub[4]]),
+                                             checkboxGroupInput("var_dls_4", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[4] + 1) : var_cor_sub[5]]),
+                                             checkboxGroupInput("var_dls_5", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]]),
+                                             checkboxGroupInput("var_dls_6", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]])
+                                           ),
+                                           span(class="clear"),
+                                           span(actionButton("dlsButton_outcome", "Update outcomes"),
+                                                actionButton("dlsButton_treatment", "Update treatments"),
+                                                actionButton("dlsButton_covar", "Update covariates")),
+                                           br(),
+                                           span(actionButton("dlsButton", "Implement double Lasso selection")))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           textOutput("dlsFormula"),
+                                           tableOutput("dlsCodec"),
+                                           textOutput("dls"))
+                           ),
+                           fluidRow(column(width=12,
+                                           br(),
+                                           br())
+                           )),
+                  
                   
                   #--Personality
                   tabPanel("Personality",

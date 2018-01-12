@@ -1,6 +1,22 @@
 "
 ### Instructions
 "
+#--Double Lasso selection
+DLS <- list(
+  T1="Correlation Table",
+  
+  C1="Select 2 or more variables to examine the correlations.",
+  C2="Refer to \"Codec\" section for additional information of the variables.",
+  C3="If exactly 2 variables are selected, the scatter plot is also provided.",
+  C4="Click the \"DESCRIBE VARIABLE\" button to proceed.",
+  C5="Click the \"CLEAR SELECTION\" button to remove current selections.",
+  
+  N1="For better display, select more than 5 variables a time.",
+  N2="Please allow some time (should be < 10 secs) for the app to process.",
+  N3="If the result is not display, try click the button again."
+)
+
+
 #--Personality
 PERSON <- list(
   T1="Distribution of Personality Versions",
