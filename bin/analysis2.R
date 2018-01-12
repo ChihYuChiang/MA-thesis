@@ -453,8 +453,7 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
 
 
 #--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
-DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar="PrefS-a1")
-
 df_ytreatment <- DT[, c("GProfile-1", "PrefS-a1")]
 df_test <- DT[, c("Demo-1", "Demo-2", "Demo-4", "PrefF-1")]
-df_yx <- cbind(df_ytreatment, df_test)
+
+DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar="PrefS-a1")

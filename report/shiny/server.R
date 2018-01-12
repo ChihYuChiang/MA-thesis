@@ -19,154 +19,16 @@ server <- function(session, input, output) {
   "
   ....Initialization <- function() {}
   
-  
-  
-  
-  "
-  ### Distribution comparison
-  "
-  #Function for distribution comparison
-  dist_compare <- function(construct, types, item, gap=0) {
-    #A map for construct and item code and str pairs
-    strCodec <- list(
-      "Person"=list(
-        item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
-               "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
-        type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
-               "InSOutS"="In-game - real", "IdSInS"="Ideal - in-game", "IdSOutS"="Ideal - real")
-      ),
-      "SDT"=list(
-        item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
-               "ab1"="Autonomy (absolute)", "ab2"="Relatedness (absolute)", "ab3"="Competence (absolute)", "absum"="Summation (absolute)"),
-        type=c("In"="In-game", "Out"="Real", "Id"="Ideal",
-               "InOut"="In-game - real", "IdIn"="Ideal - in-game", "IdOut"="Ideal - real")
-      )
-    )
-    
-    #Decide scales according to item and gap
-    #Complicated is bad!!!!!
-    itemNo <- c("Person"=5, "SDT"=3)[construct]
-    scales <- list(
-      binwidth=if (item == "sum" | item == "absum") 0.5 * itemNo else 0.5,
-      limits=if (gap == 1) {
-        if (item == "sum" | item == "absum") c(-6 * itemNo - 0.5 * itemNo, 6 * itemNo + 0.5 * itemNo) else c(-6.5, 6.5)
-      } else if (gap == 0) {
-        if (item == "sum") c(1 * itemNo - 0.5 * itemNo, 7 * itemNo + 0.5 * itemNo) else c(0.5, 7.5)
-      },
-      breaks=if (gap == 1) {
-        if (item == "sum" | item == "absum") seq(-6 * itemNo, 6 * itemNo, itemNo) else seq(-6, 6)
-      } else if (gap == 0) {
-        if (item == "sum") seq(1 * itemNo, 7 * itemNo, itemNo) else seq(1, 7)
-      }
-    )
-    
-    #Make individual hist
-    make_hist <- function(type) {
-      geom_histogram(mapping=aes_(x=as.name(sprintf("%s%s-%s", construct, type, item)), fill=toString(which(types == type))),
-                     binwidth=scales$binwidth, alpha=0.6)
-    }
-    
-    #Make hist list of all items
-    geom_hists <- lapply(types, make_hist)
-    
-    #Use the list to add ggplot components
-    ggplot(data=DT) +
-      geom_hists +
-      scale_x_continuous(breaks=scales$breaks, minor_breaks=NULL, labels=scales$breaks, limits=scales$limits) +
-      labs(x="score", title=strCodec[[construct]]$item[toString(item)]) +
-      scale_fill_manual(values=diverge_hcl(length(types)), name="Item", labels=unname(strCodec[[construct]]$type[unlist(types)])) + #labels does not accept names vector
-      theme_minimal()
-  }
+  #Import necessary functions for processing
+  source("func.R")
   
   
   
   
-  "
-  ### Distribution
-  "
-  #Function for dist
-  dist_gen <- function(targetColName) {
-    ggplot(data=DT[, targetColName, with=FALSE]) +
-      geom_histogram(mapping=aes_(x=as.name(targetColName)),
-                     bins=15, alpha=0.65) +
-      labs(title=targetColName) +
-      theme_minimal()
-  }
-  
-  
-  
-  
-  "
-  ### Multiple plot function (Modify from Cookbook for R)
-  "
-  # ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-  # - cols:   Number of columns in layout
-  # - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-  #
-  # If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-  # then plot 1 will go in the upper left, 2 will go in the upper right, and
-  # 3 will go all the way across the bottom.
-  #
-  multiplot <- function(..., plotlist=NULL, file, cols=1) {
-    library(grid)
-    
-    # Make a list from the ... arguments and plotlist
-    plots <- c(list(...), plotlist)
-    
-    numPlots = length(plots)
-    
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-    
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-    
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-  
-  
-  
-  
-  "
-  ### T-test
-  "
-  tTest <- function(construct, types, item) {
-    col1 <- sprintf("%s%s-%s", construct, types[1], item)
-    col2 <- sprintf("%s%s-%s", construct, types[2], item)
-    
-    #DT does not accept as.name (symbol); it requires object
-    testOutput <- t.test(DT[, get(col1)], DT[, get(col2)], paired=TRUE)
-    
-    #Rename the caption of output table
-    testOutput$data.name <- paste(col1, "and", col2, sep=" ")
-    
-    #Use pander_return to preserve the string in rmd format
-    testOutput <- pander_return(testOutput, style="rmarkdown")
-    
-    #Transform rmd into html and add class for proper display
-    testOutput <- sub("<table>", '<table class="table" style="width: 80%">', markdownToHTML(text=testOutput, fragment.only=TRUE))
-    
-    return(testOutput)
-  }
-
 
 
 
   
-  
-  
-
   "
   ----------------------------------------------------------------------
   ## Process Output
@@ -192,6 +54,29 @@ server <- function(session, input, output) {
     #Output new number of observations
     nrow(DT)
   })
+  
+  
+  
+  
+  "
+  ### Prepare double Lasso selection
+  "
+  ........AcquireDoubleLasso <- function() {}
+  
+  #Record the var and clean the selection
+  updateDlsVar <- function() {
+    temp <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
+    updateCheckboxGroupInput(session, inputId="var_dls_1", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dls_2", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dls_3", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dls_4", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dls_5", selected=character(0))
+    updateCheckboxGroupInput(session, inputId="var_dls_6", selected=character(0))
+    return(temp)
+  }
+  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {updateDlsVar()})
+  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {updateDlsVar()})
+  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {updateDlsVar()})
   
   
   
@@ -485,6 +370,18 @@ server <- function(session, input, output) {
   
   
   
+  "
+  ### Render double Lasso selection
+  "
+  ........RenderDoubleLasso <- function() {}
+  
+  output$dlsVar_outcome <- renderText({dlsVar_outcome.out()})
+  output$dlsVar_treatment <- renderText({dlsVar_treatment.out()})
+  output$dlsVar_covariate <- renderText({dlsVar_covariate.out()})
+    
+
+
+
   "
   ### Render dists
   "
