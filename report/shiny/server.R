@@ -22,6 +22,9 @@ server <- function(session, input, output) {
   #Import necessary functions for processing
   source("func.R")
   
+  #Setup the texts
+  source("text.R")
+  
   #Create customized reactive value to store info between reactions
   rv <- reactiveValues()
   
@@ -87,23 +90,9 @@ server <- function(session, input, output) {
   
   
   #--Record the var and clean the selection
-  updateDlsVar <- function(phId) {
-    #Save selected value
-    temp <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
-    
-    #Clean selection
-    map(c("var_dls_1", "var_dls_2", "var_dls_3", "var_dls_4", "var_dls_5", "var_dls_6"),
-        ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
-    
-    #Deal with placeholder
-    if(is.null(temp)) shinyjs::show(phId) else shinyjs::hide(phId)
-    
-    return(unlist(temp))
-  }
-  
-  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar("ph_dls_1")})
-  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar("ph_dls_2")})
-  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar("ph_dls_3")})
+  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar("ph_dls_1", rv$dlsVar_outcome)})
+  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar("ph_dls_2", rv$dlsVar_treatment)})
+  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar("ph_dls_3", rv$dlsVar_covariate)})
   
 
   #--Implement double Lasso selection (+ simple lm)

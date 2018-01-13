@@ -82,7 +82,7 @@ dist_gen <- function(targetColName) {
 # If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
 # then plot 1 will go in the upper left, 2 will go in the upper right, and
 # 3 will go all the way across the bottom.
-#
+
 multiplot <- function(..., plotlist=NULL, file, cols=1) {
   library(grid)
   
@@ -218,4 +218,26 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   
   #Return a new df_yx with variables selected
   return(df_yx_selected)
+}
+
+
+#Function save selected value
+updateDlsVar <- function(phId, cur) {
+  #Save selected value
+  selectedVar <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
+  
+  #Check input
+  switch(phId,
+         ph_dls_1={if(length(selectedVar) > 1) {shinyjs::alert(DLS$PH1); return(cur)}},
+         ph_dls_3={if(length(selectedVar) > 0 & length(selectedVar) < 2) {shinyjs::alert(DLS$PH3); return(cur)}}
+  )
+  
+  #Deal with placeholder
+  if(is.null(selectedVar)) shinyjs::show(phId) else shinyjs::hide(phId)
+  
+  #Clean selection
+  map(c("var_dls_1", "var_dls_2", "var_dls_3", "var_dls_4", "var_dls_5", "var_dls_6"),
+      ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
+  
+  return(unlist(selectedVar))
 }
