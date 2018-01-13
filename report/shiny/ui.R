@@ -82,7 +82,7 @@ ui <- fluidPage(#--Header
                 tags$p(id="authorship",
                      "Chih-Yu Chiang",
                      br(),
-                     "December 15, 2017"),
+                     "January 15, 2017"),
                 hr(),
                 
                 #Filter
@@ -147,10 +147,11 @@ ui <- fluidPage(#--Header
                            ),
                            fluidRow(column(width=12,
                                            br(),
-                                           textOutput("dlsVar_outcome"),
-                                           textOutput("dlsVar_treatment"),
-                                           textOutput("dlsVar_covariate"),
                                            tableOutput("dlsCodec"),
+                                           div(tags$b("Outcome Variable: "), textOutput("dlsVar_outcome", inline=TRUE)),
+                                           br(),
+                                           div(tags$b("Treatments: "), textOutput("dlsVar_treatment", inline=TRUE)),
+                                           div(tags$b("Covariates: "), textOutput("dlsVar_covariate", inline=TRUE)),
                                            verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,

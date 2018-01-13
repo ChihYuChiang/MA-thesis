@@ -69,6 +69,22 @@ server <- function(session, input, output) {
   "
   ........AcquireDoubleLasso <- function() {}
   
+  #--Dynamically show codec when var selected
+  dlsCodec.out <- reactive({
+    targetColName <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
+    
+    #Acquire description of specific vars
+    filter <- codec$Variable %in% targetColName
+    
+    #When no match, additionally show the synthetic ones
+    syn <- sum(!(targetColName %in% codec$Variable))
+    dlsCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
+    
+    #Hide table when nothing is selected
+    return(if(nrow(dlsCodec) == 0) NULL else dlsCodec)
+  })
+  
+  
   #--Record the var and clean the selection
   updateDlsVar <- function() {
     #Save selected value
@@ -403,6 +419,8 @@ server <- function(session, input, output) {
   "
   ........RenderDoubleLasso <- function() {}
   
+  output$dlsCodec <- renderTable({dlsCodec.out()})
+  
   output$dlsVar_outcome <- renderText({dlsVar_outcome.out()})
   output$dlsVar_treatment <- renderText({dlsVar_treatment.out()})
   output$dlsVar_covariate <- renderText({dlsVar_covariate.out()})
@@ -448,27 +466,27 @@ server <- function(session, input, output) {
   ........RenderT <- function() {}
   
   #If NULL, don't return to avoid vacant box in the UI
-  output$t_personality_sum <- renderText({if (!is.null(x <- t_personality.out()$isum)) x})
-  output$t_personality_1 <- renderText({if (!is.null(x <- t_personality.out()$i1)) x})
-  output$t_personality_2 <- renderText({if (!is.null(x <- t_personality.out()$i2)) x})
-  output$t_personality_3 <- renderText({if (!is.null(x <- t_personality.out()$i3)) x})
-  output$t_personality_4 <- renderText({if (!is.null(x <- t_personality.out()$i4)) x})
-  output$t_personality_5 <- renderText({if (!is.null(x <- t_personality.out()$i5)) x})
-  output$t_personality_absum <- renderText({if (!is.null(x <- t_personality.out()$iabsum)) x})
-  output$t_personality_ab1 <- renderText({if (!is.null(x <- t_personality.out()$iab1)) x})
-  output$t_personality_ab2 <- renderText({if (!is.null(x <- t_personality.out()$iab2)) x})
-  output$t_personality_ab3 <- renderText({if (!is.null(x <- t_personality.out()$iab3)) x})
-  output$t_personality_ab4 <- renderText({if (!is.null(x <- t_personality.out()$iab4)) x})
-  output$t_personality_ab5 <- renderText({if (!is.null(x <- t_personality.out()$iab5)) x})
+  output$t_personality_sum <- renderText({if(!is.null(x <- t_personality.out()$isum)) x})
+  output$t_personality_1 <- renderText({if(!is.null(x <- t_personality.out()$i1)) x})
+  output$t_personality_2 <- renderText({if(!is.null(x <- t_personality.out()$i2)) x})
+  output$t_personality_3 <- renderText({if(!is.null(x <- t_personality.out()$i3)) x})
+  output$t_personality_4 <- renderText({if(!is.null(x <- t_personality.out()$i4)) x})
+  output$t_personality_5 <- renderText({if(!is.null(x <- t_personality.out()$i5)) x})
+  output$t_personality_absum <- renderText({if(!is.null(x <- t_personality.out()$iabsum)) x})
+  output$t_personality_ab1 <- renderText({if(!is.null(x <- t_personality.out()$iab1)) x})
+  output$t_personality_ab2 <- renderText({if(!is.null(x <- t_personality.out()$iab2)) x})
+  output$t_personality_ab3 <- renderText({if(!is.null(x <- t_personality.out()$iab3)) x})
+  output$t_personality_ab4 <- renderText({if(!is.null(x <- t_personality.out()$iab4)) x})
+  output$t_personality_ab5 <- renderText({if(!is.null(x <- t_personality.out()$iab5)) x})
   
-  output$t_SDT_sum <- renderText({if (!is.null(x <- t_SDT.out()$isum)) x})
-  output$t_SDT_1 <- renderText({if (!is.null(x <- t_SDT.out()$i1)) x})
-  output$t_SDT_2 <- renderText({if (!is.null(x <- t_SDT.out()$i2)) x})
-  output$t_SDT_3 <- renderText({if (!is.null(x <- t_SDT.out()$i3)) x})
-  output$t_SDT_absum <- renderText({if (!is.null(x <- t_SDT.out()$iabsum)) x})
-  output$t_SDT_ab1 <- renderText({if (!is.null(x <- t_SDT.out()$iab1)) x})
-  output$t_SDT_ab2 <- renderText({if (!is.null(x <- t_SDT.out()$iab2)) x})
-  output$t_SDT_ab3 <- renderText({if (!is.null(x <- t_SDT.out()$iab3)) x})
+  output$t_SDT_sum <- renderText({if(!is.null(x <- t_SDT.out()$isum)) x})
+  output$t_SDT_1 <- renderText({if(!is.null(x <- t_SDT.out()$i1)) x})
+  output$t_SDT_2 <- renderText({if(!is.null(x <- t_SDT.out()$i2)) x})
+  output$t_SDT_3 <- renderText({if(!is.null(x <- t_SDT.out()$i3)) x})
+  output$t_SDT_absum <- renderText({if(!is.null(x <- t_SDT.out()$iabsum)) x})
+  output$t_SDT_ab1 <- renderText({if(!is.null(x <- t_SDT.out()$iab1)) x})
+  output$t_SDT_ab2 <- renderText({if(!is.null(x <- t_SDT.out()$iab2)) x})
+  output$t_SDT_ab3 <- renderText({if(!is.null(x <- t_SDT.out()$iab3)) x})
   
 
   
@@ -584,9 +602,8 @@ server <- function(session, input, output) {
   "
   ........ResetFilter <- function() {}
   observeEvent(input$filter_reset, {
-    updateSliderInput(session, inputId="filter_1", value=c(1, 7))
-    updateSliderInput(session, inputId="filter_2", value=c(1, 7))
-    updateSliderInput(session, inputId="filter_3", value=c(1, 7))
+    map(c("filter_1", "filter_2", "filter_3", "filter_4", "filter_5", "filter_6"),
+        ~ updateSliderInput(session, inputId=., value=c(1, 7)))
   })
   
 }
