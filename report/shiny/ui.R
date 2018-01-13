@@ -100,6 +100,8 @@ ui <- fluidPage(#--Header
           ),
           mainPanel(width=9,
                 tabsetPanel(
+                  
+                  
                   #--Double Lasso selection
                   tabPanel("Double Lasso Selection",
                            fluidRow(column(width=12,
@@ -133,15 +135,17 @@ ui <- fluidPage(#--Header
                                            span(class="clear"),
                                            span(actionButton("dlsButton_outcome", "Update outcomes"),
                                                 actionButton("dlsButton_treatment", "Update treatments"),
-                                                actionButton("dlsButton_covar", "Update covariates")),
+                                                actionButton("dlsButton_covariate", "Update covariates")),
                                            br(),
                                            span(actionButton("dlsButton", "Implement double Lasso selection")))
                            ),
                            fluidRow(column(width=12,
                                            br(),
-                                           textOutput("dlsFormula"),
+                                           textOutput("dlsVar_outcome"),
+                                           textOutput("dlsVar_treatment"),
+                                           textOutput("dlsVar_covariate"),
                                            tableOutput("dlsCodec"),
-                                           textOutput("dls"))
+                                           verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,
                                            br(),

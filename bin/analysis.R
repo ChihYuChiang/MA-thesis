@@ -553,11 +553,11 @@ lassoSelect <- function(df_yx, outcomeVar, form) {
   }
   
   
-  #Process the result indices to remove the first term (the interaction term)
+  #Process the result indices to remove the first term (the intercept term)
   betaIndices <- setdiff((betaIndices - 1), 0)
   
   #Bind the selected variables with dependent and treatment variables
-  df_yx_selected <- cbind(df_ytreatment, df_test[, betaIndices])
+  df_yx_selected <- if(nrow(df_test[, betaIndices]) == 0) df_ytreatment else cbind(df_ytreatment, df_test[, betaIndices])
   
   #Return a new df_yx with variables selected
   return(df_yx_selected)

@@ -22,6 +22,9 @@ server <- function(session, input, output) {
   #Import necessary functions for processing
   source("func.R")
   
+  #Create customized reactive value to store info between reactions
+  rv <- reactiveValues()
+  
   
   
   
@@ -59,24 +62,46 @@ server <- function(session, input, output) {
   
   
   "
-  ### Prepare double Lasso selection
+  ### Acquire double Lasso selection (+ simple lm)
   "
   ........AcquireDoubleLasso <- function() {}
   
-  #Record the var and clean the selection
+  #--Record the var and clean the selection
   updateDlsVar <- function() {
+    #Save selected value
     temp <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
-    updateCheckboxGroupInput(session, inputId="var_dls_1", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dls_2", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dls_3", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dls_4", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dls_5", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_dls_6", selected=character(0))
-    return(temp)
+    
+    #Clean selection
+    map(c("var_dls_1", "var_dls_2", "var_dls_3", "var_dls_4", "var_dls_5", "var_dls_6"),
+        ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
+    
+    return(unlist(temp))
   }
-  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {updateDlsVar()})
-  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {updateDlsVar()})
-  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {updateDlsVar()})
+  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar()})
+  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar()})
+  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar()})
+  
+
+  #--Implement double Lasso selection (+ simple lm)
+  dls.out <- eventReactive(input$dlsButton, {
+    #Save as independent vars to avoid data.table syntax problems
+    outcomeVar <- rv$dlsVar_outcome[1]
+    ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar)
+    covariateVar <- rv$dlsVar_covariate
+    
+    #Get respective DT
+    df_ytreatment <- DT[, ..ytreatmentVar]
+    df_test <- DT[, ..covariateVar]
+    
+    #Use the function to acquire the selected dfs
+    DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar=outcomeVar)
+    
+    #Implement simple lm
+    model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
+    
+    #Output summary
+    summary(model_lm)
+  })
   
   
   
@@ -378,6 +403,8 @@ server <- function(session, input, output) {
   output$dlsVar_outcome <- renderText({dlsVar_outcome.out()})
   output$dlsVar_treatment <- renderText({dlsVar_treatment.out()})
   output$dlsVar_covariate <- renderText({dlsVar_covariate.out()})
+  
+  output$dls <- renderPrint({dls.out()})
     
 
 
@@ -522,21 +549,13 @@ server <- function(session, input, output) {
   
   #When press button
   observeEvent(input$descButton_clear, {
-    updateCheckboxGroupInput(session, inputId="var_desc_1", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_desc_2", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_desc_3", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_desc_4", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_desc_5", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_desc_6", selected=character(0))
+    map(c("var_desc_1", "var_desc_2", "var_desc_3", "var_desc_4", "var_desc_5", "var_desc_6"),
+        ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
   })
   
   observeEvent(input$corButton_clear, {
-    updateCheckboxGroupInput(session, inputId="var_cor_1", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_cor_2", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_cor_3", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_cor_4", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_cor_5", selected=character(0))
-    updateCheckboxGroupInput(session, inputId="var_cor_6", selected=character(0))
+    map(c("var_cor_1", "var_cor_2", "var_cor_3", "var_cor_4", "var_cor_5", "var_cor_6"),
+        ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
   })
   
   #When click on other set of options

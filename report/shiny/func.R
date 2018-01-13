@@ -185,7 +185,7 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   #--Select vars that predict outcome
   #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
   #If the treatment var is NULL, use the se pf dependent var to initiate
-  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(paste("`", outcomeVar, "`", " ~ .", sep="")), data=df_ytreatment)))}
+  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=df_ytreatment)))}
   lambda <- updateLambda(n=n, p=p, se=residual.se)
   
   #by Lasso model: dependent variable ~ test variables
@@ -210,11 +210,11 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   }
   
   
-  #Process the result indices to remove the first term (the interaction term)
+  #Process the result indices to remove the first term (the intercept term)
   betaIndices <- setdiff((betaIndices - 1), 0)
   
   #Bind the selected variables with dependent and treatment variables
-  df_yx_selected <- cbind(df_ytreatment, df_test[, ..betaIndices])
+  df_yx_selected <- if(nrow(df_test[, ..betaIndices]) == 0) df_ytreatment else cbind(df_ytreatment, df_test[, ..betaIndices])
   
   #Return a new df_yx with variables selected
   return(df_yx_selected)
