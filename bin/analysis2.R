@@ -371,7 +371,7 @@ tTest("Person", list("InS", "OutS"), "sum")
 
 
 "
-### Double Lasso selection
+### Double Lasso selection (+ simple lm)
 "
 #--Function for updating lambda used in selection
 #n = number of observation; p = number of independent variables; se = standard error of residual or dependent variable
@@ -416,7 +416,7 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   #--Select vars that predict outcome
   #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
   #If the treatment var is NULL, use the se pf dependent var to initiate
-  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(paste("`", outcomeVar, "`", " ~ .", sep="")), data=df_ytreatment)))}
+  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=df_ytreatment)))}
   lambda <- updateLambda(n=n, p=p, se=residual.se)
   
   #by Lasso model: dependent variable ~ test variables
@@ -457,3 +457,8 @@ df_ytreatment <- DT[, c("GProfile-1", "PrefS-a1")]
 df_test <- DT[, c("Demo-1", "Demo-2", "Demo-4", "PrefF-1")]
 
 DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar="PrefS-a1")
+
+
+#--Simple lm implementation
+model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
+summary(model_lm)
