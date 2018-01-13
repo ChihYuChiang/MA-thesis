@@ -72,21 +72,22 @@ server <- function(session, input, output) {
   #--Dynamically show codec when var selected
   dlsCodec.out <- reactive({
     targetColName <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
+    selectedColName <- isolate({c(rv$dlsVar_outcome, rv$dlsVar_treatment, rv$dlsVar_covariate)})
     
     #Acquire description of specific vars
-    filter <- codec$Variable %in% targetColName
+    filter <- codec$Variable %in% c(targetColName, selectedColName)
     
     #When no match, additionally show the synthetic ones
-    syn <- sum(!(targetColName %in% codec$Variable))
+    syn <- sum(!(c(targetColName, selectedColName) %in% codec$Variable))
     dlsCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
     
-    #Hide table when nothing is selected
+    #Hide table when nothing is selected and rv has no values
     return(if(nrow(dlsCodec) == 0) NULL else dlsCodec)
   })
   
   
   #--Record the var and clean the selection
-  updateDlsVar <- function() {
+  updateDlsVar <- function(phId) {
     #Save selected value
     temp <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
     
@@ -94,11 +95,15 @@ server <- function(session, input, output) {
     map(c("var_dls_1", "var_dls_2", "var_dls_3", "var_dls_4", "var_dls_5", "var_dls_6"),
         ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
     
+    #Deal with placeholder
+    if(is.null(temp)) shinyjs::show(phId) else shinyjs::hide(phId)
+    
     return(unlist(temp))
   }
-  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar()})
-  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar()})
-  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar()})
+  
+  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar("ph_dls_1")})
+  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar("ph_dls_2")})
+  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar("ph_dls_3")})
   
 
   #--Implement double Lasso selection (+ simple lm)

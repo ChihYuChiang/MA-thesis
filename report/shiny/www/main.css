@@ -53,6 +53,18 @@ hr.large {
   float: right;
 }
 
+.ph {
+  color: #C7C7C7;
+}
+
+.space_r {
+  margin-right: 1em;
+}
+
+.space_t {
+  margin-top: 1em;
+}
+
 /*Adjust slider bar size*/
 .irs-bar {height: 8px;}
 .irs-bar-edge {height: 8px; width: 8px;}

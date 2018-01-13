@@ -138,20 +138,18 @@ ui <- fluidPage(#--Header
                                              checkboxGroupInput("var_dls_5", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[5] + 1) : var_cor_sub[6]]),
                                              checkboxGroupInput("var_dls_6", "", width=CHECKBOX_WIDTH, var_cor[(var_cor_sub[6] + 1) : var_cor_sub[7]])
                                            ),
-                                           span(class="clear"),
-                                           span(actionButton("dlsButton_outcome", "Update outcomes"),
-                                                actionButton("dlsButton_treatment", "Update treatments"),
-                                                actionButton("dlsButton_covariate", "Update covariates")),
-                                           br(),
-                                           span(actionButton("dlsButton", "Implement double Lasso selection")))
+                                           span(class="clear"))
                            ),
                            fluidRow(column(width=12,
+                                           span(actionLink(class="space_r", "dlsButton_outcome", "Update outcomes"),
+                                                actionLink(class="space_r", "dlsButton_treatment", "Update treatments"),
+                                                actionLink(class="space_r", "dlsButton_covariate", "Update covariates")),
+                                           div(class="space_t", tags$b(class="space_r", "Outcome variable:"), span(class="ph", id="ph_dls_1", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
+                                           div(tags$b(class="space_r", "Treatments:"), span(class="ph", id="ph_dls_2", DLS$PH2), textOutput("dlsVar_treatment", inline=TRUE)),
+                                           div(tags$b(class="space_r", "Covariates:"), span(class="ph", id="ph_dls_3", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
                                            br(),
                                            tableOutput("dlsCodec"),
-                                           div(tags$b("Outcome Variable: "), textOutput("dlsVar_outcome", inline=TRUE)),
-                                           br(),
-                                           div(tags$b("Treatments: "), textOutput("dlsVar_treatment", inline=TRUE)),
-                                           div(tags$b("Covariates: "), textOutput("dlsVar_covariate", inline=TRUE)),
+                                           actionButton(class="space_t", "dlsButton", "Implement double Lasso selection"),
                                            verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,
