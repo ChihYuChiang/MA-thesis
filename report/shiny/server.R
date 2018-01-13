@@ -52,7 +52,10 @@ server <- function(session, input, output) {
     DT <<- DT_raw[
       `GProfile-3_1` >= input$filter_1[1] & `GProfile-3_1` <= input$filter_1[2]][
       `PrefS-a2` >= input$filter_2[1] & `PrefS-a2` <= input$filter_2[2]][
-      `PrefS-5` >= input$filter_3[1] & `PrefS-5` <= input$filter_3[2]]
+      `PrefS-5` >= input$filter_3[1] & `PrefS-5` <= input$filter_3[2]][
+      `Relation-8` >= input$filter_4[1] & `PrefS-5` <= input$filter_4[2]][
+      `GProfile-10_2` >= input$filter_5[1] & `PrefS-5` <= input$filter_5[2]][
+      `GProfile-11_2` >= input$filter_6[1] & `PrefS-5` <= input$filter_6[2]]
     
     #Output new number of observations
     nrow(DT)

@@ -1,4 +1,36 @@
 "
+### Filter
+"
+FILTER <- list(
+  F1_1="Casual or Core Gamer",
+  F1_2="GProfile-3_1",
+  F1_3="(casual gamer = 1, core gamer = 7)",
+  
+  F2_1="Preference for the Focal Game",
+  F2_2="PrefS-a2",
+  F2_3="(casual gamer = 1, core gamer = 7)",
+  
+  F3_1="The Focal Game fit the taste",
+  F3_2="PrefS-5",
+  F3_3="(low = 1, high = 7)",
+  
+  F4_1="How familiar with the fellow player",
+  F4_2="Relation-8",
+  F4_3="(low = 1, high = 7)",
+  
+  F5_1="In video games, as myself or a different person",
+  F5_2="GProfile-10_2",
+  F5_3="(myself = 1, different person = 7)",
+  
+  F6_1="In video games, as usual self or a better version of self",
+  F6_2="GProfile-11_2",
+  F6_3="(usual self = 1, better version of self = 7)"
+)
+
+
+
+
+"
 ### Instructions
 "
 #--Double Lasso selection
