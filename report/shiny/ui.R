@@ -112,12 +112,14 @@ ui <- fluidPage(#--Header
                   tabPanel("Double Lasso Selection",
                            fluidRow(column(width=12,
                                            h3(DLS$T1),
+                                           h5(DLS$T2),
                                            tags$ol(
                                              tags$li(DLS$C1),
                                              tags$li(DLS$C2),
                                              tags$li(DLS$C3),
                                              tags$li(DLS$C4),
-                                             tags$li(DLS$C5)
+                                             tags$li(DLS$C5),
+                                             tags$li(DLS$C6)
                                            ),
                                            span(class="note",
                                                 span("Note"),

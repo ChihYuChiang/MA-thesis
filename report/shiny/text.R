@@ -35,15 +35,17 @@ FILTER <- list(
 "
 #--Double Lasso selection
 DLS <- list(
-  T1="Correlation Table",
+  T1="Double Lasso Selection",
+  T2="(O. Urminsky, C. Hansen, and V. Chernozhukov, 2016)",
   
-  C1="Select 2 or more variables to examine the correlations.",
-  C2="Refer to \"Codec\" section for additional information of the variables.",
-  C3="If exactly 2 variables are selected, the scatter plot is also provided.",
-  C4="Click the \"DESCRIBE VARIABLE\" button to proceed.",
-  C5="Click the \"CLEAR SELECTION\" button to remove current selections.",
+  C1="Select and update variables for each construct, outcome, treatment, and covariate.",
+  C2="Treatments are variables will be included in the final model, no matter the selection.",
+  C3="Covariates are variables to be selected by the double Lasso selection process.",
+  C4="Refer to \"Codec\" section for additional information of the variables.",
+  C5="Click the \"IMPLEMENT DOUBLE LASSO SELECTION\" button to proceed.",
+  C6="The app processes the selection and shows a simple lm result with the selected variables.",
   
-  N1="For better display, select more than 5 variables a time.",
+  N1="Select the number of variables as instructed.",
   N2="Please allow some time (should be < 10 secs) for the app to process.",
   N3="If the result is not display, try click the button again.",
   

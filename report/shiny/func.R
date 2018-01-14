@@ -221,8 +221,12 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
 }
 
 
-#Function save selected value
+#--Function save selected value
 updateDlsVar <- function(phId, cur) {
+  #Get var from server.R frame
+  input <- get("input", parent.frame())
+  session <- get("session", parent.frame())
+  
   #Save selected value
   selectedVar <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
   
@@ -240,4 +244,18 @@ updateDlsVar <- function(phId, cur) {
       ~ updateCheckboxGroupInput(session, inputId=., selected=character(0)))
   
   return(unlist(selectedVar))
+}
+
+
+#--Function produces dynamic codec for non-codec section
+produceCodec <- function(targetColName) {
+  #Acquire description of specific vars
+  filter <- codec$Variable %in% targetColName
+  
+  #When no match, additionally show the synthetic ones
+  syn <- sum(!(targetColName %in% codec$Variable))
+  subCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
+  
+  #Hide table when nothing is selected and rv has no values
+  return(if(nrow(subCodec) == 0) NULL else subCodec)
 }

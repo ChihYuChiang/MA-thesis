@@ -77,15 +77,8 @@ server <- function(session, input, output) {
     targetColName <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
     selectedColName <- isolate({c(rv$dlsVar_outcome, rv$dlsVar_treatment, rv$dlsVar_covariate)})
     
-    #Acquire description of specific vars
-    filter <- codec$Variable %in% c(targetColName, selectedColName)
-    
-    #When no match, additionally show the synthetic ones
-    syn <- sum(!(c(targetColName, selectedColName) %in% codec$Variable))
-    dlsCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
-    
-    #Hide table when nothing is selected and rv has no values
-    return(if(nrow(dlsCodec) == 0) NULL else dlsCodec)
+    #Ref to Func.R
+    produceCodec(c(targetColName, selectedColName))
   })
   
   
@@ -292,21 +285,28 @@ server <- function(session, input, output) {
   
   desc.out <- eventReactive(input$descButton, {
     targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
+    
+    #Save for later use
+    rv$descVar <- targetColName
+    
+    #Get description DT
     descOutput <- pander_return(summary(DT[, targetColName, with=FALSE]), style="rmarkdown")
     
     #Dynamically adjust table width
     descOutput <- gsub("<table>", sprintf('<table class="table" style="width: %spx">', 110 * if(length(targetColName) %% 10 == 0) 10 else length(targetColName) %% 10), markdownToHTML(text=descOutput, fragment.only=TRUE))
     
     #Centering table head
-    descOutput <- gsub('<th align="center">', '<th class="text-center">', descOutput)
-    
-    #Acquire description of specific vars
-    #When no match, show the synthetic ones
-    filter <- codec$Variable %in% targetColName
-    descCodec <- if(nrow(codec[filter]) == 0) tail(codec, 5) else codec[filter]
-    
-    #Output
-    list(descOutput=descOutput, descCodec=descCodec)
+    gsub('<th align="center">', '<th class="text-center">', descOutput)
+  })
+  
+  
+  #--Dynamically show codec when var selected
+  descCodec.out <- reactive({
+    targetColName <- c(input$var_desc_1, input$var_desc_2, input$var_desc_3, input$var_desc_4, input$var_desc_5, input$var_desc_6)
+    targetColName <- if(length(targetColName) == 0) rv$descVar else targetColName
+
+    #Ref to Func.R
+    produceCodec(targetColName)
   })
 
   
@@ -317,9 +317,12 @@ server <- function(session, input, output) {
   "
   ........AcquireCor <- function() {}
   
-  #The plot
+  #--The plot
   cor.out <- eventReactive(input$corButton, {
     targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
+    
+    #Save for later
+    rv$corVar <- targetColName
     
     #Avoid error when 0 or 1 item is selected
     if(length(targetColName) <= 1) return()
@@ -347,17 +350,14 @@ server <- function(session, input, output) {
     max(targetLength * 50, 500)
   })
   
-  #The corresponding codec
-  corCodec.out <- eventReactive(input$corButton, {
+  
+  #--Dynamically show codec when var selected
+  corCodec.out <- reactive({
     targetColName <- c(input$var_cor_1, input$var_cor_2, input$var_cor_3, input$var_cor_4, input$var_cor_5, input$var_cor_6)
+    targetColName <- if(length(targetColName) == 0) rv$corVar else targetColName
     
-    #Avoid error when 0 or 1 item is selected
-    if(length(targetColName) <= 1) return()
-    
-    #Acquire description of specific vars
-    #When no match, show the synthetic ones
-    filter <- codec$Variable %in% targetColName
-    if(nrow(codec[filter]) == 0) tail(codec, 5) else codec[filter]
+    #Ref to Func.R
+    produceCodec(targetColName)
   })
 
   
@@ -504,8 +504,8 @@ server <- function(session, input, output) {
   "
   ........RenderDesc <- function() {}
   
-  output$descCodec <- renderTable({desc.out()$descCodec}, width="1100px")
-  output$desc <- renderText({desc.out()$descOutput})
+  output$descCodec <- renderTable({descCodec.out()}, width="1100px")
+  output$desc <- renderText({desc.out()})
   
   
   
