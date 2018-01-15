@@ -440,7 +440,7 @@ server <- function(session, input, output) {
   ....RenderOutput <- function() {}
 
   "
-  ### Show double Lasso selection save result
+  ### Show double Lasso selection saving result
   "
   ........ShowDlsSave <- function() {}
 
@@ -448,7 +448,20 @@ server <- function(session, input, output) {
   
   
 
-    
+  
+  "
+  ### Load UI for double Lasso selection saved results
+  "
+  ........RenderDlsLoadInput <- function() {}
+  
+  output$dlsLoad <- renderUI({selectInput("dlsLoadCom",
+                                          label=NULL, width="120px",
+                                          choice=if(nrow(rv$dlsSave) == 0) NULL else seq(1, nrow(rv$dlsSave)))
+                            })
+  
+  
+  
+  
   "
   ### Render double Lasso selection
   "

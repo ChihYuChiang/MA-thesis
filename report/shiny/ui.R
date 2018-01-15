@@ -142,12 +142,14 @@ ui <- fluidPage(#--Header
                            fluidRow(column(width=12,
                                            span(actionLink(class="space_r", "dlsButton_outcome", "Update outcomes"),
                                                 actionLink(class="space_r", "dlsButton_treatment", "Update treatments"),
-                                                actionLink(class="space_r", "dlsButton_covariate", "Update covariates"),
-                                                actionLink(class="space_l4 space_r", "dlsButton_save", "Save this combination"),
+                                                actionLink(class="space_r", "dlsButton_covariate", "Update covariates")
+                                           ),
+                                           span(actionLink(class="space_r space_l4", "dlsButton_save", "Save this combination"),
                                                 textOutput("dlsSave", inline=TRUE),
                                                 hidden(span(id="saved", "saved !"))
                                            ),
-                                           div(class="space_t", tags$b(class="space_r", "Outcome variable:"), span(class="ph", id="ph_dls_1", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
+                                           div(class="space_t", "Load combination", div(class="inLine space_l", uiOutput("dlsLoad", inline=TRUE))),
+                                           div(tags$b(class="space_r", "Outcome variable:"), span(class="ph", id="ph_dls_1", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
                                            div(tags$b(class="space_r", "Treatments:"), span(class="ph", id="ph_dls_2", DLS$PH2), textOutput("dlsVar_treatment", inline=TRUE)),
                                            div(tags$b(class="space_r", "Covariates:"), span(class="ph", id="ph_dls_3", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
                                            br(),

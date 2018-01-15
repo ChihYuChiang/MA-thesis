@@ -65,12 +65,20 @@ hr.large {
   margin-right: 1em;
 }
 
+.space_l {
+  margin-left: 1em;
+}
+
 .space_l4 {
   margin-left: 4em;
 }
 
 .space_t {
   margin-top: 1em;
+}
+
+.inLine {
+  display: inline-block;
 }
 
 /*Adjust slider bar size*/
