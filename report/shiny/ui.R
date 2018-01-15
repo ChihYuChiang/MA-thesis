@@ -126,6 +126,7 @@ ui <- fluidPage(#--Header
                                                   tags$li(DLS$N3)
                                                 )
                                            ),
+                                           downloadButton("dlsFile_download", "Download"),
                                            hr())
                            ),
                            fluidRow(column(width=12,

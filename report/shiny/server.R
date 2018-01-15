@@ -87,7 +87,7 @@ server <- function(session, input, output) {
     if(is.null(rv$dlsVar_outcome) | is.null(rv$dlsVar_treatment) | is.null(rv$dlsVar_covariate))  return()
     
     shinyjs::show("saved")
-    rv$dlsSave <- rbind(rv$dlsSave, list(list(rv$dlsVar_outcome), list(rv$dlsVar_treatment), list(rv$dlsVar_covariate)))
+    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=","), paste(rv$dlsVar_treatment, collapse=","), paste(rv$dlsVar_covariate, collapse=",")))
     
     #Return the number of saved entries
     nrow(rv$dlsSave)
@@ -439,6 +439,20 @@ server <- function(session, input, output) {
   "
   ....RenderOutput <- function() {}
 
+  "
+  ### Show double Lasso selection saving result
+  "
+  ........DownloadDlsSave <- function() {}
+  
+  output$dlsFile_download <- downloadHandler(
+    filename=paste("dls_", Sys.Date(), ".csv", sep=""),
+    content=function(file) write.csv(isolate(rv$dlsSave), file, row.names = FALSE),
+    contentType="text/csv"
+  )
+
+    
+  
+  
   "
   ### Show double Lasso selection saving result
   "
