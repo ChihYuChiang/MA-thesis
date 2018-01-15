@@ -127,6 +127,7 @@ ui <- fluidPage(#--Header
                                                 )
                                            ),
                                            downloadButton("dlsFile_download", "Download"),
+                                           fileInput("dlsFile_upload", "Upload", accept=".csv"),
                                            hr())
                            ),
                            fluidRow(column(width=12,

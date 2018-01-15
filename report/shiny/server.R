@@ -71,6 +71,18 @@ server <- function(session, input, output) {
   
   
   "
+  ### Load double Lasso file
+  "
+  ........LoadDls <- function() {}
+  
+  observeEvent(input$dlsFile_upload, {
+    rv$dlsSave <- read.csv(input$dlsFile_upload$datapath)
+  })
+  
+  
+  
+  
+  "
   ### Save double Lasso selection
   "
   ........SaveDls <- function() {}
