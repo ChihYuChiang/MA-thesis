@@ -6,9 +6,12 @@ library(tidyverse)
 library(data.table)
 library(colorspace)
 library(corrplot)
+library(glmnet)
 
 #Prevent pander wrapping
 panderOptions("table.split.table", 200)
+
+
 
 
 server <- function(session, input, output) {
@@ -68,9 +71,35 @@ server <- function(session, input, output) {
   
   
   "
+  ### Save double Lasso selection
+  "
+  ........SaveDls <- function() {}
+  
+  #--Create empty df
+  rv$dlsSave <- data.table(matrix(data=vector(), nrow=0, ncol=3,
+                           #Specify row and column names
+                           dimnames=list(c(), c("outcome", "treatment", "covariate"))))
+  
+  
+  #--Save current selection when btn clicked
+  dlsSave.out <- eventReactive(input$dlsButton_save, {
+    #Input check: all 3 constructs have to have selection
+    if(is.null(rv$dlsVar_outcome) | is.null(rv$dlsVar_treatment) | is.null(rv$dlsVar_covariate))  return()
+    
+    shinyjs::show("saved")
+    rv$dlsSave <- rbind(rv$dlsSave, list(list(rv$dlsVar_outcome), list(rv$dlsVar_treatment), list(rv$dlsVar_covariate)))
+    
+    #Return the number of saved entries
+    nrow(rv$dlsSave)
+  })
+  
+  
+  
+  
+  "
   ### Acquire double Lasso selection (+ simple lm)
   "
-  ........AcquireDoubleLasso <- function() {}
+  ........AcquireDls <- function() {}
   
   #--Dynamically show codec when var selected
   dlsCodec.out <- reactive({
@@ -95,6 +124,11 @@ server <- function(session, input, output) {
     ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar)
     covariateVar <- rv$dlsVar_covariate
     
+    #Input check: the vars selected cannot be overlapped
+    if(length(union(ytreatmentVar, covariateVar)) != length(c(ytreatmentVar, covariateVar))) {
+      return("Overlapped selection between the constructs.")
+    }
+
     #Get respective DT
     df_ytreatment <- DT[, ..ytreatmentVar]
     df_test <- DT[, ..covariateVar]
@@ -404,14 +438,21 @@ server <- function(session, input, output) {
   ----------------------------------------------------------------------
   "
   ....RenderOutput <- function() {}
+
+  "
+  ### Show double Lasso selection save result
+  "
+  ........ShowDlsSave <- function() {}
+
+  output$dlsSave <- renderText({dlsSave.out()})  
   
   
-  
-  
+
+    
   "
   ### Render double Lasso selection
   "
-  ........RenderDoubleLasso <- function() {}
+  ........RenderDls <- function() {}
   
   output$dlsCodec <- renderTable({dlsCodec.out()})
   

@@ -5,9 +5,6 @@ library(shinythemes)
 
 
 
-
-
-
 "
 ------------------------------------------------------------
 Initialization
@@ -64,7 +61,7 @@ Front end
 "
 ui <- fluidPage(#--Header
                 #Enable shinyjs
-                useShinyjs(), 
+                useShinyjs(),
                 
                 #CSS and shiny theme based on Bootstrap https://rstudio.github.io/shinythemes/
                 theme=shinytheme("paper"),
@@ -102,7 +99,7 @@ ui <- fluidPage(#--Header
                 tags$p(tags$b(FILTER$F6_1), code(FILTER$F6_2), br(), FILTER$F6_3),
                 sliderInput("filter_6", NULL, min=1, max=7, value=c(1, 7)),
                 tags$p(id="obs",
-                     "Current number of observations: ", tags$b(textOutput("filter", inline=TRUE)))
+                       "Current number of observations: ", tags$b(textOutput("filter", inline=TRUE)))
           ),
           mainPanel(width=9,
                 tabsetPanel(
@@ -145,7 +142,11 @@ ui <- fluidPage(#--Header
                            fluidRow(column(width=12,
                                            span(actionLink(class="space_r", "dlsButton_outcome", "Update outcomes"),
                                                 actionLink(class="space_r", "dlsButton_treatment", "Update treatments"),
-                                                actionLink(class="space_r", "dlsButton_covariate", "Update covariates")),
+                                                actionLink(class="space_r", "dlsButton_covariate", "Update covariates"),
+                                                actionLink(class="space_l4 space_r", "dlsButton_save", "Save this combination"),
+                                                textOutput("dlsSave", inline=TRUE),
+                                                hidden(span(id="saved", "saved !"))
+                                           ),
                                            div(class="space_t", tags$b(class="space_r", "Outcome variable:"), span(class="ph", id="ph_dls_1", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
                                            div(tags$b(class="space_r", "Treatments:"), span(class="ph", id="ph_dls_2", DLS$PH2), textOutput("dlsVar_treatment", inline=TRUE)),
                                            div(tags$b(class="space_r", "Covariates:"), span(class="ph", id="ph_dls_3", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
