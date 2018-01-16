@@ -2,6 +2,11 @@
 _General writing progress will follow the schedule of <a href="https://github.com/UC-MACSS/persp-research" target="_blank">MACS 30200</a>._  
 
 
+### 1/15/2018
+1. Update **shiny** corresponding to the changes in [report](/report) folder.
+1. Explorative tool for Double Lasso Selection and simple linear model.
+
+
 ### 12/5/2017
 1. Add **shiny** corresponding to the changes in [report](/report) folder.
 1. Explorative tool for the new survey data.
