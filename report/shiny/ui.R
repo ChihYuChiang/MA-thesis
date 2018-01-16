@@ -116,7 +116,8 @@ ui <- fluidPage(#--Header
                                              tags$li(DLS$C3),
                                              tags$li(DLS$C4),
                                              tags$li(DLS$C5),
-                                             tags$li(DLS$C6)
+                                             tags$li(DLS$C6),
+                                             tags$li(DLS$C7)
                                            ),
                                            span(class="note",
                                                 span("Note"),
@@ -126,8 +127,7 @@ ui <- fluidPage(#--Header
                                                   tags$li(DLS$N3)
                                                 )
                                            ),
-                                           downloadButton("dlsFile_download", "Download"),
-                                           fileInput("dlsFile_upload", "Upload", accept=".csv"),
+                                           fileInput("dlsFile_upload", NULL, accept=".csv", buttonLabel="Import combination", placeholder=NULL),
                                            hr())
                            ),
                            fluidRow(column(width=12,
@@ -147,16 +147,20 @@ ui <- fluidPage(#--Header
                                                 actionLink(class="space_r", "dlsButton_covariate", "Update covariates")
                                            ),
                                            span(actionLink(class="space_r space_l4", "dlsButton_save", "Save this combination"),
-                                                textOutput("dlsSave", inline=TRUE),
-                                                hidden(span(id="saved", "saved !"))
+                                                hidden(span(id="saved", "saved at slot")),
+                                                textOutput("dlsSave", inline=TRUE)
                                            ),
-                                           div(class="space_t", "Load combination", div(class="inLine space_l", uiOutput("dlsLoad", inline=TRUE))),
-                                           div(tags$b(class="space_r", "Outcome variable:"), span(class="ph", id="ph_dls_1", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
-                                           div(tags$b(class="space_r", "Treatments:"), span(class="ph", id="ph_dls_2", DLS$PH2), textOutput("dlsVar_treatment", inline=TRUE)),
-                                           div(tags$b(class="space_r", "Covariates:"), span(class="ph", id="ph_dls_3", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
+                                           div(class="space_t",
+                                               "Load combination",
+                                               div(class="inLine space_l", uiOutput("dlsLoad", inline=TRUE))),
+                                           div(tags$b(class="space_r", "Outcome variable:"), span(id="dlsPh_1", class="ph", DLS$PH1), textOutput("dlsVar_outcome", inline=TRUE)),
+                                           div(tags$b(class="space_r", "Treatments:"), span(id="dlsPh_2", class="ph", DLS$PH2), textOutput("dlsVar_treatment", inline=TRUE)),
+                                           div(tags$b(class="space_r", "Covariates:"), span(id="dlsPh_3", class="ph", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
                                            br(),
                                            tableOutput("dlsCodec"),
-                                           actionButton(class="space_t", "dlsButton", "Implement double Lasso selection"),
+                                           div(class="inLine",
+                                               actionButton(class="space_t", "dlsButton", "Implement double Lasso selection"),
+                                               downloadButton(class="space_t", "dlsFile_download", "Download saved combination")),
                                            verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,

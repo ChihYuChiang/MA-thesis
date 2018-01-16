@@ -44,6 +44,7 @@ DLS <- list(
   C4="Refer to \"Codec\" section for additional information of the variables.",
   C5="Click the \"IMPLEMENT DOUBLE LASSO SELECTION\" button to proceed.",
   C6="The app processes the selection and shows a simple lm result with the selected variables.",
+  C7="The app supports saving variable combinations. You can output them as a file or retrieve them later on.",
   
   N1="Select the number of variables as instructed.",
   N2="Please allow some time (should be < 10 secs) for the app to process.",

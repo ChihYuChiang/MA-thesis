@@ -222,7 +222,7 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
 
 
 #--Function save selected value
-updateDlsVar <- function(phId, cur) {
+updateDlsVar <- function(id, cur) {
   #Get var from server.R frame
   input <- get("input", parent.frame())
   session <- get("session", parent.frame())
@@ -231,13 +231,10 @@ updateDlsVar <- function(phId, cur) {
   selectedVar <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
   
   #Check input
-  switch(phId,
-         ph_dls_1={if(length(selectedVar) > 1) {shinyjs::alert(DLS$PH1); return(cur)}},
-         ph_dls_3={if(length(selectedVar) > 0 & length(selectedVar) < 2) {shinyjs::alert(DLS$PH3); return(cur)}}
+  switch(id,
+         "1"={if(length(selectedVar) > 1) {shinyjs::alert(DLS$PH1); return(cur)}},
+         "3"={if(length(selectedVar) > 0 & length(selectedVar) < 2) {shinyjs::alert(DLS$PH3); return(cur)}}
   )
-  
-  #Deal with placeholder
-  if(is.null(selectedVar)) shinyjs::show(phId) else shinyjs::hide(phId)
   
   #Clean selection
   map(c("var_dls_1", "var_dls_2", "var_dls_3", "var_dls_4", "var_dls_5", "var_dls_6"),
@@ -249,6 +246,12 @@ updateDlsVar <- function(phId, cur) {
 
 #--Function produces dynamic codec for non-codec section
 produceCodec <- function(targetColName) {
+  #Deal with NA
+  suppressWarnings({targetColName <- na.omit(targetColName)})
+  
+  #Hide table when nothing is selected and rv has no values
+  if(length(targetColName) == 0) return(NULL)
+  
   #Acquire description of specific vars
   filter <- codec$Variable %in% targetColName
   
@@ -256,6 +259,5 @@ produceCodec <- function(targetColName) {
   syn <- sum(!(targetColName %in% codec$Variable))
   subCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
   
-  #Hide table when nothing is selected and rv has no values
-  return(if(nrow(subCodec) == 0) NULL else subCodec)
+  return(subCodec)
 }

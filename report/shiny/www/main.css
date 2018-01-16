@@ -27,6 +27,10 @@ hr.large {
   border-width: 1px;
 }
 
+input.form-control {
+  margin-left: 0.5em;
+}
+
 .note span {
   padding-left: 20px;
 }

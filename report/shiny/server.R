@@ -76,7 +76,7 @@ server <- function(session, input, output) {
   ........LoadDls <- function() {}
   
   observeEvent(input$dlsFile_upload, {
-    rv$dlsSave <- read.csv(input$dlsFile_upload$datapath)
+    rv$dlsSave <- fread(input$dlsFile_upload$datapath)
   })
   
   
@@ -99,7 +99,7 @@ server <- function(session, input, output) {
     if(is.null(rv$dlsVar_outcome) | is.null(rv$dlsVar_treatment) | is.null(rv$dlsVar_covariate))  return()
     
     shinyjs::show("saved")
-    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=","), paste(rv$dlsVar_treatment, collapse=","), paste(rv$dlsVar_covariate, collapse=",")))
+    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=" "), paste(rv$dlsVar_treatment, collapse=" "), paste(rv$dlsVar_covariate, collapse=" ")))
     
     #Return the number of saved entries
     nrow(rv$dlsSave)
@@ -116,26 +116,47 @@ server <- function(session, input, output) {
   #--Dynamically show codec when var selected
   dlsCodec.out <- reactive({
     targetColName <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
-    selectedColName <- isolate({c(rv$dlsVar_outcome, rv$dlsVar_treatment, rv$dlsVar_covariate)})
+    selectedColName <- c(rv$dlsVar_outcome, rv$dlsVar_treatment, rv$dlsVar_covariate)
     
     #Ref to Func.R
     produceCodec(c(targetColName, selectedColName))
   })
+
   
+  #--Update selected var
+  dlsVar_outcome.out <- reactive({
+    if(rv$dlsVar_outcome %>% na.omit() %>% length() == 0) {shinyjs::show("dlsPh_1"); NULL}
+    else {shinyjs::hide("dlsPh_1"); rv$dlsVar_outcome}
+  })
+  dlsVar_treatment.out <- reactive({
+    if(rv$dlsVar_treatment %>% na.omit() %>% length() == 0) {shinyjs::show("dlsPh_2"); NULL}
+    else {shinyjs::hide("dlsPh_2"); rv$dlsVar_treatment}
+  })
+  dlsVar_covariate.out <- reactive({
+    if(rv$dlsVar_covariate %>% na.omit() %>% length() == 0) {shinyjs::show("dlsPh_3"); NULL}
+    else {shinyjs::hide("dlsPh_3"); rv$dlsVar_covariate}
+  })
   
-  #--Record the var and clean the selection
-  dlsVar_outcome.out <- eventReactive(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar("ph_dls_1", rv$dlsVar_outcome)})
-  dlsVar_treatment.out <- eventReactive(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar("ph_dls_2", rv$dlsVar_treatment)})
-  dlsVar_covariate.out <- eventReactive(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar("ph_dls_3", rv$dlsVar_covariate)})
+  #Record the var from selection and clean the selection
+  observeEvent(input$dlsButton_outcome, {rv$dlsVar_outcome <- updateDlsVar("1", rv$dlsVar_outcome)})
+  observeEvent(input$dlsButton_treatment, {rv$dlsVar_treatment <- updateDlsVar("2", rv$dlsVar_treatment)})
+  observeEvent(input$dlsButton_covariate, {rv$dlsVar_covariate <- updateDlsVar("3", rv$dlsVar_covariate)})
   
+  #Update the var from saved combination
+  observeEvent(input$dlsLoadCom, {
+    rv$dlsVar_outcome <- rv$dlsSave[as.integer(input$dlsLoadCom), outcome]
+    rv$dlsVar_treatment <- rv$dlsSave[as.integer(input$dlsLoadCom), treatment] %>% as.character() %>% strsplit(split=" ") %>% unlist()
+    rv$dlsVar_covariate <- rv$dlsSave[as.integer(input$dlsLoadCom), covariate] %>% as.character() %>% strsplit(split=" ") %>% unlist()
+  })
+
 
   #--Implement double Lasso selection (+ simple lm)
   dls.out <- eventReactive(input$dlsButton, {
     #Save as independent vars to avoid data.table syntax problems
-    outcomeVar <- rv$dlsVar_outcome[1]
+    outcomeVar <- rv$dlsVar_outcome
     ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar)
     covariateVar <- rv$dlsVar_covariate
-    
+
     #Input check: the vars selected cannot be overlapped
     if(length(union(ytreatmentVar, covariateVar)) != length(c(ytreatmentVar, covariateVar))) {
       return("Overlapped selection between the constructs.")
@@ -144,13 +165,13 @@ server <- function(session, input, output) {
     #Get respective DT
     df_ytreatment <- DT[, ..ytreatmentVar]
     df_test <- DT[, ..covariateVar]
-    
+
     #Use the function to acquire the selected dfs
     DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar=outcomeVar)
-    
+
     #Implement simple lm
     model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
-    
+
     #Output summary
     summary(model_lm)
   })
@@ -452,7 +473,7 @@ server <- function(session, input, output) {
   ....RenderOutput <- function() {}
 
   "
-  ### Show double Lasso selection saving result
+  ### Download double Lasso selection saved result
   "
   ........DownloadDlsSave <- function() {}
   
@@ -484,7 +505,7 @@ server <- function(session, input, output) {
                                           label=NULL, width="120px",
                                           choice=if(nrow(rv$dlsSave) == 0) NULL else seq(1, nrow(rv$dlsSave)))
                             })
-  
+
   
   
   
@@ -500,9 +521,9 @@ server <- function(session, input, output) {
   output$dlsVar_covariate <- renderText({dlsVar_covariate.out()})
   
   output$dls <- renderPrint({dls.out()})
-    
 
 
+  
 
   "
   ### Render dists
