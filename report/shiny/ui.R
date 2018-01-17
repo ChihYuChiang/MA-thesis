@@ -201,12 +201,13 @@ ui <- fluidPage(#--Header
                                                                   "Ideal (self)"="IdS",
                                                                   "In-game (fellow)"="InF",
                                                                   "Real (fellow)"="OutF",
-                                                                  "Stereotype (Self)"="SteS")),
+                                                                  "Stereotype (self)"="SteS")),
                                              checkboxGroupInput("type_personalityG", width=CHECKBOX_WIDTH,
                                                                 PERSON$ST2,
-                                                                c("In-game - Real"="InSOutS",
-                                                                  "Ideal - In-game"="IdSInS",
-                                                                  "Ideal - Real"="IdSOutS"))
+                                                                c("In-game - Real (self)"="InSOutS",
+                                                                  "In-game - Real (fellow)"="InFOutF",
+                                                                  "Ideal - In-game (self)"="IdSInS",
+                                                                  "Ideal - Real (self)"="IdSOutS"))
                                            ),
                                            span(class="clear"), #Clear the float effect above
                                            actionButton("distButton_personality", "Draw distribution")),
