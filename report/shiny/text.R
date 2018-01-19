@@ -50,9 +50,9 @@ DLS <- list(
   N2="Please allow some time (should be < 10 secs) for the app to process.",
   N3="If the result is not display, try click the button again.",
   
-  PH1="select only 1 variable as outcome",
-  PH2="select 1+ variables as treatments",
-  PH3="select 2+ variables as covariates"
+  PH1="Select only 1 variable as outcome",
+  PH2="Select 1+ variables as treatments",
+  PH3="Select 2+ variables as covariates"
 )
 
 

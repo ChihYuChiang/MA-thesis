@@ -81,6 +81,10 @@ input.form-control {
   margin-top: 1em;
 }
 
+.space_b {
+  margin-bottom: 1em;
+}
+
 .inLine {
   display: inline-block;
 }

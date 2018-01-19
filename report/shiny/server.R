@@ -30,7 +30,7 @@ server <- function(session, input, output) {
   
   #Create customized reactive value to store info between reactions
   rv <- reactiveValues()
-  
+
   
   
   
@@ -95,16 +95,16 @@ server <- function(session, input, output) {
   
   #--Save current selection when btn clicked
   dlsSave.out <- eventReactive(input$dlsButton_save, {
-    #Input check: all 3 constructs have to have selection
-    if(is.null(rv$dlsVar_outcome) | is.null(rv$dlsVar_treatment) | is.null(rv$dlsVar_covariate))  return()
+    #Input check: outcome has to have selection
+    if(rv$dlsVar_outcome %>% na.omit() %>% length() == 0)  return()
     
     shinyjs::show("saved")
-    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=" "), paste(rv$dlsVar_treatment, collapse=" "), paste(rv$dlsVar_covariate, collapse=" ")))
+    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=" "), paste(rv$dlsVar_treatment %>% na.omit(), collapse=" "), paste(rv$dlsVar_covariate %>% na.omit(), collapse=" ")))
     
     #Return the number of saved entries
     nrow(rv$dlsSave)
   })
-  
+
   
   
   
@@ -119,7 +119,7 @@ server <- function(session, input, output) {
     selectedColName <- c(rv$dlsVar_outcome, rv$dlsVar_treatment, rv$dlsVar_covariate)
     
     #Ref to Func.R
-    produceCodec(c(targetColName, selectedColName))
+    produceCodec(c(targetColName, selectedColName) %>% na.omit())
   })
 
   
@@ -150,30 +150,44 @@ server <- function(session, input, output) {
   })
 
 
-  #--Implement double Lasso selection (+ simple lm)
+  #--Implement double Lasso selection (+ simple lm or other model)
   dls.out <- eventReactive(input$dlsButton, {
+    #--Initialization
     #Save as independent vars to avoid data.table syntax problems
-    outcomeVar <- rv$dlsVar_outcome
-    ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar)
-    covariateVar <- rv$dlsVar_covariate
+    outcomeVar <- rv$dlsVar_outcome %>% na.omit()
+    ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar) %>% na.omit()
+    covariateVar <- rv$dlsVar_covariate %>% na.omit()
 
-    #Input check: the vars selected cannot be overlapped
-    if(length(union(ytreatmentVar, covariateVar)) != length(c(ytreatmentVar, covariateVar))) {
-      return("Overlapped selection between the constructs.")
-    }
-
-    #Get respective DT
-    df_ytreatment <- DT[, ..ytreatmentVar]
-    df_test <- DT[, ..covariateVar]
-
-    #Use the function to acquire the selected dfs
-    DT_select <- lassoSelect(df_yx=DT, df_ytreatment=df_ytreatment, df_test=df_test, outcomeVar=outcomeVar)
-
-    #Implement simple lm
-    model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
-
-    #Output summary
-    summary(model_lm)
+    #Input check (general)
+    if(length(outcomeVar) == 0) {return("Oucome variable cannot be NULL.")}
+    if(length(union(ytreatmentVar, covariateVar)) != length(c(ytreatmentVar, covariateVar))) {return("Overlapped selection between the constructs.")}
+  
+    
+    #--Select process to proceed
+    switch(input$dlsMode,
+      "LM"={
+        #Input check (particular condition)
+        if(length(ytreatmentVar) == 1) {return("Treatment must be 1 or more variables.")}
+        
+        #Implement simple lm
+        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT[, ..ytreatmentVar])
+       
+        #Output summary
+        summary(model_lm)
+      },
+      "DLS + LM"={
+        #Input check (particular condition)
+        if(length(covariateVar) == 0) {return("Covariate must be 2 or more variables.")}
+        
+        #Use the function to acquire the selected dfs
+        DT_select <- lassoSelect(df=DT, ytreatment=ytreatmentVar, test=covariateVar, outcome=outcomeVar)
+        
+        #Implement simple lm
+        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
+        
+        #Output summary
+        summary(model_lm)
+      })
   })
   
   

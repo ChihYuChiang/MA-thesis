@@ -169,11 +169,12 @@ acquireBetaIndices <- function(df_x, y, lambda, n, p) {
 
 
 #--Function to perform double lasso selection
-#output = a new df_yx with variables selected from df_yx
-lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
+#output = a new df with variables selected
+lassoSelect <- function(df, ytreatment, test, outcome) {
   #--Setting up
-  #Df af all variables
-  df_yx <- cbind(df_ytreatment, df_test)
+  df_ytreatment <- df[, ..ytreatment]
+  df_test <- df[, ..test]
+  c_outcome <- df[[outcome]]
   
   #The number of observations
   n <- nrow(df_test)
@@ -185,11 +186,11 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   #--Select vars that predict outcome
   #Lambda is initialized as the se of residuals of a simple linear using only treatments predicting dependent variable
   #If the treatment var is NULL, use the se pf dependent var to initiate
-  residual.se <- if(ncol(df_ytreatment) == 1) {sd(df_yx[[outcomeVar]])} else {sd(residuals(lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=df_ytreatment)))}
+  residual.se <- if(ncol(df_ytreatment) == 1) {sd(c_outcome)} else {sd(residuals(lm(as.formula(sprintf("`%s` ~ .", outcome)), data=df_ytreatment)))}
   lambda <- updateLambda(n=n, p=p, se=residual.se)
   
   #by Lasso model: dependent variable ~ test variables
-  betaIndices <- acquireBetaIndices(df_x=df_test, y=df_yx[[outcomeVar]], lambda=lambda, n=n, p=p)
+  betaIndices <- acquireBetaIndices(df_x=df_test, y=c_outcome, lambda=lambda, n=n, p=p)
   
   
   #--Select vars that predict treatments
@@ -198,14 +199,14 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   if(ncol(df_ytreatment) != 1) { #Run only when treatment vars not NULL
     for(i in seq(2, ncol(df_ytreatment))) {
       #Acquire target treatment variable
-      treatment <- df_ytreatment[[i]]
+      c_treatment <- df_ytreatment[[i]]
       
       #Lambda is initialized as the se of the target treatment variable
-      treatment.se <- sd(treatment)
-      lambda <- updateLambda(n=n, p=p, se=treatment.se)
+      c_treatment.se <- sd(c_treatment)
+      lambda <- updateLambda(n=n, p=p, se=c_treatment.se)
       
       #Acquire the indices and union the result indices of each treatment variable
-      betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=treatment, lambda=lambda, n=n, p=p))
+      betaIndices <- union(betaIndices, acquireBetaIndices(df_x=df_test, y=c_treatment, lambda=lambda, n=n, p=p))
     }
   }
   
@@ -214,10 +215,10 @@ lassoSelect <- function(df_yx, df_ytreatment, df_test, outcomeVar) {
   betaIndices <- setdiff((betaIndices - 1), 0)
   
   #Bind the selected variables with dependent and treatment variables
-  df_yx_selected <- if(nrow(df_test[, ..betaIndices]) == 0) df_ytreatment else cbind(df_ytreatment, df_test[, ..betaIndices])
+  df_selected <- if(nrow(df_test[, ..betaIndices]) == 0) df_ytreatment else cbind(df_ytreatment, df_test[, ..betaIndices])
   
-  #Return a new df_yx with variables selected
-  return(df_yx_selected)
+  #Return a new df with variables selected
+  return(df_selected)
 }
 
 
@@ -228,7 +229,8 @@ updateDlsVar <- function(id, cur) {
   session <- get("session", parent.frame())
   
   #Save selected value
-  selectedVar <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6)
+  selectedVar <- c(input$var_dls_1, input$var_dls_2, input$var_dls_3, input$var_dls_4, input$var_dls_5, input$var_dls_6) %>%
+    na.omit()
   
   #Check input
   switch(id,
@@ -246,9 +248,6 @@ updateDlsVar <- function(id, cur) {
 
 #--Function produces dynamic codec for non-codec section
 produceCodec <- function(targetColName) {
-  #Deal with NA
-  suppressWarnings({targetColName <- na.omit(targetColName)})
-  
   #Hide table when nothing is selected and rv has no values
   if(length(targetColName) == 0) return(NULL)
   

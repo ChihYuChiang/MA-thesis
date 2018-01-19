@@ -417,7 +417,7 @@ lassoSelect <- function(df, ytreatment, test, outcome) {
   df_ytreatment <- df[, ..ytreatment]
   df_test <- df[, ..test]
   c_outcome <- df[[outcome]]
-  
+
   #The number of observations
   n <- nrow(df_test)
   
