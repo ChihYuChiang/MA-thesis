@@ -172,8 +172,8 @@ server <- function(session, input, output) {
         #Implement simple lm
         model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT[, ..ytreatmentVar])
        
-        #Output summary
-        summary(model_lm)
+        #Output summary with outcome var as title
+        list(outcomeVar, summary(model_lm))
       },
       "DLS + LM"={
         #Input check (particular condition)
@@ -185,8 +185,8 @@ server <- function(session, input, output) {
         #Implement simple lm
         model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
         
-        #Output summary
-        summary(model_lm)
+        #Output summary with outcome var as title
+        list(outcomeVar, summary(model_lm))
       })
   })
   
