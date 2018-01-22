@@ -107,6 +107,7 @@ colIndex_OutF <- grep("^PersonOutF-\\d$", names(DT))
 colIndex_InS <- grep("^PersonInS-\\d$", names(DT))
 colIndex_OutS <- grep("^PersonOutS-\\d$", names(DT))
 colIndex_IdS <- grep("^PersonIdS-\\d$", names(DT))
+colIndex_SteS <- grep("^PersonSteS-\\d$", names(DT))
 
 #InF - OutF (original and absolute)
 InFOutF <- DT[, colIndex_InF, with=FALSE] - DT[, colIndex_OutF, with=FALSE]
@@ -136,17 +137,35 @@ DT[, (newColName) := IdSOutS]
 newColName <- gsub("(\\d)", "ab\\1", newColName)
 DT[, (newColName) := abs(IdSOutS)]
 
+#InS - SteS (original and absolute)
+InSSteS <- DT[, colIndex_InS, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
+newColName <- gsub("InS", "InSSteS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+DT[, (newColName) := InSSteS]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(InSSteS)]
+
+#OutS - SteS (original and absolute)
+OutSSteS <- DT[, colIndex_OutS, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
+newColName <- gsub("InS", "OutSSteS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+DT[, (newColName) := OutSSteS]
+newColName <- gsub("(\\d)", "ab\\1", newColName)
+DT[, (newColName) := abs(OutSSteS)]
+
 #Gap sum
 DT[, "PersonInFOutF-sum" := rowSums(.SD), .SDcols=grep("^PersonInFOutF-\\d$", names(DT))]
 DT[, "PersonInSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-\\d$", names(DT))]
 DT[, "PersonIdSInS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-\\d$", names(DT))]
 DT[, "PersonIdSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-\\d$", names(DT))]
+DT[, "PersonInSSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonInSSteS-\\d$", names(DT))]
+DT[, "PersonOutSSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutSSteS-\\d$", names(DT))]
 
 #Gap absolute sum
 DT[, "PersonInFOutF-absum" := rowSums(.SD), .SDcols=grep("^PersonInFOutF-ab\\d$", names(DT))]
 DT[, "PersonInSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-ab\\d$", names(DT))]
 DT[, "PersonIdSInS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-ab\\d$", names(DT))]
 DT[, "PersonIdSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-ab\\d$", names(DT))]
+DT[, "PersonInSSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSSteS-ab\\d$", names(DT))]
+DT[, "PersonOutSSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonOutSSteS-ab\\d$", names(DT))]
 
 #InS, OutS, IdS, SteS sum
 DT[, "PersonInF-sum" := rowSums(.SD), .SDcols=grep("^PersonInF-\\d$", names(DT))]
@@ -159,7 +178,7 @@ DT[, "PersonSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonSteS-\\d$", names(DT
 #Update codec
 codec <- rbind(codec, list("PersonOO-Z",
                            "Personality gaps.
-                           OO = {InFOutF, InSOutS, IdSInS, IdSOutS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
+                           OO = {InFOutF, InSOutS, IdSInS, IdSOutS, InSSteS, OutSSteS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
                            Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation, ab(prefix): absolute}"))
 
 

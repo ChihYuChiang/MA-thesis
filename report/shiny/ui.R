@@ -208,7 +208,9 @@ ui <- fluidPage(#--Header
                                                                 c("In-game - Real (self)"="InSOutS",
                                                                   "In-game - Real (fellow)"="InFOutF",
                                                                   "Ideal - In-game (self)"="IdSInS",
-                                                                  "Ideal - Real (self)"="IdSOutS"))
+                                                                  "Ideal - Real (self)"="IdSOutS",
+                                                                  "In-game - Stereotype (self)"="InSSteS",
+                                                                  "Real - Stereotype (self)"="OutSSteS"))
                                            ),
                                            span(class="clear"), #Clear the float effect above
                                            actionButton("distButton_personality", "Draw distribution")),

@@ -9,7 +9,7 @@ dist_compare <- function(construct, types, item, gap=0) {
       item=c("1"="Extraversion", "2"="Agreeableness", "3"="Conscientiousness", "4"="Emotion stability", "5"="Openness", "sum"="Summation",
              "ab1"="Extraversion (absolute)", "ab2"="Agreeableness (absolute)", "ab3"="Conscientiousness (absolute)", "ab4"="Emotion stability (absolute)", "ab5"="Openness (absolute)", "absum"="Summation (absolute)"),
       type=c("InS"="In-game (self)", "OutS"="Real (self)", "IdS"="Ideal (self)", "InF"="In-game (fellow)", "OutF"="Real (fellow)", "SteS"="Stereotype (self)",
-             "InSOutS"="In-game - real (self)", "InFOutF"="In-game - real (fellow)", "IdSInS"="Ideal - in-game (self)", "IdSOutS"="Ideal - real (self)")
+             "InSOutS"="In-game - real (self)", "InFOutF"="In-game - real (fellow)", "IdSInS"="Ideal - in-game (self)", "IdSOutS"="Ideal - real (self)", "InSSteS"="In-game - Stereo (self)", "OutSSteS"="Real - stereo (self)")
     ),
     "SDT"=list(
       item=c("1"="Autonomy", "2"="Relatedness", "3"="Competence", "sum"="Summation",
