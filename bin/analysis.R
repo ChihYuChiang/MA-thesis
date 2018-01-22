@@ -742,7 +742,7 @@ mseSd_lm_cv <- sd(mses_lm_cv)
 
 #--Create cross validation datasets
 #Update vars
-updateVars(update_predictors=FALSE)
+updateVars()
 
 #Leave-one-out: k=nrow(df_yx)
 df_yx_cv <- crossv_kfold(dfs$df_yx[[1]], k=10)
@@ -1070,6 +1070,9 @@ t.test(df_player$game_conscientiousness, df_player$real_conscientiousness, paire
 t.test(df_player$game_extraversion, df_player$real_extraversion, paired=TRUE)
 t.test(df_player$game_emotionstability, df_player$real_emotionstability, paired=TRUE)
 t.test(df_player$game_openness, df_player$real_openness, paired=TRUE)
+t.test(df_player$game_openness + df_player$game_emotionstability + df_player$game_extraversion + df_player$game_conscientiousness + df_player$game_agreeableness,
+       df_player$real_openness + df_player$real_emotionstability + df_player$real_extraversion + df_player$real_conscientiousness + df_player$real_agreeableness,
+       paired=TRUE)
 
 
 
