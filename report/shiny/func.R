@@ -222,6 +222,23 @@ lassoSelect <- function(df, ytreatment, test, outcome) {
 }
 
 
+#--Identify vars to be processed by dls
+#Function to make obj expression of a string vector
+objstr <- function(ss) {
+  ss_obj <- character()
+  for(s in ss) ss_obj <- c(ss_obj, sub(":", "`:`", sprintf("`%s`", s)))
+  return(ss_obj)
+}
+
+#Function to remove obj expression of a df
+deobjdf <- function(df) {
+  ss_deobj <- character()
+  for(s in names(df)) ss_deobj <- c(ss_deobj, gsub("`", "", x=s))
+  names(df) <- ss_deobj
+  return(df)
+}
+
+
 #--Function save selected value
 updateDlsVar <- function(id, cur) {
   #Get var from server.R frame

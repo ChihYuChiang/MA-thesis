@@ -155,22 +155,29 @@ server <- function(session, input, output) {
     #--Initialization
     #Save as independent vars to avoid data.table syntax problems
     outcomeVar <- rv$dlsVar_outcome %>% na.omit()
-    ytreatmentVar <- c(rv$dlsVar_treatment, outcomeVar) %>% na.omit()
+    treatmentVar <- rv$dlsVar_treatment %>% na.omit()
     covariateVar <- rv$dlsVar_covariate %>% na.omit()
+    DT_dls <- sprintf("~%s", paste(c(treatmentVar %>% objstr, covariateVar %>% objstr), collapse="+")) %>%
+      as.formula %>%
+      model.matrix(data=DT) %>%
+      as.data.table %>%
+      deobjdf %>%
+      cbind(DT[, ..outcomeVar])
 
     #Input check (general)
     if(length(outcomeVar) == 0) {return("Oucome variable cannot be NULL.")}
-    if(length(union(ytreatmentVar, covariateVar)) != length(c(ytreatmentVar, covariateVar))) {return("Overlapped selection between the constructs.")}
+    if(length(outcomeVar %>% union(treatmentVar) %>% union(covariateVar)) != length(c(outcomeVar, treatmentVar, covariateVar))) {return("Overlapped selection between the constructs.")}
   
     
     #--Select process to proceed
     switch(input$dlsMode,
       "LM"={
         #Input check (particular condition)
-        if(length(ytreatmentVar) == 1) {return("Treatment must be 1 or more variables.")}
+        if(length(treatmentVar) == 0) {return("Treatment must be 1 or more variables.")}
         
         #Implement simple lm
-        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT[, ..ytreatmentVar])
+        ytreatmentVar <- union(outcomeVar, treatmentVar)
+        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_dls[, ..ytreatmentVar])
        
         #Output summary with outcome var as title
         list(outcomeVar, summary(model_lm))
@@ -180,7 +187,7 @@ server <- function(session, input, output) {
         if(length(covariateVar) == 0) {return("Covariate must be 2 or more variables.")}
         
         #Use the function to acquire the selected dfs
-        DT_select <- lassoSelect(df=DT, ytreatment=ytreatmentVar, test=covariateVar, outcome=outcomeVar)
+        DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcomeVar, treatmentVar), test=covariateVar, outcome=outcomeVar)
         
         #Implement simple lm
         model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)

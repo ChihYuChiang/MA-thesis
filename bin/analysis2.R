@@ -483,12 +483,37 @@ lassoSelect <- function(df, ytreatment, test, outcome) {
 }
 
 
-#--Use the function to acquire the selected dfs (the new dfs can be fed into the simple linear model)
-ytreatment <- c("GProfile-1", "PrefS-a1")
-test <- c("Demo-1", "Demo-2", "Demo-4", "PrefF-1")
-outcome <- "PrefS-a1"
+#--Identify vars to be processed
+#Function to make obj expression of a string vector
+objstr <- function(ss) {
+  ss_obj <- character()
+  for(s in ss) ss_obj <- c(ss_obj, sub(":", "`:`", sprintf("`%s`", s)))
+  return(ss_obj)
+}
 
-DT_select <- lassoSelect(df=DT, ytreatment=ytreatment, test=test, outcome=outcome)
+#Function to remove obj expression of a df
+deobjdf <- function(df) {
+  ss_deobj <- character()
+  for(s in names(df)) ss_deobj <- c(ss_deobj, gsub("`", "", x=s))
+  names(df) <- ss_deobj
+  return(df)
+}
+
+#Note the interaction term is defined as e.g. "GProfile-1:GProfile-2"
+treatment <- c("GProfile-1", "GProfile-2", "GProfile-1:GProfile-2")
+test <- c("Demo-1", "Demo-2", "Demo-4", "PrefF-1", "Demo-4:PrefF-1")
+outcome <- "PrefS-a2"
+
+DT_dls <- sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
+  as.formula %>%
+  model.matrix(data=DT) %>%
+  as.data.table %>%
+  deobjdf %>%
+  cbind(DT[, ..outcome])
+
+
+#--Apply the function to acquire the selected dfs
+DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcome, treatment), test=test, outcome=outcome)
 
 
 #--Simple lm implementation
