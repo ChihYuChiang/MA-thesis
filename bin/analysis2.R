@@ -519,3 +519,18 @@ DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcome, treatment), test=t
 #--Simple lm implementation
 model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcome)), data=DT_select)
 summary(model_lm)
+
+
+tt <- fread("../data/vars2/dlsFile_download2.csv")
+ha <- c("treatment", "covariate")
+tt[, (ha) := lapply(.SD, function(x) {base::strsplit(x, split=" ")}), .SDcols=ha]
+
+ddd <- function(outcome, treatment, covariate) {
+  sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
+    as.formula %>%
+    model.matrix(data=DT) %>%
+    as.data.table %>%
+    deobjdf %>%
+    cbind(DT[, ..outcome])
+}
+pmap(tt, ddd)
