@@ -499,38 +499,75 @@ deobjdf <- function(df) {
   return(df)
 }
 
-#Note the interaction term is defined as e.g. "GProfile-1:GProfile-2"
-treatment <- c("GProfile-1", "GProfile-2", "GProfile-1:GProfile-2")
-test <- c("Demo-1", "Demo-2", "Demo-4", "PrefF-1", "Demo-4:PrefF-1")
-outcome <- "PrefS-a2"
-
-DT_dls <- sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
-  as.formula %>%
-  model.matrix(data=DT) %>%
-  as.data.table %>%
-  deobjdf %>%
-  cbind(DT[, ..outcome])
-
-
-#--Apply the function to acquire the selected dfs
-DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcome, treatment), test=test, outcome=outcome)
-
-
-#--Simple lm implementation
-model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcome)), data=DT_select)
-summary(model_lm)
-
-
-tt <- fread("../data/vars2/dlsFile_download2.csv")
-ha <- c("treatment", "covariate")
-tt[, (ha) := lapply(.SD, function(x) {base::strsplit(x, split=" ")}), .SDcols=ha]
-
-ddd <- function(outcome, treatment, covariate) {
+#Function to produce expanded dts
+expandDt <- function(outcome, treatment, test) {
   sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
     as.formula %>%
     model.matrix(data=DT) %>%
     as.data.table %>%
     deobjdf %>%
-    cbind(DT[, ..outcome])
+    cbind(DT[, outcome, with=FALSE])
 }
-pmap(tt, ddd)
+
+
+#--Multiple set var wrappers
+#lassoSelect
+lassoSelect_multi <- function(df, ytreatment, test, outcome) {
+  output <- list()
+  for(i in 1:length(df)) output[[i]] <- lassoSelect(df=df[[i]], ytreatment=ytreatment[[i]], test=test[[i]], outcome=outcome[[i]])
+  return(output)
+}
+
+#expandDt
+expandDt_multi <- function(outcome, treatment, test) {
+  output <- list()
+  for(i in 1:length(outcome)) output[[i]] <- expandDt(outcome[[i]], treatment[[i]], test[[i]])
+  return(output)
+}
+
+#lm
+lm_multi <- function(outcome, data) {
+  output <- list()
+  for(i in 1:length(outcome)) output[[i]] <- lm(as.formula(sprintf("`%s` ~ .", outcome[[i]])), data=data[[i]])
+  return(output)
+}
+
+
+#--Implementation of 1 var set
+#Identify the vars
+#Note the interaction term is defined as e.g. "GProfile-1:GProfile-2"
+treatment <- c("GProfile-1", "GProfile-2", "GProfile-1:GProfile-2")
+test <- c("Demo-1", "Demo-2", "Demo-4", "PrefF-1", "Demo-4:PrefF-1")
+outcome <- "PrefS-a2"
+
+#Apply the functions to acquire the selected df
+DT_dls <- expandDt(outcome, treatment, test)
+DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcome, treatment), test=test, outcome=outcome)
+
+#Simple lm implementation
+model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcome)), data=DT_select)
+summary(model_lm)
+
+
+#--Implementation of multiple var set
+#Read in a df of vars
+DTs_dls <- fread("../data/vars2/dlsFile_download2.csv")
+
+#Processing the text of each cell
+DTs_dls[, (c("treatment", "covariate")) := lapply(.SD, function(x) {base::strsplit(x, split=" ")}), .SDcols=c("treatment", "covariate")][
+  
+#Select the vars as dts
+  , df := expandDt_multi(outcome, treatment, covariate)][
+  
+#Apply dls to each df 
+  , df_select := lassoSelect_multi(df=df, ytreatment=union(outcome, treatment), test=covariate, outcome=outcome)][
+
+#Apply simple lm
+  , model_lm := lm_multi(outcome=outcome, data=df_select)]
+
+#Print model summaries
+for(i in 1:nrow(DTs_dls)) {
+  sprintf("Model %s", i) %>% print
+  sprintf("outcome: %s", DTs_dls[i, outcome][[1]]) %>% print
+  DTs_dls[i, model_lm][[1]] %>% summary %>% print #Each cell is selected as a list and therefore require subsetting
+}
