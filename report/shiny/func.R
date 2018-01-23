@@ -1,6 +1,8 @@
 "
 ### Distribution comparison
 "
+...DistComparison <- function() {}
+
 #Function for distribution comparison
 dist_compare <- function(construct, types, item, gap=0) {
   #A map for construct and item code and str pairs
@@ -55,12 +57,7 @@ dist_compare <- function(construct, types, item, gap=0) {
 }
 
 
-
-
-"
-### Distribution
-"
-#Function for dist
+#--Function for dist
 dist_gen <- function(targetColName) {
   ggplot(data=DT[, targetColName, with=FALSE]) +
     geom_histogram(mapping=aes_(x=as.name(targetColName)),
@@ -73,50 +70,10 @@ dist_gen <- function(targetColName) {
 
 
 "
-### Multiple plot function (Modify from Cookbook for R)
-"
-# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
-# - cols:   Number of columns in layout
-# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
-#
-# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
-# then plot 1 will go in the upper left, 2 will go in the upper right, and
-# 3 will go all the way across the bottom.
-
-multiplot <- function(..., plotlist=NULL, file, cols=1) {
-  library(grid)
-  
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  
-  numPlots = length(plots)
-  
-  # Make the panel
-  # ncol: Number of columns of plots
-  # nrow: Number of rows needed, calculated from # of cols
-  layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                   ncol = cols, nrow = ceiling(numPlots/cols))
-  
-  # Set up the page
-  grid.newpage()
-  pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-  
-  # Make each plot, in the correct location
-  for (i in 1:numPlots) {
-    # Get the i,j matrix positions of the regions that contain this subplot
-    matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-    
-    print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                    layout.pos.col = matchidx$col))
-  }
-}
-
-
-
-
-"
 ### T-test
 "
+...TTest <- function() {}
+
 tTest <- function(construct, types, item) {
   col1 <- sprintf("%s%s-%s", construct, types[1], item)
   col2 <- sprintf("%s%s-%s", construct, types[2], item)
@@ -142,6 +99,8 @@ tTest <- function(construct, types, item) {
 "
 ### Double Lasso selection
 "
+...DLS <- function() {}
+
 #--Function for updating lambda used in selection
 #n = number of observation; p = number of independent variables; se = standard error of residual or dependent variable
 updateLambda <- function(n, p, se) {se * (1.1 / sqrt(n)) * qnorm(1 - (.1 / log(n)) / (2 * p))}
@@ -222,7 +181,7 @@ lassoSelect <- function(df, ytreatment, test, outcome) {
 }
 
 
-#--Identify vars to be processed by dls
+#--Identify vars to be processed
 #Function to make obj expression of a string vector
 objstr <- function(ss) {
   ss_obj <- character()
@@ -236,6 +195,43 @@ deobjdf <- function(df) {
   for(s in names(df)) ss_deobj <- c(ss_deobj, gsub("`", "", x=s))
   names(df) <- ss_deobj
   return(df)
+}
+
+#Function to produce expanded dts
+expandDt <- function(outcome, treatment, test) {
+  output <- sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
+    as.formula %>%
+    model.matrix(data=DT) %>%
+    as.data.table %>%
+    deobjdf %>%
+    cbind(DT[, outcome, with=FALSE])
+  output[, -1] #-1 to remove the intersection term created by matrix
+}
+
+
+#--Multiple set var wrappers
+#lassoSelect
+lassoSelect_multi <- function(df, treatment, test, outcome) {
+  output <- list()
+  for(i in 1:length(df)) {
+    ytreatment <- union(treatment[[i]], outcome[[i]])
+    output[[i]] <- lassoSelect(df=df[[i]], ytreatment=ytreatment, test=test[[i]], outcome=outcome[[i]])
+  }
+  return(output)
+}
+
+#expandDt
+expandDt_multi <- function(outcome, treatment, test) {
+  output <- list()
+  for(i in 1:length(outcome)) output[[i]] <- expandDt(outcome[[i]], treatment[[i]], test[[i]])
+  return(output)
+}
+
+#lm
+lm_multi <- function(outcome, data) {
+  output <- list()
+  for(i in 1:length(outcome)) output[[i]] <- lm(as.formula(sprintf("`%s` ~ .", outcome[[i]])), data=data[[i]])
+  return(output)
 }
 
 
@@ -263,6 +259,13 @@ updateDlsVar <- function(id, cur) {
 }
 
 
+
+
+"
+### General
+"
+...General <- function() {}
+
 #--Function produces dynamic codec for non-codec section
 produceCodec <- function(targetColName) {
   #Hide table when nothing is selected and rv has no values
@@ -276,4 +279,42 @@ produceCodec <- function(targetColName) {
   subCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
   
   return(subCodec)
+}
+
+
+#--Multiple plot function (Modify from Cookbook for R)
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+
+multiplot <- function(..., plotlist=NULL, file, cols=1) {
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # Make the panel
+  # ncol: Number of columns of plots
+  # nrow: Number of rows needed, calculated from # of cols
+  layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                   ncol = cols, nrow = ceiling(numPlots/cols))
+  
+  # Set up the page
+  grid.newpage()
+  pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+  
+  # Make each plot, in the correct location
+  for (i in 1:numPlots) {
+    # Get the i,j matrix positions of the regions that contain this subplot
+    matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+    
+    print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                    layout.pos.col = matchidx$col))
+  }
 }

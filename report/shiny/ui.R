@@ -161,7 +161,8 @@ ui <- fluidPage(#--Header
                                            tableOutput("dlsCodec"),
                                            div(class="inLine space_t", selectInput("dlsMode", label=NULL, choices=c("LM", "DLS + LM"), selected="LM", width="120px")),
                                            div(class="inLine space_l", actionButton(class="space_b", "dlsButton", "Implement")),
-                                           div(class="inLine space_l", downloadButton(class="space_b", "dlsFile_download", "Download saved combination")),
+                                           div(class="inLine space_l", actionButton(class="space_b", "dlsButton_multi", "Implement all")),
+                                           div(class="inLine space_l", downloadButton(class="space_b", "dlsFile_download", "Download saved combinations")),
                                            verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,

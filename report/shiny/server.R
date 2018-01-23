@@ -75,9 +75,7 @@ server <- function(session, input, output) {
   "
   ........LoadDls <- function() {}
   
-  observeEvent(input$dlsFile_upload, {
-    rv$dlsSave <- fread(input$dlsFile_upload$datapath)
-  })
+  observeEvent(input$dlsFile_upload, {fread(input$dlsFile_upload$datapath)})
   
   
   
@@ -150,53 +148,90 @@ server <- function(session, input, output) {
   })
 
 
-  #--Implement double Lasso selection (+ simple lm or other model)
-  dls.out <- eventReactive(input$dlsButton, {
+  #--Implement double Lasso selection on single var set
+  observeEvent(input$dlsButton, {
     #--Initialization
     #Save as independent vars to avoid data.table syntax problems
     outcomeVar <- rv$dlsVar_outcome %>% na.omit()
     treatmentVar <- rv$dlsVar_treatment %>% na.omit()
     covariateVar <- rv$dlsVar_covariate %>% na.omit()
-    DT_dls <- sprintf("~%s", paste(c(treatmentVar %>% objstr, covariateVar %>% objstr), collapse="+")) %>%
-      as.formula %>%
-      model.matrix(data=DT) %>%
-      as.data.table %>%
-      deobjdf %>%
-      cbind(DT[, ..outcomeVar])
-
+    
     #Input check (general)
-    if(length(outcomeVar) == 0) {return("Oucome variable cannot be NULL.")}
-    if(length(outcomeVar %>% union(treatmentVar) %>% union(covariateVar)) != length(c(outcomeVar, treatmentVar, covariateVar))) {return("Overlapped selection between the constructs.")}
+    if(length(outcomeVar) == 0) {rv$dls <- "Oucome variable cannot be empty."; return()}
+    if(length(outcomeVar %>% union(treatmentVar) %>% union(covariateVar)) != length(c(outcomeVar, treatmentVar, covariateVar))) {rv$dls <- "Overlapped selection between the constructs."; return()}
+    
+    #Expand the matrix
+    DT_dls <- expandDt(outcomeVar, treatmentVar, covariateVar)
   
     
     #--Select process to proceed
     switch(input$dlsMode,
       "LM"={
         #Input check (particular condition)
-        if(length(treatmentVar) == 0) {return("Treatment must be 1 or more variables.")}
+        if(length(union(treatmentVar, covariateVar)) == 0) {rv$dls <- "Treatment + covariate must be 1 or more variables."; return()}
         
         #Implement simple lm
         ytreatmentVar <- union(outcomeVar, treatmentVar)
-        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_dls[, ..ytreatmentVar])
-       
-        #Output summary with outcome var as title
-        list(outcomeVar, summary(model_lm))
+        model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_dls)
       },
       "DLS + LM"={
         #Input check (particular condition)
-        if(length(covariateVar) == 0) {return("Covariate must be 2 or more variables.")}
+        if(length(covariateVar) == 0) {rv$dls <- "Covariate must be 2 or more variables."; return()}
         
         #Use the function to acquire the selected dfs
         DT_select <- lassoSelect(df=DT_dls, ytreatment=union(outcomeVar, treatmentVar), test=covariateVar, outcome=outcomeVar)
         
         #Implement simple lm
         model_lm <- lm(as.formula(sprintf("`%s` ~ .", outcomeVar)), data=DT_select)
-        
-        #Output summary with outcome var as title
-        list(outcomeVar, summary(model_lm))
       })
+    
+    
+    #--Output summary with outcome var as title
+    rv$dls <- list(outcomeVar, summary(model_lm))
   })
   
+  
+  #--Implement double Lasso selection on multiple var sets
+  observeEvent(input$dlsButton_multi, {
+    #--Initialization
+    DTs_dls <- copy(rv$dlsSave)
+
+    #The var df can't be NULL
+    if(nrow(DTs_dls) == 0) {rv$dls <- "Saved variable set cannot be empty."; return()}
+  
+    #Processing the text of each cell
+    DTs_dls[, (c("treatment", "covariate")) := lapply(.SD, function(x) {base::strsplit(x, split=" ")}), .SDcols=c("treatment", "covariate")][
+    
+    #Expand the matrix
+      , df := expandDt_multi(outcome, treatment, covariate)]
+    
+    #--Select process to proceed
+    switch(input$dlsMode,
+           "LM"={
+             #Apply simple lm to each df 
+             DTs_dls[, model_lm := lm_multi(outcome=outcome, data=df)]
+           },
+           "DLS + LM"={
+             #Apply dls to each df 
+             DTs_dls[, df_select := lassoSelect_multi(df=df, treatment=treatment, test=covariate, outcome=outcome)][
+               
+             #Apply simple lm
+               , model_lm := lm_multi(outcome=outcome, data=df_select)]
+           })
+    
+    
+    #--Output summary with outcome var as title
+    rv$dls <- list()
+    for(i in 1:nrow(DTs_dls)) {
+      rv$dls[[i]] <- list(
+        sprintf("Model %s", i),
+        sprintf("outcome: %s", DTs_dls[i, outcome][[1]]),
+        DTs_dls[i, model_lm][[1]] %>% summary #Each cell is selected as a list and therefore require subsetting
+      )
+    }
+    return(rv$dls)
+  })
+
   
   
   
@@ -541,7 +576,7 @@ server <- function(session, input, output) {
   output$dlsVar_treatment <- renderText({dlsVar_treatment.out()})
   output$dlsVar_covariate <- renderText({dlsVar_covariate.out()})
   
-  output$dls <- renderPrint({dls.out()})
+  output$dls <- renderPrint({req(rv$dls); rv$dls})
 
 
   
