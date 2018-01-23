@@ -501,20 +501,24 @@ deobjdf <- function(df) {
 
 #Function to produce expanded dts
 expandDt <- function(outcome, treatment, test) {
-  sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
+  output <- sprintf("~%s", paste(c(treatment %>% objstr, test %>% objstr), collapse="+")) %>%
     as.formula %>%
     model.matrix(data=DT) %>%
     as.data.table %>%
     deobjdf %>%
     cbind(DT[, outcome, with=FALSE])
+  output[, -1] #-1 to remove the intersection term created by matrix
 }
 
 
 #--Multiple set var wrappers
 #lassoSelect
-lassoSelect_multi <- function(df, ytreatment, test, outcome) {
+lassoSelect_multi <- function(df, treatment, test, outcome) {
   output <- list()
-  for(i in 1:length(df)) output[[i]] <- lassoSelect(df=df[[i]], ytreatment=ytreatment[[i]], test=test[[i]], outcome=outcome[[i]])
+  for(i in 1:length(df)) {
+    ytreatment <- union(treatment[[i]], outcome[[i]])
+    output[[i]] <- lassoSelect(df=df[[i]], ytreatment=ytreatment, test=test[[i]], outcome=outcome[[i]])
+  }
   return(output)
 }
 
@@ -536,9 +540,9 @@ lm_multi <- function(outcome, data) {
 #--Implementation of 1 var set
 #Identify the vars
 #Note the interaction term is defined as e.g. "GProfile-1:GProfile-2"
-treatment <- c("GProfile-1", "GProfile-2", "GProfile-1:GProfile-2")
-test <- c("Demo-1", "Demo-2", "Demo-4", "PrefF-1", "Demo-4:PrefF-1")
-outcome <- "PrefS-a2"
+treatment <- c("PersonSteS-1", "PersonOutS-1", "PersonIdS-1")
+test <- c("PersonSteS-4", "PersonOutS-4", "PersonIdS-4")
+outcome <- "PersonInS-1"
 
 #Apply the functions to acquire the selected df
 DT_dls <- expandDt(outcome, treatment, test)
@@ -560,7 +564,7 @@ DTs_dls[, (c("treatment", "covariate")) := lapply(.SD, function(x) {base::strspl
   , df := expandDt_multi(outcome, treatment, covariate)][
   
 #Apply dls to each df 
-  , df_select := lassoSelect_multi(df=df, ytreatment=union(outcome, treatment), test=covariate, outcome=outcome)][
+  , df_select := lassoSelect_multi(df=df, treatment=treatment, test=covariate, outcome=outcome)][
 
 #Apply simple lm
   , model_lm := lm_multi(outcome=outcome, data=df_select)]
