@@ -77,12 +77,12 @@ input.form-control {
   margin-left: 4em;
 }
 
-.space_t {
-  margin-top: 1em;
-}
-
 .space_b {
   margin-bottom: 1em;
+}
+
+.space_b3 {
+  margin-bottom: 3em;
 }
 
 .inLine {

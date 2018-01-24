@@ -106,7 +106,7 @@ ui <- fluidPage(#--Header
                   
                   
                   #--Double Lasso selection
-                  tabPanel("Double Lasso Selection",
+                  tabPanel("Model (with DLS)",
                            fluidRow(column(width=12,
                                            h3(DLS$T1),
                                            h5(DLS$T2),
@@ -117,7 +117,8 @@ ui <- fluidPage(#--Header
                                              tags$li(DLS$C4),
                                              tags$li(DLS$C5),
                                              tags$li(DLS$C6),
-                                             tags$li(DLS$C7)
+                                             tags$li(DLS$C7),
+                                             tags$li(DLS$C8)
                                            ),
                                            span(class="note",
                                                 span("Note"),
@@ -159,10 +160,10 @@ ui <- fluidPage(#--Header
                                            div(tags$b(class="space_r", "Covariates:"), span(id="dlsPh_3", class="ph", DLS$PH3), textOutput("dlsVar_covariate", inline=TRUE)),
                                            br(),
                                            tableOutput("dlsCodec"),
-                                           div(class="inLine space_t", selectInput("dlsMode", label=NULL, choices=c("LM", "DLS + LM"), selected="LM", width="120px")),
-                                           div(class="inLine space_l", actionButton(class="space_b", "dlsButton", "Implement")),
-                                           div(class="inLine space_l", actionButton(class="space_b", "dlsButton_multi", "Implement all")),
-                                           div(class="inLine space_l", downloadButton(class="space_b", "dlsFile_download", "Download saved combinations")),
+                                           div(class="inLine", selectInput("dlsMode", label=NULL, choices=c("LM", "DLS + LM"), selected="LM", width="120px")),
+                                           div(class="inLine space_l", actionButton(class="space_b3", "dlsButton", "Implement")),
+                                           div(class="inLine space_l", actionButton(class="space_b3", "dlsButton_multi", "Implement all")),
+                                           div(class="inLine space_l", downloadButton(class="space_b3", "dlsFile_download", "Download saved combinations")),
                                            verbatimTextOutput("dls"))
                            ),
                            fluidRow(column(width=12,

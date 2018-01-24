@@ -35,16 +35,17 @@ FILTER <- list(
 "
 #--Double Lasso selection
 DLS <- list(
-  T1="Double Lasso Selection",
-  T2="(O. Urminsky, C. Hansen, and V. Chernozhukov, 2016)",
+  T1="Model (with Double Lasso Selection)",
+  T2="(O. Urminsky, C. Hansen, and V. Chernozhukov, 2018)",
   
   C1="Select and update variables for each construct, outcome, treatment, and covariate.",
-  C2="Treatments are variables will be included in the final model, no matter the selection.",
+  C2="Treatments are variables will be included in the final model.",
   C3="Covariates are variables to be selected by the double Lasso selection process.",
   C4="Refer to \"Codec\" section for additional information of the variables.",
-  C5="Click the \"IMPLEMENT DOUBLE LASSO SELECTION\" button to proceed.",
-  C6="The app processes the selection and shows a simple lm result with the selected variables.",
-  C7="The app supports saving variable combinations. You can output them as a file or retrieve them later on.",
+  C5="Select a type pf model to implement.",
+  C6="Click the \"IMPLEMENT\" button to proceed.",
+  C7="This app supports saving variable combinations. You can output them as a file or retrieve them later on.",
+  C8="This app supports batch processing. You can implement the selected model on all var combinations at once.",
   
   N1="Select the number of variables as instructed.",
   N2="Please allow some time (should be < 10 secs) for the app to process.",
