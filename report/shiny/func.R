@@ -276,7 +276,7 @@ produceCodec <- function(targetColName) {
   
   #When no match, additionally show the synthetic ones
   syn <- sum(!(targetColName %in% codec$Variable))
-  subCodec <- if(syn) rbind(codec[filter], tail(codec, 5)) else codec[filter]
+  subCodec <- if(syn) rbind(codec[filter], tail(codec, 6)) else codec[filter]
   
   return(subCodec)
 }
