@@ -75,7 +75,7 @@ server <- function(session, input, output) {
   "
   ........LoadDls <- function() {}
   
-  observeEvent(input$dlsFile_upload, {fread(input$dlsFile_upload$datapath)})
+  observeEvent(input$dlsFile_upload, {rv$dlsSave <- fread(input$dlsFile_upload$datapath)})
   
   
   
