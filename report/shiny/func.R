@@ -223,7 +223,7 @@ lassoSelect_multi <- function(df, treatment, test, outcome) {
 #expandDt
 expandDt_multi <- function(outcome, treatment, test) {
   output <- list()
-  for(i in 1:length(outcome)) output[[i]] <- expandDt(outcome[[i]], treatment[[i]], test[[i]])
+  for(i in 1:length(outcome)) output[[i]] <- expandDt(na.omit(outcome[[i]]), na.omit(treatment[[i]]), na.omit(test[[i]]))
   return(output)
 }
 

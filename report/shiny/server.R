@@ -195,12 +195,17 @@ server <- function(session, input, output) {
   observeEvent(input$dlsButton_multi, {
     #--Initialization
     DTs_dls <- copy(rv$dlsSave)
-
-    #The var df can't be NULL
+    
+    #Input check (general)
     if(nrow(DTs_dls) == 0) {rv$dls <- "Saved variable set cannot be empty."; return()}
+    #____todo: check each outcome is not empty
+    #____todo: chech each model not having overlapping constructs
   
     #Processing the text of each cell
-    DTs_dls[, (c("treatment", "covariate")) := lapply(.SD, function(x) {base::strsplit(x, split=" ")}), .SDcols=c("treatment", "covariate")][
+    DTs_dls[, (c("treatment", "covariate")) := lapply(.SD, function(x) {
+      if(is.character(x)) base::strsplit(x, split=" ")
+      else rep(NA, length(x)) #Only NA accepted by the functions implemented, will be removed in expandDt_multi()
+      }), .SDcols=c("treatment", "covariate")][
     
     #Expand the matrix
       , df := expandDt_multi(outcome, treatment, covariate)]
@@ -208,11 +213,17 @@ server <- function(session, input, output) {
     #--Select process to proceed
     switch(input$dlsMode,
            "LM"={
+             #Input check (particular condition)
+             if(sum((lengths(DTs_dls$covariate) + length(DTs_dls$treatment) == 0)) > 0 ) {rv$dls <- "Treatment + covariate of each model must be 1 or more variables."; return()}
+             
              #Apply simple lm to each df 
              DTs_dls[, model_lm := lm_multi(outcome=outcome, data=df)]
            },
            "DLS + LM"={
-             #Apply dls to each df 
+             #Input check (particular condition)
+             if(sum(lengths(DTs_dls$covariate) <= 1) > 0) {rv$dls <- "Covariate of each model must be 2 or more variables."; return()}
+             
+             #Apply dls to each df
              DTs_dls[, df_select := lassoSelect_multi(df=df, treatment=treatment, test=covariate, outcome=outcome)][
                
              #Apply simple lm
