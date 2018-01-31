@@ -106,3 +106,5 @@ bin/\.RData
 data/
 
 report/shiny/\.RData
+
+*.dcf
