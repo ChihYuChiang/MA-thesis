@@ -56,11 +56,11 @@ server <- function(session, input, output) {
   filter.out <- reactive({
     #Filter DT
     DT <<- DT_raw[
-      `GProfile-3_1` >= input$filter_1[1] & `GProfile-3_1` <= input$filter_1[2]][
-      `GProfile-4` >= input$filter_2[1] & `GProfile-4` <= input$filter_2[2]][
-      `GProfile-5` >= input$filter_3[1] & `GProfile-5` <= input$filter_3[2]][
-      `GProfile-10_2` >= input$filter_4[1] & `GProfile-10_2` <= input$filter_4[2]][
-      `GProfile-11_2` >= input$filter_5[1] & `GProfile-11_2` <= input$filter_5[2]]
+      `GProfile-1` >= input$filter_1[1] & `GProfile-1` <= input$filter_1[2]][
+      `GProfile-2` >= input$filter_2[1] & `GProfile-2` <= input$filter_2[2]][
+      `GProfile-3_1` >= input$filter_3[1] & `GProfile-3_1` <= input$filter_3[2]][
+      `GProfile-4` >= input$filter_4[1] & `GProfile-4` <= input$filter_4[2]][
+      `GProfile-5` >= input$filter_5[1] & `GProfile-5` <= input$filter_5[2]]
     
     #Output new number of observations
     nrow(DT)
@@ -74,7 +74,13 @@ server <- function(session, input, output) {
   "
   ........LoadDls <- function() {}
   
-  observeEvent(input$dlsFile_upload, {rv$dlsSave <- fread(input$dlsFile_upload$datapath)})
+  observeEvent(input$dlsFile_upload, {
+    #Input check: duplicated id
+    coms <- fread(input$dlsFile_upload$datapath)
+    if(anyDuplicated(coms$id) != 0) {rv$dls <- "Import error: combination id must be unique."; return()}
+    
+    rv$dlsSave <- coms
+  })
   
   
   
@@ -85,9 +91,9 @@ server <- function(session, input, output) {
   ........SaveDls <- function() {}
   
   #--Create empty df
-  rv$dlsSave <- data.table(matrix(data=vector(), nrow=0, ncol=3,
+  rv$dlsSave <- data.table(matrix(data=vector(), nrow=0, ncol=4,
                            #Specify row and column names
-                           dimnames=list(c(), c("outcome", "treatment", "covariate"))))
+                           dimnames=list(c(), c("id", "outcome", "treatment", "covariate"))))
   
   
   #--Save current selection when btn clicked
@@ -96,10 +102,11 @@ server <- function(session, input, output) {
     if(rv$dlsVar_outcome %>% na.omit() %>% length() == 0)  return()
     
     shinyjs::show("saved")
-    rv$dlsSave <- rbind(rv$dlsSave, list(paste(rv$dlsVar_outcome, collapse=" "), paste(rv$dlsVar_treatment %>% na.omit(), collapse=" "), paste(rv$dlsVar_covariate %>% na.omit(), collapse=" ")))
+    cid <- max(1, max(rv$dlsSave$id) + 1)
+    rv$dlsSave <- rbind(rv$dlsSave, list(cid, paste(rv$dlsVar_outcome, collapse=" "), paste(rv$dlsVar_treatment %>% na.omit(), collapse=" "), paste(rv$dlsVar_covariate %>% na.omit(), collapse=" ")))
     
-    #Return the number of saved entries
-    nrow(rv$dlsSave)
+    #Return the id of the saved entries
+    cid
   })
 
   
@@ -141,9 +148,9 @@ server <- function(session, input, output) {
   
   #Update the var from saved combination
   observeEvent(input$dlsLoadCom, {
-    rv$dlsVar_outcome <- rv$dlsSave[as.integer(input$dlsLoadCom), outcome]
-    rv$dlsVar_treatment <- rv$dlsSave[as.integer(input$dlsLoadCom), treatment] %>% as.character() %>% strsplit(split=" ") %>% unlist()
-    rv$dlsVar_covariate <- rv$dlsSave[as.integer(input$dlsLoadCom), covariate] %>% as.character() %>% strsplit(split=" ") %>% unlist()
+    rv$dlsVar_outcome <- rv$dlsSave[id == as.integer(input$dlsLoadCom), outcome]
+    rv$dlsVar_treatment <- rv$dlsSave[id == as.integer(input$dlsLoadCom), treatment] %>% as.character() %>% strsplit(split=" ") %>% unlist()
+    rv$dlsVar_covariate <- rv$dlsSave[id == as.integer(input$dlsLoadCom), covariate] %>% as.character() %>% strsplit(split=" ") %>% unlist()
   })
 
 
@@ -234,7 +241,7 @@ server <- function(session, input, output) {
     rv$dls <- list()
     for(i in 1:nrow(DTs_dls)) {
       rv$dls[[i]] <- list(
-        sprintf("Model %s", i),
+        sprintf("Model %s", DTs_dls[i, id]),
         sprintf("outcome: %s", DTs_dls[i, outcome][[1]]),
         DTs_dls[i, model_lm][[1]] %>% summary #Each cell is selected as a list and therefore require subsetting
       )
@@ -569,7 +576,7 @@ server <- function(session, input, output) {
   
   output$dlsLoad <- renderUI({selectInput("dlsLoadCom",
                                           label=NULL, width="120px",
-                                          choice=if(nrow(rv$dlsSave) == 0) NULL else seq(1, nrow(rv$dlsSave)))
+                                          choice=if(nrow(rv$dlsSave) == 0) NULL else rv$dlsSave$id)
                             })
 
   

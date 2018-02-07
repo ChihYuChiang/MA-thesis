@@ -2,25 +2,33 @@
 ### Filter
 "
 FILTER <- list(
-  F1_1="Casual or Core Gamer",
-  F1_2="GProfile-3_1",
-  F1_3="(casual gamer = 1, core gamer = 7)",
+  F1_1="How long have been playing video game",
+  F1_2="GProfile-1",
+  F1_3="(three months = 1, ten years = 7)",
   
-  F2_1="Enjoy video game more than other recreational activities",
-  F2_2="GProfile-4",
+  F2_1="Like video game more than other recreational activities",
+  F2_2="GProfile-2",
   F2_3="(disagree = 1, agree = 7)",
   
-  F3_1="The time per week spend on video games in the last three months",
-  F3_2="GProfile-5",
-  F3_3="(never played = 1, more than 21 hrs = 7)",
+  F3_1="Casual or Core Gamer",
+  F3_2="GProfile-3_1",
+  F3_3="(casual gamer = 1, core gamer = 7)",
   
-  F4_1="In video games, as myself or a different person",
-  F4_2="GProfile-10_2",
-  F4_3="(myself = 1, different person = 7)",
+  F4_1="Enjoy video game more than other recreational activities",
+  F4_2="GProfile-4",
+  F4_3="(disagree = 1, agree = 7)",
   
-  F5_1="In video games, as usual self or a better version of self",
-  F5_2="GProfile-11_2",
-  F5_3="(usual self = 1, better version of self = 7)"
+  F5_1="The time per week spend on video games in the last three months",
+  F5_2="GProfile-5",
+  F5_3="(never played = 1, more than 21 hrs = 7)",
+  
+  F6_1="In video games, as myself or a different person",
+  F6_2="GProfile-10_2",
+  F6_3="(myself = 1, different person = 7)",
+  
+  F7_1="In video games, as usual self or a better version of self",
+  F7_2="GProfile-11_2",
+  F7_3="(usual self = 1, better version of self = 7)"
 )
 
 
