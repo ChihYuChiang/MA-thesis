@@ -186,10 +186,17 @@ DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
 DT[, "PersonSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonSteS-\\d$", names(DT))]
 
+#Proportional gap
+PersonInSOutS_capped <- pmax(DT[, `PersonInSOutS-sum`], 0)
+PersonIdSInS_capped <- pmax(DT[, `PersonIdSInS-sum`], 0)
+DT[, "PersonProgapS-sum" := (PersonInSOutS_capped / (PersonInSOutS_capped + PersonIdSInS_capped))]
+DT[`PersonInS-sum` > `PersonIdS-sum`, "PersonProgapS-sum" := NA]
+DT[is.nan(`PersonProgapS-sum`), "PersonProgapS-sum" := NA]
+
 #Update codec
 codec <- rbind(codec, list("PersonOO-Z",
                            "Personality gaps.
-                           OO = {InFOutF, InSOutS, IdSInS, IdSOutS, InSSteS, OutSSteS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
+                           OO = {InFOutF, InSOutS, IdSInS, IdSOutS, InSSteS, OutSSteS, ProgapS; eg. IdSInS: ideal(self-version) - in-game(self-version)}
                            Z = {1: extraversion, 2: agreeableness, 3: conscientiousness, 4: emotion stability, 5: openness, sum: summation, ab(prefix): absolute}"))
 
 
