@@ -186,17 +186,17 @@ DT[, "PersonOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutS-\\d$", names(DT
 DT[, "PersonIdS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdS-\\d$", names(DT))]
 DT[, "PersonSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonSteS-\\d$", names(DT))]
 
-# #Proportional gap -- capped on ideal = 1, real = 0
-# PersonInSOutS_capped <- pmax(DT[, `PersonInSOutS-sum`], 0)
-# PersonIdSInS_capped <- pmax(DT[, `PersonIdSInS-sum`], 0)
-# DT[, "PersonProgapS-capsum" := PersonInSOutS_capped / (PersonInSOutS_capped + PersonIdSInS_capped)]
-# DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-capsum" := NA] #Ideal must > real
-# DT[!is.finite(`PersonProgapS-capsum`), "PersonProgapS-capsum" := NA]
-# 
-# #Proportional gap -- no cap
-# DT[, "PersonProgapS-sum" := `PersonInSOutS-sum` / `PersonIdSOutS-sum`]
-# DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-sum" := NA]
-# DT[!is.finite(`PersonProgapS-sum`), "PersonProgapS-sum" := NA]
+#Proportional gap -- capped on ideal = 1, real = 0
+PersonInSOutS_capped <- pmax(DT[, `PersonInSOutS-sum`], 0)
+PersonIdSInS_capped <- pmax(DT[, `PersonIdSInS-sum`], 0)
+DT[, "PersonProgapS-capsum" := PersonInSOutS_capped / (PersonInSOutS_capped + PersonIdSInS_capped)]
+DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-capsum" := NA] #Ideal must > real
+DT[!is.finite(`PersonProgapS-capsum`), "PersonProgapS-capsum" := NA]
+
+#Proportional gap -- no cap
+DT[, "PersonProgapS-sum" := `PersonInSOutS-sum` / `PersonIdSOutS-sum`]
+DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-sum" := NA]
+DT[!is.finite(`PersonProgapS-sum`), "PersonProgapS-sum" := NA]
 
 #Update codec
 codec <- rbind(codec, list("PersonOO-Z",
