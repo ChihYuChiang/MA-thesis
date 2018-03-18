@@ -6,11 +6,11 @@ library(glmnet)
 
 #Read in as DT
 #Skip 2 for codec
-DT <- fread("../data/survey2.csv", skip=2)[
+DT <- fread("../data/raw_survey2/survey2.csv", skip=2)[
   MTurkCode != "", ,] #Filter
 
 #Read in codec
-codec <- as.data.table(t(fread("../data/survey2.csv", nrows=1)), keep.rownames=TRUE)
+codec <- as.data.table(t(fread("../data/raw_survey2/survey2.csv", nrows=1)), keep.rownames=TRUE)
 colnames(codec) <- c("Variable", "Description")
 
 
@@ -251,6 +251,8 @@ codec <- rbind(codec, list("SDTOO-Z",
                            "SDT gaps.
                            OO = {InOut, IdIn, IdOut; eg. IdIn: ideal - in-game}
                            Z = {1: autonomy, 2: relatedness, 3: competence, sum: summation, ab(prefix): absolute}"))
+
+
 
 
 "
