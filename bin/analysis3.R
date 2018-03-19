@@ -127,11 +127,76 @@ DT[!is.finite(`PersonProgapS-sum`), "PersonProgapS-sum" := NA]
 
 
 "
+### Log transform
+"
+DT[, c("Hobby-3_log", "Hobby-4_log") := .(log(`Hobby-3`), log(`Hobby-4`))]
+
+
+
+
+"
 ### Clean temp vars and save the environment
 "
 rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 
 # save.image()
+
+
+
+
+
+
+
+
+"
+----------------------------------------------------------------------
+## Explore
+----------------------------------------------------------------------
+"
+#--Age
+breaks <- c(0, 1960, 1970, 1980, 1990, 2000, Inf)
+(DT_age <- DT[, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=.(year=cut(`Demo-1`, breaks=breaks))])
+
+ggplot(DT_age, aes(x=`year`, y=`mean`)) +
+  geom_col() +
+  scale_x_discrete(label=c("50-59", "60-69", "70-79", "80-89", "90-99")) +
+  labs(x="Year of birth", y="Personality gap", title="Personality gap by year of birth")
+
+
+#--Education
+(DT_edu <- DT[, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=`Demo-2`])
+
+ggplot(DT_edu, aes(x=`Demo-2`, y=`mean`)) +
+  geom_col() +
+  scale_x_continuous(breaks=DT_edu[["Demo-2"]], label=DT_edu[["Demo-2"]]) +
+  labs(x="Education", y="Personality gap", title="Personality gap by education")
+
+
+#--Ethnicity
+DT_eth <- gather(DT, key="Ethnicity", value="Ethnicity_1", matches("^Demo-3_\\d$")) %>% data.table()
+(DT_eth <- DT_eth[`Ethnicity_1` == 1, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=`Ethnicity`])
+
+ggplot(DT_eth, aes(x=`Ethnicity`, y=`mean`)) +
+  geom_col() +
+  labs(x="Ethnicity", y="Personality gap", title="Personality gap by ethnicity")
+
+
+#--Gender
+(DT_gender <- DT[, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=`Demo-4`])
+
+ggplot(DT_gender, aes(x=`Demo-4`, y=`mean`)) +
+  geom_col() +
+  scale_x_continuous(breaks=DT_gender[["Demo-4"]], label=DT_gender[["Demo-4"]]) +
+  labs(x="Gender", y="Personality gap", title="Personality gap by gender")
+
+
+#--Income
+(DT_income <- DT[, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=`Demo-5`])
+
+ggplot(DT_income, aes(x=`Demo-5`, y=`mean`)) +
+  geom_col() +
+  scale_x_continuous(breaks=DT_income[["Demo-5"]], label=DT_income[["Demo-5"]]) +
+  labs(x="Income group", y="Personality gap", title="Personality gap by income")
 
 
 
@@ -160,14 +225,26 @@ topCats <- DT[, .N, by=.(`Enough-2_1`)][order(-N)][1:6, `Enough-2_1`]
 "
 ### ANOVA
 "
+#--Across hobby categories
 #`PersonHbOutS-sum`; `PersonHbOutS-absum`; `PersonProgapS-sum`
 model_anova <- aov(`PersonHbOutS-sum` ~ `Enough-2_1`, data=DT[`Enough-2_1` %in% topCats])
 summary(model_anova)
 
 ggplot(DT[`Enough-2_1` %in% topCats], aes(x=`Enough-2_1`, y=`PersonHbOutS-sum`)) +
   geom_boxplot() +
-  scale_x_discrete() +
   labs(x="Hobby category", y="Personality gap", title="Personality gap by hobby category")
+
+
+#--Across personality conditions
+#(Repeated measure)
+DT_long <- gather(DT, key="PersonCondition", value="Person", `PersonHb-sum`, `PersonOutS-sum`, `PersonIdS-sum`, `PersonLch-sum`)
+
+model_anova_re <- aov(`Person` ~ `PersonCondition` + Error(ResponseID / PersonCondition), data=DT_long)
+summary(model_anova_re)
+
+ggplot(DT_long, aes(x=`PersonCondition`, y=`Person`)) +
+  geom_boxplot() +
+  labs(x="Personality condition", y="Sum of personality score", title="Personality score by condition")
 
 
 
@@ -182,3 +259,17 @@ t.test(DT[, `PersonProgapS-sum`], mu=0)
 #Gaming only
 t.test(DT[`Enough-2_1` == "gaming", `PersonHbOutS-sum`], mu=0)
 t.test(DT[`Enough-2_1` == "gaming", `PersonProgapS-sum`], mu=0)
+
+
+
+
+"
+### Linear model
+"
+model_lm <- lm(`PersonHbOutS-sum` ~ `PersonOutS-sum` + `Hobby-3` + `Hobby-4`, data=DT)
+summary(model_lm)
+
+#Log version
+#Made sure the log result is finite
+model_lm_log <- lm(`PersonHbOutS-sum` ~ `PersonOutS-sum` + `Hobby-3_log` + `Hobby-4_log`, data=DT[is.finite(`Hobby-3_log`) & is.finite(`Hobby-4_log`)])
+summary(model_lm_log)
