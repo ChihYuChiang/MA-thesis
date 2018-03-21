@@ -3,11 +3,12 @@ library(data.table)
 
 #Read in as DT
 #Skip 2 for codec
-DT <- fread("../data/raw_survey3/survey3.csv", skip=2)
+DT <- fread("../data/raw_survey3/survey3_no25rule.csv", skip=2)
 
 #Read in codec
-codec <- as.data.table(t(fread("../raw_survey3/survey3.csv", nrows=1)), keep.rownames=TRUE)
+codec <- as.data.table(t(fread("../raw_survey3/survey3_no25rule.csv", nrows=1)), keep.rownames=TRUE)
 colnames(codec) <- c("Variable", "Description")
+
 
 
 
@@ -150,7 +151,7 @@ rm(list=ls()[which(ls() != "DT" & ls() != "codec")]) #Preserve only DT and codec
 
 "
 ----------------------------------------------------------------------
-## Explore
+## Description
 ----------------------------------------------------------------------
 "
 #--Age
@@ -162,6 +163,8 @@ ggplot(DT_age, aes(x=`year`, y=`mean`)) +
   scale_x_discrete(label=c("50-59", "60-69", "70-79", "80-89", "90-99")) +
   labs(x="Year of birth", y="Personality gap", title="Personality gap by year of birth")
 
+cor(DT[["PersonHbOutS-sum"]], DT[["Demo-1"]])
+
 
 #--Education
 (DT_edu <- DT[, .(n=.N, mean=mean(`PersonHbOutS-sum`), std=var(`PersonHbOutS-sum`) %>% sqrt()), keyby=`Demo-2`])
@@ -170,6 +173,8 @@ ggplot(DT_edu, aes(x=`Demo-2`, y=`mean`)) +
   geom_col() +
   scale_x_continuous(breaks=DT_edu[["Demo-2"]], label=DT_edu[["Demo-2"]]) +
   labs(x="Education", y="Personality gap", title="Personality gap by education")
+
+cor(DT[["PersonHbOutS-sum"]], DT[["Demo-2"]])
 
 
 #--Ethnicity
@@ -197,6 +202,8 @@ ggplot(DT_income, aes(x=`Demo-5`, y=`mean`)) +
   geom_col() +
   scale_x_continuous(breaks=DT_income[["Demo-5"]], label=DT_income[["Demo-5"]]) +
   labs(x="Income group", y="Personality gap", title="Personality gap by income")
+
+cor(DT[["PersonHbOutS-sum"]], DT[["Demo-5"]])
 
 
 
