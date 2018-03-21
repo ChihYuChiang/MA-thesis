@@ -6,7 +6,7 @@ library(data.table)
 DT <- fread("../data/raw_survey3/survey3_no25rule.csv", skip=2)
 
 #Read in codec
-codec <- as.data.table(t(fread("../raw_survey3/survey3_no25rule.csv", nrows=1)), keep.rownames=TRUE)
+codec <- as.data.table(t(fread("../data/raw_survey3/survey3_no25rule.csv", nrows=1)), keep.rownames=TRUE)
 colnames(codec) <- c("Variable", "Description")
 
 
@@ -204,6 +204,16 @@ ggplot(DT_income, aes(x=`Demo-5`, y=`mean`)) +
   labs(x="Income group", y="Personality gap", title="Personality gap by income")
 
 cor(DT[["PersonHbOutS-sum"]], DT[["Demo-5"]])
+
+
+#--Passive and active
+#Active = 1, passive = 3
+ggplot(DT, aes(x=`Enough-2_1`, y=`PersonHbOutS-sum`)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x="Degree of passivity", y="Personality gap (absolute)", title="Personality gap and passivity")
+
+cor(DT[["PersonHbOutS-absum"]], DT[["Enough-2_1"]], use="complete.obs")
 
 
 
