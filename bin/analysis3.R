@@ -208,6 +208,8 @@ cor(DT[["PersonHbOutS-sum"]], DT[["Demo-5"]])
 
 #--Passive and active
 #Active = 1, passive = 3
+mean(DT[["Enough-2_1"]])
+
 ggplot(DT, aes(x=`Enough-2_1`, y=`PersonHbOutS-sum`)) +
   geom_point() +
   geom_smooth() +
