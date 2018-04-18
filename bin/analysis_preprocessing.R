@@ -138,7 +138,8 @@ getData_2 <- function() {
     mutate(race = factor(race),
            sex = factor(sex),
            core_id = factor(core_id)) %>%
-    select(-id)
+    select(-id) %>%
+    as.data.table()
   
   
   
@@ -148,7 +149,7 @@ getData_2 <- function() {
   "
   DT <- DT %>%
     rowwise() %>% #Rowwise to make the ordinary functions work
-    mutate(preference = mean(c(preference_3))) %>%
+    mutate(preference = mean(c(preference_1, preference_2, preference_3))) %>%
     ungroup() #Ungroup to cancel rowwise
   
   
@@ -179,7 +180,7 @@ getData_2 <- function() {
   ### Acquire distinguished player DT
   "
   #Key = player
-  DT_player <- distinct(DT, respondent, .keep_all=TRUE)
+  DT_player <- distinct(DT, respondent, .keep_all=TRUE) %>% as.data.table()
   
   
   

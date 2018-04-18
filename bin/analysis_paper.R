@@ -56,6 +56,7 @@ DT_1[, .N, by=.(`Enough-2_0`)][, NP := N / nrow(DT_1)][order(-N)][1:20, ]
 #--Across the top six hobbies, no evidence showed that the personality shifts were different
 topC <- DT_1[, .N, by=.(`Enough-2_0`)][, NP := N / nrow(DT_1)][order(-N)][1:6, `Enough-2_0`]
 
+#Anova
 model_1_anova2 <- aov(`PersonHbOutS-sum` ~ `Enough-2_0`, data=DT_1[`Enough-2_0` %in% topC])
 summary(model_1_anova2)
 
@@ -66,6 +67,7 @@ ggplot(DT_1[`Enough-2_0` %in% topC], aes(x=`Enough-2_0`, y=`PersonHbOutS-sum`)) 
 
 
 #--Across the top six hobbies, no evidence showed that the personality improvements were different
+#Anova
 model_1_anova3 <- aov(`PersonProgapS-sum` ~ `Enough-2_0`, data=DT_1[`Enough-2_0` %in% topC])
 summary(model_1_anova3)
 
@@ -81,22 +83,27 @@ ggplot(DT_1[`Enough-2_0` %in% topC], aes(x=`Enough-2_0`, y=`PersonProgapS-sum`))
 ### Study 2 (analysis)
 "
 #--The personality shift in video gaming context is significantly different from zero
-
-#figure
+t.test(DT_2[, `gap_sum`], mu=0)
 
 
 #--This shift was robust across the fifty game titles
+#Anova
+model_2_anova <- aov(`gap_sum` ~ `core_id`, data=DT_2_long)
+summary(model_2_anova)
 
 #figure
+ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
+  geom_boxplot() +
+  labs(x="Game", y="Personality shift", title="Personality shift by games")
 
 
-#--an individual’s fondness for video gaming in general does not predict the shift
-
-
-#--his/her preference on the specific games does not predict the shift
+#--an individual’s preference on the specific games does not predict the shift
+model_2_lm1 <- lm(gap_sum ~ real_sum + preference, data=DT_2)
+summary(model_2_lm1)
 
 
 #--the personality shift correlates with the respondent’s satisfaction in real life 
+cor.test(DT_2[["game_sum"]], DT_2[["combined_sum"]])
 
 
 
@@ -105,24 +112,32 @@ ggplot(DT_1[`Enough-2_0` %in% topC], aes(x=`Enough-2_0`, y=`PersonProgapS-sum`))
 ### Study 3 (analysis 2)
 "
 #--the mean values of the four self-report personalities were different from each other
+DT_3_long <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
+
+#Anova
+model_3_anova1 <- aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long)
+summary(model_3_anova1)
 
 #figure
+ggplot(DT_3_long, aes(x=`PersonCondition`, y=`Person`)) +
+  geom_boxplot() +
+  labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
 
 
 #--the personality shift in video gaming context is significantly different and higher from zero
+t.test(DT_3[, `PersonInSOutS-sum`], mu=0)
 
 
-#--he personality improvement in video gaming context is significantly different and higher from zero
+#--the personality improvement in video gaming context is not significantly different and higher from zero
+t.test(DT_3[, `PersonProgapS-sum`], mu=0)
 
 
-#--Both the shift and improvement were not influenced by an individual’s fondness for video gaming in general
-
-
-#--Both the shift and improvement were not influenced by his/her preference on the specific games predicted the shift
+#--the shift were not influenced by an individual’s fondness for video gaming in general and his/her preference on the specific games predicted the shift
 
 
 #--It was well predicted by the ideal personality but not the stereotypical one
-#table
+model_3_lm1 <- lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3)
+summary(model_3_lm1)
 
 
 #--The fellow version personalities showed a similar mean difference from the ideal and stereotype
