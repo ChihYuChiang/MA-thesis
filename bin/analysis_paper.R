@@ -37,10 +37,10 @@ t.test(DT_1[, `PersonProgapS-sum`], mu=0)
 
 #--personality phenomena are not predicted by the frequency of participating in the hobbies and the length of the period engaging in the hobbies
 #log version, make logarithm is finite
-model_1_lmlog1 <- lm(`PersonHbOutS-sum` ~ `PersonOutS-sum` + log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))])
+model_1_lmlog1 <- lm(`PersonHbOutS-sum` ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))])
 summary(model_1_lmlog1)
 
-model_1_lmlog2 <- lm(`PersonProgapS-sum` ~ `PersonOutS-sum` + log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))])
+model_1_lmlog2 <- lm(`PersonProgapS-sum` ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))])
 summary(model_1_lmlog2)
 
 
@@ -98,7 +98,7 @@ ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
 
 
 #--an individual’s preference on the specific games does not predict the shift
-model_2_lm1 <- lm(gap_sum ~ real_sum + preference, data=DT_2)
+model_2_lm1 <- lm(gap_sum ~ preference, data=DT_2)
 summary(model_2_lm1)
 
 
@@ -133,44 +133,60 @@ t.test(DT_3[, `PersonProgapS-sum`], mu=0)
 
 
 #--the shift were not influenced by an individual’s fondness for video gaming in general and his/her preference on the specific games predicted the shift
-
-
-#--It was well predicted by the ideal personality but not the stereotypical one
-model_3_lm1 <- lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3)
+model_3_lm1 <- lm(`PersonInSOutS-sum` ~ `GProfile-a1` + `PrefS-a1`, data=DT_3)
 summary(model_3_lm1)
 
 
+#--It was well predicted by the ideal personality but not the stereotypical one
+model_3_lm2 <- lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3)
+summary(model_3_lm2)
+
+
 #--The fellow version personalities showed a similar mean difference from the ideal and stereotype
+DT_3_longFellow <- melt(DT_3, measure.vars=c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
+
+#Anova
+model_3_anova2 <- aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_longFellow)
+summary(model_3_anova2)
 
 #figure
+ggplot(DT_3_longFellow, aes(x=`PersonCondition`, y=`Person`)) +
+  geom_boxplot() +
+  labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
 
 
 #--The fellow personality shift was higher than zero
-
-
-#--The fellow personality improvement was higher than zero
+t.test(DT_3[, `PersonInFOutF-sum`], mu=0)
 
 
 #--The fellow version was well predicted by the ideal personality but not the stereotypical one
-#table
+model_3_lm3<- lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3)
+summary(model_3_lm3)
 
 
 #--The degrees of becoming a better self correlated positively with the personality shift
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-11_2"]])
 
 
 #--The degrees of becoming a different self correlated positively with the absolute personality shift
+cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["GProfile-10_2"]])
 
 
 #--the personality shift was negatively correlated with the respondent’s satisfaction in real life
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["SDTOut-sum"]])
 
 
 #--the absolute personality shift was predicted by the general life satisfaction
-#table
+model_3_lm4<- lm(`PersonInSOutS-absum` ~ `SDTOut-sum`, data=DT_3)
+summary(model_3_lm4)
 
 
 #--the personality improvement was predicted by the general life satisfaction
-#table
+model_3_lm5<- lm(`PersonProgapS-sum` ~ `SDTOut-sum`, data=DT_3)
+summary(model_3_lm5)
 
 
 #--both the absolute shift and improvement predicted the satisfaction an individual acquired from the video gaming experience
-#table
+model_3_lm6<- lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-absum` + `PersonProgapS-sum`, data=DT_3)
+summary(model_3_lm6)
+
