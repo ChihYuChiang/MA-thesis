@@ -121,6 +121,8 @@ ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_sum"]])
 lm(gap_sum ~ combined_sum, data=DT_2) %>% summary()
 
+cor.test(DT_2[["gap_sum_abs"]], DT_2[["combined_sum"]])
+
 
 
 
