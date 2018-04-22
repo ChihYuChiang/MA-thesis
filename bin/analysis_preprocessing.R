@@ -355,10 +355,15 @@ getData_3 <- function() {
   DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-capsum" := NA] #Ideal must > real
   DT[!is.finite(`PersonProgapS-capsum`), "PersonProgapS-capsum" := NA]
   
-  #Proportional gap -- no cap
+  #Proportional gap -- no cap (self)
   DT[, "PersonProgapS-sum" := `PersonInSOutS-sum` / `PersonIdSOutS-sum`]
   DT[`PersonOutS-sum` > `PersonIdS-sum`, "PersonProgapS-sum" := NA]
   DT[!is.finite(`PersonProgapS-sum`), "PersonProgapS-sum" := NA]
+  
+  #Proportional gap -- no cap (fellow)
+  DT[, "PersonProgapF-sum" := (`PersonInF-sum` - `PersonOutF-sum`) / (`PersonIdS-sum` - `PersonOutF-sum`)]
+  DT[`PersonOutF-sum` > `PersonIdS-sum`, "PersonProgapF-sum" := NA]
+  DT[!is.finite(`PersonProgapF-sum`), "PersonProgapF-sum" := NA]
   
   
   #--SDT
