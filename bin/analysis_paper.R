@@ -183,6 +183,13 @@ t.test(DT_3[, tanh(`PersonProgapF-sum`)], mu=0)
 lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
 
+#--
+#GProfile-10_2 = different person
+#GProfile-11_2 = better self
+t.test(DT_3[, `GProfile-11_2`], DT_3[, `GProfile-10_2`], paired=TRUE)
+describe(DT_3[, .(`GProfile-11_2`, `GProfile-10_2`)])
+
+
 #--The degrees of becoming a better self correlated positively with the personality shift
 cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-11_2"]])
 
