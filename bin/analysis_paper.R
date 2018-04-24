@@ -132,6 +132,9 @@ cor.test(DT_2[["gap_sum_abs"]], DT_2[["combined_sum"]])
 #--the mean values of the four self-report personalities were different from each other
 DT_3_long <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
 
+#description
+describe(DT_3[, c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum")])
+
 #Anova
 aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long) %>% summary()
 
@@ -142,12 +145,14 @@ ggplot(DT_3_long, aes(x=`PersonCondition`, y=`Person`)) +
 
 
 #--the personality shift in video gaming context is significantly different and higher from zero
-t.test(DT_3[, `PersonInSOutS-sum`], mu=0)
+t.test(DT_3[, `PersonInSOutS-sum`], mu=0, alternative="greater")
+describe(DT_3[, `PersonInSOutS-sum`])
 
 
 #--the personality improvement in video gaming context is not significantly different and higher from zero
-t.test(DT_3[, `PersonProgapS-sum`], mu=0)
-t.test(DT_3[, tanh(`PersonProgapS-sum`)], mu=0)
+t.test(DT_3[, `PersonProgapS-sum`], mu=0, alternative="greater")
+t.test(DT_3[, tanh(`PersonProgapS-sum`)], mu=0, alternative="greater")
+describe(DT_3[, tanh(`PersonProgapS-sum`)])
 
 
 #--the shift were not influenced by an individual’s fondness for video gaming in general and his/her preference on the specific games predicted the shift
@@ -163,9 +168,11 @@ lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data
 #--The fellow version personalities showed a similar mean difference from the ideal and stereotype
 DT_3_longFellow <- melt(DT_3, measure.vars=c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
 
+#description
+describe(DT_3[, c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSteS-sum")])
+
 #Anova
 aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_longFellow) %>% summary()
-aov(`Person` ~ `PersonCondition`, data=DT_3_longFellow) %>% summary()
 
 #figure
 ggplot(DT_3_longFellow, aes(x=`PersonCondition`, y=`Person`)) +
@@ -174,19 +181,21 @@ ggplot(DT_3_longFellow, aes(x=`PersonCondition`, y=`Person`)) +
 
 
 #--The fellow personality shift was higher than zero
-t.test(DT_3[, `PersonInFOutF-sum`], mu=0)
-t.test(DT_3[, `PersonProgapF-sum`], mu=0)
-t.test(DT_3[, tanh(`PersonProgapF-sum`)], mu=0)
+t.test(DT_3[, `PersonInFOutF-sum`], mu=0, alternative="greater")
+t.test(DT_3[, `PersonProgapF-sum`], mu=0, alternative="greater")
+t.test(DT_3[, tanh(`PersonProgapF-sum`)], mu=0, alternative="greater")
+describe(DT_3[, `PersonInFOutF-sum`])
+describe(DT_3[, tanh(`PersonProgapF-sum`)])
 
 
 #--The fellow version was well predicted by the ideal personality but not the stereotypical one
 lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
 
-#--
+#--Different motivation
 #GProfile-10_2 = different person
 #GProfile-11_2 = better self
-t.test(DT_3[, `GProfile-11_2`], DT_3[, `GProfile-10_2`], paired=TRUE)
+t.test(DT_3[, `GProfile-11_2`], DT_3[, `GProfile-10_2`], paired=TRUE, alternative="greater")
 describe(DT_3[, .(`GProfile-11_2`, `GProfile-10_2`)])
 
 
@@ -204,10 +213,12 @@ lm(`PersonInSOutS-sum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
 
 #--the absolute personality shift was predicted by the general life satisfaction
+cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["SDTOut-sum"]])
 lm(`PersonInSOutS-absum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
 
 #--the personality improvement was predicted by the general life satisfaction
+cor.test(tanh(DT_3[["PersonProgapS-sum"]]), DT_3[["SDTOut-sum"]])
 lm(`PersonProgapS-sum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
 lm(tanh(`PersonProgapS-sum`) ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
@@ -215,3 +226,6 @@ lm(tanh(`PersonProgapS-sum`) ~ `SDTOut-sum`, data=DT_3) %>% summary()
 #--both the absolute shift and improvement predicted the satisfaction an individual acquired from the video gaming experience
 lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-absum` + `PersonProgapS-sum`, data=DT_3) %>% summary()
 lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-absum` + tanh(`PersonProgapS-sum`), data=DT_3) %>% summary()
+lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-sum`, data=DT_3) %>% summary()
+lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-absum`, data=DT_3) %>% summary()
+lm(`SDTIn-sum` ~ `SDTOut-sum` + tanh(`PersonProgapS-sum`), data=DT_3) %>% summary()
