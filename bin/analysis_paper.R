@@ -1,6 +1,8 @@
 source("analysis_preprocessing.R")
 library(psych)
 
+PLOT_PATH <- "../report/img/"
+
 DT_1 <- getData_1()
 DT_2 <- getData_2()[[2]]
 DT_2_long <- getData_2()[[1]]
@@ -10,6 +12,15 @@ DT_3 <- getData_3()
 "
 ### Study 1 (analysis 3)
 "
+#--Ideal personality is higher than general personality
+t.test(DT_1[, `PersonIdS-sum`], DT_1[, `PersonOutS-sum`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdS-1`], DT_1[, `PersonOutS-1`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdS-2`], DT_1[, `PersonOutS-2`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdS-3`], DT_1[, `PersonOutS-3`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdS-4`], DT_1[, `PersonOutS-4`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdS-5`], DT_1[, `PersonOutS-5`], mu=0, paired=TRUE)
+
+
 #--hobby personality is a significant diverse from that of the controlled-context personality
 t.test(DT_1[, `PersonHb-sum`], DT_1[, `PersonLch-sum`], mu=0, paired=TRUE)
 
@@ -17,6 +28,15 @@ t.test(DT_1[, `PersonHb-sum`], DT_1[, `PersonLch-sum`], mu=0, paired=TRUE)
 #--both of the means of the hobby and news personalities are different from the general life personality
 t.test(DT_1[, `PersonHb-sum`], DT_1[, `PersonOutS-sum`], mu=0, paired=TRUE)
 t.test(DT_1[, `PersonLch-sum`], DT_1[, `PersonOutS-sum`], mu=0, paired=TRUE)
+
+
+#--hobby personality was less positive than their ideal personality
+t.test(DT_1[, `PersonIdS-sum`], DT_1[, `PersonHb-sum`], mu=0, paired=TRUE)
+
+
+#--the gap between hobby personality and ideal personality was smaller than general personality - ideal or the control personality i ideal 
+t.test(DT_1[, `PersonIdSHb-sum`], DT_1[, `PersonIdSOutS-sum`], mu=0, paired=TRUE)
+t.test(DT_1[, `PersonIdSHb-sum`], DT_1[, `PersonIdSLch-sum`], mu=0, paired=TRUE)
 
 
 #--mean values of the four versions are different from each other
@@ -28,10 +48,28 @@ DT_1_long <- melt(DT_1, measure.vars=c("PersonHb-sum", "PersonOutS-sum", "Person
 
 aov(`Person` ~ `PersonCondition` + Error(ResponseID / PersonCondition), data=DT_1_long) %>% summary()
 
-#figure
+#figure - sum
+DT_1_long[, PersonConditionAvg := mean(Person), by=PersonCondition]
+DT_1_long$PersonCondition <- factor(DT_1_long$PersonCondition,
+                                    levels=c("PersonLch-sum", "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum"),
+                                    labels=c("control", "general", "hobby", "ideal"))
 ggplot(DT_1_long, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_boxplot() +
+  geom_violin() +
+  geom_boxplot(width=0.1) +
   labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
+ggsave("personality-des_all.png", device="png", path=PLOT_PATH)
+
+#figure - individual
+DT_1_long_indi <- melt(DT_1, measure.vars=c("PersonHb-5", "PersonOutS-5", "PersonIdS-5", "PersonLch-5"), variable.name="PersonCondition", value.name="Person")
+DT_1_long_indi[, PersonConditionAvg := mean(Person), by=PersonCondition]
+DT_1_long_indi$PersonCondition <- factor(DT_1_long_indi$PersonCondition,
+                                    levels=c("PersonLch-5", "PersonOutS-5", "PersonHb-5", "PersonIdS-5"),
+                                    labels=c("control", "general", "hobby", "ideal"))
+ggplot(DT_1_long_indi, aes(x=`PersonCondition`, y=`Person`)) +
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  labs(x="Personality version", y="Personality score", title="Personality score by version - openness")
+ggsave("personality-des_5.png", device="png", path=PLOT_PATH)
 
 
 #--The hobby-context personality improvement is significantly higher than zero
@@ -98,6 +136,11 @@ ggplot(DT_1[`Enough-2_0` %in% topC], aes(x=`Enough-2_0`, y=tanh(`PersonProgapS-s
 #--The personality shift in video gaming context is significantly different from zero
 #describe
 describe(DT_2[, `gap_sum`])
+describe(DT_2[, `game_sum`])
+describe(DT_2[, `real_sum`])
+
+#% of participants rated their hobby personality more positively than their general personality
+DT_2[game_sum > real_sum] %>% nrow() / DT_2 %>% nrow()
 
 #t
 t.test(DT_2[, `gap_sum`], mu=0, alternative="greater")
@@ -117,12 +160,31 @@ ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
   labs(x="Game", y="Personality shift", title="Personality shift by games")
 
 
-#--the personality shift correlates with the respondent’s satisfaction in real life
+#--The personality difference was not significantly moderated by how much a participant liked videogames on average 
+cor.test(DT_2[["gap_sum"]], DT_2[["preference_1"]]) #liking
+cor.test(DT_2[["gap_sum"]], DT_2[["preference_2"]]) #how often played
+cor.test(DT_2[["gap_sum"]], DT_2[["preference_3"]]) #fit taste
+
+cor.test(DT_2[["gap_sum"]], DT_2[, preference_1 + preference_2 + preference_3]) #fit taste
+
+
+#--the personality shift does not correlates with the respondent’s satisfaction in real life
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_sum"]])
 lm(gap_sum ~ combined_sum, data=DT_2) %>% summary()
 
+cor.test(DT_2[["gap_sum"]], DT_2[["combined_autonomy"]])
+cor.test(DT_2[["gap_sum"]], DT_2[["combined_relatedness"]])
+cor.test(DT_2[["gap_sum"]], DT_2[["combined_competence"]])
+
+
+#--the personality shift correlates with the respondent’s satisfaction in real life
 cor.test(DT_2[["gap_sum_abs"]], DT_2[["combined_sum"]])
 
+
+#--real personality negatively correlates relative videogame personality (higher than overall = 1)
+DT_2[, game_sum_higher := game_sum > mean(game_sum)]
+cor.test(DT_2[["real_sum"]], as.numeric(DT_2[["game_sum_higher"]]))
+cor.test(DT_2[["real_sum"]], DT_2[["gap_sum"]])
 
 
 
@@ -130,7 +192,7 @@ cor.test(DT_2[["gap_sum_abs"]], DT_2[["combined_sum"]])
 ### Study 3 (analysis 2)
 "
 #--the mean values of the four self-report personalities were different from each other
-DT_3_long <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
+DT_3_long <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum"), variable.name="PersonCondition", value.name="Person")
 
 #description
 describe(DT_3[, c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum")])
@@ -139,9 +201,40 @@ describe(DT_3[, c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSte
 aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long) %>% summary()
 
 #figure
-ggplot(DT_3_long, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_boxplot() +
+DT_3_long2 <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
+DT_3_long2[, PersonConditionAvg := mean(Person), by=PersonCondition]
+DT_3_long2$PersonCondition <- factor(DT_3_long2$PersonCondition,
+                                         levels=c("PersonSteS-sum", "PersonOutS-sum", "PersonInS-sum", "PersonIdS-sum"),
+                                         labels=c("stereotype", "general", "game", "ideal"))
+ggplot(DT_3_long2, aes(x=`PersonCondition`, y=`Person`)) +
+  geom_violin() +
+  geom_boxplot(width=0.1) +
   labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
+ggsave("3-personality-des_all.png", device="png", path=PLOT_PATH)
+
+
+#--Participants’ video-gaming personality was less positive than their ideal personality
+t.test(DT_3[, `PersonIdS-sum`], DT_3[, `PersonInS-sum`], mu=0, paired=TRUE)
+
+
+#--the gap between video-game personality and ideal personality was smaller than for general personality
+t.test(DT_3[, `PersonIdSInS-sum`], DT_3[, `PersonIdSOutS-sum`], mu=0, paired=TRUE)
+
+
+#--% of participants rated their videogame personality as more positive than their general personality
+DT_3[`PersonInS-sum` > `PersonOutS-sum`] %>% nrow() / DT_3 %>% nrow()
+
+
+#--video-gaming personality was more positive than their perception of general public perceptions of video-gamer personality 
+t.test(DT_3[, `PersonInS-sum`], DT_3[, `PersonSteS-sum`], mu=0, paired=TRUE)
+
+
+#--the publics’ stereotypical video-game personality was closer to general personality than to actual video-game personality
+t.test(DT_3[, `PersonOutSSteS-sum`], DT_3[, `PersonInSSteS-sum`], mu=0, paired=TRUE)
+
+
+#--% of participants rated their videogame personality as more positive than the personality they believed others expect videogamers to have
+DT_3[`PersonInS-sum` > `PersonSteS-sum`] %>% nrow() / DT_3 %>% nrow()
 
 
 #--the personality shift in video gaming context is significantly different and higher from zero
@@ -161,6 +254,14 @@ lm(`PersonProgapS-sum` ~ `GProfile-a1` + `PrefS-a1`, data=DT_3) %>% summary()
 lm(tanh(`PersonProgapS-sum`) ~ `GProfile-a1` + `PrefS-a1`, data=DT_3) %>% summary()
 
 
+#--the gap between the other person’s video-game personality and an ideal personality as smaller than for the other persons’ general personality
+t.test(DT_3[, `PersonIdSInF-sum`], DT_3[, `PersonIdSOutF-sum`], mu=0, paired=TRUE)
+
+
+#--other person’s video-gaming personality as more positive than their perception of the stereotypical video-gamer personality 
+t.test(DT_3[, `PersonInFSteS-sum`], mu=0, alternative="greater")
+
+
 #--It was well predicted by the ideal personality but not the stereotypical one
 lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
@@ -175,9 +276,15 @@ describe(DT_3[, c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSte
 aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_longFellow) %>% summary()
 
 #figure
+DT_3_longFellow[, PersonConditionAvg := mean(Person), by=PersonCondition]
+DT_3_longFellow$PersonCondition <- factor(DT_3_longFellow$PersonCondition,
+                                     levels=c("PersonSteS-sum", "PersonOutF-sum", "PersonInF-sum", "PersonIdS-sum"),
+                                     labels=c("stereotype", "general", "game", "ideal"))
 ggplot(DT_3_longFellow, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_boxplot() +
-  labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  labs(x="Personality version", y="Sum of personality score", title="Fellow personality score by version")
+ggsave("3-personality-des_allf.png", device="png", path=PLOT_PATH)
 
 
 #--The fellow personality shift was higher than zero
@@ -188,9 +295,15 @@ describe(DT_3[, `PersonInFOutF-sum`])
 describe(DT_3[, tanh(`PersonProgapF-sum`)])
 
 
+#--The fellow version game-general personality difference is less than self version difference
+t.test(DT_3[, `PersonInSOutS-sum`], DT_3[, `PersonInFOutF-sum`], mu=0, alternative="greater")
+
+
 #--The fellow version was well predicted by the ideal personality but not the stereotypical one
 lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
+#Moderation of how well they know
+lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
 #--Different motivation
 #GProfile-10_2 = different person

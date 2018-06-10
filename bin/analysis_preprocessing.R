@@ -84,17 +84,26 @@ getData_1 <- function() {
   newColName <- gsub("(\\d)", "ab\\1", newColName)
   DT[, (newColName) := abs(IdSHb)]
   
+  #IdS - Lch (original and absolute)
+  IdSLch <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_Lch, with=FALSE]
+  newColName <- gsub("IdS", "IdSLch", grep("^PersonIdS-\\d$", names(DT), value=TRUE))
+  DT[, (newColName) := IdSLch]
+  newColName <- gsub("(\\d)", "ab\\1", newColName)
+  DT[, (newColName) := abs(IdSLch)]
+  
   #Gap sum
   DT[, "PersonHbOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonHbOutS-\\d$", names(DT))]
   DT[, "PersonLchSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonLchOutS-\\d$", names(DT))]
   DT[, "PersonIdSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-\\d$", names(DT))]
   DT[, "PersonIdSHb-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSHb-\\d$", names(DT))]
+  DT[, "PersonIdSLch-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSLch-\\d$", names(DT))]
   
   #Gap absolute sum
   DT[, "PersonHbOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonHbOutS-ab\\d$", names(DT))]
   DT[, "PersonLchSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonLchOutS-ab\\d$", names(DT))]
   DT[, "PersonIdSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-ab\\d$", names(DT))]
   DT[, "PersonIdSHb-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSHb-ab\\d$", names(DT))]
+  DT[, "PersonIdSLch-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSLch-ab\\d$", names(DT))]
   
   #Hb, Lch, IdS, OutS sum
   DT[, "PersonHb-sum" := rowSums(.SD), .SDcols=grep("^PersonHb-\\d$", names(DT))]
@@ -303,12 +312,26 @@ getData_3 <- function() {
   newColName <- gsub("(\\d)", "ab\\1", newColName)
   DT[, (newColName) := abs(IdSInS)]
   
+  #IdS - InF (original and absolute)
+  IdSInF <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_InF, with=FALSE]
+  newColName <- gsub("InS", "IdSInF", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+  DT[, (newColName) := IdSInF]
+  newColName <- gsub("(\\d)", "ab\\1", newColName)
+  DT[, (newColName) := abs(IdSInF)]
+  
   #IdS - OutS (original and absolute)
   IdSOutS <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_OutS, with=FALSE]
   newColName <- gsub("InS", "IdSOutS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
   DT[, (newColName) := IdSOutS]
   newColName <- gsub("(\\d)", "ab\\1", newColName)
   DT[, (newColName) := abs(IdSOutS)]
+  
+  #IdS - OutF (original and absolute)
+  IdSOutF <- DT[, colIndex_IdS, with=FALSE] - DT[, colIndex_OutF, with=FALSE]
+  newColName <- gsub("InS", "IdSOutF", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+  DT[, (newColName) := IdSOutF]
+  newColName <- gsub("(\\d)", "ab\\1", newColName)
+  DT[, (newColName) := abs(IdSOutF)]
   
   #InS - SteS (original and absolute)
   InSSteS <- DT[, colIndex_InS, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
@@ -317,6 +340,13 @@ getData_3 <- function() {
   newColName <- gsub("(\\d)", "ab\\1", newColName)
   DT[, (newColName) := abs(InSSteS)]
   
+  #InF - SteS (original and absolute)
+  InFSteS <- DT[, colIndex_InF, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
+  newColName <- gsub("InS", "InFSteS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+  DT[, (newColName) := InFSteS]
+  newColName <- gsub("(\\d)", "ab\\1", newColName)
+  DT[, (newColName) := abs(InFSteS)]
+  
   #OutS - SteS (original and absolute)
   OutSSteS <- DT[, colIndex_OutS, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
   newColName <- gsub("InS", "OutSSteS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
@@ -324,21 +354,36 @@ getData_3 <- function() {
   newColName <- gsub("(\\d)", "ab\\1", newColName)
   DT[, (newColName) := abs(OutSSteS)]
   
+  #OutF - SteS (original and absolute)
+  OutFSteS <- DT[, colIndex_OutF, with=FALSE] - DT[, colIndex_SteS, with=FALSE]
+  newColName <- gsub("InS", "OutFSteS", grep("^PersonInS-\\d$", names(DT), value=TRUE))
+  DT[, (newColName) := OutFSteS]
+  newColName <- gsub("(\\d)", "ab\\1", newColName)
+  DT[, (newColName) := abs(OutFSteS)]
+  
   #Gap sum
   DT[, "PersonInFOutF-sum" := rowSums(.SD), .SDcols=grep("^PersonInFOutF-\\d$", names(DT))]
   DT[, "PersonInSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-\\d$", names(DT))]
   DT[, "PersonIdSInS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-\\d$", names(DT))]
+  DT[, "PersonIdSInF-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSInF-\\d$", names(DT))]
   DT[, "PersonIdSOutS-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-\\d$", names(DT))]
+  DT[, "PersonIdSOutF-sum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutF-\\d$", names(DT))]
   DT[, "PersonInSSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonInSSteS-\\d$", names(DT))]
+  DT[, "PersonInFSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonInFSteS-\\d$", names(DT))]
   DT[, "PersonOutSSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutSSteS-\\d$", names(DT))]
+  DT[, "PersonOutFSteS-sum" := rowSums(.SD), .SDcols=grep("^PersonOutFSteS-\\d$", names(DT))]
   
   #Gap absolute sum
   DT[, "PersonInFOutF-absum" := rowSums(.SD), .SDcols=grep("^PersonInFOutF-ab\\d$", names(DT))]
   DT[, "PersonInSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSOutS-ab\\d$", names(DT))]
   DT[, "PersonIdSInS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSInS-ab\\d$", names(DT))]
+  DT[, "PersonIdSInF-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSInF-ab\\d$", names(DT))]
   DT[, "PersonIdSOutS-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutS-ab\\d$", names(DT))]
+  DT[, "PersonIdSOutF-absum" := rowSums(.SD), .SDcols=grep("^PersonIdSOutF-ab\\d$", names(DT))]
   DT[, "PersonInSSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonInSSteS-ab\\d$", names(DT))]
+  DT[, "PersonInFSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonInFSteS-ab\\d$", names(DT))]
   DT[, "PersonOutSSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonOutSSteS-ab\\d$", names(DT))]
+  DT[, "PersonOutFSteS-absum" := rowSums(.SD), .SDcols=grep("^PersonOutFSteS-ab\\d$", names(DT))]
   
   #InS, OutS, IdS, SteS sum
   DT[, "PersonInF-sum" := rowSums(.SD), .SDcols=grep("^PersonInF-\\d$", names(DT))]
