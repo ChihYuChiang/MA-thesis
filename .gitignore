@@ -108,3 +108,5 @@ data/
 report/shiny/\.RData
 
 *.dcf
+
+report/img/
