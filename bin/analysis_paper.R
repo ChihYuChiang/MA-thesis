@@ -9,6 +9,51 @@ DT_2_long <- getData_2()[[1]]
 DT_3 <- getData_3()
 
 
+#--Cleaned data for hypothesis
+#Set target variable
+V_1 <- c("ResponseID",
+         "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum",
+         "PersonHbOutS-sum", "PersonHbOutS-absum", "PersonIdSOutS-sum", "PersonIdSOutS-absum")
+V_1_rename <- c("ResponseID",
+                "Person_life", "Person_hobby", "Person_ideal",
+                "Person_hobbyLife", "Person_hobbyLife_abs", "Person_idealLife", "Person_idealLife_abs")
+V_2 <- c("respondent",
+         "real_sum", "game_sum",
+         "gap_sum", "gap_sum_abs",
+         "combined_sum")
+V_2_rename <- c("ResponseID",
+                "Person_life", "Person_hobby",
+                "Person_hobbyLife", "Person_hobbyLife_abs",
+                "Satis_life")
+V_3 <- c("ResponseId",
+         "GProfile-10_2", "GProfile-11_2",
+         "PersonOutS-sum", "PersonInS-sum", "PersonIdS-sum",
+         "PersonInSOutS-sum", "PersonInSOutS-absum", "PersonIdSOutS-sum", "PersonIdSOutS-absum",
+         "SDTOut-sum", "SDTIn-sum", "SDTId-sum",
+         "SDTIdOut-sum", "SDTIdOut-absum")
+V_3_rename <- c("ResponseID",
+                "Self_different", "Self_better",
+                "Person_life", "Person_hobby", "Person_ideal",
+                "Person_hobbyLife", "Person_hobbyLife_abs", "Person_idealLife", "Person_idealLife_abs",
+                "Satis_life", "Satis_hobby", "Satis_ideal",
+                "Satis_idealLife", "Satis_idealLife_abs")
+
+#Setup data tables
+DT_1_clean <- DT_1[, match(V_1, names(DT_1)), with=FALSE]
+names(DT_1_clean) <- V_1_rename
+write.csv(DT_1_clean, file="../data/DT_1_clean.csv")
+
+DT_2_clean <- DT_2[, match(V_2, names(DT_2)), with=FALSE]
+names(DT_2_clean) <- V_2_rename
+write.csv(DT_2_clean, file="../data/DT_2_clean.csv")
+
+DT_3_clean <- DT_3[, match(V_3, names(DT_3)), with=FALSE]
+names(DT_3_clean) <- V_3_rename
+write.csv(DT_3_clean, file="../data/DT_3_clean.csv")
+
+
+
+
 "
 ### Study 1 (analysis 3)
 "
@@ -260,6 +305,11 @@ t.test(DT_3[, `PersonIdSInF-sum`], DT_3[, `PersonIdSOutF-sum`], mu=0, paired=TRU
 
 #--other person’s video-gaming personality as more positive than their perception of the stereotypical video-gamer personality 
 t.test(DT_3[, `PersonInFSteS-sum`], mu=0, alternative="greater")
+
+
+#--% of participants rated the other person’s videogame personality as more positive than their general personality
+DT_3[`PersonInF-sum` > `PersonOutF-sum`] %>% nrow() / DT_3 %>% nrow()
+DT_3[`PersonInF-sum` > `PersonSteS-sum`] %>% nrow() / DT_3 %>% nrow()
 
 
 #--It was well predicted by the ideal personality but not the stereotypical one
