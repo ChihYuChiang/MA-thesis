@@ -98,11 +98,16 @@ DT_1_long[, PersonConditionAvg := mean(Person), by=PersonCondition]
 DT_1_long$PersonCondition <- factor(DT_1_long$PersonCondition,
                                     levels=c("PersonLch-sum", "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum"),
                                     labels=c("control", "general", "hobby", "ideal"))
+DT_1_summary <- summarySE(DT_1_long, measurevar="Person", groupvars=c("PersonCondition"))
 ggplot(DT_1_long, aes(x=`PersonCondition`, y=`Person`)) +
   geom_violin() +
-  geom_boxplot(width=0.1) +
-  labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
-ggsave("personality-des_all.png", device="png", path=PLOT_PATH)
+  geom_jitter(shape=16, position=position_jitter(0.2), color="grey") +
+  geom_errorbar(aes(ymin=Person - ci, ymax=Person + ci), data=DT_1_summary, width=.3) +
+  geom_point(aes(y=Person), data=DT_1_summary) +
+  labs(x="Personality Version", y="Sum of Personality Score", title="Personality Score by Version") +
+  theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5)) #Center title
+ggsave("personality-des_all.png", device="png", dpi=600, path=PLOT_PATH)
 
 #figure - individual
 DT_1_long_indi <- melt(DT_1, measure.vars=c("PersonHb-5", "PersonOutS-5", "PersonIdS-5", "PersonLch-5"), variable.name="PersonCondition", value.name="Person")
