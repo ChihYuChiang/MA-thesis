@@ -1,12 +1,16 @@
 source("analysis_preprocessing.R")
 library(psych)
+library(lme4)
+library(fastDummies)
 
-PLOT_PATH <- "../report/img/"
-
-DT_1 <- getData_1()
+DT_1 <- getData_1()[[1]]
+DT_1_active <- getData_1()[[2]]
 DT_2 <- getData_2()[[2]]
 DT_2_long <- getData_2()[[1]]
 DT_3 <- getData_3()
+
+PERSON_NAMES <- c("Extraversion", "Agreeableness", "Conscientiousness", "Emotion Stability", "Openness")
+SATIS_NAMES <- c("Autonomy", "Relatedness", "Competence")
 
 
 #--Cleaned data for hypothesis
@@ -88,38 +92,25 @@ t.test(DT_1[, `PersonIdSHb-sum`], DT_1[, `PersonIdSLch-sum`], mu=0, paired=TRUE)
 #description
 describe(DT_1[, c("PersonHb-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonLch-sum")])
 
-#ANOVA
-DT_1_long <- melt(DT_1, measure.vars=c("PersonHb-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonLch-sum"), variable.name="PersonCondition", value.name="Person")
+#ANOVA and figure (sum)
+DT_1_long <- longForm4Plot(DT_1, measureVar=c("PersonHb-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonLch-sum"),
+                           levels=c("PersonLch-sum", "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum"),
+                           labels=c("control", "general", "hobby", "ideal"))
 
-aov(`Person` ~ `PersonCondition` + Error(ResponseID / PersonCondition), data=DT_1_long) %>% summary()
+aov(`Person` ~ `PersonCondition` + Error(ResponseID / PersonCondition), data=DT_1_long[PersonCondition != "ideal"]) %>% summary()
+personViolinPlot(DT_1_long, fileName="S1-all",
+                 lab_x="Personality Version", lab_y="Sum of Personality Score", title="Personality Score by Version")
 
-#figure - sum
-DT_1_long[, PersonConditionAvg := mean(Person), by=PersonCondition]
-DT_1_long$PersonCondition <- factor(DT_1_long$PersonCondition,
-                                    levels=c("PersonLch-sum", "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum"),
-                                    labels=c("control", "general", "hobby", "ideal"))
-DT_1_summary <- summarySE(DT_1_long, measurevar="Person", groupvars=c("PersonCondition"))
-ggplot(DT_1_long, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_violin() +
-  geom_jitter(shape=16, position=position_jitter(0.2), color="grey") +
-  geom_errorbar(aes(ymin=Person - ci, ymax=Person + ci), data=DT_1_summary, width=.3) +
-  geom_point(aes(y=Person), data=DT_1_summary) +
-  labs(x="Personality Version", y="Sum of Personality Score", title="Personality Score by Version") +
-  theme_minimal() +
-  theme(plot.title=element_text(hjust=0.5)) #Center title
-ggsave("personality-des_all.png", device="png", dpi=600, path=PLOT_PATH)
-
-#figure - individual
-DT_1_long_indi <- melt(DT_1, measure.vars=c("PersonHb-5", "PersonOutS-5", "PersonIdS-5", "PersonLch-5"), variable.name="PersonCondition", value.name="Person")
-DT_1_long_indi[, PersonConditionAvg := mean(Person), by=PersonCondition]
-DT_1_long_indi$PersonCondition <- factor(DT_1_long_indi$PersonCondition,
-                                    levels=c("PersonLch-5", "PersonOutS-5", "PersonHb-5", "PersonIdS-5"),
-                                    labels=c("control", "general", "hobby", "ideal"))
-ggplot(DT_1_long_indi, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_violin() +
-  geom_boxplot(width=0.1) +
-  labs(x="Personality version", y="Personality score", title="Personality score by version - openness")
-ggsave("personality-des_5.png", device="png", path=PLOT_PATH)
+#ANOVA and figure (individual)
+for(i in c(1:5)) {
+  DT_1_long_indi <- longForm4Plot(DT_1, measureVar=c(sprintf("PersonHb-%s", i), sprintf("PersonOutS-%s", i), sprintf("PersonIdS-%s", i), sprintf("PersonLch-%s", i)),
+                             levels=c(sprintf("PersonLch-%s", i), sprintf("PersonOutS-%s", i), sprintf("PersonHb-%s", i), sprintf("PersonIdS-%s", i)),
+                             labels=c("control", "general", "hobby", "ideal"))
+  
+  aov(`Person` ~ `PersonCondition` + Error(ResponseID / PersonCondition), data=DT_1_long_indi[PersonCondition != "ideal"]) %>% summary() %>% print()
+  personViolinPlot(DT_1_long_indi, fileName=sprintf("S1-%s", i),
+                   lab_x="Personality Version", lab_y="Personality Score", title=sprintf("Personality Score by Version - %s", PERSON_NAMES[i]))
+}
 
 
 #--The hobby-context personality improvement is significantly higher than zero
@@ -127,9 +118,9 @@ ggsave("personality-des_5.png", device="png", path=PLOT_PATH)
 describe(DT_1[, .(`PersonHbOutS-sum`, tanh(`PersonProgapS-sum`))])
 
 #t
-t.test(DT_1[, `PersonHbOutS-sum`], mu=0, alternative="greater")
-t.test(DT_1[, `PersonProgapS-sum`], mu=0, alternative="greater")
-t.test(tanh(DT_1[, `PersonProgapS-sum`]), mu=0, alternative="greater")
+t.test(DT_1[, `PersonHbOutS-sum`], mu=0)
+t.test(DT_1[, `PersonProgapS-sum`], mu=0)
+t.test(tanh(DT_1[, `PersonProgapS-sum`]), mu=0)
 
 
 #--personality phenomena are not predicted by the frequency of participating in the hobbies and the length of the period engaging in the hobbies
@@ -178,6 +169,28 @@ ggplot(DT_1[`Enough-2_0` %in% topC], aes(x=`Enough-2_0`, y=tanh(`PersonProgapS-s
   labs(x="Hobby", y="Relative personality shift", title="Relative personality shift by top hobbies")
 
 
+#--% of people had hobby personality > general personality and % had hobby personality > control personality
+DT_1[`PersonHb-sum` > `PersonOutS-sum`] %>% nrow() / DT_1 %>% nrow()
+DT_1[`PersonHb-sum` > `PersonLch-sum`] %>% nrow() / DT_1 %>% nrow()
+
+
+#--%Rate as active
+#Video game
+DT_1_active[`playing video games` < 2] %>% nrow() / DT_1_active %>% nrow()
+
+#Overall
+tmp <- (DT_1_active[, c(10:95)] %>% as.matrix()) < 2
+sum(tmp) / (nrow(tmp) * ncol(tmp))
+mean(DT_1_active[, c(10:95)] %>% as.matrix())
+
+
+#--The gap is not moderated by demographics
+DT_1_dummy <- dummy_cols(DT_1, select_columns="Demo-4")
+DT_1_dummy[is.na(DT_1_dummy)] <- 0
+lm(`PersonHbOutS-sum` ~ `Demo-1` + `Demo-2` + `Demo-3_1` + `Demo-3_2` + `Demo-3_3` + `Demo-3_4` + `Demo-3_5` + `Demo-3_6` + `Demo-4_1` + `Demo-4_2` + `Demo-5`,
+   data=DT_1_dummy) %>% summary()
+
+
 
 
 "
@@ -193,7 +206,27 @@ describe(DT_2[, `real_sum`])
 DT_2[game_sum > real_sum] %>% nrow() / DT_2 %>% nrow()
 
 #t
-t.test(DT_2[, `gap_sum`], mu=0, alternative="greater")
+t.test(DT_2[["game_sum"]], DT_2[["real_sum"]], mu=0, paired=TRUE)
+
+#figure (sum)
+DT_2_longP <- longForm4Plot(DT_2, measureVar=c("game_sum", "real_sum"),
+                            levels=c("real_sum", "game_sum"),
+                            labels=c("general", "game"))
+personViolinPlot(DT_2_longP, fileName="S2-all",
+                 lab_x="Personality Version", lab_y="Sum of Personality Score", title="Personality Score by Version")
+
+#figure (individual)
+PERSON_NAMES_2 <- c("extraversion", "agreeableness", "conscientiousness", "emotionstability", "openness")
+for(i in PERSON_NAMES_2) {
+  DT_2_long_indi <- longForm4Plot(DT_2, measureVar=c(sprintf("game_%s", i), sprintf("real_%s", i)),
+                                  levels=c(sprintf("real_%s", i), sprintf("game_%s", i)),
+                                  labels=c("general", "game"))
+  
+  t.test(DT_2[[sprintf("game_%s", i)]], DT_2[[sprintf("real_%s", i)]], mu=0, paired=TRUE) %>% print()
+  
+  personViolinPlot(DT_2_long_indi, fileName=sprintf("S2-%s", which(PERSON_NAMES_2 == i)),
+                   lab_x="Personality Version", lab_y="Personality Score", title=sprintf("Personality Score by Version - %s", PERSON_NAMES[which(PERSON_NAMES_2 == i)]))
+}
 
 
 #--an individual’s preference on the specific games does not predict the shift
@@ -202,7 +235,8 @@ lm(gap_sum ~ preference, data=DT_2) %>% summary()
 
 #--This shift was robust across the fifty game titles
 #Anova
-aov(`gap_sum` ~ `core_id`, data=DT_2_long) %>% summary()
+aov(`gap_sum` ~ `core_id`, data=DT_2_long)
+lmer(gap_sum ~ core_id + (1|respondent), data=DT_2_long) %>% summary()
 
 #figure
 ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
@@ -237,30 +271,48 @@ cor.test(DT_2[["real_sum"]], as.numeric(DT_2[["game_sum_higher"]]))
 cor.test(DT_2[["real_sum"]], DT_2[["gap_sum"]])
 
 
+#--The gap is not moderated by demographics
+DT_2_dummy <- dummy_cols(DT_2, select_columns=c("race", "sex"))
+lm(`gap_sum` ~ `age` + `education` + `income` + `race_1` + `race_2` + `race_4` + `race_6` + `sex_1`,
+   data=DT_2_dummy) %>% summary()
+
+
+#--1: video person > general person, 0: otherwise Correlates with personality
+cor.test((DT_2$game_sum > DT_2$real_sum) %>% as.numeric(), DT_2$real_sum)
+
+
+
 
 "
 ### Study 3 (analysis 2)
 "
 #--the mean values of the four self-report personalities were different from each other
-DT_3_long <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum"), variable.name="PersonCondition", value.name="Person")
-
 #description
 describe(DT_3[, c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum")])
 
-#Anova
-aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long) %>% summary()
+#Anova and figure (sum)
+DT_3_long <- longForm4Plot(DT_3, measureVar=c("PersonSteS-sum", "PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum"),
+                           levels=c("PersonSteS-sum", "PersonOutS-sum", "PersonInS-sum", "PersonIdS-sum"),
+                           labels=c("stereotype", "general", "game", "ideal"))
 
-#figure
-DT_3_long2 <- melt(DT_3, measure.vars=c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
-DT_3_long2[, PersonConditionAvg := mean(Person), by=PersonCondition]
-DT_3_long2$PersonCondition <- factor(DT_3_long2$PersonCondition,
-                                         levels=c("PersonSteS-sum", "PersonOutS-sum", "PersonInS-sum", "PersonIdS-sum"),
-                                         labels=c("stereotype", "general", "game", "ideal"))
-ggplot(DT_3_long2, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_violin() +
-  geom_boxplot(width=0.1) +
-  labs(x="Personality version", y="Sum of personality score", title="Personality score by version")
-ggsave("3-personality-des_all.png", device="png", path=PLOT_PATH)
+aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long[PersonCondition != "stereotype"]) %>% summary()
+personViolinPlot(DT_3_long, fileName="S3-all",
+                 lab_x="Personality Version", lab_y="Sum of Personality Score", title="Personality Score by Version")
+
+#ANOVA and figure (individual)
+for(i in c(1:5)) {
+  DT_3_long_indi <- longForm4Plot(DT_3, measureVar=c(sprintf("PersonSteS-%s", i), sprintf("PersonOutS-%s", i), sprintf("PersonInS-%s", i), sprintf("PersonIdS-%s", i)),
+                                  levels=c(sprintf("PersonSteS-%s", i), sprintf("PersonOutS-%s", i), sprintf("PersonInS-%s", i), sprintf("PersonIdS-%s", i)),
+                                  labels=c("stereotype", "general", "game", "ideal"))
+  
+  aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long_indi[PersonCondition != "stereotype"]) %>% summary() %>% print()
+  personViolinPlot(DT_3_long_indi, fileName=sprintf("S3-%s", i),
+                   lab_x="Personality Version", lab_y="Personality Score", title=sprintf("Personality Score by Version - %s", PERSON_NAMES[i]))
+}
+
+
+#--Participants rated their hobby personality as significantly more positive than their general personality
+t.test(DT_3[, `PersonInS-sum`], DT_3[, `PersonOutS-sum`], mu=0, paired=TRUE)
 
 
 #--Participants’ video-gaming personality was less positive than their ideal personality
@@ -309,7 +361,7 @@ t.test(DT_3[, `PersonIdSInF-sum`], DT_3[, `PersonIdSOutF-sum`], mu=0, paired=TRU
 
 
 #--other person’s video-gaming personality as more positive than their perception of the stereotypical video-gamer personality 
-t.test(DT_3[, `PersonInFSteS-sum`], mu=0, alternative="greater")
+t.test(DT_3[, `PersonInFSteS-sum`], mu=0)
 
 
 #--% of participants rated the other person’s videogame personality as more positive than their general personality
@@ -322,53 +374,81 @@ lm(`PersonInS-sum` ~ `PersonOutS-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data
 
 
 #--The fellow version personalities showed a similar mean difference from the ideal and stereotype
-DT_3_longFellow <- melt(DT_3, measure.vars=c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSteS-sum"), variable.name="PersonCondition", value.name="Person")
-
-#description
+#Description
 describe(DT_3[, c("PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum", "PersonSteS-sum")])
 
-#Anova
-aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_longFellow) %>% summary()
+#Anova and figure (sum)
+DT_3_longF <- longForm4Plot(DT_3, measureVar=c("PersonSteS-sum", "PersonInF-sum", "PersonOutF-sum", "PersonIdS-sum"),
+                           levels=c("PersonSteS-sum", "PersonOutF-sum", "PersonInF-sum", "PersonIdS-sum"),
+                           labels=c("stereotype", "general", "game", "ideal"))
 
-#figure
-DT_3_longFellow[, PersonConditionAvg := mean(Person), by=PersonCondition]
-DT_3_longFellow$PersonCondition <- factor(DT_3_longFellow$PersonCondition,
-                                     levels=c("PersonSteS-sum", "PersonOutF-sum", "PersonInF-sum", "PersonIdS-sum"),
-                                     labels=c("stereotype", "general", "game", "ideal"))
-ggplot(DT_3_longFellow, aes(x=`PersonCondition`, y=`Person`)) +
-  geom_violin() +
-  geom_boxplot(width=0.1) +
-  labs(x="Personality version", y="Sum of personality score", title="Fellow personality score by version")
-ggsave("3-personality-des_allf.png", device="png", path=PLOT_PATH)
+aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_longF[PersonCondition != "stereotype"]) %>% summary()
+personViolinPlot(DT_3_longF, fileName="S3-allF",
+                 lab_x="Personality Version", lab_y="Sum of Personality Score", title="Fellow Personality Score by Version")
+
+#ANOVA and figure (individual)
+for(i in c(1:5)) {
+  DT_3_longF_indi <- longForm4Plot(DT_3, measureVar=c(sprintf("PersonSteS-%s", i), sprintf("PersonOutF-%s", i), sprintf("PersonInF-%s", i), sprintf("PersonIdS-%s", i)),
+                                  levels=c(sprintf("PersonSteS-%s", i), sprintf("PersonOutF-%s", i), sprintf("PersonInF-%s", i), sprintf("PersonIdS-%s", i)),
+                                  labels=c("stereotype", "general", "game", "ideal"))
+  
+  aov(`Person` ~ `PersonCondition` + Error(ResponseId / PersonCondition), data=DT_3_long_indi[PersonCondition != "stereotype"]) %>% summary() %>% print()
+  personViolinPlot(DT_3_longF_indi, fileName=sprintf("S3-%sF", i),
+                   lab_x="Personality Version", lab_y="Personality Score", title=sprintf("Fellow Personality Score by Version - %s", PERSON_NAMES[i]))
+}
 
 
 #--The fellow personality shift was higher than zero
-t.test(DT_3[, `PersonInFOutF-sum`], mu=0, alternative="greater")
-t.test(DT_3[, `PersonProgapF-sum`], mu=0, alternative="greater")
-t.test(DT_3[, tanh(`PersonProgapF-sum`)], mu=0, alternative="greater")
+t.test(DT_3[, `PersonInFOutF-sum`], mu=0)
+t.test(DT_3[, `PersonProgapF-sum`], mu=0)
+t.test(DT_3[, tanh(`PersonProgapF-sum`)], mu=0)
 describe(DT_3[, `PersonInFOutF-sum`])
 describe(DT_3[, tanh(`PersonProgapF-sum`)])
 
 
 #--The fellow version game-general personality difference is less than self version difference
-t.test(DT_3[, `PersonInSOutS-sum`], DT_3[, `PersonInFOutF-sum`], mu=0, alternative="greater")
+t.test(DT_3[, `PersonInSOutS-sum`], DT_3[, `PersonInFOutF-sum`], mu=0, paired=TRUE)
 
 
 #--The fellow version was well predicted by the ideal personality but not the stereotypical one
 lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
 
-#Moderation of how well they know
-lm(`PersonInF-sum` ~ `PersonOutF-sum` + `PersonIdS-sum` + `PersonSteS-sum`, data=DT_3) %>% summary()
+
+#--Game satisfaction larger than general satisfaction
+DT_3_long_satis <- longForm4Plot(DT_3, measureVar=c("SDTIn-sum", "SDTOut-sum", "SDTId-sum"),
+                            levels=c("SDTOut-sum", "SDTIn-sum", "SDTId-sum"),
+                            labels=c("general", "game", "ideal"))
+personViolinPlot(DT_3_long_satis, fileName="S3-Sall",
+                 lab_x="Satisfaction Version", lab_y="Sum of Satisfaction Score", title="Satisfaction Score by Version")
+
+for(i in c(1:3)) {
+  DT_3_long_satis_indi <- longForm4Plot(DT_3, measureVar=c(sprintf("SDTIn-%s", i), sprintf("SDTOut-%s", i), sprintf("SDTId-%s", i)),
+                                   levels=c(sprintf("SDTOut-%s", i), sprintf("SDTIn-%s", i), sprintf("SDTId-%s", i)),
+                                   labels=c("general", "game", "ideal"))
+  
+  personViolinPlot(DT_3_long_satis_indi, fileName=sprintf("S3-S%s", i),
+                   lab_x="Satisfaction Version", lab_y="Satisfaction Score", title=sprintf("Satisfaction Score by Version - %s", SATIS_NAMES[i]))
+}
+
+
+#--The fellow-perceived gap has no moderation by how well they know the other person
+#How often play together
+cor.test(DT_3[["PersonInFOutF-sum"]], DT_3[["Relation-4"]])
+
+#How familiar
+cor.test(DT_3[["PersonInFOutF-sum"]], DT_3[["Relation-8"]])
+
 
 #--Different motivation
 #GProfile-10_2 = different person
 #GProfile-11_2 = better self
-t.test(DT_3[, `GProfile-11_2`], DT_3[, `GProfile-10_2`], paired=TRUE, alternative="greater")
+t.test(DT_3[, `GProfile-11_2`], DT_3[, `GProfile-10_2`], paired=TRUE)
 describe(DT_3[, .(`GProfile-11_2`, `GProfile-10_2`)])
 
 
 #--The degrees of becoming a better self correlated positively with the personality shift
 cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-11_2"]])
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-10_2"]])
 
 
 #--The degrees of becoming a different self correlated positively with the absolute personality shift

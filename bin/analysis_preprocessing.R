@@ -127,9 +127,17 @@ getData_1 <- function() {
   
   
   "
+  ### Active/passive data table
+  "
+  DT_active <- fread("../data/raw_survey4/Rating_Hobbies.csv")
+
+  
+  
+  
+  "
   ### Return data 1
   "
-  return(DT)
+  return(list(DT, DT_active))
 }
 
 
@@ -213,7 +221,7 @@ getData_3 <- function() {
   "
   #Read in as DT
   #Skip 2 for codec
-  DT <- fread("../data/raw_survey2/survey2.csv", skip=2)[
+  DT <- fread("../data/raw_survey2/survey2_checked.csv", skip=2)[
     MTurkCode != "", ,] #Filter
   
   
@@ -464,7 +472,41 @@ getData_3 <- function() {
 
 
 
-#--Helper functions
+
+
+
+
+#------------------------------------------------------------
+#Helper functions
+#------------------------------------------------------------
+#--Create long form data, clean var names and order
+longForm4Plot <- function(DT, measureVar, levels, labels) {
+  DT_long <- melt(DT, measure.vars=measureVar, variable.name="PersonCondition", value.name="Person")
+  DT_long$PersonCondition <- factor(DT_long$PersonCondition, levels=levels, labels=labels)
+  
+  return(DT_long)
+}
+
+
+#--Create violin plot
+personViolinPlot <- function(DT_long, lab_x="Personality Version", lab_y="Sum of Personality Score", title="Personality Score by Version", fileName="") {
+  PLOT_PATH <- "../report/img/"
+  DT_summary <- summarySE(DT_long, measurevar="Person", groupvars=c("PersonCondition"))
+  
+  p <- ggplot(DT_long, aes(x=`PersonCondition`, y=`Person`)) +
+    geom_violin() +
+    geom_jitter(shape=16, position=position_jitter(0.2), color="grey") +
+    geom_errorbar(aes(ymin=Person - ci, ymax=Person + ci), data=DT_summary, width=.3) +
+    geom_point(aes(y=Person), data=DT_summary) +
+    labs(x=lab_x, y=lab_y, title=title) +
+    theme_minimal()
+    
+  print(p)
+  ggsave(sprintf("personality-%s.png", fileName), device="png", dpi=600, path=PLOT_PATH)
+}
+
+
+#--Acquire a table of data summary
 ## Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95%).
 ##   data: a data frame.
 ##   measurevar: the name of a column that contains the variable to be summariezed
@@ -474,6 +516,7 @@ getData_3 <- function() {
 ##   source: http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
                       conf.interval=.95, .drop=TRUE) {
+  library(plyr)
 
   # New version of length which can handle NA's: if na.rm==T, don't count them
   length2 <- function (x, na.rm=FALSE) {
