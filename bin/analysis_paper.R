@@ -2,6 +2,9 @@ source("analysis_preprocessing.R")
 library(psych)
 library(lme4)
 library(fastDummies)
+library(splitstackshape)
+library(corrplot)
+library(colorspace)
 
 DT_1 <- getData_1()[[1]]
 DT_1_active <- getData_1()[[2]]
@@ -58,9 +61,15 @@ write.csv(DT_3_clean, file="../data/DT_3_clean.csv")
 
 
 
-"
-### Study 1 (analysis 3)
-"
+
+
+
+
+#----------------------------------------------------------------------
+
+#Study 1 (analysis 3)
+
+#----------------------------------------------------------------------
 #--Ideal personality is higher than general personality
 t.test(DT_1[, `PersonIdS-sum`], DT_1[, `PersonOutS-sum`], mu=0, paired=TRUE)
 t.test(DT_1[, `PersonIdS-1`], DT_1[, `PersonOutS-1`], mu=0, paired=TRUE)
@@ -128,6 +137,7 @@ t.test(tanh(DT_1[, `PersonProgapS-sum`]), mu=0)
 #Hobby-3 = How long ago (in years) did you first start doing your hobby
 #Hobby-4 = How many times per year do you engage in your hobby
 lm(`PersonHbOutS-sum` ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))]) %>% summary()
+lm(`PersonHbOutS-absum` ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))]) %>% summary()
 
 lm(`PersonProgapS-sum` ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))]) %>% summary()
 lm(tanh(`PersonProgapS-sum`) ~ log(`Hobby-3`) + log(`Hobby-4`), data=DT_1[is.finite(log(`Hobby-3`)) & is.finite(log(`Hobby-4`))]) %>% summary()
@@ -193,9 +203,15 @@ lm(`PersonHbOutS-sum` ~ `Demo-1` + `Demo-2` + `Demo-3_1` + `Demo-3_2` + `Demo-3_
 
 
 
-"
-### Study 2 (analysis)
-"
+
+
+
+
+#--------------------------------------------------------------------------------
+
+#Study 2 (analysis)
+
+#--------------------------------------------------------------------------------
 #--The personality shift in video gaming context is significantly different from zero
 #describe
 describe(DT_2[, `gap_sum`])
@@ -248,21 +264,32 @@ ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
 cor.test(DT_2[["gap_sum"]], DT_2[["preference_1"]]) #liking
 cor.test(DT_2[["gap_sum"]], DT_2[["preference_2"]]) #how often played
 cor.test(DT_2[["gap_sum"]], DT_2[["preference_3"]]) #fit taste
+cor.test(DT_2[["gap_sum"]], DT_2[, preference_1 + preference_2 + preference_3]) #over all
 
-cor.test(DT_2[["gap_sum"]], DT_2[, preference_1 + preference_2 + preference_3]) #fit taste
+
+#--The abs personality difference was significantly moderated by how much a participant liked videogames on average 
+cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_1"]]) #liking
+cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_2"]]) #how often played
+cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_3"]]) #fit taste
+cor.test(DT_2[["gap_sum_abs"]], DT_2[, preference_1 + preference_2 + preference_3]) #over all
 
 
 #--the personality shift does not correlates with the respondent’s satisfaction in real life
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_sum"]])
-lm(gap_sum ~ combined_sum, data=DT_2) %>% summary()
-
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_autonomy"]])
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_relatedness"]])
 cor.test(DT_2[["gap_sum"]], DT_2[["combined_competence"]])
 
+targetColName <- c("combined_sum", "combined_autonomy", "combined_relatedness", "combined_competence",
+                   "gap_sum", "gap_extraversion", "gap_agreeableness", "gap_conscientiousness", "gap_emotionstability", "gap_openness")
+corrplot(cor(DT_2[, targetColName, with=FALSE]),
+         method="color", type="lower", addCoef.col="black", diag=FALSE, tl.srt=90, tl.cex=0.8, tl.col="black",
+         cl.pos="r", col=colorRampPalette(diverge_hcl(3))(100))
 
-#--the personality shift correlates with the respondent’s satisfaction in real life
+
+#--the abs personality shift correlates with the respondent’s satisfaction in real life but plain gap doesn't
 cor.test(DT_2[["gap_sum_abs"]], DT_2[["combined_sum"]])
+cor.test(DT_2[["gap_sum"]], DT_2[["combined_sum"]])
 
 
 #--real personality negatively correlates relative videogame personality (higher than overall = 1)
@@ -283,9 +310,15 @@ cor.test((DT_2$game_sum > DT_2$real_sum) %>% as.numeric(), DT_2$real_sum)
 
 
 
-"
-### Study 3 (analysis 2)
-"
+
+
+
+
+#--------------------------------------------------------------------------------
+
+#Study 3 (analysis 2)
+
+#--------------------------------------------------------------------------------
 #--the mean values of the four self-report personalities were different from each other
 #description
 describe(DT_3[, c("PersonInS-sum", "PersonOutS-sum", "PersonIdS-sum", "PersonSteS-sum")])
@@ -351,9 +384,31 @@ describe(DT_3[, tanh(`PersonProgapS-sum`)])
 
 
 #--the shift were not influenced by an individual’s fondness for video gaming in general and his/her preference on the specific games predicted the shift
-lm(`PersonInSOutS-sum` ~ `GProfile-a1` + `PrefS-a1`, data=DT_3) %>% summary()
+lm(`PersonInSOutS-sum` ~ `GProfile-5` + `GProfile-1` + `PrefS-4`, data=DT_3) %>% summary() #Frequency GProfile-1 from the first time
+lm(`PersonInSOutS-sum` ~ `GProfile-a2` + `PrefS-a2`, data=DT_3) %>% summary() #Pure like
+
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-3_1"]]) #hard-core(7) or casual gamer
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["PrefS-5"]]) #Fit taste
+
+lm(`PersonInSOutS-absum` ~ `GProfile-5` + `GProfile-1` + `PrefS-4`, data=DT_3) %>% summary() #Frequency GProfile-1 from the first time
+lm(`PersonInSOutS-absum` ~ `GProfile-a2` + `PrefS-a2`, data=DT_3) %>% summary() #Pure like
+
+cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["GProfile-3_1"]]) #hard-core(7) or casual gamer
+cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["PrefS-5"]]) #Fit taste
+
 lm(`PersonProgapS-sum` ~ `GProfile-a1` + `PrefS-a1`, data=DT_3) %>% summary()
 lm(tanh(`PersonProgapS-sum`) ~ `GProfile-a1` + `PrefS-a1`, data=DT_3) %>% summary()
+
+
+#--The gap is not moderated by demographics
+DT_3_dummy <- cSplit(DT_3, 'Demo-3', sep=",")
+DT_3_dummy[is.na(DT_3_dummy)] <- 0
+DT_3_dummy <- dummy_cols(DT_3_dummy, select_columns=c("Demo-3_1", "Demo-3_2", "Demo-3_3", "Demo-4"))
+DT_3_dummy[, `Demo-3_1_3` := `Demo-3_1_3` + `Demo-3_2_3`
+          ][, `Demo-3_1_4` := `Demo-3_1_4` + `Demo-3_2_4`
+          ][, `Demo-3_1_6` := `Demo-3_1_6` + `Demo-3_3_6`]
+lm(`PersonInSOutS-sum` ~ `Demo-1` + `Demo-2` + `Demo-5` + `Demo-4_1` + `Demo-4_2` + `Demo-3_1_1` + `Demo-3_1_2` + `Demo-3_1_3` + `Demo-3_1_4` + `Demo-3_1_5` + `Demo-3_1_6`,
+   data=DT_3_dummy) %>% summary()
 
 
 #--the gap between the other person’s video-game personality and an ideal personality as smaller than for the other persons’ general personality

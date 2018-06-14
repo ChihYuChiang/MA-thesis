@@ -275,15 +275,14 @@ getData_3 <- function() {
   
   #--Preference (5 items)
   DT[, "PrefS-a1" := rowMeans(.SD), .SDcols=grep("^PrefS-\\d$", names(DT))] #All 5 measures
-  DT[, "PrefS-a2" := rowMeans(.SD), .SDcols=grep("^PrefS-[1234]$", names(DT))] #Except play frequency
+  DT[, "PrefS-a2" := rowMeans(.SD), .SDcols=grep("^PrefS-[123]$", names(DT))] #Except play frequency
   DT[, "PrefF-a1" := rowMeans(.SD), .SDcols=grep("^PrefF-\\d$", names(DT))]
-  DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[1234]$", names(DT))]
+  DT[, "PrefF-a2" := rowMeans(.SD), .SDcols=grep("^PrefF-[123]$", names(DT))]
 
   
   #--Gamer (5 items)
   DT[, "GProfile-a1" := rowMeans(.SD), .SDcols=grep("^GProfile-((3_1)|[12345])$", names(DT))] #All 5 measures
   DT[, "GProfile-a2" := rowMeans(.SD), .SDcols=grep("^GProfile-[24]$", names(DT))] #Pure like
-  DT[, "GProfile-a3" := rowMeans(.SD), .SDcols=grep("^GProfile-[245]$", names(DT))] #Pure like + play frequency
   
   
   
