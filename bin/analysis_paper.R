@@ -18,7 +18,18 @@ PERSON_NAMES <- c("Extraversion", "Agreeableness", "Conscientiousness", "Emotion
 SATIS_NAMES <- c("Autonomy", "Relatedness", "Competence")
 
 
-#--Cleaned data for hypothesis
+
+
+
+
+
+
+#----------------------------------------------------------------------
+
+#Hypothesis
+
+#----------------------------------------------------------------------
+#--Cleaned data
 #Set target variable
 V_1 <- c("ResponseID",
          "PersonOutS-sum", "PersonHb-sum", "PersonIdS-sum",
@@ -59,6 +70,52 @@ write.csv(DT_2_clean, file="../data/DT_2_clean.csv")
 DT_3_clean <- DT_3[, match(V_3, names(DT_3)), with=FALSE]
 names(DT_3_clean) <- V_3_rename
 write.csv(DT_3_clean, file="../data/DT_3_clean.csv")
+
+
+#--Study 1
+cor.test(DT_1_clean[["Person_life"]], DT_1_clean[["Person_hobbyLife"]])
+cor.test(DT_1_clean[["Person_life"]], DT_1_clean[["Person_hobbyLife_abs"]])
+
+
+#--Study 2
+cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Person_hobbyLife"]])
+cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Person_hobbyLife_abs"]])
+
+cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Satis_life"]])
+
+lm(Person_hobbyLife ~ Person_life + Satis_life, DT_2_clean) %>% summary()
+lm(Person_hobbyLife_abs ~ Person_life + Satis_life, DT_2_clean) %>% summary()
+
+
+#--Study 3
+cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Person_hobbyLife"]])
+cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Person_hobbyLife_abs"]])
+
+cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Satis_life"]])
+
+lm(Person_hobbyLife ~ Person_life + Satis_life, DT_3_clean) %>% summary()
+lm(Person_hobbyLife_abs ~ Person_life + Satis_life, DT_3_clean) %>% summary()
+
+lm(Person_hobbyLife ~ Person_life + (Satis_ideal - Satis_life), DT_3_clean) %>% summary()
+lm(Person_hobbyLife_abs ~ Person_life + (Satis_ideal - Satis_life), DT_3_clean) %>% summary()
+
+lm(Satis_hobby ~ Person_life + Person_hobbyLife + Person_hobbyLife_abs, DT_3_clean) %>% summary()
+
+lm(`PrefS-a2` ~ `PersonOutS-sum` + `GProfile-a2` + `SDTIn-sum`, DT_3) %>% summary()
+
+
+cor.test(DT_3[["SDTIn-sum"]], DT_3[["GProfile-a2"]]) #Overall video game liking
+cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-a2"]]) #Liking of the particular game
+cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-5"]]) #Fittness of taste of the particular game
+
+
+cor.test(DT_3_clean[["Self_better"]], DT_3_clean[["Person_hobbyLife"]])
+cor.test(DT_3_clean[["Self_different"]], DT_3_clean[["Person_hobbyLife_abs"]])
+
+
+cor.test(DT_3_clean[["Person_ideal"]], DT_3_clean[["Satis_ideal"]])
+cor.test(DT_3_clean[["Person_ideal"]], DT_3_clean[["Person_life"]])
+cor.test(DT_3_clean[["Satis_ideal"]], DT_3_clean[["Satis_life"]])
 
 
 
