@@ -5,10 +5,12 @@ library(fastDummies)
 library(splitstackshape)
 library(corrplot)
 library(colorspace)
+library(tidyverse)
 
 DT_1 <- getData_1()[[1]]
 DT_1_active <- getData_1()[[2]]
 DT_2 <- getData_2()[[2]]
+DT_2_agame <- getData_2()[[3]]
 DT_2_long <- getData_2()[[1]]
 DT_3 <- getData_3()
 
@@ -245,14 +247,10 @@ for(i in PERSON_NAMES_2) {
 }
 
 
-#--an individual’s preference on the specific games does not predict the shift
-lm(gap_sum ~ preference, data=DT_2) %>% summary()
-
-
 #--This shift was robust across the fifty game titles
 #Anova
 aov(`gap_sum` ~ `core_id`, data=DT_2_long)
-lmer(gap_sum ~ core_id + (1|respondent), data=DT_2_long) %>% summary()
+lmer(gap_sum ~ 1 + core_id + (1|respondent), data=DT_2_long) %>% summary()
 
 #figure
 ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
@@ -261,17 +259,15 @@ ggplot(DT_2_long, aes(x=`core_id`, y=`gap_sum`)) +
 
 
 #--The personality difference was not significantly moderated by how much a participant liked videogames on average 
-cor.test(DT_2[["gap_sum"]], DT_2[["preference_1"]]) #liking
-cor.test(DT_2[["gap_sum"]], DT_2[["preference_2"]]) #how often played
-cor.test(DT_2[["gap_sum"]], DT_2[["preference_3"]]) #fit taste
-cor.test(DT_2[["gap_sum"]], DT_2[, preference_1 + preference_2 + preference_3]) #over all
+cor.test(DT_2_agame[["gap_sum"]], DT_2_agame[["preference_1"]]) #liking
+cor.test(DT_2_agame[["gap_sum"]], DT_2_agame[["preference_2"]]) #how often played
+cor.test(DT_2_agame[["gap_sum"]], DT_2_agame[["preference_3"]]) #fit taste
 
 
 #--The abs personality difference was significantly moderated by how much a participant liked videogames on average 
-cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_1"]]) #liking
-cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_2"]]) #how often played
-cor.test(DT_2[["gap_sum_abs"]], DT_2[["preference_3"]]) #fit taste
-cor.test(DT_2[["gap_sum_abs"]], DT_2[, preference_1 + preference_2 + preference_3]) #over all
+cor.test(DT_2_agame[["gap_sum_abs"]], DT_2_agame[["preference_1"]]) #liking
+cor.test(DT_2_agame[["gap_sum_abs"]], DT_2_agame[["preference_2"]]) #how often played
+cor.test(DT_2_agame[["gap_sum_abs"]], DT_2_agame[["preference_3"]]) #fit taste
 
 
 #--the personality shift does not correlates with the respondent’s satisfaction in real life
@@ -306,6 +302,11 @@ lm(`gap_sum` ~ `age` + `education` + `income` + `race_1` + `race_2` + `race_4` +
 
 #--1: video person > general person, 0: otherwise Correlates with personality
 cor.test((DT_2$game_sum > DT_2$real_sum) %>% as.numeric(), DT_2$real_sum)
+
+
+#--Across genre
+DT_2_longlg <- melt(DT_2_long, measure.vars = c("Action", "Adventure", "Role-Playing", "Shooter", "Simulation", "Sports", "Strategy"))
+lmer(gap_sum ~ variable + (1|respondent), data=DT_2_longlg) %>% summary()
 
 
 
@@ -512,18 +513,14 @@ cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["GProfile-10_2"]])
 
 #--the personality shift was negatively correlated with the respondent’s satisfaction in real life
 cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["SDTOut-sum"]])
-lm(`PersonInSOutS-sum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
 
 #--the absolute personality shift was predicted by the general life satisfaction
 cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["SDTOut-sum"]])
-lm(`PersonInSOutS-absum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
 
 #--the personality improvement was predicted by the general life satisfaction
 cor.test(tanh(DT_3[["PersonProgapS-sum"]]), DT_3[["SDTOut-sum"]])
-lm(`PersonProgapS-sum` ~ `SDTOut-sum`, data=DT_3) %>% summary()
-lm(tanh(`PersonProgapS-sum`) ~ `SDTOut-sum`, data=DT_3) %>% summary()
 
 
 #--both the absolute shift and improvement predicted the satisfaction an individual acquired from the video gaming experience

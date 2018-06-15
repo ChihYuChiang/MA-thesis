@@ -1,5 +1,5 @@
-library(tidyverse)
 library(data.table)
+library(tidyverse)
 
 
 getData_1 <- function() {
@@ -153,8 +153,7 @@ getData_2 <- function() {
   "
   DT <- read_csv("../data/raw_survey/processed/survey.csv", col_names=TRUE) %>%
     mutate(race = factor(race),
-           sex = factor(sex),
-           core_id = factor(core_id)) %>%
+           sex = factor(sex)) %>%
     select(-id) %>%
     as.data.table()
   
@@ -198,6 +197,30 @@ getData_2 <- function() {
   "
   #Key = player
   DT_player <- distinct(DT, respondent, .keep_all=TRUE) %>% as.data.table()
+    
+  DT_player_agame <- DT %>%
+    dplyr::group_by(respondent) %>% #To avoid being masked by plyr
+    dplyr::summarise(preference_1 = mean(preference_1),
+              preference_2 = mean(preference_2),
+              preference_3 = mean(preference_3),
+              preference = mean(preference),
+              gap_sum = mean(gap_sum),
+              gap_sum_abs = mean(gap_sum_abs)) %>%
+    as.data.table()
+  
+  
+  
+  
+  "
+  ### Acquire genre info (simplified)
+  "
+  DT_genre <- fread("../data/raw_survey/processed/traditional_genre_simplified.csv")
+  
+  #Left outer join using data.table
+  DT <- as.data.table(DT)
+  setkey(DT, core_id)
+  setkey(DT_genre, core_id)
+  DT <- DT[DT_genre]
   
   
   
@@ -205,7 +228,7 @@ getData_2 <- function() {
   "
   ### Return data 2
   "
-  return(list(DT, DT_player))
+  return(list(DT, DT_player, DT_player_agame))
 }
 
 
