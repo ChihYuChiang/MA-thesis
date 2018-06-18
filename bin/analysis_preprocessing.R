@@ -154,7 +154,6 @@ getData_2 <- function() {
   DT <- read_csv("../data/raw_survey/processed/survey.csv", col_names=TRUE) %>%
     mutate(race = factor(race),
            sex = factor(sex)) %>%
-    select(-id) %>%
     as.data.table()
   
   

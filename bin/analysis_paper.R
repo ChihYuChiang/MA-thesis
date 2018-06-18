@@ -1,6 +1,7 @@
 source("analysis_preprocessing.R")
 library(psych)
 library(lme4)
+library(pbnm)
 library(fastDummies)
 library(splitstackshape)
 library(corrplot)
@@ -50,13 +51,15 @@ V_3 <- c("ResponseId",
          "PersonOutS-sum", "PersonInS-sum", "PersonIdS-sum",
          "PersonInSOutS-sum", "PersonInSOutS-absum", "PersonIdSOutS-sum", "PersonIdSOutS-absum",
          "SDTOut-sum", "SDTIn-sum", "SDTId-sum",
-         "SDTIdOut-sum", "SDTIdOut-absum")
+         "SDTIdOut-sum", "SDTIdOut-absum",
+         "Enough-2_1")
 V_3_rename <- c("ResponseID",
                 "Self_different", "Self_better",
                 "Person_life", "Person_hobby", "Person_ideal",
                 "Person_hobbyLife", "Person_hobbyLife_abs", "Person_idealLife", "Person_idealLife_abs",
                 "Satis_life", "Satis_hobby", "Satis_ideal",
-                "Satis_idealLife", "Satis_idealLife_abs")
+                "Satis_idealLife", "Satis_idealLife_abs",
+                "Game")
 
 #Setup data tables
 DT_1_clean <- DT_1[, match(V_1, names(DT_1)), with=FALSE]
@@ -116,6 +119,19 @@ cor.test(DT_3_clean[["Self_different"]], DT_3_clean[["Person_hobbyLife_abs"]])
 cor.test(DT_3_clean[["Person_ideal"]], DT_3_clean[["Satis_ideal"]])
 cor.test(DT_3_clean[["Person_ideal"]], DT_3_clean[["Person_life"]])
 cor.test(DT_3_clean[["Satis_ideal"]], DT_3_clean[["Satis_life"]])
+
+
+m0 <- lm(Person_hobbyLife ~ Person_life + (Satis_ideal - Satis_life), DT_3_clean[Game])
+m1 <- lmer(Person_hobbyLife ~ Person_life + (Satis_ideal - Satis_life) + (1|Game), data=DT_3_clean, REML=FALSE)
+
+m0 <- lm(Person_hobbyLife_abs ~ Person_life + (Satis_ideal - Satis_life), DT_3_clean)
+m1 <- lmer(Person_hobbyLife_abs ~ Person_life + (Satis_ideal - Satis_life) + (1|Game), data=DT_3_clean, REML=FALSE)
+
+logLik(m0)
+logLik(m1)
+
+summary(m0)
+pbnm(m1, m0, nsim=1000, tasks=10, cores=4, seed=1) %>% summary()
 
 
 
