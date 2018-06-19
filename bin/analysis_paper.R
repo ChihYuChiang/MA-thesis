@@ -95,6 +95,7 @@ cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Person_hobbyLife"]])
 cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Person_hobbyLife_abs"]])
 
 cor.test(DT_3_clean[["Person_life"]], DT_3_clean[["Satis_life"]])
+cor.test(DT_3_clean[["Person_ideal"]], DT_3_clean[["Satis_ideal"]])
 
 lm(Person_hobbyLife ~ Person_life + Satis_life, DT_3_clean) %>% summary()
 lm(Person_hobbyLife_abs ~ Person_life + Satis_life, DT_3_clean) %>% summary()
@@ -132,6 +133,16 @@ logLik(m1)
 
 summary(m0)
 pbnm(m1, m0, nsim=1000, tasks=10, cores=4, seed=1) %>% summary()
+
+
+#if person_hobby = person_life, satis_hobby = satis_life?
+t.test(DT_3_clean[, Satis_life], DT_3_clean[, Satis_hobby], mu=0, paired=TRUE)
+t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 8, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 8, Satis_hobby], mu=0, paired=TRUE)
+t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 4, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 4, Satis_hobby], mu=0, paired=TRUE)
+t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 2, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 2, Satis_hobby], mu=0, paired=TRUE)
+t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 1, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 1, Satis_hobby], mu=0, paired=TRUE)
+t.test(DT_3_clean[abs(Person_life - Person_hobby) <= .5, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= .5, Satis_hobby], mu=0, paired=TRUE)
+
 
 
 
