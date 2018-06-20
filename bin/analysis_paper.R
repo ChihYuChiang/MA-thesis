@@ -79,12 +79,18 @@ write.csv(DT_3_clean, file="../data/DT_3_clean.csv")
 cor.test(DT_1_clean[["Person_life"]], DT_1_clean[["Person_hobbyLife"]])
 cor.test(DT_1_clean[["Person_life"]], DT_1_clean[["Person_hobbyLife_abs"]])
 
+cor.test(DT_1_clean[["Person_idealLife"]], DT_1_clean[["Person_hobbyLife"]])
+cor.test(DT_1_clean[["Person_idealLife"]], DT_1_clean[["Person_hobbyLife_abs"]])
+
 
 #--Study 2
 cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Person_hobbyLife"]])
 cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Person_hobbyLife_abs"]])
 
 cor.test(DT_2_clean[["Person_life"]], DT_2_clean[["Satis_life"]])
+
+cor.test(DT_2_clean[["Satis_life"]], DT_2_clean[["Person_hobbyLife"]])
+cor.test(DT_2_clean[["Satis_life"]], DT_2_clean[["Person_hobbyLife_abs"]])
 
 lm(Person_hobbyLife ~ Person_life + Satis_life, DT_2_clean) %>% summary()
 lm(Person_hobbyLife_abs ~ Person_life + Satis_life, DT_2_clean) %>% summary()
@@ -107,13 +113,14 @@ lm(Satis_hobby ~ Person_life + Person_hobbyLife + Person_hobbyLife_abs, DT_3_cle
 
 lm(`PrefS-a2` ~ `PersonOutS-sum` + `GProfile-a2` + `SDTIn-sum`, DT_3) %>% summary()
 
-
-cor.test(DT_3[["SDTIn-sum"]], DT_3[["GProfile-a2"]]) #Overall video game liking
+cor.test(DT_3[["PersonInSOutS-absum"]], DT_3[["PrefS-a2"]]) #Liking of the particular game
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["PrefS-a2"]]) #Liking of the particular game
+cor.test(DT_3[["PersonInSOutS-sum"]], DT_3[["GProfile-a2"]]) #Overall video game liking
 cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-a2"]]) #Liking of the particular game
 cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-5"]]) #Fittness of taste of the particular game
 
 
-cor.test(DT_3_clean[["Self_better"]], DT_3_clean[["Person_hobbyLife"]])
+cor.test(DT_3_clean[["Self_better"]], DT_3_clean[["Satis_hobbyLife"]])
 cor.test(DT_3_clean[["Self_different"]], DT_3_clean[["Person_hobbyLife_abs"]])
 
 
@@ -128,26 +135,43 @@ m1 <- lmer(Person_hobbyLife ~ Person_life + (Satis_ideal - Satis_life) + (1|Game
 m0 <- lm(Person_hobbyLife_abs ~ Person_life + (Satis_ideal - Satis_life), DT_3_clean)
 m1 <- lmer(Person_hobbyLife_abs ~ Person_life + (Satis_ideal - Satis_life) + (1|Game), data=DT_3_clean, REML=FALSE)
 
+m0 <- lm(Satis_hobby ~ Person_life + Person_hobbyLife + Person_hobbyLife_abs, DT_3_clean)
+m1 <- lmer(Satis_hobby ~ Person_life + Person_hobbyLife + Person_hobbyLife_abs + (Person_hobbyLife + Person_hobbyLife_abs|Game), data=DT_3_clean, REML=FALSE)
+
 logLik(m0)
 logLik(m1)
 
-summary(m0)
+summary(m1)
 pbnm(m1, m0, nsim=1000, tasks=10, cores=4, seed=1) %>% summary()
 
 
-#if person_hobby = person_life, satis_hobby = satis_life?
-t.test(DT_3_clean[, Satis_life], DT_3_clean[, Satis_hobby], mu=0, paired=TRUE)
-t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 8, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 8, Satis_hobby], mu=0, paired=TRUE)
-t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 4, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 4, Satis_hobby], mu=0, paired=TRUE)
-t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 2, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 2, Satis_hobby], mu=0, paired=TRUE)
-t.test(DT_3_clean[abs(Person_life - Person_hobby) <= 1, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= 1, Satis_hobby], mu=0, paired=TRUE)
-t.test(DT_3_clean[abs(Person_life - Person_hobby) <= .5, Satis_life], DT_3_clean[abs(Person_life - Person_hobby) <= .5, Satis_hobby], mu=0, paired=TRUE)
+cor.test(DT_3[["GProfile-11_2"]], DT_3[["SDTIdOut-sum"]])
+lm(`GProfile-10_2` ~ `PersonIdSOutS-absum`, DT_3) %>% summary()
+lm(`GProfile-11_2` ~ `PersonIdSOutS-sum`, DT_3) %>% summary()
+
+lm(`PersonInSOutS-absum` ~ `GProfile-10_2`, DT_3) %>% summary()
+lm(`PersonInSOutS-sum` ~ `GProfile-11_2`, DT_3) %>% summary()
+
+lm(`PersonIdSOutS-absum` ~ `SDTOut-sum`, DT_3) %>% summary()
+lm(`PersonIdSOutS-sum` ~ `SDTOut-sum`, DT_3) %>% summary()
+
+lm(`PrefS-a2` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
+lm(`GProfile-a2` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
+lm(`SDTIn-sum` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
+
+lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-sum` + `PersonInSOutS-absum`, DT_3) %>% summary()
 
 
+#--Update hypothesis
+cor.test(DT_3_clean[["Satis_idealLife"]], DT_3_clean[["Person_idealLife"]])
+cor.test(DT_3_clean[["Satis_idealLife"]], DT_3_clean[["Person_idealLife_abs"]])
+cor.test(DT_3_clean[["Person_idealLife"]], DT_3_clean[["Self_better"]])
+cor.test(DT_3_clean[["Person_idealLife_abs"]], DT_3_clean[["Self_different"]])
+cor.test(DT_3_clean[["Self_better"]], DT_3_clean[["Person_hobbyLife"]])
+cor.test(DT_3_clean[["Self_different"]], DT_3_clean[["Person_hobbyLife_abs"]])
 
-
-
-
+cor.test(DT_3_clean[["Satis_life"]], DT_3_clean[["Person_idealLife"]])
+cor.test(DT_3_clean[["Satis_life"]], DT_3_clean[["Person_idealLife_abs"]])
 
 
 
