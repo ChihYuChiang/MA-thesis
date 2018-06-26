@@ -164,6 +164,7 @@ getData_2 <- function() {
   "
   DT <- DT %>%
     rowwise() %>% #Rowwise to make the ordinary functions work
+    #1: liking; 2: how often played; 3: fit taste
     mutate(preference = mean(c(preference_1, preference_2, preference_3))) %>%
     ungroup() #Ungroup to cancel rowwise
   
