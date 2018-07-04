@@ -84,8 +84,7 @@ cor.test(DT_1_clean[["Person_idealLife"]], DT_1_clean[["Person_hobbyLife_abs"]])
 cor.test(DT_2_clean[["Satis_life"]], DT_2_clean[["Person_hobbyLife"]])
 cor.test(DT_2_clean[["Satis_life"]], DT_2_clean[["Person_hobbyLife_abs"]])
 
-lm(preference_1 ~ gap_sum + gap_sum_abs, DT_2_agame) %>% summary() #Pure liking, 10 game average
-lm(preference_1 ~ gap_sum + gap_sum_abs, DT_2_long) %>% summary() #Pure liking, indi game
+lm(preference_1 ~ gap_sum + gap_sum_abs, DT_2_agame) %>% summary() #Pure liking, 5 game average
 
 
 #--Study 3
@@ -114,6 +113,10 @@ cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-a2"]]) #Liking of the particular game
 cor.test(DT_3[["SDTIn-sum"]], DT_3[["PrefS-5"]]) #Fittness of taste of the particular game
 
 cor.test(DT_3[["SDTIn-sum"]], DT_3[["GProfile-a2"]])
+
+cor.test(DT_3[["SDTOut-sum"]], DT_3[["PersonInSOutS-sum"]])
+cor.test(DT_3[["SDTOut-sum"]], DT_3[["PersonInSOutS-absum"]])
+
 
 
 cor.test(DT_3_clean[["Self_better"]], DT_3_clean[["Satis_hobbyLife"]])
@@ -154,8 +157,22 @@ lm(`PersonIdSOutS-sum` ~ `SDTOut-sum`, DT_3) %>% summary()
 lm(`PrefS-a2` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
 lm(`GProfile-a2` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
 lm(`SDTIn-sum` ~ `GProfile-10_2` + `GProfile-11_2`, DT_3) %>% summary()
+lm(`GProfile-a2` ~ `PersonInSOutS-sum` + `PersonInSOutS-absum`, DT_3) %>% summary()
 
 lm(`SDTIn-sum` ~ `SDTOut-sum` + `PersonInSOutS-sum` + `PersonInSOutS-absum`, DT_3) %>% summary()
+
+lm(`SDTIn-sum` ~ `GProfile-11_2` + `PersonInSOutS-absum`, DT_3) %>% summary()
+cor.test(DT_3[["GProfile-a2"]], DT_3[["PersonInSOutS-sum"]])
+cor.test(DT_3[["GProfile-10_2"]], DT_3[["GProfile-11_2"]])
+cor.test(DT_3[["SDTIn-sum"]], DT_3[["PersonInSOutS-absum"]])
+cor.test(DT_3[["GProfile-11_2"]], DT_3[["PersonInSOutS-absum"]])
+cor.test(DT_3[["GProfile-10_2"]], DT_3[["PersonInSOutS-sum"]])
+ggplot(data=DT_3, aes(x=`PersonInSOutS-sum`, y=`SDTOut-sum`)) +
+  geom_point() +
+  geom_smooth()
+ggplot(data=DT_2, aes(x=`gap_sum`, y=`combined_sum`)) +
+  geom_point() +
+  geom_smooth()
 
 
 #--Update hypothesis
@@ -168,7 +185,6 @@ cor.test(DT_3_clean[["Self_different"]], DT_3_clean[["Person_hobbyLife_abs"]])
 
 cor.test(DT_3_clean[["Satis_life"]], DT_3_clean[["Person_idealLife"]])
 cor.test(DT_3_clean[["Satis_life"]], DT_3_clean[["Person_idealLife_abs"]])
-
 
 
 #----------------------------------------------------------------------

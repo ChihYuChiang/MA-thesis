@@ -199,6 +199,7 @@ getData_2 <- function() {
   DT_player <- distinct(DT, respondent, .keep_all=TRUE) %>% as.data.table()
     
   DT_player_agame <- DT %>%
+    filter(group_1 == 1) %>%
     dplyr::group_by(respondent) %>% #To avoid being masked by plyr
     dplyr::summarise(preference_1 = mean(preference_1),
               preference_2 = mean(preference_2),
