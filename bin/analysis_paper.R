@@ -112,15 +112,15 @@ corMatrix <- cor(DT_3[, .(`SDTOut-sum`, `PersonIdSOutS-sum`, `PersonIdSOutS-absu
 
 #Component pool
 "
+`PersonIdSOutS-sum` ~ `SDTOut-sum`
 `PersonIdSOutS-absum` ~ `SDTOut-sum`
 `GProfile-a2` ~ `SDTIn-sum`
-`GProfile-10_2` ~ `PersonIdSOutS-absum`
 "
 
 #Model
 modelExp_sem <- "
-`PersonIdSOutS-sum` ~ `SDTOut-sum`
 `GProfile-11_2` ~ `PersonIdSOutS-sum`
+`GProfile-10_2` ~ `PersonIdSOutS-absum`
 `PersonInSOutS-sum` ~ `GProfile-11_2`
 `PersonInSOutS-absum` ~ `GProfile-10_2`
 `SDTIn-sum` ~ `PersonInSOutS-sum` + `PersonInSOutS-absum`
