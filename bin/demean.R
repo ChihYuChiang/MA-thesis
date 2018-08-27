@@ -1,6 +1,7 @@
 source("analysis_preprocessing.R")
 library(data.table)
 DT_2_long <- getData_2()[[1]]
+write.csv(DT_2_long, file="../data/raw_survey/processed/DT_2_long.csv")
 
 #Predicting preference by respondent and game id
 model_demean <- lm(`preference` ~ `respondent` + factor(`core_id`), DT_2_long)
